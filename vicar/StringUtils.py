@@ -1,7 +1,7 @@
-'''
+"""
 Functionality to escape raw strings to their Vicar format and unescape
 them back.
-'''
+"""
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 def escape_byte_string(bs):
     # type: (str) -> str
-    '''Escape a raw Python string.'''
+    """Escape a raw Python string."""
 
     def escape_char(c):
         # type: (str) -> str
@@ -24,7 +24,7 @@ def escape_byte_string(bs):
 
 def unescape_byte_string(bs):
     # type: (str) -> str
-    '''Unescape a raw Python string.'''
+    """Unescape a raw Python string."""
     assert bs[0] == "'" and bs[-1] == "'", 'unescape_byte_string(%r)' % bs
     res = []  # type: List[str]
     saw_quote = False
