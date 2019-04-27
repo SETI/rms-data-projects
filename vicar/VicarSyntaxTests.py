@@ -1,6 +1,8 @@
 import random
 from abc import abstractmethod
 
+from HistoryLabels import HistoryLabels, Task
+from PropertyLabels import Property, PropertyLabels
 from VicarFile import *
 
 if TYPE_CHECKING:
@@ -8,6 +10,10 @@ if TYPE_CHECKING:
 
 
 class VicarSyntaxTests(object):
+    """
+    An abstract base class providing tests for common functionality of
+    VicarSyntax elements.
+    """
     __metaclass__ = ABCMeta
 
     @abstractmethod
@@ -65,5 +71,11 @@ class VicarSyntaxTests(object):
         """
         Verify that evaluating repr(arg) is equal to arg.
         """
+        # eval() needs to see all the types in order to build them.
+        # Unfortunately, my IDE thinks the imports are unused and deletes them.
+        # So I add their names here.
+
+        needed_imports = [HistoryLabels, Property, PropertyLabels, Task]
+
         for arg in self.args_for_test():
             self.assertEqual(arg, eval(str(arg)), str(arg))

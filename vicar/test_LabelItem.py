@@ -5,6 +5,15 @@ from Value import *
 from VicarSyntaxTests import VicarSyntaxTests
 
 
+def mk_sqr_label_items():
+    """
+    Make a bunch of LabelItems showing squares of
+    integers.
+    """
+    return [LabelItem.create('SQR_%d' % i, IntegerValue(str(i * i)))
+            for i in range(1, 100)]
+
+
 class TestLabelItem(unittest.TestCase, VicarSyntaxTests):
     def test__init__(self):
         str_value = StringValue.from_raw_string('foo')
