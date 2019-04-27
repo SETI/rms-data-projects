@@ -1,52 +1,24 @@
 """
 Syntax for VICAR files.
 """
-from abc import ABCMeta, abstractmethod
 
 from typing import TYPE_CHECKING
 
+from LabelItem import LabelItem
 from MigrationConstants import MIGRATION_TASK_NAME, MIGRATION_USER_NAME
-from StringUtils import escape_byte_string
+from Value import *
+from VicarSyntax import maybe_bs
 
 if TYPE_CHECKING:
     from typing import List
 
 
-class _VicarSyntax(object):
-    """Elements of VICAR syntax."""
-    __metaclass__ = ABCMeta
-
-    @abstractmethod
-    def to_byte_string(self):
-        # type: () -> str
-        """Convert the syntax to a byte-string."""
-        pass
-
-    def to_byte_length(self):
-        # type: () -> int
-        """Return the length of the byte-string for this syntax."""
-        return len(self.to_byte_string())
-
-    def to_padded_byte_string(self, recsize):
-        """
-        Convert the syntax to a byte-string and pad it with NULs until
-        its length is a multiple of the given record size.
-        """
-        assert recsize > 0
-        excess = self.to_byte_length() % recsize
-        if excess == 0:
-            padding = ''
-        else:
-            padding = (recsize - excess) * '\0'
-        return self.to_byte_string() + padding
-
-
 ##############################
 
-class SystemLabels(_VicarSyntax):
+class SystemLabels(VicarSyntax):
     def __init__(self, label_items):
         # type: (List[LabelItem]) -> None
-        _VicarSyntax.__init__(self)
+        VicarSyntax.__init__(self)
         assert label_items is not None
         for label_item in label_items:
             assert label_item is not None
@@ -139,12 +111,12 @@ class SystemLabels(_VicarSyntax):
 
 ##############################
 
-class PropertyLabels(_VicarSyntax):
+class PropertyLabels(VicarSyntax):
     """Represents the list of properties of an image."""
 
     def __init__(self, properties):
         # type: (List[Property]) -> None
-        _VicarSyntax.__init__(self)
+        VicarSyntax.__init__(self)
         assert properties is not None
         for property in properties:
             assert property is not None
@@ -172,12 +144,12 @@ class PropertyLabels(_VicarSyntax):
                         for property in self.properties])
 
 
-class Property(_VicarSyntax):
+class Property(VicarSyntax):
     """Represents a property of the image in the image domain."""
 
     def __init__(self, property_label_items):
         # type: (List[LabelItem]) -> None
-        _VicarSyntax.__init__(self)
+        VicarSyntax.__init__(self)
         assert property_label_items is not None
         for label_item in property_label_items:
             assert label_item is not None
@@ -208,10 +180,10 @@ class Property(_VicarSyntax):
 
 ##############################
 
-class HistoryLabels(_VicarSyntax):
+class HistoryLabels(VicarSyntax):
     def __init__(self, tasks):
         # type: (List[Task]) -> None
-        _VicarSyntax.__init__(self)
+        VicarSyntax.__init__(self)
         assert tasks is not None
         for task in tasks:
             assert task is not None
@@ -249,12 +221,12 @@ class HistoryLabels(_VicarSyntax):
         return self.tasks and self.tasks[-1].is_migration_task()
 
 
-class Task(_VicarSyntax):
+class Task(VicarSyntax):
     """Represents a step in the processing history of the image."""
 
     def __init__(self, history_label_items):
         # type: (List[LabelItem]) -> None
-        _VicarSyntax.__init__(self)
+        VicarSyntax.__init__(self)
         assert history_label_items is not None
         for label_item in history_label_items:
             assert label_item is not None
@@ -334,7 +306,7 @@ class Task(_VicarSyntax):
 
 
 ##############################
-class Labels(_VicarSyntax):
+class Labels(VicarSyntax):
     """A series of keyword-value pairs divided into three sections."""
 
     def __init__(self, system_labels, property_labels, history_labels,
@@ -351,10 +323,10 @@ class Labels(_VicarSyntax):
         return [self.system_labels,
                 self.property_labels,
                 self.history_labels,
-                _maybe_bs(self.padding)] == [other.system_labels,
-                                             other.property_labels,
-                                             other.history_labels,
-                                             _maybe_bs(other.padding)]
+                maybe_bs(self.padding)] == [other.system_labels,
+                                            other.property_labels,
+                                            other.history_labels,
+                                            maybe_bs(other.padding)]
 
     def __repr__(self):
         items_str = ', '.join([repr(item)
@@ -368,13 +340,13 @@ class Labels(_VicarSyntax):
         return sum([self.system_labels.to_byte_length(),
                     self.property_labels.to_byte_length(),
                     self.history_labels.to_byte_length(),
-                    len(_maybe_bs(self.padding))])
+                    len(maybe_bs(self.padding))])
 
     def to_byte_string(self):
         return ''.join([self.system_labels.to_byte_string(),
                         self.property_labels.to_byte_string(),
                         self.history_labels.to_byte_string(),
-                        _maybe_bs(self.padding)])
+                        maybe_bs(self.padding)])
 
     def get_int_value(self, keyword, default=0):
         # type: (str, int) -> int
@@ -396,164 +368,3 @@ class Labels(_VicarSyntax):
         processed.
         """
         return self.history_labels.has_migration_task()
-
-
-##############################
-
-
-class LabelItem(_VicarSyntax):
-    """A key-value pair used for a VICAR label."""
-
-    def __init__(self, initial_space, keyword, equals, value,
-                 trailing_space):
-        # type: (str, str, str, Value, str) -> None
-        _VicarSyntax.__init__(self)
-        assert keyword is not None
-        assert equals is not None
-        assert value is not None
-        assert isinstance(value, Value)
-
-        self.initial_space = initial_space
-        self.keyword = keyword
-        self.equals = equals
-        self.value = value
-        self.trailing_space = trailing_space
-
-    def __repr__(self):
-        return 'LabelItem(%r, %r, %r, %s, %r)' % \
-               (self.initial_space, self.keyword, self.equals,
-                self.value, self.trailing_space)
-
-    def __eq__(self, other):
-        return isinstance(other, LabelItem) and \
-               self.to_byte_string() == other.to_byte_string()
-
-    def to_byte_string(self):
-        return ''.join([_maybe_bs(self.initial_space),
-                        self.keyword,
-                        self.equals,
-                        self.value.to_byte_string(),
-                        _maybe_bs(self.trailing_space)])
-
-    def to_saved_string_value(self):
-        # type: () -> StringValue
-        """
-        Convert the LabelItem to a byte-string, then convert that
-        byte-string into a string value.  Useful for saving the
-        original contents of a LabelItem, including its whitespace.
-        """
-        return StringValue.from_raw_string(self.to_byte_string())
-
-    def to_saved_label_item(self, prefix):
-        # type: (str) -> LabelItem
-        """
-        Convert the LabelItem to a byte-string, then convert that
-        byte-string into a string value.  Prepend the prefix to the
-        original item's keyword, and using that and the string value,
-        create a new LabelItem.  Useful for saving the original
-        contents of a LabelItem, including its whitespace.
-        """
-        return LabelItem.create(prefix + self.keyword,
-                                self.to_saved_string_value())
-
-    @staticmethod
-    def create(keyword, value):
-        # type: (str, Value) -> LabelItem
-        """
-        Synthesize a LabelItem with a single trailing space as
-        whitespace.
-        """
-        return LabelItem(None, keyword, '=', value, ' ')
-
-
-##############################
-
-class Value(_VicarSyntax):
-    """The value in a key-value pair in a label item."""
-    __metaclass__ = ABCMeta
-
-    def __init__(self, byte_str):
-        # type: (str) -> None
-        _VicarSyntax.__init__(self)
-        assert byte_str is not None
-        assert isinstance(byte_str, str)
-        self.value_byte_string = byte_str
-
-    def to_byte_string(self):
-        return self.value_byte_string
-
-    def __eq__(self, other):
-        return isinstance(other, type(self)) and \
-               self.value_byte_string == other.value_byte_string
-
-    def __repr__(self):
-        return '%s(%r)' % (type(self).__name__, self.value_byte_string)
-
-
-###############
-
-class IntegerValue(Value):
-    """An integer value."""
-
-    def __init__(self, byte_str):
-        # type: (str) -> None
-        Value.__init__(self, byte_str)
-
-
-class RealValue(Value):
-    """A real floating-point value."""
-
-    def __init__(self, byte_str):
-        # type: (str) -> None
-        Value.__init__(self, byte_str)
-
-
-class StringValue(Value):
-    """A string value."""
-
-    def __init__(self, byte_str):
-        # type: (str) -> None
-        Value.__init__(self, byte_str)
-
-    @staticmethod
-    def from_raw_string(byte_str):
-        # type: (str) -> StringValue
-        """
-        Programmatically create a StringValue from a raw Python string.
-        """
-        return StringValue(escape_byte_string(byte_str))
-
-
-class IntegersValue(Value):
-    """An array of integer values."""
-
-    def __init__(self, byte_str):
-        # type: (str) -> None
-        Value.__init__(self, byte_str)
-
-
-class RealsValue(Value):
-    """An array of real, floating-point values."""
-
-    def __init__(self, byte_str):
-        # type: (str) -> None
-        Value.__init__(self, byte_str)
-
-
-class StringsValue(Value):
-    """An array of string values."""
-
-    def __init__(self, byte_str):
-        # type: (str) -> None
-        Value.__init__(self, byte_str)
-
-
-############################################################
-
-def _maybe_bs(byte_str):
-    # type: (str) -> str
-    """Convert a possibly missing byte-string into a byte string."""
-    if byte_str is None:
-        return ''
-    else:
-        return byte_str
