@@ -38,8 +38,10 @@ class SystemLabels(_VicarBase):
             assert isinstance(label_item, LabelItem)
         self.label_items = label_items
 
-    def __str__(self):
-        assert False, 'unimplemented'
+    def __repr__(self):
+        label_items_str = ', '.join([repr(label_item)
+                                     for label_item in self.label_items])
+        return 'SystemLabels([%s])' % label_items_str
 
     def __eq__(self, other):
         return other is not None and \
@@ -122,6 +124,42 @@ class SystemLabels(_VicarBase):
 
 ##############################
 
+class Property(_VicarBase):
+    """Represents a property of the image in the image domain."""
+
+    def __init__(self, property_label_items):
+        # type: (List[LabelItem]) -> None
+        _VicarBase.__init__(self)
+        assert property_label_items is not None
+        for label_item in property_label_items:
+            assert label_item is not None
+            assert isinstance(label_item, LabelItem)
+        self.property_label_items = property_label_items
+
+    def __eq__(self, other):
+        return other is not None and \
+               isinstance(other, Property) and \
+               self.property_label_items == other.property_label_items
+
+    def __repr__(self):
+        label_items_str = ', '.join([repr(label_item)
+                                     for label_item in
+                                     self.property_label_items])
+        return 'Property([%s])' % label_items_str
+
+    def to_byte_length(self):
+        # Summing is slightly more efficient than concatenating a bunch of
+        # byte-strings.
+        return sum([label_item.to_byte_length()
+                    for label_item in self.property_label_items])
+
+    def to_byte_string(self):
+        return ''.join([label_item.to_byte_string()
+                        for label_item in self.property_label_items])
+
+
+##############################
+
 class LabelItem(_VicarBase):
     """A key-value pair used for a VICAR label."""
 
@@ -139,7 +177,7 @@ class LabelItem(_VicarBase):
         self.value = value
         self.trailing_space = trailing_space
 
-    def __str__(self):
+    def __repr__(self):
         return 'LabelItem(%r, %r, %r, %s, %r)' % \
                (self.initial_space, self.keyword, self.equals,
                 self.value, self.trailing_space)

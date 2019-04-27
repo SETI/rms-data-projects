@@ -11,17 +11,39 @@ class VicarBaseTest(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def args_for_test_to_byte_length(self):
+    def args_for_test(self):
         # type: () -> Iterable[_VicarBase]
+        """
+        Some interesting (or not) values for testing.
+        """
         pass
 
     def assertEqual(self, first, second, msg=None):
         assert False, 'should be overridden'
 
+    def test_equal(self):
+        # type: () -> None
+        """
+        Verify that equality is reflexive on the given values.
+        """
+        for arg in self.args_for_test():
+            self.assertEqual(arg, arg)
+
     def test_to_byte_length(self):
         # type: () -> None
-        for arg in self.args_for_test_to_byte_length():
+        """
+        Verify that to_byte_length() yields the same as (the possibly less
+        efficient) length of the result of to_byte_string().
+        """
+        for arg in self.args_for_test():
             self.assertEqual(len(arg.to_byte_string()), arg.to_byte_length())
+
+    def test_repr(self):
+        """
+        Verify that evaluating repr(arg) is equal to arg.
+        """
+        for arg in self.args_for_test():
+            self.assertEqual(arg, eval(str(arg)), str(arg))
 
 
 class TestValue(unittest.TestCase, VicarBaseTest):
@@ -32,7 +54,7 @@ class TestValue(unittest.TestCase, VicarBaseTest):
         self.assertTrue(
             StringValue("'foo'") == StringValue.from_raw_string('foo'))
 
-    def args_for_test_to_byte_length(self):
+    def args_for_test(self):
         return [IntegerValue('3'), StringValue.from_raw_string('foobar'),
                 RealValue('3.14159265')]
 
@@ -60,7 +82,7 @@ class TestLabelItem(unittest.TestCase, VicarBaseTest):
         # verify that this does not raise
         LabelItem(None, 'KEYWORD', ' =  ', str_value, ' ')
 
-    def args_for_test_to_byte_length(self):
+    def args_for_test(self):
         exotic_label_item = LabelItem('   ', 'SHERPA_HOME', ' \t   =\n\n',
                                       StringValue.from_raw_string('Nepal'),
                                       '  ')
@@ -145,7 +167,7 @@ class TestSystemLabels(unittest.TestCase, VicarBaseTest):
                                        IntegerValue('2')),
                       ])
 
-    def args_for_test_to_byte_length(self):
+    def args_for_test(self):
         return [SystemLabels([]),
                 SystemLabels([LabelItem.create('ONE',
                                                StringValue.from_raw_string(
@@ -237,3 +259,35 @@ class TestSystemLabels(unittest.TestCase, VicarBaseTest):
         with self.assertRaises(Exception):
             # a default answer doesn't fix a mistyped value
             system_labels.get_int_value('STRING', 666)
+
+
+def _mk_map_property():
+    # type: () -> Property
+    """
+    Make a sample property.  Example taken from the VICAR File Format,
+    https://www-mipl.jpl.nasa.gov/external/VICAR_file_fmt.pdf
+    """
+    return Property(
+        [LabelItem.create('PROPERTY', StringValue.from_raw_string('MAP')),
+         LabelItem.create('PROJECTION',
+                          StringValue.from_raw_string('mercator')),
+         LabelItem.create('LAT', RealValue('34.2')),
+         LabelItem.create('LON', RealValue('177.221'))])
+
+
+class TestProperty(unittest.TestCase, VicarBaseTest):
+    def test__init__(self):
+        # verify that bad inputs raise exception
+        with self.assertRaises(Exception):
+            Property(None)
+        with self.assertRaises(Exception):
+            Property([None])
+        with self.assertRaises(Exception):
+            Property([1, 2, 3])
+
+        # verify that this does not raise
+        _mk_map_property()
+
+    def args_for_test(self):
+        return [Property([]),
+                _mk_map_property()]
