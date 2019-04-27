@@ -5,6 +5,7 @@ from abc import ABCMeta, abstractmethod
 
 from typing import TYPE_CHECKING
 
+from MigrationConstants import MIGRATION_TASK_NAME, MIGRATION_USER_NAME
 from StringUtils import escape_byte_string
 
 if TYPE_CHECKING:
@@ -138,6 +139,39 @@ class SystemLabels(_VicarSyntax):
 
 ##############################
 
+class PropertyLabels(_VicarSyntax):
+    """Represents the list of properties of an image."""
+
+    def __init__(self, properties):
+        # type: (List[Property]) -> None
+        _VicarSyntax.__init__(self)
+        assert properties is not None
+        for property in properties:
+            assert property is not None
+            assert isinstance(property, Property)
+        self.properties = properties
+
+    def __eq__(self, other):
+        return other is not None and \
+               isinstance(other, PropertyLabels) and \
+               self.properties == other.properties
+
+    def __repr__(self):
+        properties_str = ', '.join([repr(property)
+                                    for property in self.properties])
+        return 'PropertyLabels([%s])' % properties_str
+
+    def to_byte_length(self):
+        # Summing is slightly more efficient than concatenating a bunch of
+        # byte-strings then taking the length.
+        return sum([property.to_byte_length()
+                    for property in self.properties])
+
+    def to_byte_string(self):
+        return ''.join([property.to_byte_string()
+                        for property in self.properties])
+
+
 class Property(_VicarSyntax):
     """Represents a property of the image in the image domain."""
 
@@ -163,13 +197,99 @@ class Property(_VicarSyntax):
 
     def to_byte_length(self):
         # Summing is slightly more efficient than concatenating a bunch of
-        # byte-strings.
+        # byte-strings then taking the length.
         return sum([label_item.to_byte_length()
                     for label_item in self.property_label_items])
 
     def to_byte_string(self):
         return ''.join([label_item.to_byte_string()
                         for label_item in self.property_label_items])
+
+
+##############################
+
+class Task(_VicarSyntax):
+    """Represents a step in the processing history of the image."""
+
+    def __init__(self, history_label_items):
+        # type: (List[LabelItem]) -> None
+        _VicarSyntax.__init__(self)
+        assert history_label_items is not None
+        for label_item in history_label_items:
+            assert label_item is not None
+            assert isinstance(label_item, LabelItem)
+        assert len(history_label_items) >= 3
+        assert ['TASK', 'USER', 'DAT_TIM'] == [label_item.keyword for
+                                               label_item in
+                                               history_label_items[:3]]
+        self.history_label_items = history_label_items
+
+    def __eq__(self, other):
+        return other is not None and \
+               isinstance(other, Task) and \
+               self.history_label_items == other.history_label_items
+
+    def __repr__(self):
+        label_items_str = ', '.join([repr(label_item)
+                                     for label_item in
+                                     self.history_label_items])
+        return 'Task([%s])' % label_items_str
+
+    def to_byte_length(self):
+        # Summing is slightly more efficient than concatenating a bunch of
+        # byte-strings then taking the length.
+        return sum([label_item.to_byte_length()
+                    for label_item in self.history_label_items])
+
+    def to_byte_string(self):
+        return ''.join([label_item.to_byte_string()
+                        for label_item in self.history_label_items])
+
+    @staticmethod
+    def create(task_name, user_name, dat_tim, *other_history_label_items):
+        # type: (str, str, str, List[LabelItem]) -> Task
+        """
+        Create a task from its name, user name, datetime, and the
+        other LabelItems it contains.
+        """
+        label_items = [
+            LabelItem.create('TASK', StringValue.from_raw_string(task_name)),
+            LabelItem.create('USER', StringValue.from_raw_string(user_name)),
+            LabelItem.create('DAT_TIM',
+                             StringValue.from_raw_string(dat_tim))]
+        label_items.extend(other_history_label_items)
+        return Task(label_items)
+
+    @staticmethod
+    def create_migration_task(dat_tim, *other_history_label_items):
+        # type: (str, List[LabelItem]) -> Task
+        """
+        Create a migration task from its datetime and the other
+        LabelItems it contains.
+        """
+        return Task.create(MIGRATION_TASK_NAME,
+                           MIGRATION_USER_NAME,
+                           dat_tim,
+                           *other_history_label_items)
+
+    def is_migration_task(self):
+        # type: () -> bool
+        """
+        Returns True if this is a migration task created by this program.
+        """
+        label_items = self.history_label_items[:2]
+        expected_tags = map(escape_byte_string,
+                            [MIGRATION_TASK_NAME, MIGRATION_USER_NAME])
+        return expected_tags == [label_item.value.value_byte_string
+                                 for label_item in label_items]
+
+    def get_migration_task_label_items(self):
+        # type: () -> List[LabelItem]
+        """
+        Returns the label items with the content of the migration task.
+        """
+        assert self.is_migration_task()
+        return self.history_label_items[3:]
 
 
 ##############################
