@@ -1,9 +1,14 @@
 import random
-from abc import abstractmethod
+from abc import ABCMeta, abstractmethod
+
+from typing import TYPE_CHECKING
 
 from HistoryLabels import HistoryLabels, Task
+from LabelItem import LabelItem
+from Labels import Labels
 from PropertyLabels import Property, PropertyLabels
-from VicarFile import *
+from SystemLabels import SystemLabels
+from Value import IntegerValue, RealValue, StringValue
 
 if TYPE_CHECKING:
     from typing import Iterable
@@ -73,9 +78,11 @@ class VicarSyntaxTests(object):
         """
         # eval() needs to see all the types in order to build them.
         # Unfortunately, my IDE thinks the imports are unused and deletes them.
-        # So I add their names here.
+        # So I add their names here to fool it.
 
-        needed_imports = [HistoryLabels, Property, PropertyLabels, Task]
+        needed_imports = [HistoryLabels, IntegerValue, LabelItem, Labels,
+                          Property, PropertyLabels, RealValue,
+                          StringValue, SystemLabels, Task]
 
         for arg in self.args_for_test():
             self.assertEqual(arg, eval(str(arg)), str(arg))

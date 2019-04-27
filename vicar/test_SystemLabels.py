@@ -1,13 +1,9 @@
 import unittest
 
-from HistoryLabels import HistoryLabels
-from PropertyLabels import PropertyLabels
-from VicarFile import *
+from SystemLabels import *
+from Value import IntegerValue, StringValue
 from VicarSyntaxTests import VicarSyntaxTests
 from test_LabelItem import mk_sqr_label_items
-
-if TYPE_CHECKING:
-    from VicarSyntax import VicarSyntax
 
 _ENG = ['FOUR', 'FIVE', 'SIX', 'SEVEN']  # type: List[str]
 
@@ -152,27 +148,3 @@ class TestSystemLabels(unittest.TestCase, VicarSyntaxTests):
         with self.assertRaises(Exception):
             # a default answer doesn't fix a mistyped value
             system_labels.get_int_value('STRING', 666)
-
-
-class TestLabels(unittest.TestCase, VicarSyntaxTests):
-    def test__init__(self):
-        system_labels = SystemLabels([])
-        property_labels = PropertyLabels([])
-        history_labels = HistoryLabels([])
-        # verify that bad inputs raise an exception
-        with self.assertRaises(Exception):
-            Labels(None, property_labels, history_labels, None)
-        with self.assertRaises(Exception):
-            Labels(system_labels, None, history_labels, None)
-        with self.assertRaises(Exception):
-            Labels(system_labels, property_labels, None, None)
-
-        # verify that this does not raise
-        Labels(system_labels, property_labels, history_labels, None)
-
-    def args_for_test(self):
-        system_labels = SystemLabels([])
-        property_labels = PropertyLabels([])
-        history_labels = HistoryLabels([])
-
-        return [Labels(system_labels, property_labels, history_labels, None)]
