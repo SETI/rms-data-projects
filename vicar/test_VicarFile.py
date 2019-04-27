@@ -1,18 +1,18 @@
 import unittest
 
 from VicarFile import *
-from VicarFile import _VicarBase
+from VicarFile import _VicarSyntax
 
 if TYPE_CHECKING:
     from typing import Iterable
 
 
-class VicarBaseTest(object):
+class VicarSyntaxTests(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
     def args_for_test(self):
-        # type: () -> Iterable[_VicarBase]
+        # type: () -> Iterable[_VicarSyntax]
         """
         Some interesting (or not) values for testing.
         """
@@ -46,7 +46,7 @@ class VicarBaseTest(object):
             self.assertEqual(arg, eval(str(arg)), str(arg))
 
 
-class TestValue(unittest.TestCase, VicarBaseTest):
+class TestValue(unittest.TestCase, VicarSyntaxTests):
     def test__eq__(self):
         self.assertTrue(IntegerValue('3') == IntegerValue('3'))
         self.assertFalse(IntegerValue('3') == RealValue('3.'))
@@ -66,7 +66,7 @@ class TestValue(unittest.TestCase, VicarBaseTest):
             str(StringValue.from_raw_string("I don't like that.")))
 
 
-class TestLabelItem(unittest.TestCase, VicarBaseTest):
+class TestLabelItem(unittest.TestCase, VicarSyntaxTests):
     def test__init__(self):
         str_value = StringValue.from_raw_string('foo')
         # verify that bad inputs raise exception
@@ -150,7 +150,7 @@ def _mk_sqr_system_labels():
     return SystemLabels(list(generate_label_items()))
 
 
-class TestSystemLabels(unittest.TestCase, VicarBaseTest):
+class TestSystemLabels(unittest.TestCase, VicarSyntaxTests):
     def test__init__(self):
         # verify that bad inputs raise exception
         with self.assertRaises(Exception):
@@ -275,7 +275,7 @@ def _mk_map_property():
          LabelItem.create('LON', RealValue('177.221'))])
 
 
-class TestProperty(unittest.TestCase, VicarBaseTest):
+class TestProperty(unittest.TestCase, VicarSyntaxTests):
     def test__init__(self):
         # verify that bad inputs raise exception
         with self.assertRaises(Exception):

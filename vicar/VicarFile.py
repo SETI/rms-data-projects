@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from typing import List
 
 
-class _VicarBase(object):
+class _VicarSyntax(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
@@ -28,10 +28,10 @@ class _VicarBase(object):
 
 ##############################
 
-class SystemLabels(_VicarBase):
+class SystemLabels(_VicarSyntax):
     def __init__(self, label_items):
         # type: (List[LabelItem]) -> None
-        _VicarBase.__init__(self)
+        _VicarSyntax.__init__(self)
         assert label_items is not None
         for label_item in label_items:
             assert label_item is not None
@@ -124,12 +124,12 @@ class SystemLabels(_VicarBase):
 
 ##############################
 
-class Property(_VicarBase):
+class Property(_VicarSyntax):
     """Represents a property of the image in the image domain."""
 
     def __init__(self, property_label_items):
         # type: (List[LabelItem]) -> None
-        _VicarBase.__init__(self)
+        _VicarSyntax.__init__(self)
         assert property_label_items is not None
         for label_item in property_label_items:
             assert label_item is not None
@@ -160,12 +160,12 @@ class Property(_VicarBase):
 
 ##############################
 
-class LabelItem(_VicarBase):
+class LabelItem(_VicarSyntax):
     """A key-value pair used for a VICAR label."""
 
     def __init__(self, initial_space, keyword, equals, value, trailing_space):
         # type: (str, str, str, Value, str) -> None
-        _VicarBase.__init__(self)
+        _VicarSyntax.__init__(self)
         assert keyword is not None
         assert equals is not None
         assert value is not None
@@ -226,13 +226,13 @@ class LabelItem(_VicarBase):
 
 ##############################
 
-class Value(_VicarBase):
+class Value(_VicarSyntax):
     """The value in a key-value pair in a label item."""
     __metaclass__ = ABCMeta
 
     def __init__(self, byte_str):
         # type: (str) -> None
-        _VicarBase.__init__(self)
+        _VicarSyntax.__init__(self)
         assert byte_str is not None
         assert isinstance(byte_str, str)
         self.value_byte_string = byte_str
