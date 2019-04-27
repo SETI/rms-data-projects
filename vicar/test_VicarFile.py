@@ -452,3 +452,51 @@ class TestTask(unittest.TestCase, VicarSyntaxTests):
                 Task.create_migration_task('dat_tim'),
                 Task.create_migration_task('dat_tim', *_mk_sqr_label_items())
                 ]
+
+
+class TestHistoryLabels(unittest.TestCase, VicarSyntaxTests):
+    def test__init__(self):
+        # verify that bad inputs raise an exception
+        with self.assertRaises(Exception):
+            HistoryLabels(None)
+        with self.assertRaises(Exception):
+            HistoryLabels([None, None, None])
+        with self.assertRaises(Exception):
+            HistoryLabels([1, 2, 3])
+
+        # verify that these do not raise
+        HistoryLabels([])
+        HistoryLabels([Task.create_migration_task('dat_tim')])
+
+    def args_for_test(self):
+        return [HistoryLabels([]),
+                HistoryLabels([Task.create_migration_task('dat_tim')])]
+
+    def test_has_migration_task(self):
+        self.assertFalse(HistoryLabels([]).has_migration_task())
+        self.assertTrue(HistoryLabels(
+            [Task.create_migration_task('dat_tim')]).has_migration_task())
+
+
+class TestLabels(unittest.TestCase, VicarSyntaxTests):
+    def test__init__(self):
+        system_labels = SystemLabels([])
+        property_labels = PropertyLabels([])
+        history_labels = HistoryLabels([])
+        # verify that bad inputs raise an exception
+        with self.assertRaises(Exception):
+            Labels(None, property_labels, history_labels, None)
+        with self.assertRaises(Exception):
+            Labels(system_labels, None, history_labels, None)
+        with self.assertRaises(Exception):
+            Labels(system_labels, property_labels, None, None)
+
+        # verify that this does not raise
+        Labels(system_labels, property_labels, history_labels, None)
+
+    def args_for_test(self):
+        system_labels = SystemLabels([])
+        property_labels = PropertyLabels([])
+        history_labels = HistoryLabels([])
+
+        return [Labels(system_labels, property_labels, history_labels, None)]

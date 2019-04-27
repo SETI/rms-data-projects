@@ -208,6 +208,47 @@ class Property(_VicarSyntax):
 
 ##############################
 
+class HistoryLabels(_VicarSyntax):
+    def __init__(self, tasks):
+        # type: (List[Task]) -> None
+        _VicarSyntax.__init__(self)
+        assert tasks is not None
+        for task in tasks:
+            assert task is not None
+            assert isinstance(task, Task)
+        self.tasks = tasks
+
+    def __eq__(self, other):
+        return other is not None and \
+               isinstance(other, HistoryLabels) and \
+               self.tasks == other.tasks
+
+    def __repr__(self):
+        tasks_str = ', '.join([repr(task)
+                               for task in
+                               self.tasks])
+        return 'HistoryLabels([%s])' % tasks_str
+
+    def to_byte_length(self):
+        # Summing is slightly more efficient than concatenating a bunch of
+        # byte-strings then taking the length.
+        return sum([task.to_byte_length()
+                    for task in self.tasks])
+
+    def to_byte_string(self):
+        return ''.join([task.to_byte_string()
+                        for task in self.tasks])
+
+    def has_migration_task(self):
+        # type: () -> bool
+        """
+        Return True if the last task is a migration task.  It has to be the
+        last task because we don't guarantee  we can backmigrate the file if
+        it's been further processed.
+        """
+        return self.tasks and self.tasks[-1].is_migration_task()
+
+
 class Task(_VicarSyntax):
     """Represents a step in the processing history of the image."""
 
@@ -293,11 +334,78 @@ class Task(_VicarSyntax):
 
 
 ##############################
+class Labels(_VicarSyntax):
+    """A series of keyword-value pairs divided into three sections."""
+
+    def __init__(self, system_labels, property_labels, history_labels,
+                 padding):
+        assert system_labels is not None
+        assert property_labels is not None
+        assert history_labels is not None
+        self.system_labels = system_labels
+        self.property_labels = property_labels
+        self.history_labels = history_labels
+        self.padding = padding
+
+    def __eq__(self, other):
+        return [self.system_labels,
+                self.property_labels,
+                self.history_labels,
+                _maybe_bs(self.padding)] == [other.system_labels,
+                                             other.property_labels,
+                                             other.history_labels,
+                                             _maybe_bs(other.padding)]
+
+    def __repr__(self):
+        items_str = ', '.join([repr(item)
+                               for item in [self.system_labels,
+                                            self.property_labels,
+                                            self.history_labels,
+                                            self.padding]])
+        return 'Labels(%s)' % items_str
+
+    def to_byte_length(self):
+        return sum([self.system_labels.to_byte_length(),
+                    self.property_labels.to_byte_length(),
+                    self.history_labels.to_byte_length(),
+                    len(_maybe_bs(self.padding))])
+
+    def to_byte_string(self):
+        return ''.join([self.system_labels.to_byte_string(),
+                        self.property_labels.to_byte_string(),
+                        self.history_labels.to_byte_string(),
+                        _maybe_bs(self.padding)])
+
+    def get_int_value(self, keyword, default=0):
+        # type: (str, int) -> int
+        """
+        Look up a keyword in the system LabelItems and return the
+        corresponding integer value as an int.  If there are no
+        matching LabelItems, return the default value.  If there are
+        more than one, or if the value is not an IntegerValue, raise
+        an exception.
+        """
+        return self.system_labels.get_int_value(keyword, default)
+
+    def has_migration_task(self):
+        # type: () -> bool
+        """
+        Return True if the last task in the HistoryLabels is s a
+        migration task.  It has to be the last task because we don't
+        guarantee we can backmigrate the file if it's been further
+        processed.
+        """
+        return self.history_labels.has_migration_task()
+
+
+##############################
+
 
 class LabelItem(_VicarSyntax):
     """A key-value pair used for a VICAR label."""
 
-    def __init__(self, initial_space, keyword, equals, value, trailing_space):
+    def __init__(self, initial_space, keyword, equals, value,
+                 trailing_space):
         # type: (str, str, str, Value, str) -> None
         _VicarSyntax.__init__(self)
         assert keyword is not None
