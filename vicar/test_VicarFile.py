@@ -146,11 +146,13 @@ class TestSystemLabels(unittest.TestCase, VicarBaseTest):
                       ])
 
     def args_for_test_to_byte_length(self):
-        return [SystemLabels([LabelItem.create('ONE',
+        return [SystemLabels([]),
+                SystemLabels([LabelItem.create('ONE',
                                                StringValue.from_raw_string(
                                                    'uno')),
                               LabelItem.create('TWO',
-                                               IntegerValue('2')),
+                                               IntegerValue(
+                                                   '2')),
                               ]),
                 _mk_sqr_system_labels(),
                 _mk_system_labels_from_lists(_ENG, _SPAN)]
@@ -207,3 +209,31 @@ class TestSystemLabels(unittest.TestCase, VicarBaseTest):
         # verify that bad inputs raise exception
         with self.assertRaises(Exception):
             eng_to_span.lookup_label_items(None)
+
+    def test_get_int_value(self):
+        system_labels = SystemLabels([])
+        self.assertEqual(0, system_labels.get_int_value('FOO'))
+        self.assertEqual(666, system_labels.get_int_value('FOO', 666))
+
+        system_labels = SystemLabels([
+            LabelItem.create('ONE', IntegerValue('1')),
+            LabelItem.create('AMBIGUOUS', IntegerValue('123')),
+            LabelItem.create('AMBIGUOUS', IntegerValue('456')),
+            LabelItem.create('STRING', StringValue.from_raw_string('foobar'))
+        ])
+
+        self.assertEqual(0, system_labels.get_int_value('FOO'))
+        self.assertEqual(666, system_labels.get_int_value('FOO', 666))
+        self.assertEqual(1, system_labels.get_int_value('ONE'))
+        self.assertEqual(1, system_labels.get_int_value('ONE', 666))
+
+        with self.assertRaises(Exception):
+            # multiple labels match
+            system_labels.get_int_value('AMBIGUOUS')
+
+        with self.assertRaises(Exception):
+            # a mistyped value: it's string
+            system_labels.get_int_value('STRING')
+        with self.assertRaises(Exception):
+            # a default answer doesn't fix a mistyped value
+            system_labels.get_int_value('STRING', 666)

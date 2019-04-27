@@ -56,6 +56,34 @@ class SystemLabels(_VicarBase):
         return ''.join([label_item.to_byte_string()
                         for label_item in self.label_items])
 
+    def lookup_label_items(self, keyword):
+        # type: (str) -> List[LabelItem]
+        """
+        Return a list of LabelItems with the given keyword.
+        """
+        assert keyword is not None
+        return [label_item
+                for label_item in self.label_items
+                if label_item.keyword == keyword]
+
+    def get_int_value(self, keyword, default=0):
+        # type: (str, int) -> int
+        """
+        Look up a keyword in the LabelItems and return the
+        corresponding integer value as an int.  If there are no matching
+        LabelItems, return the default value.  If there are more than
+        one, or if the value is not an IntegerValue, raise an exception.
+        """
+        labels = self.select_labels([keyword])
+        len_labels = len(labels)
+        assert len_labels <= 1
+        if len_labels == 0:
+            return default
+        elif len_labels == 1:
+            value = labels[0].value
+            assert isinstance(value, IntegerValue)
+            return int(value.value_byte_string)
+
     def select_labels(self, keywords):
         # type: (List[str]) -> List[LabelItem]
         """
@@ -90,16 +118,6 @@ class SystemLabels(_VicarBase):
 
         return SystemLabels([maybe_replace(label_item)
                              for label_item in self.label_items])
-
-    def lookup_label_items(self, keyword):
-        # type: (str) -> List[LabelItem]
-        """
-        Return a list of LabelItems with the given keyword.
-        """
-        assert keyword is not None
-        return [label_item
-                for label_item in self.label_items
-                if label_item.keyword == keyword]
 
 
 ##############################
