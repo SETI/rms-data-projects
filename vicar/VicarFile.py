@@ -3,7 +3,12 @@ Syntax for VICAR files.
 """
 from abc import ABCMeta, abstractmethod
 
+from typing import TYPE_CHECKING
+
 from StringUtils import escape_byte_string
+
+if TYPE_CHECKING:
+    from typing import List
 
 
 class _VicarBase(object):
@@ -19,6 +24,39 @@ class _VicarBase(object):
         # type: () -> int
         """Return the length of the byte-string for this syntax."""
         return len(self.to_byte_string())
+
+
+##############################
+
+class SystemLabels(_VicarBase):
+    def __init__(self, label_items):
+        # type: (List[LabelItem]) -> None
+        _VicarBase.__init__(self)
+        assert label_items is not None
+        for label_item in label_items:
+            assert label_item is not None
+            assert isinstance(label_item, LabelItem)
+        self.label_items = label_items
+
+    def to_byte_length(self):
+        # Summing is slightly more efficient than concatenating a bunch of
+        # byte-strings.
+        return sum([label_item.to_byte_length()
+                    for label_item in self.label_items])
+
+    def to_byte_string(self):
+        return ''.join([label_item.to_byte_string()
+                        for label_item in self.label_items])
+
+    def select_labels(self, keywords):
+        # type: (List[str]) -> List[LabelItem]
+        """
+        Given a list of sought keywords, return all the LabelItems with those
+        keywords.
+        """
+        return [label_item
+                for label_item in self.label_items
+                if label_item.keyword in keywords]
 
 
 ##############################

@@ -1,7 +1,5 @@
 import unittest
 
-from typing import TYPE_CHECKING
-
 from VicarFile import *
 from VicarFile import _VicarBase
 
@@ -89,3 +87,44 @@ class TestLabelItem(unittest.TestCase, VicarBaseTest):
         expected = LabelItem.create('MAIN_FIVE_IS_EVEN',
                                     StringValue("'FIVE_IS_EVEN=0 '"))
         self.assertEqual(expected, label_item.to_saved_label_item('MAIN_'))
+
+
+class TestSystemLabels(unittest.TestCase, VicarBaseTest):
+    def test__init__(self):
+        # verify that bad inputs raise exception
+        with self.assertRaises(Exception):
+            SystemLabels(None)
+        with self.assertRaises(Exception):
+            SystemLabels([None])
+        with self.assertRaises(Exception):
+            SystemLabels([1, 2, 3])
+
+        # verify that this does not raise
+        SystemLabels([LabelItem.create('ONE',
+                                       StringValue.from_raw_string('uno')),
+                      LabelItem.create('TWO',
+                                       IntegerValue('2')),
+                      ])
+
+    def args_for_test_to_byte_length(self):
+        return [SystemLabels([LabelItem.create('ONE',
+                                               StringValue.from_raw_string(
+                                                   'uno')),
+                              LabelItem.create('TWO',
+                                               IntegerValue('2')),
+                              ])]
+
+    def test_select_labels(self):
+        def generate_label_items():
+            for i in range(3, 25):
+                yield LabelItem.create('SQR_%d' % i, IntegerValue(str(i * i)))
+
+        system_labels = SystemLabels(list(generate_label_items()))
+        keywords = ['SQR_20', 'SQR_3']
+        selected = system_labels.select_labels(keywords)
+
+        expected_1 = LabelItem.create('SQR_3', IntegerValue('9'))
+        expected_2 = LabelItem.create('SQR_20', IntegerValue('400'))
+        expected = [expected_1, expected_2]
+
+        self.assertEqual(expected, selected)
