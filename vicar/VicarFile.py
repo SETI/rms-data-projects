@@ -38,6 +38,14 @@ class SystemLabels(_VicarBase):
             assert isinstance(label_item, LabelItem)
         self.label_items = label_items
 
+    def __str__(self):
+        assert False, 'unimplemented'
+
+    def __eq__(self, other):
+        return other is not None and \
+               isinstance(other, SystemLabels) and \
+               self.label_items == other.label_items
+
     def to_byte_length(self):
         # Summing is slightly more efficient than concatenating a bunch of
         # byte-strings.
@@ -54,9 +62,44 @@ class SystemLabels(_VicarBase):
         Given a list of sought keywords, return all the LabelItems with those
         keywords.
         """
+        assert keywords is not None
+
         return [label_item
                 for label_item in self.label_items
                 if label_item.keyword in keywords]
+
+    def replace_label_items(self, replacements):
+        # type: (List[LabelItem]) -> SystemLabels
+        """
+        Create a new SystemLabels from this one, but substitute replacement
+        LabelItems for any current LabelItem with a matching keyword.
+        """
+        assert replacements is not None
+
+        def maybe_replace(current_label_item):
+            # type: (LabelItem) -> LabelItem
+            """
+            If there is a replacement LabelItem with the same keyword,
+            return it.  Else return the current LabelItem.
+            """
+            for replacement_label_item in replacements:
+                if current_label_item.keyword == \
+                        replacement_label_item.keyword:
+                    return replacement_label_item
+            return current_label_item
+
+        return SystemLabels([maybe_replace(label_item)
+                             for label_item in self.label_items])
+
+    def lookup_label_items(self, keyword):
+        # type: (str) -> List[LabelItem]
+        """
+        Return a list of LabelItems with the given keyword.
+        """
+        assert keyword is not None
+        return [label_item
+                for label_item in self.label_items
+                if label_item.keyword == keyword]
 
 
 ##############################
