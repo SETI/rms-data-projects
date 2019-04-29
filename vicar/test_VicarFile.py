@@ -94,6 +94,20 @@ class TestVicarFile(unittest.TestCase, VicarSyntaxTests):
                       None,
                       tail)
 
+        # two binary_prefixes
+        with self.assertRaises(Exception):
+            VicarFile(gen_labels(RECSIZE=2, LBLSIZE=2, NBB=1),
+                      image_area_p,
+                      None,
+                      Tail(None, gen_block(2, 2), None))
+
+        # two binary_headers
+        with self.assertRaises(Exception):
+            VicarFile(gen_labels(RECSIZE=1, LBLSIZE=2, NLB=1),
+                      image_area_h,
+                      None,
+                      Tail(gen_line(2), None, None))
+
         # verify that these do not raise
         VicarFile(gen_labels(RECSIZE=1, LBLSIZE=1),
                   image_area,

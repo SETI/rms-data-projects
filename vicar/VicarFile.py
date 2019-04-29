@@ -24,30 +24,48 @@ class VicarFile(VicarSyntax):
         assert tail is not None
         assert isinstance(tail, Tail)
 
+        # keyword EOL
         assert (labels.get_int_value('EOL') == 0) == (eol_labels is None), \
             'nonzero EOL keyword value exactly when eol_labels present'
 
+        # keyword RECSIZE
         recsize = labels.get_int_value('RECSIZE')
         assert recsize > 0, 'RECSIZE is zero or missing'
         assert (recsize == image_area.implicit_recsize_value()), \
-            ('RECSIZE value not correct for image; should be  %d' %
+            ('RECSIZE value not correct for image; should be %d' %
              image_area.implicit_recsize_value())
 
+        # keyword NBB
         assert (labels.get_int_value('NBB') ==
                 image_area.implicit_nbb_value()), \
             ('NBB value not correct for image; should be %d' %
              image_area.implicit_nbb_value())
 
+        # keyword NLB
         assert (labels.get_int_value('NLB') ==
                 image_area.implicit_nlb_value()), \
             ('NLB value not correct for image; should be %d' %
              image_area.implicit_nlb_value())
 
+        # keyword LBLSIZE
         assert labels.get_lblsize() % recsize == 0, \
             'LBLSIZE must be a multiple of RECSIZE'
         if eol_labels is not None:
             assert eol_labels.get_lblsize() % recsize == 0, \
                 'EOL LBLSIZE must be a multiple of RECSIZE'
+
+        # only one binary_header
+        assert (image_area.binary_header is None or
+                tail.binary_header_at_tail is None), \
+            'binary_header cannot appear in both ImageArea and Tail'
+
+        # only one binary_prefixes
+        assert (image_area.binary_prefixes is None or
+                tail.binary_prefixes_at_tail is None), \
+            'binary_prefixes cannot appear in both ImageArea and Tail'
+
+        # I shouldn't need to check consistency of saved NBB, NLB, and
+        # RECSIZE because they're right by construction.
 
         self.labels = labels
         self.image_area = image_area

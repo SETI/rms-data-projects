@@ -77,7 +77,7 @@ class Labels(VicarSyntax):
     def get_lblsize(self):
         # type: () -> int
         """
-        Return the value of LBLSIZE.  It must exist by construction.
+        Return the value of LBLSIZE.  It must exist, by construction.
         """
         return self.get_int_value('LBLSIZE')
 
