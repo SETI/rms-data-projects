@@ -8,6 +8,17 @@ if TYPE_CHECKING:
     from typing import List
 
 
+def _lookup_label_items(keyword, label_items):
+    # type: (str, List[LabelItem]) -> List[LabelItem]
+    """
+    Return a list of LabelItems with the given keyword.
+    """
+    assert keyword is not None
+    return [label_item
+            for label_item in label_items
+            if label_item.keyword == keyword]
+
+
 class SystemLabels(VicarSyntax):
     def __init__(self, label_items):
         # type: (List[LabelItem]) -> None
@@ -16,6 +27,10 @@ class SystemLabels(VicarSyntax):
         for label_item in label_items:
             assert label_item is not None
             assert isinstance(label_item, LabelItem)
+
+        assert len(_lookup_label_items('LBLSIZE', label_items)) == 1, \
+            'must have LBLSIZE'
+
         self.label_items = label_items
 
     def __repr__(self):
@@ -43,10 +58,7 @@ class SystemLabels(VicarSyntax):
         """
         Return a list of LabelItems with the given keyword.
         """
-        assert keyword is not None
-        return [label_item
-                for label_item in self.label_items
-                if label_item.keyword == keyword]
+        return _lookup_label_items(keyword, self.label_items)
 
     def get_int_value(self, keyword, default=0):
         # type: (str, int) -> int
@@ -100,3 +112,10 @@ class SystemLabels(VicarSyntax):
 
         return SystemLabels([maybe_replace(label_item)
                              for label_item in self.label_items])
+
+    @staticmethod
+    def create_with_lblsize(lblsize, label_items):
+        # type: (int, List[LabelItem]) -> SystemLabels
+        return SystemLabels(
+            [LabelItem.create('LBLSIZE', IntegerValue(str(lblsize)))] + \
+            label_items)

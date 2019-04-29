@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 class TestLabels(unittest.TestCase, VicarSyntaxTests):
     def test__init__(self):
-        system_labels = SystemLabels([])
+        system_labels = SystemLabels.create_with_lblsize(1, [])
         property_labels = PropertyLabels([])
         history_labels = HistoryLabels([])
         # verify that bad inputs raise an exception
@@ -27,7 +27,7 @@ class TestLabels(unittest.TestCase, VicarSyntaxTests):
         Labels(system_labels, property_labels, history_labels, None)
 
     def args_for_test(self):
-        system_labels = SystemLabels([])
+        system_labels = SystemLabels.create_with_lblsize(1, [])
         property_labels = PropertyLabels([])
         history_labels = HistoryLabels([])
 

@@ -25,13 +25,13 @@ class VicarFile(VicarSyntax):
         assert isinstance(tail, Tail)
 
         # TODO Some more consistencies are required.
+        assert (labels.get_int_value('EOL') == 0) == (eol_labels is None)
+        assert labels.get_int_value('RECSIZE') > 0, 'must have RECSIZE'
 
         self.labels = labels
         self.image_area = image_area
         self.eol_labels = eol_labels
         self.tail = tail
-
-    # TODO Some new methods are required.
 
     def __eq__(self, other):
         return [self.labels,
@@ -67,3 +67,9 @@ class VicarFile(VicarSyntax):
                         self.image_area.to_byte_string(),
                         eol_labels_byte_string,
                         self.tail.to_byte_string()])
+
+    def get_recsize(self):
+        # type: () -> int
+        res = self.labels.get_int_value('RECSIZE')
+
+    # TODO Some new methods are required.

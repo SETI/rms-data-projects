@@ -28,7 +28,8 @@ def _mk_system_labels_from_lists(keys, value_strs):
     Make a SystemLabels whose LabelItems come from a list of keys and a list
     of strings to be turned into StringValues.
     """
-    return SystemLabels(_mk_label_items_from_lists(keys, value_strs))
+    return SystemLabels.create_with_lblsize(1, _mk_label_items_from_lists(keys,
+                                                                          value_strs))
 
 
 def _mk_sqr_system_labels():
@@ -36,7 +37,29 @@ def _mk_sqr_system_labels():
     Make a SystemLabels containing a bunch of LabelItems showing squares of
     integers.
     """
-    return SystemLabels(mk_sqr_label_items())
+    return SystemLabels.create_with_lblsize(1, mk_sqr_label_items())
+
+
+def gen_label_items(**kwargs):
+    # type: (**int) -> List[LabelItem]
+    def make_label_item(k, v):
+        # type: (str, int) -> LabelItem
+        return LabelItem.create(k, IntegerValue(str(v)))
+
+    if 'RECSIZE' in kwargs:
+        # move it first
+        return [make_label_item('RECSIZE', kwargs['RECSIZE'])] + \
+               [make_label_item(k, v)
+                for k, v in kwargs.items()
+                if k != 'RECSIZE']
+    else:
+        return [LabelItem.create(k, IntegerValue(str(v))) for k, v in
+                kwargs.items()]
+
+
+def gen_system_labels(**kwargs):
+    # type: (**int) -> SystemLabels
+    return SystemLabels(gen_label_items(**kwargs))
 
 
 class TestSystemLabels(unittest.TestCase, VicarSyntaxTests):
@@ -50,21 +73,23 @@ class TestSystemLabels(unittest.TestCase, VicarSyntaxTests):
             SystemLabels([1, 2, 3])
 
         # verify that this does not raise
-        SystemLabels([LabelItem.create('ONE',
+        SystemLabels([LabelItem.create('LBLSIZE',
+                                       IntegerValue('1')),
+                      LabelItem.create('ONE',
                                        StringValue.from_raw_string('uno')),
                       LabelItem.create('TWO',
                                        IntegerValue('2')),
                       ])
 
     def args_for_test(self):
-        return [SystemLabels([]),
-                SystemLabels([LabelItem.create('ONE',
-                                               StringValue.from_raw_string(
-                                                   'uno')),
-                              LabelItem.create('TWO',
-                                               IntegerValue(
-                                                   '2')),
-                              ]),
+        return [SystemLabels.create_with_lblsize(1, []),
+                SystemLabels.create_with_lblsize(1, [LabelItem.create('ONE',
+                                                                      StringValue.from_raw_string(
+                                                                          'uno')),
+                                                     LabelItem.create('TWO',
+                                                                      IntegerValue(
+                                                                          '2')),
+                                                     ]),
                 _mk_sqr_system_labels(),
                 _mk_system_labels_from_lists(_ENG, _SPAN)]
 
@@ -122,11 +147,11 @@ class TestSystemLabels(unittest.TestCase, VicarSyntaxTests):
             eng_to_span.lookup_label_items(None)
 
     def test_get_int_value(self):
-        system_labels = SystemLabels([])
+        system_labels = SystemLabels.create_with_lblsize(1, [])
         self.assertEqual(0, system_labels.get_int_value('FOO'))
         self.assertEqual(666, system_labels.get_int_value('FOO', 666))
 
-        system_labels = SystemLabels([
+        system_labels = SystemLabels.create_with_lblsize(1, [
             LabelItem.create('ONE', IntegerValue('1')),
             LabelItem.create('AMBIGUOUS', IntegerValue('123')),
             LabelItem.create('AMBIGUOUS', IntegerValue('456')),
