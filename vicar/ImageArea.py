@@ -67,6 +67,24 @@ class ImageArea(VicarSyntax):
                                           self.binary_image_lines
                                           )
 
+    def to_byte_length(self):
+        if self.binary_prefixes:
+            prefix_width = len(self.binary_prefixes[0])
+        else:
+            prefix_width = 0
+
+        image_width = len(self.binary_image_lines[0])
+        width = prefix_width + image_width
+
+        image_height = len(self.binary_image_lines)
+        if self.binary_header is None:
+            header_height = 0
+        else:
+            header_height = len(self.binary_header) / width
+        height = image_height + header_height
+
+        return width * height
+
     def to_byte_string(self):
         if self.binary_prefixes:
             prefixed_lines = [prefix + line
