@@ -24,23 +24,22 @@ class VicarFile(VicarSyntax):
         assert tail is not None
         assert isinstance(tail, Tail)
 
-        # TODO Some more consistencies are required.
         assert (labels.get_int_value('EOL') == 0) == (eol_labels is None), \
             'nonzero EOL keyword value exactly when eol_labels present'
         assert labels.get_int_value('RECSIZE') > 0, 'must have RECSIZE keyword'
-        if False:
-            # TODO enable this
-            assert (labels.get_int_value('RECSIZE') ==
-                    image_area.implicit_recsize_value()), \
-                'RECSIZE value not correct for image'
+        assert (labels.get_int_value('RECSIZE') ==
+                image_area.implicit_recsize_value()), \
+            ('RECSIZE value not correct for image; should be  %d' %
+             image_area.implicit_recsize_value())
         assert (labels.get_int_value('NBB') ==
                 image_area.implicit_nbb_value()), \
-            'NBB value not correct for image'
-        if False:
-            # TODO enable this
-            assert (labels.get_int_value('NLB') ==
-                    image_area.implicit_nlb_value()), \
-                'NLB value not correct for image'
+            ('NBB value not correct for image; should be %d' %
+             image_area.implicit_nbb_value())
+
+        assert (labels.get_int_value('NLB') ==
+                image_area.implicit_nlb_value()), \
+            ('NLB value not correct for image; should be %d' %
+             image_area.implicit_nlb_value())
 
         self.labels = labels
         self.image_area = image_area

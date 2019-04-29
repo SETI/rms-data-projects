@@ -27,12 +27,13 @@ def gen_labels(**kwargs):
 class TestVicarFile(unittest.TestCase, VicarSyntaxTests):
     def test__init__(self):
         image_area = ImageArea(None, None, gen_block(1, 1))
-        # image_area_h = ImageArea(gen_line(1), None, gen_block(1, 1))
+        image_area_h = ImageArea(gen_line(1), None, gen_block(1, 1))
         image_area_p = ImageArea(None, gen_block(1, 1), gen_block(1, 1))
-        # image_area_h_p = ImageArea(gen_line(2),
-        #                            gen_block(1, 1),
-        #                            gen_block(1, 1))
+        image_area_hp = ImageArea(gen_line(2),
+                                  gen_block(1, 1),
+                                  gen_block(1, 1))
         tail = Tail(None, None, None)
+
         # Verify that bad inputs raise an exception.
         # missing sections:
         with self.assertRaises(Exception):
@@ -69,14 +70,45 @@ class TestVicarFile(unittest.TestCase, VicarSyntaxTests):
                       tail)
         with self.assertRaises(Exception):
             # zero NBB but with binary prefixes
-            VicarFile(gen_labels(RECSIZE=1, LBLSIZE=1, NBB=0),
+            VicarFile(gen_labels(RECSIZE=2, LBLSIZE=1, NBB=0),
+                      image_area_p,
+                      None,
+                      tail)
+        with self.assertRaises(Exception):
+            # nonzero NLB but no binary header
+            VicarFile(gen_labels(RECSIZE=1, LBLSIZE=1, NLB=1),
+                      image_area,
+                      None,
+                      tail)
+        with self.assertRaises(Exception):
+            # zero NLB but with binary header
+            VicarFile(gen_labels(RECSIZE=1, LBLSIZE=1, NLB=0),
+                      image_area_h,
+                      None,
+                      tail)
+
+        with self.assertRaises(Exception):
+            # RECSIZE of 1 but ImageArea says 2
+            VicarFile(gen_labels(RECSIZE=1, LBLSIZE=1, NLB=0),
                       image_area_p,
                       None,
                       tail)
 
-        # verify that this does not raise
+        # verify that these do not raise
         VicarFile(gen_labels(RECSIZE=1, LBLSIZE=1),
                   image_area,
+                  None,
+                  tail)
+        VicarFile(gen_labels(RECSIZE=2, LBLSIZE=1, NBB=1),
+                  image_area_p,
+                  None,
+                  tail)
+        VicarFile(gen_labels(RECSIZE=1, LBLSIZE=1, NLB=1),
+                  image_area_h,
+                  None,
+                  tail)
+        VicarFile(gen_labels(RECSIZE=2, LBLSIZE=1, NBB=1, NLB=1),
+                  image_area_hp,
                   None,
                   tail)
 
