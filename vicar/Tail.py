@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from VicarSyntax import VicarSyntax, maybe_bs
 
 if TYPE_CHECKING:
-    from typing import List
+    from typing import List, Optional
 
 
 class Tail(VicarSyntax):
@@ -11,7 +11,7 @@ class Tail(VicarSyntax):
                  binary_header_at_tail,
                  binary_prefixes_at_tail,
                  tail_bytes):
-        # type: (str, List[str], str) -> None
+        # type: (Optional[str], Optional[List[str]], Optional[str]) -> None
         VicarSyntax.__init__(self)
         if binary_prefixes_at_tail:
             for binary_prefix in binary_prefixes_at_tail:

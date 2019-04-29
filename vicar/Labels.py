@@ -8,7 +8,12 @@ from Value import *
 from VicarSyntax import maybe_bs
 
 if TYPE_CHECKING:
-    pass
+    from typing import Optional
+    from HistoryLabels import HistoryLabels
+    from PropertyLabels import PropertyLabels
+    from SystemLabels import SystemLabels
+
+    SL = SystemLabels
 
 
 class Labels(VicarSyntax):
@@ -16,6 +21,7 @@ class Labels(VicarSyntax):
 
     def __init__(self, system_labels, property_labels, history_labels,
                  padding):
+        # type: (SL, PropertyLabels, HistoryLabels, Optional[str]) -> None
         assert system_labels is not None
         assert property_labels is not None
         assert history_labels is not None

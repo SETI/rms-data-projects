@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from VicarSyntax import VicarSyntax, maybe_bs
 
 if TYPE_CHECKING:
-    from typing import List, Tuple
+    from typing import List, Optional, Tuple
 
 
 class ImageArea(VicarSyntax):
@@ -11,32 +11,32 @@ class ImageArea(VicarSyntax):
                  binary_header,
                  binary_prefixes,
                  binary_image_lines):
-        # type: (str, List[str], List[str]) -> None
+        # type: (Optional[str], Optional[List[str]], List[str]) -> None
         VicarSyntax.__init__(self)
 
-        def assert_widths_consistent(str_list):
+        def assert_widths_are_consistent(str_list):
             # type: (List[str]) -> None
             """
             Assert that the lengths of the strings in the list are all
             the same.
             """
             if str_list:
-                for str in str_list:
-                    assert str is not None
-                    assert len(str) == len(str_list[0])
+                for str_ in str_list:
+                    assert str_ is not None
+                    assert len(str_) == len(str_list[0])
 
         def get_dimensions(str_list):
             # type: (List[str]) -> Tuple[int, int]
             """Returns the width and the height of the image."""
-            assert_widths_consistent(str_list)
+            assert_widths_are_consistent(str_list)
             if str_list:
                 height = len(str_list)
                 assert height > 0
                 width = len(str_list[0])
                 assert width > 0
-                return (width, height)
+                return width, height
             else:
-                return (0, 0)
+                return 0, 0
 
         assert binary_image_lines
         image_width, image_height = get_dimensions(binary_image_lines)

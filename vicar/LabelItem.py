@@ -1,5 +1,10 @@
+from typing import TYPE_CHECKING
+
 from Value import StringValue, Value
 from VicarSyntax import VicarSyntax, maybe_bs
+
+if TYPE_CHECKING:
+    from typing import Optional
 
 
 class LabelItem(VicarSyntax):
@@ -7,7 +12,7 @@ class LabelItem(VicarSyntax):
 
     def __init__(self, initial_space, keyword, equals, value,
                  trailing_space):
-        # type: (str, str, str, Value, str) -> None
+        # type: (Optional[str], str, str, Value, Optional[str]) -> None
         VicarSyntax.__init__(self)
         assert keyword is not None
         assert equals is not None

@@ -6,7 +6,7 @@ from Tail import Tail
 from VicarSyntax import VicarSyntax
 
 if TYPE_CHECKING:
-    pass
+    from typing import Optional
 
 
 class VicarFile(VicarSyntax):
@@ -15,7 +15,7 @@ class VicarFile(VicarSyntax):
                  image_area,
                  eol_labels,
                  tail):
-        # type: (Labels, ImageArea, Labels, Tail) -> None
+        # type: (Labels, ImageArea, Optional[Labels], Tail) -> None
         assert labels is not None
         assert isinstance(labels, Labels)
         assert image_area is not None
