@@ -46,15 +46,11 @@ def gen_label_items(**kwargs):
         # type: (str, int) -> LabelItem
         return LabelItem.create(k, IntegerValue(str(v)))
 
-    if 'RECSIZE' in kwargs:
-        # move it first
-        return [make_label_item('RECSIZE', kwargs['RECSIZE'])] + \
-               [make_label_item(k, v)
-                for k, v in kwargs.items()
-                if k != 'RECSIZE']
-    else:
-        return [LabelItem.create(k, IntegerValue(str(v))) for k, v in
-                kwargs.items()]
+    # LBLSIZE is always the first keyword.
+    return [make_label_item('LBLSIZE', kwargs['LBLSIZE'])] + \
+        [make_label_item(k, v)
+         for k, v in kwargs.items()
+         if k != 'LBLSIZE']
 
 
 def gen_system_labels(**kwargs):
