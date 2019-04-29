@@ -6,14 +6,11 @@ from VicarSyntaxTests import VicarSyntaxTests
 
 
 class TestTail(unittest.TestCase, VicarSyntaxTests):
-    def test(self):
-        Tail(None, None, None)
-
     def args_for_test(self):
         header = gen_line(25)
         prefixes = gen_block(7, 8)
         tail = gen_line(124)
-        # all the combinations
+        # all combinations are legal
         return [Tail(None, None, None),
                 Tail(None, None, tail),
                 Tail(None, prefixes, None),
