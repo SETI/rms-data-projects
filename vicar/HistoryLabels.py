@@ -1,8 +1,13 @@
+from typing import TYPE_CHECKING
+
 from LabelItem import LabelItem
 from MigrationConstants import MIGRATION_TASK_NAME, MIGRATION_USER_NAME
 from StringUtils import escape_byte_string
 from Value import StringValue
 from VicarSyntax import VicarSyntax
+
+if TYPE_CHECKING:
+    from typing import List
 
 
 class HistoryLabels(VicarSyntax):
@@ -43,7 +48,7 @@ class HistoryLabels(VicarSyntax):
         last task because we don't guarantee  we can backmigrate the file if
         it's been further processed.
         """
-        return self.tasks and self.tasks[-1].is_migration_task()
+        return len(self.tasks) > 0 and self.tasks[-1].is_migration_task()
 
 
 class Task(VicarSyntax):
@@ -85,7 +90,7 @@ class Task(VicarSyntax):
 
     @staticmethod
     def create(task_name, user_name, dat_tim, *other_history_label_items):
-        # type: (str, str, str, List[LabelItem]) -> Task
+        # type: (str, str, str, *LabelItem) -> Task
         """
         Create a task from its name, user name, datetime, and the
         other LabelItems it contains.
@@ -100,7 +105,7 @@ class Task(VicarSyntax):
 
     @staticmethod
     def create_migration_task(dat_tim, *other_history_label_items):
-        # type: (str, List[LabelItem]) -> Task
+        # type: (str, *LabelItem) -> Task
         """
         Create a migration task from its datetime and the other
         LabelItems it contains.

@@ -13,6 +13,7 @@ from Value import IntegerValue, RealValue, StringValue
 
 if TYPE_CHECKING:
     from typing import Iterable
+    from VicarSyntax import VicarSyntax
 
 
 class VicarSyntaxTests(object):
