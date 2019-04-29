@@ -70,7 +70,7 @@ class TestVicarFile(unittest.TestCase, VicarSyntaxTests):
                       tail)
         with self.assertRaises(Exception):
             # zero NBB but with binary prefixes
-            VicarFile(gen_labels(RECSIZE=2, LBLSIZE=1, NBB=0),
+            VicarFile(gen_labels(RECSIZE=2, LBLSIZE=2, NBB=0),
                       image_area_p,
                       None,
                       tail)
@@ -99,7 +99,7 @@ class TestVicarFile(unittest.TestCase, VicarSyntaxTests):
                   image_area,
                   None,
                   tail)
-        VicarFile(gen_labels(RECSIZE=2, LBLSIZE=1, NBB=1),
+        VicarFile(gen_labels(RECSIZE=2, LBLSIZE=2, NBB=1),
                   image_area_p,
                   None,
                   tail)
@@ -107,13 +107,18 @@ class TestVicarFile(unittest.TestCase, VicarSyntaxTests):
                   image_area_h,
                   None,
                   tail)
-        VicarFile(gen_labels(RECSIZE=2, LBLSIZE=1, NBB=1, NLB=1),
+        VicarFile(gen_labels(RECSIZE=2, LBLSIZE=2, NBB=1, NLB=1),
                   image_area_hp,
                   None,
                   tail)
 
     def args_for_test(self):
         image_area = ImageArea(None, None, gen_block(1, 1))
+        image_area_h = ImageArea(gen_line(1), None, gen_block(1, 1))
+        image_area_p = ImageArea(None, gen_block(1, 1), gen_block(1, 1))
+        image_area_hp = ImageArea(gen_line(2),
+                                  gen_block(1, 1),
+                                  gen_block(1, 1))
         tail = Tail(None, None, None)
         return [
             VicarFile(gen_labels(RECSIZE=1, LBLSIZE=1),
@@ -127,5 +132,41 @@ class TestVicarFile(unittest.TestCase, VicarSyntaxTests):
             VicarFile(gen_labels(RECSIZE=1, LBLSIZE=1, EOL=1),
                       image_area,
                       gen_labels(LBLSIZE=1),
-                      tail)
+                      tail),
+            VicarFile(gen_labels(RECSIZE=2, LBLSIZE=2, NBB=1),
+                      image_area_p,
+                      None,
+                      tail),
+            VicarFile(gen_labels(RECSIZE=2, LBLSIZE=2, EOL=0, NBB=1),
+                      image_area_p,
+                      None,
+                      tail),
+            VicarFile(gen_labels(RECSIZE=2, LBLSIZE=2, EOL=1, NBB=1),
+                      image_area_p,
+                      gen_labels(LBLSIZE=2),
+                      tail),
+            VicarFile(gen_labels(RECSIZE=1, LBLSIZE=1, NLB=1),
+                      image_area_h,
+                      None,
+                      tail),
+            VicarFile(gen_labels(RECSIZE=1, LBLSIZE=1, EOL=0, NLB=1),
+                      image_area_h,
+                      None,
+                      tail),
+            VicarFile(gen_labels(RECSIZE=1, LBLSIZE=1, EOL=1, NLB=1),
+                      image_area_h,
+                      gen_labels(LBLSIZE=1),
+                      tail),
+            VicarFile(gen_labels(RECSIZE=2, LBLSIZE=2, NBB=1, NLB=1),
+                      image_area_hp,
+                      None,
+                      tail),
+            VicarFile(gen_labels(RECSIZE=2, LBLSIZE=2, EOL=0, NBB=1, NLB=1),
+                      image_area_hp,
+                      None,
+                      tail),
+            VicarFile(gen_labels(RECSIZE=2, LBLSIZE=2, EOL=1, NBB=1, NLB=1),
+                      image_area_hp,
+                      gen_labels(LBLSIZE=2),
+                      tail),
         ]

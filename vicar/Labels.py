@@ -25,6 +25,10 @@ class Labels(VicarSyntax):
         assert system_labels is not None
         assert property_labels is not None
         assert history_labels is not None
+
+        assert system_labels.get_int_value('LBLSIZE') > 0, \
+            'LBLSIZE zero or missing'
+
         self.system_labels = system_labels
         self.property_labels = property_labels
         self.history_labels = history_labels
@@ -69,6 +73,13 @@ class Labels(VicarSyntax):
         an exception.
         """
         return self.system_labels.get_int_value(keyword, default)
+
+    def get_lblsize(self):
+        # type: () -> int
+        """
+        Return the value of LBLSIZE.  It must exist by construction.
+        """
+        return self.get_int_value('LBLSIZE')
 
     def has_migration_task(self):
         # type: () -> bool

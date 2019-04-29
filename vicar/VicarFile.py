@@ -26,11 +26,13 @@ class VicarFile(VicarSyntax):
 
         assert (labels.get_int_value('EOL') == 0) == (eol_labels is None), \
             'nonzero EOL keyword value exactly when eol_labels present'
-        assert labels.get_int_value('RECSIZE') > 0, 'must have RECSIZE keyword'
-        assert (labels.get_int_value('RECSIZE') ==
-                image_area.implicit_recsize_value()), \
+
+        recsize = labels.get_int_value('RECSIZE')
+        assert recsize > 0, 'RECSIZE is zero or missing'
+        assert (recsize == image_area.implicit_recsize_value()), \
             ('RECSIZE value not correct for image; should be  %d' %
              image_area.implicit_recsize_value())
+
         assert (labels.get_int_value('NBB') ==
                 image_area.implicit_nbb_value()), \
             ('NBB value not correct for image; should be %d' %
@@ -40,6 +42,12 @@ class VicarFile(VicarSyntax):
                 image_area.implicit_nlb_value()), \
             ('NLB value not correct for image; should be %d' %
              image_area.implicit_nlb_value())
+
+        assert labels.get_lblsize() % recsize == 0, \
+            'LBLSIZE must be a multiple of RECSIZE'
+        if eol_labels is not None:
+            assert eol_labels.get_lblsize() % recsize == 0, \
+                'EOL LBLSIZE must be a multiple of RECSIZE'
 
         self.labels = labels
         self.image_area = image_area
