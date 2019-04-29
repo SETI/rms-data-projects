@@ -40,3 +40,12 @@ class Tail(VicarSyntax):
         return ''.join([maybe_bs(self.binary_header_at_tail),
                         binary_prefixes,
                         maybe_bs(self.tail_bytes)])
+
+    def has_binary_labels(self):
+        # type: () -> bool
+        """
+        Return True if a binary header or binary prefixes are stored
+        in the tail.
+        """
+        return self.binary_header_at_tail is not None or \
+               self.binary_prefixes_at_tail is not None

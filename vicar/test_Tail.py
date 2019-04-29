@@ -19,3 +19,19 @@ class TestTail(unittest.TestCase, VicarSyntaxTests):
                 Tail(header, None, tail),
                 Tail(header, prefixes, None),
                 Tail(header, prefixes, tail)]
+
+    def test_has_binary_labels(self):
+        header = gen_line(2)
+        prefixes = gen_block(1, 1)
+
+        tail = Tail(None, None, None)
+        self.assertFalse(tail.has_binary_labels())
+
+        tail = Tail(None, prefixes, None)
+        self.assertTrue(tail.has_binary_labels())
+
+        tail = Tail(header, None, None)
+        self.assertTrue(tail.has_binary_labels())
+
+        tail = Tail(header, prefixes, None)
+        self.assertTrue(tail.has_binary_labels())

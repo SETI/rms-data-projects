@@ -54,15 +54,10 @@ class VicarFile(VicarSyntax):
             assert eol_labels.get_lblsize() % recsize == 0, \
                 'EOL LBLSIZE must be a multiple of RECSIZE'
 
-        # only one binary_header
-        assert (image_area.binary_header is None or
-                tail.binary_header_at_tail is None), \
-            'binary_header cannot appear in both ImageArea and Tail'
-
-        # only one binary_prefixes
-        assert (image_area.binary_prefixes is None or
-                tail.binary_prefixes_at_tail is None), \
-            'binary_prefixes cannot appear in both ImageArea and Tail'
+        # binary labels either in ImageArea or Tail but not both
+        assert not (image_area.has_binary_labels() and
+                    tail.has_binary_labels()), \
+            'binary labels cannot appear in both ImageArea and Tail'
 
         # I shouldn't need to check consistency of saved NBB, NLB, and
         # RECSIZE because they're right by construction.
