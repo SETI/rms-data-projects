@@ -80,3 +80,24 @@ class ImageArea(VicarSyntax):
         header = maybe_bs(self.binary_header)
 
         return header + prefixed_image
+
+    def implicit_nbb_value(self):
+        # type: () ->  int
+        """Return what the NBB value should be for this ImageArea."""
+        if self.binary_prefixes:
+            return len(self.binary_prefixes[0])
+        else:
+            return 0
+
+    def implicit_nlb_value(self):
+        # type: () ->  int
+        """Return what the NLB value should be for this ImageArea."""
+        if self.binary_header:
+            return len(self.binary_header) / self.implicit_recsize_value()
+        else:
+            return 0
+
+    def implicit_recsize_value(self):
+        # type: () ->  int
+        """Return what the RECSIZE value should be for this ImageArea."""
+        return self.implicit_nbb_value() + len(self.binary_image_lines[0])
