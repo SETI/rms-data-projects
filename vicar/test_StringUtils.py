@@ -1,8 +1,7 @@
+import random
 import unittest
 
-from typing import TYPE_CHECKING
-
-from StringUtils import escape_byte_string, unescape_byte_string
+from StringUtils import *
 
 if TYPE_CHECKING:
     from typing import List, Tuple
@@ -27,3 +26,16 @@ class TestStringUtils(unittest.TestCase):
         for bad_str in _BAD_STRINGS:
             with self.assertRaises(Exception):
                 unescape_byte_string(bad_str)
+
+    def test_gen_line(self):
+        n = random.randint(1, 100)
+        line = gen_line(n)
+        self.assertEqual(n, len(line))
+
+    def test_gen_block(self):
+        w = random.randint(1, 25)
+        h = random.randint(1, 25)
+        block = gen_block(w, h)
+        assert len(block) == h
+        for line in block:
+            assert len(line) == w

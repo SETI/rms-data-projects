@@ -9,6 +9,7 @@ from LabelItem import LabelItem
 from Labels import Labels
 from PropertyLabels import Property, PropertyLabels
 from SystemLabels import SystemLabels
+from Tail import Tail
 from Value import IntegerValue, RealValue, StringValue
 
 if TYPE_CHECKING:
@@ -84,7 +85,7 @@ class VicarSyntaxTests(object):
 
         needed_imports = [HistoryLabels, ImageArea, IntegerValue, LabelItem,
                           Labels, Property, PropertyLabels, RealValue,
-                          StringValue, SystemLabels, Task]
+                          StringValue, SystemLabels, Tail, Task]
 
         for arg in self.args_for_test():
             self.assertEqual(arg, eval(str(arg)), str(arg))

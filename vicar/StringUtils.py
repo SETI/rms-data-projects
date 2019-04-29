@@ -43,3 +43,15 @@ def unescape_byte_string(bs):
     assert not saw_quote, 'unescape_byte_string(%r): EOF quotes?' % bs
 
     return ''.join(res)
+
+
+def gen_line(width):
+    # type: (int) -> str
+    """Generate a line of bytes."""
+    return width * '\0'
+
+
+def gen_block(width, height):
+    # type: (int, int) -> List[str]
+    """Generate a block of bytes of the given dimensions."""
+    return [gen_line(width) for i in xrange(height)]
