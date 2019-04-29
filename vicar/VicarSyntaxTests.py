@@ -4,6 +4,7 @@ from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING
 
 from HistoryLabels import HistoryLabels, Task
+from ImageArea import ImageArea
 from LabelItem import LabelItem
 from Labels import Labels
 from PropertyLabels import Property, PropertyLabels
@@ -80,8 +81,8 @@ class VicarSyntaxTests(object):
         # Unfortunately, my IDE thinks the imports are unused and deletes them.
         # So I add their names here to fool it.
 
-        needed_imports = [HistoryLabels, IntegerValue, LabelItem, Labels,
-                          Property, PropertyLabels, RealValue,
+        needed_imports = [HistoryLabels, ImageArea, IntegerValue, LabelItem,
+                          Labels, Property, PropertyLabels, RealValue,
                           StringValue, SystemLabels, Task]
 
         for arg in self.args_for_test():

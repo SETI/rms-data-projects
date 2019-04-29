@@ -32,7 +32,7 @@ class VicarSyntax(object):
 
 def maybe_bs(byte_str):
     # type: (str) -> str
-    """Convert a possibly missing byte-string into a byte string."""
+    """Convert an optional byte-string into a byte-string."""
     if byte_str is None:
         return ''
     else:
