@@ -103,42 +103,80 @@ class Labels(VicarSyntax):
         return self.history_labels.has_migration_task()
 
     @staticmethod
-    def create_with_lblsize(recsize,
-                            system_labels,
-                            property_labels,
-                            history_labels,
-                            padding):
+    def create_labels_with_adjusted_lblsize(system_labels,
+                                            property_labels,
+                                            history_labels,
+                                            padding):
+        # type: (SL, PL, HL, Optional[str]) -> Labels
+        """
+        Create a Labels from the pieces, adjusting the LBLSIZE and
+        adding padding as necessary.
+        """
+        recsize = system_labels.get_int_value('RECSIZE', 0)
+        assert recsize > 0
+        return _create_labels(recsize,
+                              system_labels,
+                              property_labels,
+                              history_labels,
+                              padding)
+
+    @staticmethod
+    def create_eol_labels_with_adjusted_lblsize(recsize,
+                                                system_labels,
+                                                property_labels,
+                                                history_labels,
+                                                padding):
         # type: (int, SL, PL, HL, Optional[str]) -> Labels
-        def make_lblsize_item(n):
-            # type: (int) -> LabelItem
-            """Create a LBLSIZE LabelItem with a fixed width."""
-            int_str = '%10d' % n
-            return LabelItem.create('LBLSIZE', IntegerValue(int_str))
+        """
+        Create a Labels from the pieces, adjusting the LBLSIZE and
+        adding padding as necessary.
+        """
+        return _create_labels(recsize,
+                              system_labels,
+                              property_labels,
+                              history_labels,
+                              padding)
 
-        dummy_lblsize = make_lblsize_item(0)
-        dummy_system_labels = system_labels.replace_label_items(
-            [dummy_lblsize])
-        dummy_system_labels_length = dummy_system_labels.to_byte_length()
-        property_labels_length = property_labels.to_byte_length()
-        history_labels_length = history_labels.to_byte_length()
-        padding_length = len(maybe_bs(padding))
 
-        labels_length = sum([dummy_system_labels_length,
-                             property_labels_length,
-                             history_labels_length,
-                             padding_length])
+def _create_labels(recsize, system_labels, property_labels, history_labels,
+                   padding):
+    # type: (int, SL, PL, HL, Optional[str]) -> Labels
+    """
+    Create a Labels from the pieces, adjusting the LBLSIZE and
+    adding padding as necessary.
+    """
+    assert recsize > 0
 
-        final_labels_length = round_to_multiple_of(labels_length, recsize)
-        new_padding_length = final_labels_length - labels_length
-        final_padding = maybe_bs(padding) + new_padding_length * '\0'
+    def make_lblsize_item(n):
+        # type: (int) -> LabelItem
+        """Create a LBLSIZE LabelItem with a fixed width."""
+        int_str = '%10d' % n
+        return LabelItem.create('LBLSIZE', IntegerValue(int_str))
 
-        final_system_labels = system_labels.replace_label_items(
-            [make_lblsize_item(final_labels_length)])
+    dummy_lblsize = make_lblsize_item(0)
+    dummy_system_labels = system_labels.replace_label_items(
+        [dummy_lblsize])
+    dummy_system_labels_length = dummy_system_labels.to_byte_length()
+    property_labels_length = property_labels.to_byte_length()
+    history_labels_length = history_labels.to_byte_length()
+    padding_length = len(maybe_bs(padding))
 
-        return Labels(final_system_labels,
-                      property_labels,
-                      history_labels,
-                      final_padding)
+    labels_length = sum([dummy_system_labels_length,
+                         property_labels_length,
+                         history_labels_length,
+                         padding_length])
+
+    final_labels_length = round_to_multiple_of(labels_length, recsize)
+    new_padding_length = final_labels_length - labels_length
+    final_padding = maybe_bs(padding) + new_padding_length * '\0'
+
+    final_system_labels = system_labels.replace_label_items(
+        [make_lblsize_item(final_labels_length)])
+
+    return Labels(final_system_labels,
+                  property_labels,
+                  history_labels,
+                  final_padding)
 
 
 def round_to_multiple_of(n, m):

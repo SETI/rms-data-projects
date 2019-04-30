@@ -116,6 +116,11 @@ class SystemLabels(VicarSyntax):
     @staticmethod
     def create_with_lblsize(lblsize, label_items):
         # type: (int, List[LabelItem]) -> SystemLabels
+        """
+        Prepend a LBLSIZE LabelItem to the others and create a
+        SystemLabels.
+        """
+        assert not _lookup_label_items('LBLSIZE', label_items)
         return SystemLabels(
             [LabelItem.create('LBLSIZE', IntegerValue(str(lblsize)))] + \
             label_items)

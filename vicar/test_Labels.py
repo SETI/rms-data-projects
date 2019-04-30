@@ -1,16 +1,20 @@
 import unittest
 
 from HistoryLabels import HistoryLabels
+from LabelItem import LabelItem
 from Labels import Labels, round_to_multiple_of
 from PropertyLabels import PropertyLabels
 from SystemLabels import SystemLabels
+from Value import IntegerValue
 from VicarSyntaxTests import VicarSyntaxTests
 from test_SystemLabels import gen_system_labels
 
 
 class TestLabels(unittest.TestCase, VicarSyntaxTests):
     def test__init__(self):
-        system_labels = SystemLabels.create_with_lblsize(1, [])
+        system_labels = SystemLabels.create_with_lblsize(1, [
+            LabelItem.create('RECSIZE', IntegerValue('16'))
+        ])
         property_labels = PropertyLabels([])
         history_labels = HistoryLabels([])
         # verify that bad inputs raise an exception
@@ -22,30 +26,30 @@ class TestLabels(unittest.TestCase, VicarSyntaxTests):
             Labels(system_labels, property_labels, None, None)
 
         # verify that this does not raise
-        Labels.create_with_lblsize(1,
-                                   system_labels,
-                                   property_labels,
-                                   history_labels,
-                                   None)
+        Labels.create_labels_with_adjusted_lblsize(system_labels,
+                                                   property_labels,
+                                                   history_labels,
+                                                   None)
 
     def args_for_test(self):
-        system_labels = SystemLabels.create_with_lblsize(1, [])
+        system_labels = SystemLabels.create_with_lblsize(1, [
+            LabelItem.create('RECSIZE', IntegerValue('16'))
+        ])
         property_labels = PropertyLabels([])
         history_labels = HistoryLabels([])
 
-        return [Labels.create_with_lblsize(1,
-                                           system_labels,
-                                           property_labels,
-                                           history_labels,
-                                           None)]
+        return [Labels.create_labels_with_adjusted_lblsize(system_labels,
+                                                           property_labels,
+                                                           history_labels,
+                                                           None)]
 
     def test_create_with_lblsize(self):
         # should not throw
-        Labels.create_with_lblsize(1,
-                                   gen_system_labels(RECSIZE=1, LBLSIZE=1),
-                                   PropertyLabels([]),
-                                   HistoryLabels([]),
-                                   None)
+        Labels.create_labels_with_adjusted_lblsize(
+            gen_system_labels(RECSIZE=1, LBLSIZE=1),
+            PropertyLabels([]),
+            HistoryLabels([]),
+            None)
 
 
 def test_round_to_multiple_of():
