@@ -153,30 +153,37 @@ def _create_labels(recsize, system_labels, property_labels, history_labels,
         int_str = '%10d' % n
         return LabelItem.create('LBLSIZE', IntegerValue(int_str))
 
-    dummy_lblsize = make_lblsize_item(0)
-    dummy_system_labels = system_labels.replace_label_items(
-        [dummy_lblsize])
-    dummy_system_labels_length = dummy_system_labels.to_byte_length()
+    # Substitute a dummy LBLSIZE item of fixed width into the
+    # SystemLabels and figure out its size.
+    adjusted_system_labels_length = system_labels.replace_label_items(
+        [make_lblsize_item(0)]).to_byte_length()
     property_labels_length = property_labels.to_byte_length()
     history_labels_length = history_labels.to_byte_length()
     padding_length = len(maybe_bs(padding))
 
-    labels_length = sum([dummy_system_labels_length,
-                         property_labels_length,
-                         history_labels_length,
-                         padding_length])
+    adjusted_labels_length = sum([adjusted_system_labels_length,
+                                  property_labels_length,
+                                  history_labels_length,
+                                  padding_length])
 
-    final_labels_length = round_to_multiple_of(labels_length, recsize)
-    new_padding_length = final_labels_length - labels_length
+    # Find the padding needed to bring the LBLSIZE up to a multiple of
+    # RECSIZE.
+    final_labels_length = round_to_multiple_of(adjusted_labels_length, recsize)
+    new_padding_length = final_labels_length - adjusted_labels_length
     final_padding = maybe_bs(padding) + new_padding_length * '\0'
 
+    # Substitute the actual LBLSIZE into the SystemLabels.
     final_system_labels = system_labels.replace_label_items(
         [make_lblsize_item(final_labels_length)])
 
-    return Labels(final_system_labels,
-                  property_labels,
-                  history_labels,
-                  final_padding)
+    # Create the result with the right LBLSIZE.
+    result = Labels(final_system_labels,
+                    property_labels,
+                    history_labels,
+                    final_padding)
+
+    assert final_labels_length == result.to_byte_length()
+    return result
 
 
 def round_to_multiple_of(n, m):
