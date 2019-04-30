@@ -108,6 +108,9 @@ class TestVicarFile(unittest.TestCase, VicarSyntaxTests):
                       None,
                       Tail(gen_line(2), None, None))
 
+        # TODO Create a case with both binary labels and a
+        # MigrationTask.
+
         # verify that these do not raise
         VicarFile(gen_labels(RECSIZE=1, LBLSIZE=1),
                   image_area,

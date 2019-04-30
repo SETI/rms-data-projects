@@ -54,6 +54,13 @@ class VicarFile(VicarSyntax):
             assert eol_labels.get_lblsize() % recsize == 0, \
                 'EOL LBLSIZE must be a multiple of RECSIZE'
 
+        # check structures
+
+        # migration must remove binary labels
+        assert not (image_area.has_binary_labels() and
+                    labels.has_migration_task()), \
+            'a migrated VICAR file cannot have binary labels'
+
         # binary labels either in ImageArea or Tail but not both
         assert not (image_area.has_binary_labels() and
                     tail.has_binary_labels()), \
@@ -105,3 +112,13 @@ class VicarFile(VicarSyntax):
     def get_recsize(self):
         # type: () -> int
         return self.labels.get_int_value('RECSIZE')
+
+    def has_migration_task(self):
+        # type: () -> bool
+        """
+        Return True if the last task in the HistoryLabels is s a
+        migration task.  It has to be the last task because we don't
+        guarantee we can backmigrate the file if it's been further
+        processed.
+        """
+        return self.labels.has_migration_task()
