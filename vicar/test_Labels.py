@@ -1,13 +1,11 @@
 import unittest
 
 from HistoryLabels import HistoryLabels
-from Labels import *
+from Labels import Labels, round_to_multiple_of
 from PropertyLabels import PropertyLabels
 from SystemLabels import SystemLabels
 from VicarSyntaxTests import VicarSyntaxTests
-
-if TYPE_CHECKING:
-    from VicarSyntax import VicarSyntax
+from test_SystemLabels import gen_system_labels
 
 
 class TestLabels(unittest.TestCase, VicarSyntaxTests):
@@ -24,11 +22,33 @@ class TestLabels(unittest.TestCase, VicarSyntaxTests):
             Labels(system_labels, property_labels, None, None)
 
         # verify that this does not raise
-        Labels(system_labels, property_labels, history_labels, None)
+        Labels.create_with_lblsize(1,
+                                   system_labels,
+                                   property_labels,
+                                   history_labels,
+                                   None)
 
     def args_for_test(self):
         system_labels = SystemLabels.create_with_lblsize(1, [])
         property_labels = PropertyLabels([])
         history_labels = HistoryLabels([])
 
-        return [Labels(system_labels, property_labels, history_labels, None)]
+        return [Labels.create_with_lblsize(1,
+                                           system_labels,
+                                           property_labels,
+                                           history_labels,
+                                           None)]
+
+    def test_create_with_lblsize(self):
+        # should not throw
+        Labels.create_with_lblsize(1,
+                                   gen_system_labels(RECSIZE=1, LBLSIZE=1),
+                                   PropertyLabels([]),
+                                   HistoryLabels([]),
+                                   None)
+
+
+def test_round_to_multiple_of():
+    for m in xrange(1, 100):
+        for n in xrange(1, 100):
+            assert round_to_multiple_of(n, m) % m == 0

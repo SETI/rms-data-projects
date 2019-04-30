@@ -4,6 +4,7 @@ Syntax for VICAR files.
 
 from typing import TYPE_CHECKING
 
+from LabelItem import LabelItem
 from Value import *
 from VicarSyntax import maybe_bs
 
@@ -13,6 +14,8 @@ if TYPE_CHECKING:
     from PropertyLabels import PropertyLabels
     from SystemLabels import SystemLabels
 
+    HL = HistoryLabels
+    PL = PropertyLabels
     SL = SystemLabels
 
 
@@ -21,13 +24,21 @@ class Labels(VicarSyntax):
 
     def __init__(self, system_labels, property_labels, history_labels,
                  padding):
-        # type: (SL, PropertyLabels, HistoryLabels, Optional[str]) -> None
+        # type: (SL, PL, HL, Optional[str]) -> None
         assert system_labels is not None
         assert property_labels is not None
         assert history_labels is not None
 
-        assert system_labels.get_int_value('LBLSIZE') > 0, \
-            'LBLSIZE zero or missing'
+        lblsize = system_labels.get_int_value('LBLSIZE')
+        assert lblsize > 0, 'LBLSIZE zero or missing'
+
+        # make sure LBLSIZE is correct
+        size_of_labels = sum([system_labels.to_byte_length(),
+                              property_labels.to_byte_length(),
+                              history_labels.to_byte_length(),
+                              len(maybe_bs(padding))])
+        assert size_of_labels == lblsize, \
+            'size of labels (%d) != lblsize (%d)' % (size_of_labels, lblsize)
 
         self.system_labels = system_labels
         self.property_labels = property_labels
@@ -90,3 +101,50 @@ class Labels(VicarSyntax):
         processed.
         """
         return self.history_labels.has_migration_task()
+
+    @staticmethod
+    def create_with_lblsize(recsize,
+                            system_labels,
+                            property_labels,
+                            history_labels,
+                            padding):
+        # type: (int, SL, PL, HL, Optional[str]) -> Labels
+        def make_lblsize_item(n):
+            # type: (int) -> LabelItem
+            """Create a LBLSIZE LabelItem with a fixed width."""
+            int_str = '%10d' % n
+            return LabelItem.create('LBLSIZE', IntegerValue(int_str))
+
+        dummy_lblsize = make_lblsize_item(0)
+        dummy_system_labels = system_labels.replace_label_items(
+            [dummy_lblsize])
+        dummy_system_labels_length = dummy_system_labels.to_byte_length()
+        property_labels_length = property_labels.to_byte_length()
+        history_labels_length = history_labels.to_byte_length()
+        padding_length = len(maybe_bs(padding))
+
+        labels_length = sum([dummy_system_labels_length,
+                             property_labels_length,
+                             history_labels_length,
+                             padding_length])
+
+        final_labels_length = round_to_multiple_of(labels_length, recsize)
+        new_padding_length = final_labels_length - labels_length
+        final_padding = maybe_bs(padding) + new_padding_length * '\0'
+
+        final_system_labels = system_labels.replace_label_items(
+            [make_lblsize_item(final_labels_length)])
+
+        return Labels(final_system_labels,
+                      property_labels,
+                      history_labels,
+                      final_padding)
+
+
+def round_to_multiple_of(n, m):
+    assert m > 0
+    excess = n % m
+    if excess == 0:
+        return n
+    else:
+        return n + m - excess
