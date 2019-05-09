@@ -7,6 +7,7 @@ from HistoryLabels import HistoryLabels, Task
 from ImageArea import ImageArea
 from LabelItem import LabelItem
 from Labels import Labels
+from Parsers import parse_all
 from PropertyLabels import Property, PropertyLabels
 from SystemLabels import SystemLabels
 from Tail import Tail
@@ -14,8 +15,12 @@ from Value import IntegerValue, RealValue, StringValue
 from VicarFile import VicarFile
 
 if TYPE_CHECKING:
-    from typing import Iterable
+    from typing import Any, Callable, Iterable, Optional, Tuple
     from VicarSyntax import VicarSyntax
+
+    # A parser is a function that takes a string and returns the
+    # unconsumed input and the result of that parser.
+    Parser = Callable[[str], Tuple[str, Any]]
 
 
 class VicarSyntaxTests(object):
@@ -90,3 +95,16 @@ class VicarSyntaxTests(object):
 
         for arg in self.args_for_test():
             self.assertEqual(arg, eval(str(arg)), str(arg))
+
+    def syntax_parser(self):
+        # type: () -> Optional[Parser]
+        return None
+
+    def test_parsing(self):
+        # type: () -> None
+        parser = self.syntax_parser()
+        if parser is not None:
+            for arg in self.args_for_test():
+                byte_str = arg.to_byte_string()
+                rt_arg = parse_all(parser, byte_str)
+                self.assertEqual(arg, rt_arg)
