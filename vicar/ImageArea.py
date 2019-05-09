@@ -1,9 +1,62 @@
 from typing import TYPE_CHECKING
 
+from Parsers import bytes, repeat
 from VicarSyntax import VicarSyntax, maybe_bs
 
 if TYPE_CHECKING:
     from typing import List, Optional, Tuple
+
+
+def parse_image_area(header_len,
+                     image_height,
+                     prefix_width,
+                     image_width,
+                     byte_str):
+    # type: (int, int, int, int, str) -> Tuple[str, ImageArea]
+    print '**** header_len=%d, image_height=%d, ' \
+          'prefix_width=%d, image_width=%d' % (header_len,
+                                               image_height,
+                                               prefix_width,
+                                               image_width)
+
+    # Parse the header as necessary;
+    if header_len > 0:
+        byte_str, header = bytes(header_len)(byte_str)
+    else:
+        header = None
+
+    if prefix_width > 0:
+        # If there are binary prefixes, parse the prefixes and the image.
+
+        def parse_prefixed_image_line(byte_str):
+            # type: (str) -> Tuple[str, Tuple[str,str]]
+            """
+            Parse a prefixed image line as a tuple of the prefix and
+            image_line.
+            """
+            byte_str, prefix = bytes(prefix_width)(byte_str)
+            byte_str, image_line = bytes(image_width)(byte_str)
+            return byte_str, (prefix, image_line)
+
+        byte_str, prefixed_image_lines = \
+            repeat(image_height, parse_prefixed_image_line)(byte_str)
+
+        # prefixed_image_lines is a list of tuples of prefix and
+        # image_line.  But we want a list the prefixes and a list of
+        # the image_lines, so we have to zip the result.
+        prefixes, image_lines = zip(*prefixed_image_lines)
+
+        # Furthermore, zip() produces tuples; we want lists.
+        prefixes = list(prefixes)
+        image_lines = list(image_lines)
+        # All good now.
+    else:
+        # Just parse the image.
+        prefixes = None
+        byte_str, image_lines = repeat(image_height,
+                                       bytes(image_width))(byte_str)
+
+    return byte_str, ImageArea(header, prefixes, image_lines)
 
 
 class ImageArea(VicarSyntax):

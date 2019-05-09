@@ -31,6 +31,23 @@ class TestImageArea(unittest.TestCase, VicarSyntaxTests):
                 ImageArea(generate_line(20), generate_block(3, 14),
                           generate_block(7, 14))]
 
+    def syntax_parser_for_arg(self, arg):
+        if arg.binary_header is None:
+            header_len = 0
+        else:
+            header_len = len(arg.binary_header)
+        image_height = len(arg.binary_image_lines)
+        if arg.binary_prefixes:
+            prefix_width = len(arg.binary_prefixes[0])
+        else:
+            prefix_width = 0
+        image_width = len(arg.binary_image_lines[0])
+        return lambda (byte_str): parse_image_area(header_len,
+                                                   image_height,
+                                                   prefix_width,
+                                                   image_width,
+                                                   byte_str)
+
     def test_has_binary_labels(self):
         header = generate_line(2)
         prefixes = generate_block(1, 1)
