@@ -43,7 +43,7 @@ class TestParsers(unittest.TestCase):
 
     def test_rest_of_input(self):
         byte_str = 'foobar'
-        byte_str, rst = bytes(3)(byte_str)
+        byte_str, _three_bytes = bytes(3)(byte_str)
         self.assertEqual(('', 'bar'), rest_of_input(byte_str))
 
     def test_parse_all(self):

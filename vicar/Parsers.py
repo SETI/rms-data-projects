@@ -50,8 +50,8 @@ def bind(p, f):
         Run the first parser.  Give the result to the function to get
         the second parser.  Run it on the remaining input.
         """
-        byte_str2, res = p(byte_str)
-        return f(res)(byte_str2)
+        byte_str, res = p(byte_str)
+        return f(res)(byte_str)
 
     return bound_parser
 
@@ -65,8 +65,8 @@ def pmap(f, p):
 
     def mapped_parser(byte_str):
         # type: (str) -> Tuple[str, Any]
-        byte_str2, res = p(byte_str)
-        return byte_str2, f(res)
+        byte_str, res = p(byte_str)
+        return byte_str, f(res)
 
     return mapped_parser
 
@@ -101,10 +101,10 @@ def parse_all(p, byte_str):
     Run the parser; raise an exception if it does not consume the
     entire input.
     """
-    byte_str2, res = p(byte_str)
-    if byte_str2:
+    byte_str, res = p(byte_str)
+    if byte_str:
         raise Exception('parse_all() left %d bytes unconsumed' %
-                        len(byte_str2))
+                        len(byte_str))
     return res
 
 
