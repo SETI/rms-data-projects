@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 
 def parse_pds3_tail(byte_str):
     # type: (str) -> Tuple[str, Tail]
+    """Parse a PDS3 tail.  All the bytes go into the tail of the tail."""
     byte_str2, res = rest(byte_str)
     if len(res) == 0:
         res = None
@@ -17,6 +18,13 @@ def parse_pds3_tail(byte_str):
 
 def parse_pds4_tail(hdr_bytes, img_height, prefix_width, byte_str):
     # type: (int, int, int, str) -> Tuple[str, Tail]
+    """
+    Parse a PDS4 tail.  Some of the bytes may be parts of the binary
+    header, some may be binary prefixes.  The rest goes into the
+    tail_bytes.  We determine what goes where from the integer
+    arguments: the length of the header and the dimensions of the
+    binary prefixes.
+    """
     if hdr_bytes > 0:
         byte_str, hdr = bytes(hdr_bytes)(byte_str)
     else:
