@@ -45,13 +45,13 @@ def unescape_byte_string(bs):
     return ''.join(res)
 
 
-def gen_line(width):
+def generate_line(width):
     # type: (int) -> str
     """Generate a line of bytes."""
     return width * '\0'
 
 
-def gen_block(width, height):
+def generate_block(width, height):
     # type: (int, int) -> List[str]
     """Generate a block of bytes of the given dimensions."""
-    return [gen_line(width) for i in xrange(height)]
+    return [generate_line(width) for i in xrange(height)]

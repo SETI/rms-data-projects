@@ -27,15 +27,15 @@ class TestStringUtils(unittest.TestCase):
             with self.assertRaises(Exception):
                 unescape_byte_string(bad_str)
 
-    def test_gen_line(self):
+    def test_generate_line(self):
         n = random.randint(1, 100)
-        line = gen_line(n)
+        line = generate_line(n)
         self.assertEqual(n, len(line))
 
-    def test_gen_block(self):
+    def test_generate_block(self):
         w = random.randint(1, 25)
         h = random.randint(1, 25)
-        block = gen_block(w, h)
+        block = generate_block(w, h)
         assert len(block) == h
         for line in block:
             assert len(line) == w

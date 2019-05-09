@@ -4,7 +4,7 @@ from HistoryLabels import HistoryLabels
 from ImageArea import ImageArea
 from Labels import Labels
 from PropertyLabels import PropertyLabels
-from StringUtils import gen_block, gen_line
+from StringUtils import generate_block, generate_line
 from Tail import Tail
 from VicarFile import VicarFile
 from VicarSyntaxTests import VicarSyntaxTests
@@ -32,12 +32,13 @@ def gen_eol_labels(recsize, **kwargs):
 
 class TestVicarFile(unittest.TestCase, VicarSyntaxTests):
     def test__init__(self):
-        image_area = ImageArea(None, None, gen_block(1, 1))
-        image_area_h = ImageArea(gen_line(1), None, gen_block(1, 1))
-        image_area_p = ImageArea(None, gen_block(1, 1), gen_block(1, 1))
-        image_area_hp = ImageArea(gen_line(2),
-                                  gen_block(1, 1),
-                                  gen_block(1, 1))
+        image_area = ImageArea(None, None, generate_block(1, 1))
+        image_area_h = ImageArea(generate_line(1), None, generate_block(1, 1))
+        image_area_p = ImageArea(None, generate_block(1, 1),
+                                 generate_block(1, 1))
+        image_area_hp = ImageArea(generate_line(2),
+                                  generate_block(1, 1),
+                                  generate_block(1, 1))
         tail = Tail(None, None, None)
 
         # Verify that bad inputs raise an exception.
@@ -109,14 +110,14 @@ class TestVicarFile(unittest.TestCase, VicarSyntaxTests):
             VicarFile(gen_labels(2, RECSIZE=2, LBLSIZE=2, NBB=1),
                       image_area_p,
                       None,
-                      Tail(None, gen_block(2, 2), None))
+                      Tail(None, generate_block(2, 2), None))
 
         # two binary_headers
         with self.assertRaises(Exception):
             VicarFile(gen_labels(2, RECSIZE=1, LBLSIZE=2, NLB=1),
                       image_area_h,
                       None,
-                      Tail(gen_line(2), None, None))
+                      Tail(generate_line(2), None, None))
 
         # TODO Create a case with both binary labels and a
         # MigrationTask.
@@ -140,12 +141,13 @@ class TestVicarFile(unittest.TestCase, VicarSyntaxTests):
                   tail)
 
     def args_for_test(self):
-        image_area = ImageArea(None, None, gen_block(1, 1))
-        image_area_h = ImageArea(gen_line(1), None, gen_block(1, 1))
-        image_area_p = ImageArea(None, gen_block(1, 1), gen_block(1, 1))
-        image_area_hp = ImageArea(gen_line(2),
-                                  gen_block(1, 1),
-                                  gen_block(1, 1))
+        image_area = ImageArea(None, None, generate_block(1, 1))
+        image_area_h = ImageArea(generate_line(1), None, generate_block(1, 1))
+        image_area_p = ImageArea(None, generate_block(1, 1),
+                                 generate_block(1, 1))
+        image_area_hp = ImageArea(generate_line(2),
+                                  generate_block(1, 1),
+                                  generate_block(1, 1))
         tail = Tail(None, None, None)
         return [
             VicarFile(
