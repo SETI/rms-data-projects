@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from Parsers import bytes, rest_of_input
+from Parsers import bytes, repeat, rest_of_input
 from VicarSyntax import VicarSyntax, maybe_bs
 
 if TYPE_CHECKING:
@@ -31,10 +31,7 @@ def parse_pds4_tail(hdr_bytes, img_height, prefix_width, byte_str):
         hdr = None
 
     if prefix_width > 0:
-        prefs = list()  # type: List[str]
-        for i in xrange(img_height):
-            byte_str, line = bytes(prefix_width)(byte_str)
-            prefs.append(line)
+        byte_str, prefs = repeat(img_height, bytes(prefix_width))(byte_str)
     else:
         prefs = None
     byte_str, rest = rest_of_input(byte_str)

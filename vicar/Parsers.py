@@ -87,6 +87,25 @@ def bytes(n):
     return bytes_parser
 
 
+def repeat(n, p):
+    # type: (int, Parser) -> Parser
+    """
+    A parser that runs the given parser n times and returns a list of
+    the results.
+    """
+    assert n >= 0
+
+    def repeating_parser(byte_str):
+        # type: (str) -> Tuple[str, List[Any]]
+        res = list()
+        for i in xrange(n):
+            byte_str, item = p(byte_str)
+            res.append(item)
+        return byte_str, res
+
+    return repeating_parser
+
+
 def rest_of_input(byte_str):
     # type: (str) -> Tuple[str, Any]
     """
