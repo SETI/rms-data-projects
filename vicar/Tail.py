@@ -66,25 +66,6 @@ class Tail(VicarSyntax):
                                      self.binary_prefixes_at_tail,
                                      self.tail_bytes)
 
-    def syntax_parser(self):
-        if self.has_binary_labels():
-            # It's PDS4.
-            if self.binary_header_at_tail:
-                hdr_bytes = len(self.binary_header_at_tail)
-            else:
-                hdr_bytes = 0
-            if self.binary_prefixes_at_tail:
-                img_height = len(self.binary_prefixes_at_tail)
-                prefix_width = len(self.binary_prefixes_at_tail[0])
-            else:
-                img_height = 0
-                prefix_width = 0
-            return lambda (byte_str): parse_pds4_tail(hdr_bytes, img_height,
-                                                      prefix_width, byte_str)
-        else:
-            # It's PDS3.
-            return parse_pds3_tail
-
     def to_byte_string(self):
         if self.binary_prefixes_at_tail:
             binary_prefixes = ''.join(self.binary_prefixes_at_tail)

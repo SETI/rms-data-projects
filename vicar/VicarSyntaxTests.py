@@ -15,7 +15,8 @@ from Value import IntegerValue, RealValue, StringValue
 from VicarFile import VicarFile
 
 if TYPE_CHECKING:
-    from typing import Iterable
+    from typing import Any, Iterable, Optional
+    from Parsers import Parser
     from VicarSyntax import VicarSyntax
 
 
@@ -36,6 +37,10 @@ class VicarSyntaxTests(object):
 
     def assertEqual(self, _first, _second, _msg=None):
         assert False, 'must be overridden'
+
+    def syntax_parser_for_arg(self, arg):
+        # type: (Any) -> Optional[Parser]
+        return None
 
     def test_equal(self):
         # type: () -> None
@@ -95,7 +100,7 @@ class VicarSyntaxTests(object):
     def test_parsing(self):
         # type: () -> None
         for arg in self.args_for_test():
-            parser = arg.syntax_parser()
+            parser = self.syntax_parser_for_arg(arg)
             if parser is not None:
                 byte_str = arg.to_byte_string()
                 rt_arg = parse_all(parser, byte_str)

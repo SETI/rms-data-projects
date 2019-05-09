@@ -20,6 +20,25 @@ class TestTail(unittest.TestCase, VicarSyntaxTests):
                 Tail(header, prefixes, None),
                 Tail(header, prefixes, tail)]
 
+    def syntax_parser_for_arg(self, arg):
+        if arg.has_binary_labels():
+            # It's PDS4.
+            if arg.binary_header_at_tail:
+                hdr_bytes = len(arg.binary_header_at_tail)
+            else:
+                hdr_bytes = 0
+            if arg.binary_prefixes_at_tail:
+                img_height = len(arg.binary_prefixes_at_tail)
+                prefix_width = len(arg.binary_prefixes_at_tail[0])
+            else:
+                img_height = 0
+                prefix_width = 0
+            return lambda (byte_str): parse_pds4_tail(hdr_bytes, img_height,
+                                                      prefix_width, byte_str)
+        else:
+            # It's PDS3.
+            return parse_pds3_tail
+
     def test_has_binary_labels(self):
         header = generate_line(2)
         prefixes = generate_block(1, 1)
