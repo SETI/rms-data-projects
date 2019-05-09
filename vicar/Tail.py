@@ -17,9 +17,6 @@ def parse_pds3_tail(byte_str):
 
 def parse_pds4_tail(hdr_bytes, img_height, prefix_width, byte_str):
     # type: (int, int, int, str) -> Tuple[str, Tail]
-    print '**** hdr_bytes=%d, img_height=%d, prefix_width=%d' % (hdr_bytes,
-                                                                 img_height,
-                                                                 prefix_width)
     if hdr_bytes > 0:
         byte_str, hdr = bytes(hdr_bytes)(byte_str)
     else:
@@ -74,7 +71,6 @@ class Tail(VicarSyntax):
             if self.binary_prefixes_at_tail:
                 img_height = len(self.binary_prefixes_at_tail)
                 prefix_width = len(self.binary_prefixes_at_tail[0])
-                print '**** (%dw x %dh)' % (prefix_width, img_height)
             else:
                 img_height = 0
                 prefix_width = 0
