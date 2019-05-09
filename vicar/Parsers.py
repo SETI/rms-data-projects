@@ -87,12 +87,12 @@ def bytes(n):
     return bytes_parser
 
 
-def rest(str):
+def rest(byte_str):
     # type: (str) -> Tuple[str, Any]
     """
     A parser that consumes and returns the rest of the input.
     """
-    return '', str
+    return '', byte_str
 
 
 def parse_all(p, byte_str):

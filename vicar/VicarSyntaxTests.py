@@ -15,12 +15,8 @@ from Value import IntegerValue, RealValue, StringValue
 from VicarFile import VicarFile
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, Iterable, Optional, Tuple
+    from typing import Iterable
     from VicarSyntax import VicarSyntax
-
-    # A parser is a function that takes a string and returns the
-    # unconsumed input and the result of that parser.
-    Parser = Callable[[str], Tuple[str, Any]]
 
 
 class VicarSyntaxTests(object):
@@ -38,7 +34,7 @@ class VicarSyntaxTests(object):
         """
         pass
 
-    def assertEqual(self, first, second, msg=None):
+    def assertEqual(self, _first, _second, _msg=None):
         assert False, 'must be overridden'
 
     def test_equal(self):
@@ -89,22 +85,18 @@ class VicarSyntaxTests(object):
         # Unfortunately, my IDE thinks the imports are unused and deletes them.
         # So I add their names here to fool it.
 
-        needed_imports = [HistoryLabels, ImageArea, IntegerValue, LabelItem,
-                          Labels, Property, PropertyLabels, RealValue,
-                          StringValue, SystemLabels, Tail, Task, VicarFile]
+        _needed_imports = [HistoryLabels, ImageArea, IntegerValue, LabelItem,
+                           Labels, Property, PropertyLabels, RealValue,
+                           StringValue, SystemLabels, Tail, Task, VicarFile]
 
         for arg in self.args_for_test():
             self.assertEqual(arg, eval(str(arg)), str(arg))
 
-    def syntax_parser(self):
-        # type: () -> Optional[Parser]
-        return None
-
     def test_parsing(self):
         # type: () -> None
-        parser = self.syntax_parser()
-        if parser is not None:
-            for arg in self.args_for_test():
+        for arg in self.args_for_test():
+            parser = arg.syntax_parser()
+            if parser is not None:
                 byte_str = arg.to_byte_string()
                 rt_arg = parse_all(parser, byte_str)
                 self.assertEqual(arg, rt_arg)

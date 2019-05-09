@@ -1,9 +1,23 @@
 from abc import ABCMeta, abstractmethod
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Optional
+    from Parsers import Parser
+
 
 class VicarSyntax(object):
     """Elements of VICAR syntax."""
     __metaclass__ = ABCMeta
+
+    def syntax_parser(self):
+        # type: () -> Optional[Parser]
+        """
+        Return a parser appropriate for this value's byte-string.
+        Used for testing only.
+        """
+        return None
 
     @abstractmethod
     def to_byte_string(self):
