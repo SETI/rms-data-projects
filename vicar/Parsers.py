@@ -87,7 +87,7 @@ def bytes(n):
     return bytes_parser
 
 
-def rest(byte_str):
+def rest_of_input(byte_str):
     # type: (str) -> Tuple[str, Any]
     """
     A parser that consumes and returns the rest of the input.

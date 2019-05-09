@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from Parsers import bytes, rest
+from Parsers import bytes, rest_of_input
 from VicarSyntax import VicarSyntax, maybe_bs
 
 if TYPE_CHECKING:
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 def parse_pds3_tail(byte_str):
     # type: (str) -> Tuple[str, Tail]
     """Parse a PDS3 tail.  All the bytes go into the tail of the tail."""
-    byte_str2, res = rest(byte_str)
+    byte_str2, res = rest_of_input(byte_str)
     if len(res) == 0:
         res = None
     return (byte_str2, Tail(None, None, res))
@@ -37,7 +37,7 @@ def parse_pds4_tail(hdr_bytes, img_height, prefix_width, byte_str):
             prefs.append(line)
     else:
         prefs = None
-    byte_str, rst = rest(byte_str)
+    byte_str, rst = rest_of_input(byte_str)
     if len(rst) == 0:
         rst = None
     return byte_str, Tail(hdr, prefs, rst)

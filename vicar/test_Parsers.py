@@ -8,7 +8,7 @@ class TestParsers(unittest.TestCase):
         byte_str = 'foobar'
         self.assertEqual(('foobar', 666), pure(666)('foobar'))
 
-    def testBind(self):
+    def test_bind(self):
         def read_digit_as_int(byte_str):
             byte_str, res = bytes(1)(byte_str)
             return byte_str, int(res)
@@ -28,32 +28,32 @@ class TestParsers(unittest.TestCase):
         self.assertEqual(('', '123456789'),
                          context_sensitive_parser('9123456789'))
 
-    def testPmap(self):
+    def test_pmap(self):
         p = pure(3)
         f = lambda x: x * x
         byte_str = 'foobar'
         self.assertEqual(('foobar', 9), pmap(f, p)(byte_str))
 
-    def testBytes(self):
+    def test_bytes(self):
         byte_str = 'barfoo'
         with self.assertRaises(Exception):
             bytes(12)(byte_str)
 
         self.assertEqual(('foo', 'bar'), bytes(3)(byte_str))
 
-    def testRest(self):
+    def test_rest_of_input(self):
         byte_str = 'foobar'
         byte_str, rst = bytes(3)(byte_str)
-        self.assertEqual(('', 'bar'), rest(byte_str))
+        self.assertEqual(('', 'bar'), rest_of_input(byte_str))
 
-    def testParseAll(self):
+    def test_parse_all(self):
         byte_str = 'foobar'
         self.assertEqual('foobar', parse_all(bytes(6), byte_str))
 
         with self.assertRaises(Exception):
             parse_all(bytes(3), byte_str)
 
-    def testEof(self):
+    def test_eof(self):
         # test at EOF
         byte_str = 'foobar'
         byte_str, res = bytes(6)(byte_str)
