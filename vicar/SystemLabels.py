@@ -5,7 +5,13 @@ from Value import IntegerValue
 from VicarSyntax import VicarSyntax
 
 if TYPE_CHECKING:
-    from typing import List
+    from typing import List, Tuple
+
+
+def parse_system_labels(byte_str):
+    # type: (str) -> Tuple[str, SystemLabels]
+    import PlyParser  # to avoid circular import
+    return '', PlyParser.ply_parse_system_labels(byte_str)
 
 
 def _lookup_label_items(keyword, label_items):

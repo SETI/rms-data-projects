@@ -48,9 +48,9 @@ def gen_label_items(**kwargs):
 
     # LBLSIZE is always the first keyword.
     return [make_label_item('LBLSIZE', kwargs['LBLSIZE'])] + \
-        [make_label_item(k, v)
-         for k, v in kwargs.items()
-         if k != 'LBLSIZE']
+           [make_label_item(k, v)
+            for k, v in kwargs.items()
+            if k != 'LBLSIZE']
 
 
 def gen_system_labels(**kwargs):
@@ -78,16 +78,21 @@ class TestSystemLabels(unittest.TestCase, VicarSyntaxTests):
                       ])
 
     def args_for_test(self):
-        return [SystemLabels.create_with_lblsize(1, []),
-                SystemLabels.create_with_lblsize(1, [LabelItem.create('ONE',
-                                                                      StringValue.from_raw_string(
-                                                                          'uno')),
-                                                     LabelItem.create('TWO',
-                                                                      IntegerValue(
-                                                                          '2')),
-                                                     ]),
-                _mk_sqr_system_labels(),
-                _mk_system_labels_from_lists(_ENG, _SPAN)]
+        return [
+            SystemLabels.create_with_lblsize(1, []),
+            SystemLabels.create_with_lblsize(1, [
+                LabelItem.create('ONE',
+                                 StringValue.from_raw_string(
+                                     'uno')),
+                LabelItem.create('TWO',
+                                 IntegerValue(
+                                     '2')),
+            ]),
+            _mk_sqr_system_labels(),
+            _mk_system_labels_from_lists(_ENG, _SPAN)]
+
+    def syntax_parser_for_arg(self, arg):
+        return parse_system_labels
 
     def test_select_labels(self):
         sqr_system_labels = _mk_sqr_system_labels()

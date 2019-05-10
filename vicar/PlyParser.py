@@ -3,6 +3,7 @@ from ply import lex, yacc
 from HistoryLabels import HistoryLabels, Task
 from LabelItem import LabelItem
 from PropertyLabels import Property, PropertyLabels
+from SystemLabels import SystemLabels
 from Value import *
 
 reserved = {
@@ -132,6 +133,33 @@ def t_error(t):
 
 ################################
 
+def p_systemlabels(p):
+    'systemlabels : lblsizeitem labelitems'
+    p[0] = SystemLabels([p[1]] + p[2])
+
+
+################
+
+def p_lblsizeitem(p):
+    'lblsizeitem : optwhitespace LBLSIZE_KW EQUALS INTEGER optwhitespace'
+    p[0] = LabelItem(p[1], p[2], p[3], IntegerValue(p[4]), p[5])
+
+
+################
+
+def p_labelitems_some(p):
+    'labelitems : labelitems labelitem'
+    p[1].append(p[2])
+    p[0] = p[1]
+
+
+def p_labelitems_none(p):
+    'labelitems : '
+    p[0] = list()
+
+
+################################
+
 def p_propertylabels(p):
     'propertylabels : properties'
     p[0] = PropertyLabels(p[1])
@@ -210,19 +238,6 @@ def p_useritem(p):
 def p_dattimitem(p):
     'dattimitem : DAT_TIM_KW EQUALS STRING optwhitespace'
     p[0] = LabelItem(None, p[1], p[2], StringValue(p[3]), p[4])
-
-
-################
-
-def p_labelitems_some(p):
-    'labelitems : labelitems labelitem'
-    p[1].append(p[2])
-    p[0] = p[1]
-
-
-def p_labelitems_none(p):
-    'labelitems : '
-    p[0] = list()
 
 
 ################
@@ -317,6 +332,10 @@ def ply_parse_property(data):
 
 def ply_parse_property_labels(data):
     return ply_parse('propertylabels', data)
+
+
+def ply_parse_system_labels(data):
+    return ply_parse('systemlabels', data)
 
 
 def ply_parse_task(data):
