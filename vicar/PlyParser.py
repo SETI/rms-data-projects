@@ -1,5 +1,6 @@
 from ply import lex, yacc
 
+from HistoryLabels import HistoryLabels, Task
 from LabelItem import LabelItem
 from Value import *
 
@@ -130,6 +131,67 @@ def t_error(t):
 
 ################################
 
+def p_historylabels(p):
+    'historylabels : tasks'
+    p[0] = HistoryLabels(p[1])
+
+
+################
+
+def p_tasks_some(p):
+    'tasks : tasks task'
+    p[1].append(p[2])
+    p[0] = p[1]
+
+
+def p_tasks_none(p):
+    'tasks :'
+    p[0] = list()
+
+
+################
+
+def p_task(p):
+    'task : taskitem useritem dattimitem labelitems'
+    p[0] = Task([p[1], p[2], p[3]] + p[4])
+
+
+################
+
+def p_taskitem(p):
+    'taskitem : TASK_KW EQUALS STRING optwhitespace'
+    p[0] = LabelItem(None, p[1], p[2], StringValue(p[3]), p[4])
+
+
+################
+
+def p_useritem(p):
+    'useritem : USER_KW EQUALS STRING optwhitespace'
+    p[0] = LabelItem(None, p[1], p[2], StringValue(p[3]), p[4])
+
+
+################
+
+def p_dattimitem(p):
+    'dattimitem : DAT_TIM_KW EQUALS STRING optwhitespace'
+    p[0] = LabelItem(None, p[1], p[2], StringValue(p[3]), p[4])
+
+
+################
+
+def p_labelitems_some(p):
+    'labelitems : labelitems labelitem'
+    p[1].append(p[2])
+    p[0] = p[1]
+
+
+def p_labelitems_none(p):
+    'labelitems : '
+    p[0] = list()
+
+
+################
+
 def p_labelitem(p):
     'labelitem : optwhitespace KEYWORD EQUALS value optwhitespace'
     p[0] = LabelItem(p[1], p[2], p[3], p[4], p[5])
@@ -195,7 +257,19 @@ def dump_tokens(lexer, data):
         print(tok)
 
 
-def ply_parse_label_item(data):
+def ply_parse(start, data):
     lexer = lex.lex()
-    parser = yacc.yacc(start='labelitem')
+    parser = yacc.yacc(start=start)
     return parser.parse(data)
+
+
+def ply_parse_label_item(data):
+    return ply_parse('labelitem', data)
+
+
+def ply_parse_task(data):
+    return ply_parse('task', data)
+
+
+def ply_parse_history_labels(data):
+    return ply_parse('historylabels', data)

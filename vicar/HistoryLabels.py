@@ -7,7 +7,13 @@ from Value import StringValue
 from VicarSyntax import VicarSyntax
 
 if TYPE_CHECKING:
-    from typing import List
+    from typing import List, Tuple
+
+
+def parse_history_labels(byte_str):
+    # type: (str) -> Tuple[str, HistoryLabels]
+    import PlyParser  # to avoid circular import
+    return '', PlyParser.ply_parse_history_labels(byte_str)
 
 
 class HistoryLabels(VicarSyntax):
@@ -49,6 +55,12 @@ class HistoryLabels(VicarSyntax):
         it's been further processed.
         """
         return len(self.tasks) > 0 and self.tasks[-1].is_migration_task()
+
+
+def parse_task(byte_str):
+    # type: (str) -> Tuple[str, Task]
+    import PlyParser  # to avoid circular import
+    return '', PlyParser.ply_parse_task(byte_str)
 
 
 class Task(VicarSyntax):

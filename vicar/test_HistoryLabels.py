@@ -124,6 +124,9 @@ class TestTask(unittest.TestCase, VicarSyntaxTests):
                 Task.create_migration_task('dat_tim', *mk_sqr_label_items())
                 ]
 
+    def syntax_parser_for_arg(self, arg):
+        return parse_task
+
 
 class TestHistoryLabels(unittest.TestCase, VicarSyntaxTests):
     def test__init__(self):
@@ -142,6 +145,9 @@ class TestHistoryLabels(unittest.TestCase, VicarSyntaxTests):
     def args_for_test(self):
         return [HistoryLabels([]),
                 HistoryLabels([Task.create_migration_task('dat_tim')])]
+
+    def syntax_parser_for_arg(self, arg):
+        return parse_history_labels
 
     def test_has_migration_task(self):
         self.assertFalse(HistoryLabels([]).has_migration_task())
