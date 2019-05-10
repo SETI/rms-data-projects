@@ -4,6 +4,7 @@
 
 conda create -y --name vicar-migration pytest python=2.7
 conda install -y --name vicar-migration -c anaconda typing
+conda install -y -n vicar-migration -c conda-forge ply
 
 # conda create -y --name vicar-migration pycodestyle pytest scipy python=2.7
 # conda install -y -n vicar-migration -c anaconda lxml pyparsing
