@@ -1,0 +1,201 @@
+from ply import lex, yacc
+
+from LabelItem import LabelItem
+from Value import *
+
+reserved = {
+    'DAT_TIM': 'DAT_TIM_KW',
+    'LBLSIZE': 'LBLSIZE_KW',
+    'PROPERTY': 'PROPERTY_KW',
+    'TASK': 'TASK_KW',
+    'USER': 'USER_KW',
+}
+
+tokens = [
+             'EQUALS',
+             'INTEGER',
+             'INTEGERS',
+             'KEYWORD',
+             'REAL',
+             'REALS',
+             'STRING',
+             'STRINGS',
+             'WHITESPACE'
+         ] + list(reserved.values())
+
+# There is a limitation in the Python 2.7 libraries (sre_compile.py)
+# in the number of parentheses allowed in a regular expression; the
+# error message is "sorry, but this version only supports 100 named
+# groups".  I hit this by wrapping *all* the regexps in parentheses,
+# then removed some to make it compile, but that also introduced bugs.
+# I *think* this version is correct, but if there are bugs in the
+# scanning, this might be a good place to look.
+
+################
+# CHARACTER SETS
+################
+
+_white = r'[ ]'
+_digit = r'[0-9]'
+_alpha = r'[A-Z]'
+_kw_char = r'[A-Z_0-9]'
+_sign = r'[-+]'
+_sq = "[']"
+_not_sq = "[^']"
+_left_paren = r'[(]'
+_right_paren = r'[)]'
+_comma = r'[,]'
+_dot = r'[.]'
+_exp_char = r'[EeDd]'
+
+################
+# REGULAR EXPRESSIONS
+################
+
+_digits_re = _digit + r'+'
+_opt_sign_re = _sign + r'?'
+_integer_re = _opt_sign_re + _digits_re
+_opt_digits_re = _digit + r'*'
+_opt_white_re = _white + r'*'
+
+_exp_re = _exp_char + _opt_sign_re + _integer_re
+_opt_exp_re = r'(' + _exp_re + ')?'
+
+_frac_digits_re = r'(' + _dot + _digits_re + r')'
+_frac_opt_digits_re = r'(' + _dot + _opt_digits_re + r')'
+_real1_re = r'(' + _integer_re + r'(' + \
+            _frac_opt_digits_re + _opt_exp_re + r'|' + \
+            _exp_re + \
+            r')' + r')'
+_real2_re = r'(' + _opt_sign_re + _frac_digits_re + _opt_exp_re + r')'
+_real_re = r'(' + _real1_re + r'|' + _real2_re + r')'
+
+# A number of the early Cassini VICAR files contain string values in
+# the labels that are not properly escaped.  They include the
+# characters " FW'S " whose un-doubled single quote prematurely ends
+# the string.  Since most string values are followed by space, we hack
+# around this by considering a single quote followed by a capital S
+# and a space as legal within a string value.  It isn't legal, but
+# this lets the parse continue and doesn't seem to cause other issues.
+
+_cassini_string_char_hack_re = r'(' + _sq + r'[S]' + _white + r')'
+
+_string_char_re = r'(' + \
+                  _sq + _sq + r'|' + \
+                  _not_sq + r'|' + \
+                  _cassini_string_char_hack_re + \
+                  r')'
+_string_re = _sq + r'(' + _string_char_re + r'*)' + _sq
+
+_left_paren_re = r'(' + _left_paren + _opt_white_re + r')'
+_right_paren_re = r'(' + _opt_white_re + _right_paren + r')'
+_comma_re = r'(' + _opt_white_re + _comma + _opt_white_re + r')'
+
+################
+
+t_EQUALS = r'(' + _opt_white_re + r'=' + _opt_white_re + r')'
+
+t_WHITESPACE = r'(' + _white + r'+)'
+
+t_REAL = _real_re
+
+t_INTEGER = _integer_re
+
+t_STRING = _string_re
+
+t_REALS = r'(' + _left_paren_re + _real_re + \
+          r'(' + _comma_re + _real_re + r')*' + \
+          _right_paren_re + r')'
+
+t_INTEGERS = r'(' + _left_paren_re + _integer_re + \
+             r'(' + _comma_re + _integer_re + r')*' + \
+             _right_paren_re + r')'
+
+t_STRINGS = r'(' + _left_paren_re + _string_re + \
+            r'(' + _comma_re + _string_re + r')*' + \
+            _right_paren_re + r')'
+
+
+def t_KEYWORD(t):
+    r'[A-Z_][A-Z_0-9]*'
+    t.type = reserved.get(t.value, 'KEYWORD')  # Check for reserved words
+    return t
+
+
+# Error handling rule
+def t_error(t):
+    raise Exception("Scanning error: character '%r'; "
+                    'rest of input is "%r"' % (t.value[0], t.value))
+
+
+################################
+
+def p_labelitem(p):
+    'labelitem : optwhitespace KEYWORD EQUALS value optwhitespace'
+    p[0] = LabelItem(p[1], p[2], p[3], p[4], p[5])
+
+
+################
+
+def p_optwhitespace_some(p):
+    'optwhitespace : WHITESPACE'
+    p[0] = p[1]
+
+
+def p_optwhitespace_none(p):
+    'optwhitespace :'
+    p[0] = None
+
+
+################
+
+def p_value_integer(p):
+    'value : INTEGER'
+    p[0] = IntegerValue(p[1])
+
+
+def p_value_integers(p):
+    'value : INTEGERS'
+    p[0] = IntegersValue(p[1])
+
+
+def p_value_real(p):
+    'value : REAL'
+    p[0] = RealValue(p[1])
+
+
+def p_value_reals(p):
+    'value : REALS'
+    p[0] = RealsValue(p[1])
+
+
+def p_value_string(p):
+    'value : STRING'
+    p[0] = StringValue(p[1])
+
+
+def p_value_strings(p):
+    'value : STRINGS'
+    p[0] = StringsValue(p[1])
+
+
+################
+
+def p_error(p):
+    raise Exception('Syntax error at %s: %s' % (p.type, p))
+
+
+################################
+
+def dump_tokens(lexer, data):
+    lexer.input(data)
+    while True:
+        tok = lexer.token()
+        assert tok
+        print(tok)
+
+
+def ply_parse_label_item(data):
+    lexer = lex.lex()
+    parser = yacc.yacc(start='labelitem')
+    return parser.parse(data)

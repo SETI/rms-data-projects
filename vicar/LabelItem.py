@@ -4,7 +4,13 @@ from Value import StringValue, Value
 from VicarSyntax import VicarSyntax, maybe_bs
 
 if TYPE_CHECKING:
-    from typing import Optional
+    from typing import Optional, Tuple
+
+
+def parse_label_item(byte_str):
+    # type: (str) -> Tuple[str, LabelItem]
+    import PlyParser  # to avoid circular imports
+    return '', PlyParser.ply_parse_label_item(byte_str)
 
 
 class LabelItem(VicarSyntax):

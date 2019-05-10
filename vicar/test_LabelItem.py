@@ -1,6 +1,6 @@
 import unittest
 
-from LabelItem import LabelItem
+from LabelItem import LabelItem, parse_label_item
 from Value import *
 from VicarSyntaxTests import VicarSyntaxTests
 
@@ -31,7 +31,7 @@ class TestLabelItem(unittest.TestCase, VicarSyntaxTests):
         LabelItem(None, 'KEYWORD', ' =  ', str_value, ' ')
 
     def args_for_test(self):
-        exotic_label_item = LabelItem('   ', 'SHERPA_HOME', ' \t   =\n\n',
+        exotic_label_item = LabelItem('   ', 'SHERPA_HOME', '     =  ',
                                       StringValue.from_raw_string('Nepal'),
                                       '  ')
         return [LabelItem('    ', 'TRES', '=', IntegerValue('3'), '      '),
@@ -39,17 +39,20 @@ class TestLabelItem(unittest.TestCase, VicarSyntaxTests):
                 exotic_label_item.to_saved_label_item('PREFIX_')
                 ]
 
+    def syntax_parser_for_arg(self, arg):
+        return parse_label_item
+
     def test_to_saved_string_value(self):
         # works for basic LabelItems
         label_item = LabelItem.create('FIVE_IS_EVEN', IntegerValue('0'))
         self.assertEqual(StringValue("'FIVE_IS_EVEN=0 '"),
                          label_item.to_saved_string_value())
 
-        # works for LabelItems with crazy whitespace
-        label_item = LabelItem('   ', 'SHERPA_HOME', ' \t   =\n\n',
+        # works for LabelItems with lots of whitespace
+        label_item = LabelItem('   ', 'SHERPA_HOME', '     =  ',
                                StringValue.from_raw_string('Nepal'), '  ')
         self.assertEqual(StringValue(
-            "'   SHERPA_HOME \t   =\n\n''Nepal''  '"),
+            "'   SHERPA_HOME     =  ''Nepal''  '"),
             label_item.to_saved_string_value())
 
     def test_to_saved_label_item(self):
