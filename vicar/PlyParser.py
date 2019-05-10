@@ -133,6 +133,15 @@ def t_error(t):
 
 ################################
 
+def p_labels(p):
+    'labels : systemlabels propertylabels historylabels'
+    # We don't build the Labels yet because it needs its padding,
+    # which isn't part of this grammar.
+    p[0] = (p[1], p[2], p[3])
+
+
+################
+
 def p_systemlabels(p):
     'systemlabels : lblsizeitem labelitems'
     p[0] = SystemLabels([p[1]] + p[2])
@@ -302,6 +311,23 @@ def p_error(p):
 
 ################################
 
+def parse_lblsize(src):
+    # type: (str) -> int
+    lexer = lex.lex()
+    lexer.input(src)
+    tok = lexer.token()
+    if tok.type == 'WHITESPACE':
+        tok = lexer.token()
+    assert tok.type == 'LBLSIZE_KW'
+    tok = lexer.token()
+    assert tok.type == 'EQUALS'
+    tok = lexer.token()
+    assert tok.type == 'INTEGER'
+    return int(tok.value)
+
+
+################################
+
 def dump_tokens(lexer, data):
     lexer.input(data)
     while True:
@@ -324,6 +350,10 @@ def ply_parse_history_labels(data):
 
 def ply_parse_label_item(data):
     return ply_parse('labelitem', data)
+
+
+def ply_parse_labels(data):
+    return ply_parse('labels', data)
 
 
 def ply_parse_property(data):

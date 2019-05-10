@@ -2,7 +2,7 @@ import unittest
 
 from HistoryLabels import HistoryLabels
 from LabelItem import LabelItem
-from Labels import Labels, round_to_multiple_of
+from Labels import Labels, parse_labels, round_to_multiple_of
 from PropertyLabels import PropertyLabels
 from SystemLabels import SystemLabels
 from Value import IntegerValue
@@ -42,6 +42,9 @@ class TestLabels(unittest.TestCase, VicarSyntaxTests):
                                                            property_labels,
                                                            history_labels,
                                                            None)]
+
+    def syntax_parser_for_arg(self, arg):
+        return parse_labels
 
     def test_create_with_lblsize(self):
         # should not throw

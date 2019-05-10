@@ -5,11 +5,12 @@ Syntax for VICAR files.
 from typing import TYPE_CHECKING
 
 from LabelItem import LabelItem
+from Parsers import bytes
 from Value import *
 from VicarSyntax import maybe_bs
 
 if TYPE_CHECKING:
-    from typing import Optional
+    from typing import Optional, Tuple
     from HistoryLabels import HistoryLabels
     from PropertyLabels import PropertyLabels
     from SystemLabels import SystemLabels
@@ -17,6 +18,39 @@ if TYPE_CHECKING:
     HL = HistoryLabels
     PL = PropertyLabels
     SL = SystemLabels
+
+
+def _parse_to_null(byte_str):
+    nul_index = byte_str.find('\0')
+    if nul_index == -1:
+        return '', byte_str
+    else:
+        return bytes(nul_index)(byte_str)
+
+
+def parse_labels(byte_str):
+    # type: (str) -> Tuple[str, Labels]
+    import PlyParser  # to avoid circular import
+    lblsize = PlyParser.parse_lblsize(byte_str)
+
+    def parse_to_null(byte_str):
+        # type: (str) -> Tuple[str, str]
+        nul_index = byte_str.find('\0')
+        if nul_index == -1:
+            # return all of it
+            return '', byte_str
+        else:
+            # return the non-NUL bytes
+            return bytes(nul_index)(byte_str)
+
+    padding, src = parse_to_null(byte_str)
+    system_labels, property_labels, history_labels = \
+        PlyParser.ply_parse_labels(src)
+    labels = Labels(system_labels,
+                    property_labels,
+                    history_labels,
+                    padding)
+    return '', labels
 
 
 class Labels(VicarSyntax):
