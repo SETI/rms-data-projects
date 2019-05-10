@@ -66,6 +66,22 @@ class SystemLabels(VicarSyntax):
         """
         return _lookup_label_items(keyword, self.label_items)
 
+    def get_binary_header_size(self):
+        # type: () -> int
+        return self.get_int_value('RECSIZE') * self.get_int_value('NLB')
+
+    def get_binary_prefix_width(self):
+        # type: () -> int
+        return self.get_int_value('NBB')
+
+    def get_image_height(self):
+        # type: () -> int
+        return self.get_int_value('N2') * self.get_int_value('N3')
+
+    def get_image_width(self):
+        # type: () -> int
+        return self.get_int_value('RECSIZE') - self.get_int_value('NBB')
+
     def get_int_value(self, keyword, default=0):
         # type: (str, int) -> int
         """

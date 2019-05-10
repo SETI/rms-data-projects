@@ -27,12 +27,14 @@ class TestTail(unittest.TestCase, VicarSyntaxTests):
                 hdr_bytes = len(arg.binary_header_at_tail)
             else:
                 hdr_bytes = 0
+
             if arg.binary_prefixes_at_tail:
                 img_height = len(arg.binary_prefixes_at_tail)
                 prefix_width = len(arg.binary_prefixes_at_tail[0])
             else:
                 img_height = 0
                 prefix_width = 0
+
             return lambda (byte_str): parse_pds4_tail(hdr_bytes, img_height,
                                                       prefix_width, byte_str)
         else:

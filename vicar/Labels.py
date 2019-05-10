@@ -32,8 +32,9 @@ def parse_labels(byte_str):
     # type: (str) -> Tuple[str, Labels]
     import PlyParser  # to avoid circular import
     lblsize = PlyParser.parse_lblsize(byte_str)
+    byte_str, src = bytes(lblsize)(byte_str)
 
-    def parse_to_null(byte_str):
+    def split_at_nul(byte_str):
         # type: (str) -> Tuple[str, str]
         nul_index = byte_str.find('\0')
         if nul_index == -1:
@@ -43,14 +44,14 @@ def parse_labels(byte_str):
             # return the non-NUL bytes
             return bytes(nul_index)(byte_str)
 
-    padding, src = parse_to_null(byte_str)
+    padding, label_src = split_at_nul(src)
     system_labels, property_labels, history_labels = \
-        PlyParser.ply_parse_labels(src)
+        PlyParser.ply_parse_labels(label_src)
     labels = Labels(system_labels,
                     property_labels,
                     history_labels,
                     padding)
-    return '', labels
+    return byte_str, labels
 
 
 class Labels(VicarSyntax):
@@ -118,6 +119,22 @@ class Labels(VicarSyntax):
         an exception.
         """
         return self.system_labels.get_int_value(keyword, default)
+
+    def get_binary_header_size(self):
+        # type: () -> int
+        return self.system_labels.get_binary_header_size()
+
+    def get_binary_prefix_width(self):
+        # type: () -> int
+        return self.system_labels.get_binary_prefix_width()
+
+    def get_image_height(self):
+        # type: () -> int
+        return self.system_labels.get_image_height()
+
+    def get_image_width(self):
+        # type: () -> int
+        return self.system_labels.get_image_width()
 
     def get_lblsize(self):
         # type: () -> int

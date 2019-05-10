@@ -6,7 +6,46 @@ from Tail import Tail
 from VicarSyntax import VicarSyntax
 
 if TYPE_CHECKING:
-    from typing import Optional
+    from typing import Optional, Tuple
+
+def parse_vicar_file(byte_str):
+    # type: (str) -> Tuple[str, VicarFile]
+    from ImageArea import parse_image_area
+    from Labels import parse_labels
+    from Tail import parse_tail
+
+    byte_str, labels = parse_labels(byte_str)
+
+    binary_header_size = labels.get_binary_header_size()
+    image_height = labels.get_image_height()
+    prefix_width = labels.get_binary_prefix_width()
+    image_width = labels.get_image_width()
+
+    byte_str, image_area = parse_image_area(binary_header_size,
+                                            image_height,
+                                            prefix_width,
+                                            image_width,
+                                            byte_str)
+
+    has_eol_labels = labels.get_int_value('EOL')
+    if has_eol_labels:
+        byte_str, eol_labels = parse_labels(byte_str)
+    else:
+        eol_labels = None
+
+    has_binary_labels = image_area.has_binary_labels()
+
+    hdr_bytes = -666
+    assert False, 'hdr_bytes not defined'
+
+    byte_str, tail = parse_tail(has_binary_labels,
+                                hdr_bytes,
+                                image_height,
+                                prefix_width,
+                                byte_str)
+
+    assert not byte_str, 'should consume all input'
+    return byte_str, VicarFile(labels, image_area, eol_labels, tail)
 
 
 class VicarFile(VicarSyntax):

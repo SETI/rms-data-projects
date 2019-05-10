@@ -13,11 +13,6 @@ def parse_image_area(header_len,
                      image_width,
                      byte_str):
     # type: (int, int, int, int, str) -> Tuple[str, ImageArea]
-    print '**** header_len=%d, image_height=%d, ' \
-          'prefix_width=%d, image_width=%d' % (header_len,
-                                               image_height,
-                                               prefix_width,
-                                               image_width)
 
     # Parse the header as necessary;
     if header_len > 0:

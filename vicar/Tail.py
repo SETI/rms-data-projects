@@ -7,6 +7,15 @@ if TYPE_CHECKING:
     from typing import List, Optional, Tuple
 
 
+def parse_tail(has_binary_labels,
+               hdr_bytes, img_height, prefix_width, byte_str):
+    # type: (bool, int, int, int, str) -> Tuple[str, Tail]
+    if has_binary_labels:
+        return parse_pds3_tail(byte_str)
+    else:
+        return parse_pds4_tail(hdr_bytes, img_height, prefix_width, byte_str)
+
+
 def parse_pds3_tail(byte_str):
     # type: (str) -> Tuple[str, Tail]
     """Parse a PDS3 tail.  All the bytes go into the tail of the tail."""
