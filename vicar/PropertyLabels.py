@@ -1,5 +1,16 @@
+from typing import TYPE_CHECKING
+
 from LabelItem import LabelItem
 from VicarSyntax import VicarSyntax
+
+if TYPE_CHECKING:
+    from typing import Tuple
+
+
+def parse_property_labels(byte_str):
+    # type: (str) -> Tuple[str, PropertyLabels]
+    import PlyParser  # to avoid circular import
+    return '', PlyParser.ply_parse_property_labels(byte_str)
 
 
 class PropertyLabels(VicarSyntax):
@@ -35,6 +46,12 @@ class PropertyLabels(VicarSyntax):
                         for property in self.properties])
 
 
+def parse_property(byte_str):
+    # type: (str) -> Tuple[str, Property]
+    import PlyParser  # to avoid circular import
+    return '', PlyParser.ply_parse_property(byte_str)
+
+
 class Property(VicarSyntax):
     """Represents a property of the image in the image domain."""
 
@@ -42,6 +59,7 @@ class Property(VicarSyntax):
         # type: (List[LabelItem]) -> None
         VicarSyntax.__init__(self)
         assert property_label_items is not None
+        assert len(property_label_items) > 0
         for label_item in property_label_items:
             assert label_item is not None
             assert isinstance(label_item, LabelItem)

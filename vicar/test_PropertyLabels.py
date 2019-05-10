@@ -1,7 +1,8 @@
 import unittest
 
 from LabelItem import LabelItem
-from PropertyLabels import Property, PropertyLabels
+from PropertyLabels import Property, PropertyLabels, parse_property, \
+    parse_property_labels
 from Value import RealValue, StringValue
 from VicarSyntaxTests import VicarSyntaxTests
 
@@ -34,8 +35,13 @@ class TestProperty(unittest.TestCase, VicarSyntaxTests):
         _mk_map_property()
 
     def args_for_test(self):
-        return [Property([]),
-                _mk_map_property()]
+        return [
+            Property([LabelItem.create('PROPERTY',
+                                       StringValue.from_raw_string('EMPTY'))]),
+            _mk_map_property()]
+
+    def syntax_parser_for_arg(self, arg):
+        return parse_property
 
 
 class TestPropertyLabels(unittest.TestCase, VicarSyntaxTests):
@@ -51,3 +57,6 @@ class TestPropertyLabels(unittest.TestCase, VicarSyntaxTests):
     def args_for_test(self):
         return [PropertyLabels([]),
                 PropertyLabels([_mk_map_property()])]
+
+    def syntax_parser_for_arg(self, arg):
+        return parse_property_labels

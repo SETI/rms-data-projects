@@ -2,6 +2,7 @@ from ply import lex, yacc
 
 from HistoryLabels import HistoryLabels, Task
 from LabelItem import LabelItem
+from PropertyLabels import Property, PropertyLabels
 from Value import *
 
 reserved = {
@@ -131,6 +132,40 @@ def t_error(t):
 
 ################################
 
+def p_propertylabels(p):
+    'propertylabels : properties'
+    p[0] = PropertyLabels(p[1])
+
+
+################
+
+def p_properties_some(p):
+    'properties : properties property'
+    p[1].append(p[2])
+    p[0] = p[1]
+
+
+def p_properties_none(p):
+    'properties :'
+    p[0] = list()
+
+
+################
+
+def p_property(p):
+    'property : propertyitem labelitems'
+    p[0] = Property([p[1]] + p[2])
+
+
+################
+
+def p_propertyitem(p):
+    'propertyitem : PROPERTY_KW EQUALS STRING optwhitespace'
+    p[0] = LabelItem(None, p[1], p[2], StringValue(p[3]), p[4])
+
+
+################
+
 def p_historylabels(p):
     'historylabels : tasks'
     p[0] = HistoryLabels(p[1])
@@ -244,7 +279,10 @@ def p_value_strings(p):
 ################
 
 def p_error(p):
-    raise Exception('Syntax error at %s: %s' % (p.type, p))
+    if p is None:
+        raise Exception('Syntax error at EOF')
+    else:
+        raise Exception('Syntax error at %s: %s' % (p.type, p))
 
 
 ################################
@@ -263,13 +301,23 @@ def ply_parse(start, data):
     return parser.parse(data)
 
 
+################################
+
+def ply_parse_history_labels(data):
+    return ply_parse('historylabels', data)
+
+
 def ply_parse_label_item(data):
     return ply_parse('labelitem', data)
 
 
+def ply_parse_property(data):
+    return ply_parse('property', data)
+
+
+def ply_parse_property_labels(data):
+    return ply_parse('propertylabels', data)
+
+
 def ply_parse_task(data):
     return ply_parse('task', data)
-
-
-def ply_parse_history_labels(data):
-    return ply_parse('historylabels', data)
