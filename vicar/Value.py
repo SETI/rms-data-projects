@@ -1,6 +1,6 @@
 from abc import ABCMeta
 
-from StringUtils import escape_byte_string
+from StringUtils import escape_byte_string, unescape_byte_string
 from VicarSyntax import VicarSyntax
 
 
@@ -50,6 +50,10 @@ class StringValue(Value):
     def __init__(self, byte_str):
         # type: (str) -> None
         Value.__init__(self, byte_str)
+
+    def to_raw_string(self):
+        # type: () -> str
+        return unescape_byte_string(self.value_byte_string)
 
     @staticmethod
     def from_raw_string(byte_str):

@@ -13,6 +13,16 @@ def parse_label_item(byte_str):
     return '', PlyParser.ply_parse_label_item(byte_str)
 
 
+def parse_general_label_item(byte_str):
+    # type: (str) -> Tuple[str, LabelItem]
+
+    # TODO This will fail on a few reserved keywords.  Need to fix
+    # this in PlyParser.
+
+    import PlyParser  # to avoid circular imports
+    return '', PlyParser.ply_parse_label_item(byte_str)
+
+
 class LabelItem(VicarSyntax):
     """A key-value pair used for a VICAR label."""
 
@@ -67,6 +77,18 @@ class LabelItem(VicarSyntax):
         """
         return LabelItem.create(prefix + self.keyword,
                                 self.to_saved_string_value())
+
+    @staticmethod
+    def from_saved_string_value(value):
+        # type: (Value) -> LabelItem
+        from Parsers import parse_all  # avoid circular imports
+        assert isinstance(value, StringValue)
+        return parse_all(parse_general_label_item, value.to_raw_string())
+
+    @staticmethod
+    def from_saved_label_item(label_item):
+        # type: (LabelItem) -> LabelItem
+        return LabelItem.from_saved_string_value(label_item.value)
 
     @staticmethod
     def create(keyword, value):

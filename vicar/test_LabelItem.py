@@ -55,8 +55,25 @@ class TestLabelItem(unittest.TestCase, VicarSyntaxTests):
             "'   SHERPA_HOME     =  ''Nepal''  '"),
             label_item.to_saved_string_value())
 
+        # test roundtripping on all the test values
+        for arg in self.args_for_test():
+            saved_string_value = arg.to_saved_string_value()
+            self.assertEqual(
+                arg,
+                LabelItem.from_saved_string_value(saved_string_value))
+
     def test_to_saved_label_item(self):
         label_item = LabelItem.create('FIVE_IS_EVEN', IntegerValue('0'))
         expected = LabelItem.create('MAIN_FIVE_IS_EVEN',
                                     StringValue("'FIVE_IS_EVEN=0 '"))
         self.assertEqual(expected, label_item.to_saved_label_item('MAIN_'))
+
+        # test roundtripping on all the test values
+        for arg in self.args_for_test():
+            saved_label_item = arg.to_saved_label_item('PREFIX_')
+            
+            self.assertTrue(saved_label_item.keyword.startswith('PREFIX_'))
+            self.assertEqual(
+                arg,
+                LabelItem.from_saved_label_item(saved_label_item))
+
