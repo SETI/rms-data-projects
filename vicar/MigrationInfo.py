@@ -11,11 +11,11 @@ if TYPE_CHECKING:
     DICT_VALUE = Union[str, int]
     DICT = Dict[str, DICT_VALUE]
 
-_MAIN_PREFIX = 'MAIN_'  # type: str
+MAIN_PREFIX = 'MAIN_'  # type: str
 
-_EOL_PREFIX = 'EOL_'  # type: str
+EOL_PREFIX = 'EOL_'  # type: str
 
-_PDS3_PREFIX = 'PDS3_'  # type: str
+PDS3_PREFIX = 'PDS3_'  # type: str
 
 
 def dict_value_to_value(v):
@@ -83,11 +83,11 @@ class MigrationInfo(object):
 
     def to_label_items(self):
         # type: () -> List[LabelItem]
-        return [label_item.to_saved_label_item(_MAIN_PREFIX)
+        return [label_item.to_saved_label_item(MAIN_PREFIX)
                 for label_item in self.label_items] + \
-               [label_item.to_saved_label_item(_EOL_PREFIX)
+               [label_item.to_saved_label_item(EOL_PREFIX)
                 for label_item in self.eol_label_items] + \
-               dict_to_label_items(_PDS3_PREFIX, self.pds3_dict)
+               dict_to_label_items(PDS3_PREFIX, self.pds3_dict)
 
     @staticmethod
     def from_label_items(label_items):
@@ -99,11 +99,11 @@ class MigrationInfo(object):
                     if label_item.keyword.startswith(prefix)]
 
         main_label_items = map(LabelItem.from_saved_label_item,
-                               filter_by_prefix(_MAIN_PREFIX, label_items))
+                               filter_by_prefix(MAIN_PREFIX, label_items))
         eol_label_items = map(LabelItem.from_saved_label_item,
-                              filter_by_prefix(_EOL_PREFIX, label_items))
-        d = label_items_to_dict(_PDS3_PREFIX,
-                                filter_by_prefix(_PDS3_PREFIX, label_items))
+                              filter_by_prefix(EOL_PREFIX, label_items))
+        d = label_items_to_dict(PDS3_PREFIX,
+                                filter_by_prefix(PDS3_PREFIX, label_items))
 
         return MigrationInfo(main_label_items,
                              eol_label_items,
