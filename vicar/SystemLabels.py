@@ -93,12 +93,12 @@ class SystemLabels(VicarSyntax):
         labels = self.select_labels([keyword])
         len_labels = len(labels)
         assert len_labels <= 1
-        if len_labels == 0:
-            return default
-        elif len_labels == 1:
+        if len_labels:
             value = labels[0].value
             assert isinstance(value, IntegerValue)
             return int(value.value_byte_string)
+        else:
+            return default
 
     def select_labels(self, keywords):
         # type: (List[str]) -> List[LabelItem]

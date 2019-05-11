@@ -1,15 +1,14 @@
 from typing import TYPE_CHECKING
 
 from ImageArea import ImageArea
-from LabelItem import LabelItem
 from Labels import Labels
+from LabelItem import LabelItem
 from MigrationInfo import MigrationInfo, add_migration_task
 from Tail import Tail
 from VicarFile import VicarFile
 
 if TYPE_CHECKING:
     from typing import List, Optional
-    from LabelItem import LabelItem
     from MigrationInfo import DICT
 
 
@@ -157,6 +156,8 @@ if __name__ == '__main__':
     with open(out_filepath, 'w') as f:
         f.write(pds4_bytes)
 
-    # Sanity check: can I parse a PDS4 file?  Not yet: "still
-    # unimplemented" in VicarFile.parse_vicar_file().
+    # Sanity check: can I parse a PDS4 file?  Yep.
     pds4_rt_vicar_file = parse_all(parse_vicar_file, pds4_bytes)
+    assert pds4_bytes == pds4_rt_vicar_file.to_byte_string()
+
+    print '**** All good!'

@@ -2,11 +2,29 @@ from typing import TYPE_CHECKING
 
 from ImageArea import ImageArea
 from Labels import Labels
+from MigrationInfo import remove_migration_task
 from Tail import Tail
+from Value import IntegerValue
 from VicarSyntax import VicarSyntax
 
 if TYPE_CHECKING:
-    from typing import Optional, Tuple
+    from typing import List, Optional, Tuple
+    from LabelItem import LabelItem
+
+
+def _get_int_value(label_items, keyword, default=0):
+    # type: (List[LabelItem], str, int) -> int
+    label_items = [label_item
+                   for label_item in label_items
+                   if label_item.keyword == keyword]
+    len_label_items = len(label_items)
+    assert len_label_items <= 1
+    if len_label_items:
+        value = label_items[0].value
+        assert isinstance(value, IntegerValue)
+        return int(value.value_byte_string)
+    else:
+        return default
 
 
 def parse_vicar_file(byte_str):
@@ -38,13 +56,16 @@ def parse_vicar_file(byte_str):
         from Tail import parse_pds3_tail
         byte_str, tail = parse_pds3_tail(byte_str)
     else:
-        from Tail import parse_pds4_tail
-        def get_hdr_bytes():
-            assert False, 'Still unimplemented: ' \
-                          'it needs to be extracted from the migration task.'
+        # Figure out how long the binary header in the tail is.
+        migration_info, _history = remove_migration_task(labels.history_labels)
+        old_label_items = migration_info.label_items
+        old_nlb = _get_int_value(old_label_items, 'NLB')
+        old_recsize = _get_int_value(old_label_items, 'RECSIZE')
+        binary_header_length = old_nlb * old_recsize
 
-        hdr_bytes = get_hdr_bytes()
-        byte_str, tail = parse_pds4_tail(hdr_bytes,
+        # Parse the tail.
+        from Tail import parse_pds4_tail
+        byte_str, tail = parse_pds4_tail(binary_header_length,
                                          image_height,
                                          prefix_width,
                                          byte_str)
