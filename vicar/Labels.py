@@ -198,16 +198,10 @@ def _create_labels(recsize, system_labels, property_labels, history_labels,
     """
     assert recsize > 0
 
-    def make_lblsize_item(n):
-        # type: (int) -> LabelItem
-        """Create a LBLSIZE LabelItem with a fixed width."""
-        int_str = '%10d' % n
-        return LabelItem.create('LBLSIZE', IntegerValue(int_str))
-
     # Substitute a dummy LBLSIZE item of fixed width into the
     # SystemLabels and figure out its size.
     adjusted_system_labels_length = system_labels.replace_label_items(
-        [make_lblsize_item(0)]).to_byte_length()
+        [LabelItem.create_lblsize_item()]).to_byte_length()
     property_labels_length = property_labels.to_byte_length()
     history_labels_length = history_labels.to_byte_length()
     padding_length = len(maybe_bs(padding))
@@ -225,7 +219,7 @@ def _create_labels(recsize, system_labels, property_labels, history_labels,
 
     # Substitute the actual LBLSIZE into the SystemLabels.
     final_system_labels = system_labels.replace_label_items(
-        [make_lblsize_item(final_labels_length)])
+        [LabelItem.create_lblsize_item(final_labels_length)])
 
     # Create the result with the right LBLSIZE.
     result = Labels(final_system_labels,

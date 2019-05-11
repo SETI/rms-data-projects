@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from Value import StringValue, Value
+from Value import IntegerValue, StringValue, Value
 from VicarSyntax import VicarSyntax, maybe_bs
 
 if TYPE_CHECKING:
@@ -98,3 +98,14 @@ class LabelItem(VicarSyntax):
         whitespace.
         """
         return LabelItem(None, keyword, '=', value, ' ')
+
+    @staticmethod
+    def create_int_item(keyword, value):
+        # type: (str, int) -> LabelItem
+        return LabelItem.create(keyword, IntegerValue.from_raw_integer(value))
+
+    @staticmethod
+    def create_lblsize_item(n=0):
+        # type: (int) -> LabelItem
+        int_str = '%10d' % n
+        return LabelItem.create('LBLSIZE', IntegerValue(int_str))

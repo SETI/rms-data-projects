@@ -10,26 +10,26 @@ if TYPE_CHECKING:
     from LabelItem import LabelItem
     from Labels import Labels
     from MigrationInfo import DICT
-    from SystemLabels import SystemLabels
 
 
 def migrate_labels(dat_tim, migration_info, pds3_labels):
     # type: (str, MigrationInfo, Labels) -> Labels
+    old_recsize = pds3_labels.get_int_value('RECSIZE')
+    old_nbb = pds3_labels.get_int_value('NBB')
+    new_recsize = old_recsize - old_nbb
+    pds4_system_labels = pds3_labels.system_labels.replace_label_items([
+        LabelItem.create_int_item('NBB', 0),
+        LabelItem.create_int_item('NLB', 0),
+        LabelItem.create_int_item('RECSIZE', new_recsize)
+    ])
 
-    def adjust_system_labels():
-        # type: () -> SystemLabels
-        assert False, 'unimplemented'
-
-    def pad_padding():
-        # type: () -> str
-        assert False, 'unimplemented'
-
-    return Labels(adjust_system_labels(),
-                  pds3_labels.property_labels,
-                  add_migration_task(dat_tim,
-                                     migration_info,
-                                     pds3_labels.history_labels),
-                  pad_padding())
+    return Labels.create_labels_with_adjusted_lblsize(
+        pds4_system_labels,
+        pds3_labels.property_labels,
+        add_migration_task(dat_tim,
+                           migration_info,
+                           pds3_labels.history_labels),
+        pds3_labels.padding)
 
 
 def migrate_image_area(pds3_image_area):
@@ -37,27 +37,26 @@ def migrate_image_area(pds3_image_area):
     return ImageArea(None, None, pds3_image_area.binary_image_lines)
 
 
-def migrate_eol_labels(pds3_eol_labels):
-    # type: (Labels) -> Labels
+def migrate_eol_labels(new_recsize, pds3_eol_labels):
+    # type: (int, Labels) -> Labels
     if pds3_eol_labels is None:
         return None
 
-    def adjust_system_labels():
-        # type: () -> SystemLabels
-        assert False, 'unimplemented'
-
-    def pad_padding():
-        # type: () -> str
-        assert False, 'unimplemented'
-
-    return Labels(adjust_system_labels(),
-                  pds3_eol_labels.property_labels,
-                  pds3_eol_labels.history_labels,
-                  pad_padding())
+    return Labels.create_eol_labels_with_adjusted_lblsize(
+        new_recsize,
+        pds3_eol_labels.system_labels,
+        pds3_eol_labels.property_labels,
+        pds3_eol_labels.history_labels,
+        pds3_eol_labels.padding)
 
 
-def migrate_tail(pds3_image_area, pds3_tail):
-    # type: (ImageArea, Tail) -> Tail
+def migrate_tail(new_recsize, pds3_image_area, pds3_tail):
+    # type: (int, ImageArea, Tail) -> Tail
+    """
+    Pull the binary labels from the PDS3 image area, put them into the
+    PDS4 tail, and pad appropriately.
+    """
+
     def pad_bytes_at_tail():
         # type: () -> str
         assert False, 'unimplemented'
@@ -69,37 +68,41 @@ def migrate_tail(pds3_image_area, pds3_tail):
                 padded_bytes_at_tail)
 
 
-def select_label_items(keywords, labels):
-    # type: (List[str], Labels) -> List[LabelItem]
-    if labels is None:
-        return []
-    else:
-        return [label_item
-                for label_item in labels.system_labels.label_items
-                if label_item.keyword in keywords]
-
-
 def build_migration_info(original_filepath, pds3_vicar_file):
     # type: (str, VicarFile) -> MigrationInfo
+    """Collect PDS3 information to be saved within the PDS4 file."""
+
     def select_main_label_items():
         # type: () -> List[LabelItem]
-        keywords = ['RECSIZE', 'LBLSIZE', 'NBB', 'NLB']
-        return select_label_items(keywords, pds3_vicar_file.labels)
+        """Select and extract certain LabelItems from the Labels."""
+        keywords_to_select = ['RECSIZE', 'LBLSIZE', 'NBB', 'NLB']
+        return pds3_vicar_file.labels.system_labels.select_labels(
+            keywords_to_select)
 
     def select_eol_label_items():
         # type: () -> List[LabelItem]
-        keywords = ['LBLSIZE']
-        return select_label_items(keywords, pds3_vicar_file.eol_labels)
+        """Select and extract certain LabelItems from the EolLabels."""
+        eol_labels = pds3_vicar_file.eol_labels
+        if eol_labels is None:
+            return []
+        else:
+            keywords_to_select = ['LBLSIZE']
+            return eol_labels.system_labels.select_labels(keywords_to_select)
 
     def build_dictionary():
         # type: () -> DICT
+        """Build a dictionary with selected data."""
         tail_bytes = pds3_vicar_file.tail.tail_bytes
         if tail_bytes is None:
             tail_length = 0
         else:
             tail_length = len(tail_bytes)
 
+        # We'll need the original tail length to peel off any added
+        # padding when back-migrating.
         dictionary = {'TAIL_LENGTH': tail_length}  # type: DICT
+
+        # If the user gave an original_filepath, archive it too.
         if original_filepath is not None:
             dictionary['FILEPATH'] = original_filepath
 
@@ -118,12 +121,15 @@ def migrate_vicar_file(original_filepath, dat_tim, pds3_vicar_file):
     pds4_labels = migrate_labels(dat_tim,
                                  migration_info,
                                  pds3_vicar_file.labels)
+    new_recsize = pds4_labels.get_int_value('RECSIZE')
 
     pds4_image_area = migrate_image_area(pds3_vicar_file.image_area)
 
-    pds4_eol_labels = migrate_eol_labels(pds3_vicar_file.eol_labels)
+    pds4_eol_labels = migrate_eol_labels(new_recsize,
+                                         pds3_vicar_file.eol_labels)
 
-    pds4_tail = migrate_tail(pds3_vicar_file.image_area,
+    pds4_tail = migrate_tail(new_recsize,
+                             pds3_vicar_file.image_area,
                              pds3_vicar_file.tail)
 
     return VicarFile(pds4_labels, pds4_image_area, pds4_eol_labels, pds4_tail)

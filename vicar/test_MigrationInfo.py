@@ -7,7 +7,7 @@ from LabelItem import LabelItem
 from MigrationInfo import MigrationInfo, dict_to_label_items, \
     dict_value_to_value, \
     label_items_to_dict, value_to_dict_value
-from Value import IntegerValue, StringValue
+from Value import StringValue
 
 if TYPE_CHECKING:
     from MigrationInfo import DICT, DICT_VALUE
@@ -48,14 +48,14 @@ def test_dict_to_label_items():
 def _create_migration_info():
     # type: () -> MigrationInfo
     main_label_items = [
-        LabelItem.create('RECSIZE', IntegerValue.from_raw_integer(45)),
-        LabelItem.create('LBLSIZE', IntegerValue.from_raw_integer(900)),
+        LabelItem.create_int_item('RECSIZE', 45),
+        LabelItem.create_int_item('LBLSIZE', 900),
         LabelItem.create('HOMER',
                          StringValue.from_raw_string("Lisa's Dad"))
     ]
 
     eol_label_items = [
-        LabelItem.create('LBLSIZE', IntegerValue.from_raw_integer(45))
+        LabelItem.create_int_item('LBLSIZE', 45)
     ]
 
     d = {'TAIL_LENGTH': 549, 'FILEPATH': '/etc/passwd'}  # type: DICT

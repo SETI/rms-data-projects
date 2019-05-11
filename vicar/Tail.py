@@ -83,3 +83,28 @@ class Tail(VicarSyntax):
         """
         return self.binary_header_at_tail is not None or \
                self.binary_prefixes_at_tail is not None
+
+    @staticmethod
+    def create_with_padding(recsize,
+                            binary_header_at_tail,
+                            binary_prefixes_at_tail,
+                            tail_bytes):
+        # type: (int, str, List[str], str) -> Tail
+        unadjusted_length = Tail(binary_header_at_tail,
+                                 binary_prefixes_at_tail,
+                                 tail_bytes).to_byte_length()
+        final_length = round_to_multiple_of(final_length, recsize)
+        new_padding_length = final_length - unadjusted_length
+        padded_tail_bytes = tail_bytes + new_padding_length * '\0'
+        return Tail(binary_header_at_tail,
+                    binary_prefixes_at_tail,
+                    padded_tail_bytes)
+
+
+def round_to_multiple_of(n, m):
+    assert m > 0
+    excess = n % m
+    if excess == 0:
+        return n
+    else:
+        return n + m - excess
