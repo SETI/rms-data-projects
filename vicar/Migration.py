@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
 
 from ImageArea import ImageArea
-from Labels import Labels
 from LabelItem import LabelItem
+from Labels import Labels
 from MigrationInfo import MigrationInfo, add_migration_task
 from Tail import Tail
 from VicarFile import VicarFile
@@ -147,17 +147,28 @@ if __name__ == '__main__':
     now = datetime.datetime.utcnow()
     dat_tim = now.strftime('%a %b %d %H:%M:%S %Y')
 
+    # Try migrating.
     from Migration import migrate_vicar_file
 
     pds4_vicar_file = migrate_vicar_file(in_filepath, dat_tim, pds3_vicar_file)
 
+    # Write it out
     pds4_bytes = pds4_vicar_file.to_byte_string()
-
     with open(out_filepath, 'w') as f:
         f.write(pds4_bytes)
 
     # Sanity check: can I parse a PDS4 file?  Yep.
     pds4_rt_vicar_file = parse_all(parse_vicar_file, pds4_bytes)
     assert pds4_bytes == pds4_rt_vicar_file.to_byte_string()
+
+    # Now try back-migrating.
+    from BackMigration import back_migrate_vicar_file
+
+    orig_filepath, pds3_rt_vicar_file = back_migrate_vicar_file(
+        pds4_vicar_file)
+
+    # check that we got the original stuff back
+    assert orig_filepath == in_filepath
+    assert pds3_vicar_file == pds3_rt_vicar_file
 
     print '**** All good!'
