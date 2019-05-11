@@ -90,12 +90,16 @@ class Tail(VicarSyntax):
                             binary_prefixes_at_tail,
                             tail_bytes):
         # type: (int, str, List[str], str) -> Tail
+        if tail_bytes is None:
+            tail_bytes = ''
         unadjusted_length = Tail(binary_header_at_tail,
                                  binary_prefixes_at_tail,
                                  tail_bytes).to_byte_length()
-        final_length = round_to_multiple_of(final_length, recsize)
+        final_length = round_to_multiple_of(unadjusted_length, recsize)
         new_padding_length = final_length - unadjusted_length
         padded_tail_bytes = tail_bytes + new_padding_length * '\0'
+        if len(padded_tail_bytes) == 0:
+            padded_tail_bytes = None
         return Tail(binary_header_at_tail,
                     binary_prefixes_at_tail,
                     padded_tail_bytes)

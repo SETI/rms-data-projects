@@ -1,6 +1,8 @@
 from typing import TYPE_CHECKING
 
 from ImageArea import ImageArea
+from LabelItem import LabelItem
+from Labels import Labels
 from MigrationInfo import MigrationInfo, add_migration_task
 from Tail import Tail
 from VicarFile import VicarFile
@@ -8,7 +10,6 @@ from VicarFile import VicarFile
 if TYPE_CHECKING:
     from typing import List, Optional
     from LabelItem import LabelItem
-    from Labels import Labels
     from MigrationInfo import DICT
 
 
@@ -56,16 +57,10 @@ def migrate_tail(new_recsize, pds3_image_area, pds3_tail):
     Pull the binary labels from the PDS3 image area, put them into the
     PDS4 tail, and pad appropriately.
     """
-
-    def pad_bytes_at_tail():
-        # type: () -> str
-        assert False, 'unimplemented'
-
-    padded_bytes_at_tail = pad_bytes_at_tail()
-
-    return Tail(pds3_image_area.binary_header,
-                pds3_image_area.binary_prefixes,
-                padded_bytes_at_tail)
+    return Tail.create_with_padding(new_recsize,
+                                    pds3_image_area.binary_header,
+                                    pds3_image_area.binary_prefixes,
+                                    pds3_tail.tail_bytes)
 
 
 def build_migration_info(original_filepath, pds3_vicar_file):
@@ -133,3 +128,35 @@ def migrate_vicar_file(original_filepath, dat_tim, pds3_vicar_file):
                              pds3_vicar_file.tail)
 
     return VicarFile(pds4_labels, pds4_image_area, pds4_eol_labels, pds4_tail)
+
+
+if __name__ == '__main__':
+    import sys
+
+    in_filepath = sys.argv[1]
+    out_filepath = sys.argv[2]
+    with open(in_filepath, 'r') as f:
+        pds3_bytes = f.read()
+
+    from Parsers import parse_all
+    from VicarFile import parse_vicar_file
+
+    pds3_vicar_file = parse_all(parse_vicar_file, pds3_bytes)
+
+    import datetime
+
+    now = datetime.datetime.utcnow()
+    dat_tim = now.strftime('%a %b %d %H:%M:%S %Y')
+
+    from Migration import migrate_vicar_file
+
+    pds4_vicar_file = migrate_vicar_file(in_filepath, dat_tim, pds3_vicar_file)
+
+    pds4_bytes = pds4_vicar_file.to_byte_string()
+
+    with open(out_filepath, 'w') as f:
+        f.write(pds4_bytes)
+
+    # Sanity check: can I parse a PDS4 file?  Not yet: "still
+    # unimplemented" in VicarFile.parse_vicar_file().
+    pds4_rt_vicar_file = parse_all(parse_vicar_file, pds4_bytes)
