@@ -8,11 +8,11 @@ from VicarSyntax import VicarSyntax
 if TYPE_CHECKING:
     from typing import Optional, Tuple
 
+
 def parse_vicar_file(byte_str):
     # type: (str) -> Tuple[str, VicarFile]
     from ImageArea import parse_image_area
     from Labels import parse_labels
-    from Tail import parse_tail
 
     byte_str, labels = parse_labels(byte_str)
 
@@ -34,15 +34,20 @@ def parse_vicar_file(byte_str):
         eol_labels = None
 
     has_binary_labels = image_area.has_binary_labels()
+    if has_binary_labels:
+        from Tail import parse_pds3_tail
+        byte_str, tail = parse_pds3_tail(byte_str)
+    else:
+        from Tail import parse_pds4_tail
+        def get_hdr_bytes():
+            assert False, 'Still unimplemented: ' \
+                          'it needs to be extracted from the migration task.'
 
-    hdr_bytes = -666
-    assert False, 'hdr_bytes not defined'
-
-    byte_str, tail = parse_tail(has_binary_labels,
-                                hdr_bytes,
-                                image_height,
-                                prefix_width,
-                                byte_str)
+        hdr_bytes = get_hdr_bytes()
+        byte_str, tail = parse_pds4_tail(hdr_bytes,
+                                         image_height,
+                                         prefix_width,
+                                         byte_str)
 
     assert not byte_str, 'should consume all input'
     return byte_str, VicarFile(labels, image_area, eol_labels, tail)
