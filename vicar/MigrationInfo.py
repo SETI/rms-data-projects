@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING
 
-from HistoryLabels import Task
+from HistoryLabels import HistoryLabels, Task
 from LabelItem import LabelItem
 from Value import IntegerValue, StringValue
 
 if TYPE_CHECKING:
-    from typing import Dict, List, Union
+    from typing import Dict, List, Tuple, Union
     from Value import Value
 
     DICT_VALUE = Union[str, int]
@@ -119,3 +119,17 @@ class MigrationInfo(object):
         assert task.is_migration_task()
         return MigrationInfo.from_label_items(
             task.get_migration_task_label_items())
+
+
+def add_migration_task(dat_tim, migration_info, history_labels):
+    # type: (str, MigrationInfo, HistoryLabels) -> HistoryLabels
+    migration_task = migration_info.to_migration_task(dat_tim)
+    return HistoryLabels(history_labels.tasks + [migration_task])
+
+
+def remove_migration_task(history_labels):
+    # type: (HistoryLabels) -> Tuple[MigrationInfo, HistoryLabels]
+    assert history_labels.has_migration_task()
+    tasks = history_labels.tasks
+    return (MigrationInfo.from_migration_task(tasks[-1]),
+            HistoryLabels(tasks[:-1]))

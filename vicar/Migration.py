@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 from ImageArea import ImageArea
-from MigrationInfo import MigrationInfo
+from MigrationInfo import MigrationInfo, add_migration_task
 from Tail import Tail
 from VicarFile import VicarFile
 
@@ -10,11 +10,26 @@ if TYPE_CHECKING:
     from LabelItem import LabelItem
     from Labels import Labels
     from MigrationInfo import DICT
+    from SystemLabels import SystemLabels
 
 
-def migrate_labels(pds3_label):
-    # type: (Labels) -> Labels
-    assert False, 'unimplemented'
+def migrate_labels(dat_tim, migration_info, pds3_labels):
+    # type: (str, MigrationInfo, Labels) -> Labels
+
+    def adjust_system_labels():
+        # type: () -> SystemLabels
+        assert False, 'unimplemented'
+
+    def pad_padding():
+        # type: () -> str
+        assert False, 'unimplemented'
+
+    return Labels(adjust_system_labels(),
+                  pds3_labels.property_labels,
+                  add_migration_task(dat_tim,
+                                     migration_info,
+                                     pds3_labels.history_labels),
+                  pad_padding())
 
 
 def migrate_image_area(pds3_image_area):
@@ -27,7 +42,18 @@ def migrate_eol_labels(pds3_eol_labels):
     if pds3_eol_labels is None:
         return None
 
-    assert False, 'unimplemented'
+    def adjust_system_labels():
+        # type: () -> SystemLabels
+        assert False, 'unimplemented'
+
+    def pad_padding():
+        # type: () -> str
+        assert False, 'unimplemented'
+
+    return Labels(adjust_system_labels(),
+                  pds3_eol_labels.property_labels,
+                  pds3_eol_labels.history_labels,
+                  pad_padding())
 
 
 def migrate_tail(pds3_image_area, pds3_tail):
@@ -89,9 +115,15 @@ def migrate_vicar_file(original_filepath, dat_tim, pds3_vicar_file):
     migration_info = build_migration_info(original_filepath,
                                           pds3_vicar_file)
 
-    pds4_labels = migrate_labels(pds3_vicar_file.labels)
+    pds4_labels = migrate_labels(dat_tim,
+                                 migration_info,
+                                 pds3_vicar_file.labels)
+
     pds4_image_area = migrate_image_area(pds3_vicar_file.image_area)
+
     pds4_eol_labels = migrate_eol_labels(pds3_vicar_file.eol_labels)
+
     pds4_tail = migrate_tail(pds3_vicar_file.image_area,
                              pds3_vicar_file.tail)
+
     return VicarFile(pds4_labels, pds4_image_area, pds4_eol_labels, pds4_tail)
