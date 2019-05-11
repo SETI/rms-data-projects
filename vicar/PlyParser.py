@@ -330,8 +330,9 @@ def p_error(p):
 
 ################################
 
-def parse_lblsize(src):
+def get_lblsize(src):
     # type: (str) -> int
+    """Not exactly a parse, just a pick through the first few tokens."""
     lexer = lex.lex()
     lexer.input(src)
     tok = lexer.token()

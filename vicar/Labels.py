@@ -31,7 +31,7 @@ def _parse_to_null(byte_str):
 def parse_labels(byte_str):
     # type: (str) -> Tuple[str, Labels]
     import PlyParser  # to avoid circular import
-    lblsize = PlyParser.parse_lblsize(byte_str)
+    lblsize = PlyParser.get_lblsize(byte_str)
     byte_str, src = bytes(lblsize)(byte_str)
 
     def split_at_nul(byte_str):

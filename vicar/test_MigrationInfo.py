@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from MigrationInfo import DICT, DICT_VALUE
 
 
-def generate_dict_value():
+def generate_test_dict_value():
     # type: () -> DICT_VALUE
     n = random.randint(0, 1)
     if n:
@@ -32,7 +32,7 @@ def test_dict_value_to_value():
 
     # Try a bunch of generated ones
     for i in xrange(0, 1000):
-        dict_value = generate_dict_value()
+        dict_value = generate_test_dict_value()
         value = dict_value_to_value(dict_value)
         assert dict_value == value_to_dict_value(value)
 
