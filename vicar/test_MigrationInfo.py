@@ -45,25 +45,36 @@ def test_dict_to_label_items():
     assert d == label_items_to_dict(prefix, label_items)
 
 
+def _create_migration_info():
+    # type: () -> MigrationInfo
+    main_label_items = [
+        LabelItem.create('RECSIZE', IntegerValue.from_raw_integer(45)),
+        LabelItem.create('LBLSIZE', IntegerValue.from_raw_integer(900)),
+        LabelItem.create('HOMER',
+                         StringValue.from_raw_string("Lisa's Dad"))
+    ]
+
+    eol_label_items = [
+        LabelItem.create('LBLSIZE', IntegerValue.from_raw_integer(45))
+    ]
+
+    d = {'TAIL_LENGTH': 549, 'FILEPATH': '/etc/passwd'}  # type: DICT
+
+    return MigrationInfo(main_label_items,
+                         eol_label_items,
+                         d)
+
+
 class TestMigrationInfo(unittest.TestCase):
+
     def test_to_label_items(self):
-        main_label_items = [
-            LabelItem.create('RECSIZE', IntegerValue.from_raw_integer(45)),
-            LabelItem.create('LBLSIZE', IntegerValue.from_raw_integer(900)),
-            LabelItem.create('HOMER',
-                             StringValue.from_raw_string("Lisa's Dad"))
-        ]
-
-        eol_label_items = [
-            LabelItem.create('LBLSIZE', IntegerValue.from_raw_integer(45))
-        ]
-
-        d = {'TAIL_LENGTH': 549, 'FILEPATH': '/etc/passwd'}  # type: DICT
-
-        mi = MigrationInfo(main_label_items,
-                           eol_label_items,
-                           d)
-
+        mi = _create_migration_info()
         label_items = mi.to_label_items()
         rt_mi = MigrationInfo.from_label_items(label_items)
+        self.assertEqual(mi, rt_mi)
+
+    def test_to_migration_task(self):
+        mi = _create_migration_info()
+        migration_task = mi.to_migration_task('<dat_tim>')
+        rt_mi = MigrationInfo.from_migration_task(migration_task)
         self.assertEqual(mi, rt_mi)

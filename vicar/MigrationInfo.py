@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from HistoryLabels import Task
 from LabelItem import LabelItem
 from Value import IntegerValue, StringValue
 
@@ -66,15 +67,16 @@ class MigrationInfo(object):
 
     def __eq__(self, other):
         return other is not None and \
-            isinstance(other, MigrationInfo) and \
-            (self.label_items, self.eol_label_items, self.pds3_dict) == \
-            (other.label_items, other.eol_label_items, other.pds3_dict)
+               isinstance(other, MigrationInfo) and \
+               (self.label_items, self.eol_label_items, self.pds3_dict) == \
+               (other.label_items, other.eol_label_items, other.pds3_dict)
 
     def __repr__(self):
         label_items_str = ', '.join([repr(label_item)
                                      for label_item in self.label_items])
         eol_label_items_str = ', '.join([repr(label_item)
-                                     for label_item in self.eol_label_items])
+                                         for label_item in
+                                         self.eol_label_items])
         return 'MigrationInfo([%r], [%r], %r)' % (label_items_str,
                                                   eol_label_items_str,
                                                   self.pds3_dict)
@@ -83,9 +85,9 @@ class MigrationInfo(object):
         # type: () -> List[LabelItem]
         return [label_item.to_saved_label_item(_MAIN_PREFIX)
                 for label_item in self.label_items] + \
-                [label_item.to_saved_label_item(_EOL_PREFIX)
-                 for label_item in self.eol_label_items] + \
-                 dict_to_label_items(_PDS3_PREFIX, self.pds3_dict)
+               [label_item.to_saved_label_item(_EOL_PREFIX)
+                for label_item in self.eol_label_items] + \
+               dict_to_label_items(_PDS3_PREFIX, self.pds3_dict)
 
     @staticmethod
     def from_label_items(label_items):
@@ -106,3 +108,14 @@ class MigrationInfo(object):
         return MigrationInfo(main_label_items,
                              eol_label_items,
                              d)
+
+    def to_migration_task(self, dat_tim):
+        # type: (str) -> Task
+        return Task.create_migration_task(dat_tim, *self.to_label_items())
+
+    @staticmethod
+    def from_migration_task(task):
+        # type: (Task) -> MigrationInfo
+        assert task.is_migration_task()
+        return MigrationInfo.from_label_items(
+            task.get_migration_task_label_items())
