@@ -258,6 +258,25 @@ def p_labelitem(p):
 
 ################
 
+def p_generallabelitem(p):
+    'generallabelitem : optwhitespace genkeyword EQUALS value optwhitespace'
+    p[0] = LabelItem(p[1], p[2], p[3], p[4], p[5])
+
+
+################
+
+def p_genkeyword(p):
+    '''genkeyword : KEYWORD
+                  | DAT_TIM_KW
+                  | LBLSIZE_KW
+                  | PROPERTY_KW
+                  | TASK_KW
+                  | USER_KW'''
+    p[0] = p[1]
+
+
+################
+
 def p_optwhitespace_some(p):
     'optwhitespace : WHITESPACE'
     p[0] = p[1]
@@ -350,6 +369,10 @@ def ply_parse_history_labels(data):
 
 def ply_parse_label_item(data):
     return ply_parse('labelitem', data)
+
+
+def ply_parse_general_label_item(data):
+    return ply_parse('generallabelitem', data)
 
 
 def ply_parse_labels(data):

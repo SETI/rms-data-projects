@@ -20,7 +20,7 @@ def parse_general_label_item(byte_str):
     # this in PlyParser.
 
     import PlyParser  # to avoid circular imports
-    return '', PlyParser.ply_parse_label_item(byte_str)
+    return '', PlyParser.ply_parse_general_label_item(byte_str)
 
 
 class LabelItem(VicarSyntax):
