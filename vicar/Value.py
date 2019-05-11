@@ -35,6 +35,15 @@ class IntegerValue(Value):
         # type: (str) -> None
         Value.__init__(self, byte_str)
 
+    def to_raw_integer(self):
+        # type: () -> int
+        return int(self.value_byte_string)
+
+    @staticmethod
+    def from_raw_integer(n):
+        # type: (int) -> IntegerValue
+        return IntegerValue(str(n))
+
 
 class RealValue(Value):
     """A real floating-point value."""
