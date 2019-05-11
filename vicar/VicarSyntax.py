@@ -30,19 +30,6 @@ class VicarSyntax(object):
         """Return the length of the byte-string for this syntax."""
         return len(self.to_byte_string())
 
-    def to_padded_byte_string(self, recsize):
-        """
-        Convert the syntax to a byte-string and pad it with NULs until
-        its length is a multiple of the given record size.
-        """
-        assert recsize > 0
-        excess = self.to_byte_length() % recsize
-        if excess == 0:
-            padding = ''
-        else:
-            padding = (recsize - excess) * '\0'
-        return self.to_byte_string() + padding
-
 
 def maybe_bs(byte_str):
     # type: (str) -> str

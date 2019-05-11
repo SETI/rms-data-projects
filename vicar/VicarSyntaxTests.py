@@ -1,4 +1,3 @@
-import random
 from abc import ABCMeta, abstractmethod
 
 from typing import TYPE_CHECKING
@@ -58,29 +57,6 @@ class VicarSyntaxTests(object):
         """
         for arg in self.args_for_test():
             self.assertEqual(len(arg.to_byte_string()), arg.to_byte_length())
-
-    def test_to_padded_byte_string(self):
-        # type: () -> None
-        """
-        Verify that to_padded_byte_string(recsize) yields a string of
-        a length that's a multiple of recsize.
-        """
-        for arg in self.args_for_test():
-            byte_str = arg.to_byte_string()
-            byte_len = arg.to_byte_length()
-
-            if byte_len:
-                # check that it won't pad at all if not necessary
-                padded_byte_str = arg.to_padded_byte_string(byte_len)
-                self.assertEqual(byte_str, padded_byte_str)
-
-            # check that it pads properly in other cases:
-            recsize = random.randint(256, 2048)
-            padded_byte_str = arg.to_padded_byte_string(recsize)
-            # that the length is a multiple
-            self.assertEqual(0, len(padded_byte_str) % recsize)
-            # and that the initial part of the string is untouched
-            self.assertEqual(byte_str, padded_byte_str[:byte_len])
 
     def test_repr(self):
         """
