@@ -1,2 +1,2 @@
 #!/bin/bash -e
-conda remove -y --name vicar-migration --all
+conda remove -y --name pds-migration-vicar --all

@@ -2,14 +2,14 @@
 
 ### conda update conda
 
-conda create -y --name vicar-migration pytest python=2.7
-conda install -y --name vicar-migration -c anaconda typing
-conda install -y -n vicar-migration -c conda-forge ply
+conda create -y --name pds-migration-vicar pytest python=2.7
+conda install -y --name pds-migration-vicar -c anaconda typing
+conda install -y -n pds-migration-vicar -c conda-forge ply
 
-# conda create -y --name vicar-migration pycodestyle pytest scipy python=2.7
-# conda install -y -n vicar-migration -c anaconda lxml pyparsing
-# conda install -y -n vicar-migration -c conda-forge fs ply sh
-# source activate vicar-migration
+# conda create -y --name pds-migration-vicar pycodestyle pytest scipy python=2.7
+# conda install -y -n pds-migration-vicar -c anaconda lxml pyparsing
+# conda install -y -n pds-migration-vicar -c conda-forge fs ply sh
+# source activate pds-migration-vicar
 
 echo
-echo "Run 'source activate vicar-migration' to activate the environment."
+echo "Run 'source activate pds-migration-vicar' to activate the environment."
