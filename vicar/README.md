@@ -72,10 +72,19 @@ VICAR file object representing the original file, byte for byte.
 To read a VICAR file, read its bytes and then pass them to
 `parse_vicar_file()` in `VicarFile.py`.  It will return a 2-tuple of
 any unparsed bytes (should be empty), and a `VicarFile` object.
-Parsing malformed files will raise an exception.
+(Equivalently, running `parse_all(parse_vicar_file, input_bytes)` will
+enforce all bytes were consumed and return only the `VicarFile`
+object.)  Attempting to parse malformed files will raise an exception.
 
 To write a VICAR file `vf`, call `vf.to_byte_string()` then write the
 bytes to a file.
 
 
+# Example usage
 
+See the bottom of `Migration.py` for example usage of the software.
+
+We read in a VICAR file, parse it into a `VicarFile` object.  We
+migrate it and write the PDS4 version out to an output file.  We then
+back-migrate and verify that the results are byte-for-byte equivalent
+to the original file.
