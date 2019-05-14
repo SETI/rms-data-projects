@@ -73,12 +73,11 @@ To read a VICAR file, read its bytes and then pass them to
 `parse_vicar_file()` in `VicarFile.py`.  It will return a 2-tuple of
 any unparsed bytes (should be empty), and a `VicarFile` object.
 (Equivalently, running `parse_all(parse_vicar_file, input_bytes)` will
-enforce all bytes were consumed and return only the `VicarFile`
+verify that all bytes were consumed and return only the `VicarFile`
 object.)  Attempting to parse malformed files will raise an exception.
 
 To write a VICAR file `vf`, call `vf.to_byte_string()` then write the
 bytes to a file.
-
 
 # Example usage
 
