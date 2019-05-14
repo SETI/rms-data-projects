@@ -46,10 +46,21 @@ wrapper using the information below.
 The key function for migration is `migrate_vicar_file()` in
 `Migration.py`.  It takes the original filepath (optional), a properly
 formatted `DAT_TIM` string which will go into the migration task, and
-a parsed VICAR file object.  It returns a VICAR file object with
-any binary labels pushed into the tail of the file and a migration
-task in the history labels with proper information to reconstruct the
-original file.
+a parsed VICAR file object.  It returns a VICAR file object with any
+binary labels pushed into the tail of the file and a migration task in
+the history labels with proper information to reconstruct the original
+file.  This resulting object will be compliant with PDS4.
+
+The `DAT_TIM` string is passed in so that when doing bulk migration,
+all migrated files can be stamped with the same date-time, even if it
+takes a while to parse the full archive.  To get a properly formatted
+string in Python, this code snippet will work:
+
+```python
+import datetime
+now = datetime.datetime.utcnow()
+dat_tim_value = now.strftime('%a %b %d %H:%M:%S %Y')
+```
 
 The key function for back-migration is `back_migrate_vicar_file()` in
 `BackMigration.py`.  It takes a parsed VICAR file object, and returns
