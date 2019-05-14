@@ -43,6 +43,8 @@ wrapper using the information below.
 
 # Migration entry points
 
+## Migration: PDS3 to PDS4
+
 The key function for migration is `migrate_vicar_file()` in
 `Migration.py`.  It takes the original filepath (optional), a properly
 formatted `DAT_TIM` string which will go into the migration task, and
@@ -61,6 +63,8 @@ import datetime
 now = datetime.datetime.utcnow()
 dat_tim_value = now.strftime('%a %b %d %H:%M:%S %Y')
 ```
+
+## Back-migration: PDS4 back to original
 
 The key function for back-migration is `back_migrate_vicar_file()` in
 `BackMigration.py`.  It takes a parsed VICAR file object, and returns
