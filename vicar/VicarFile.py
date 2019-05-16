@@ -178,6 +178,10 @@ class VicarFile(VicarSyntax):
         # type: () -> int
         return self.labels.get_int_value('RECSIZE')
 
+    def has_binary_labels(self):
+        # type: () -> bool
+        return self.image_area.has_binary_labels()
+
     def has_migration_task(self):
         # type: () -> bool
         """

@@ -64,12 +64,35 @@ now = datetime.datetime.utcnow()
 dat_tim_value = now.strftime('%a %b %d %H:%M:%S %Y')
 ```
 
+A VICAR file that does not have binary labels is already
+PDS4-compliant.  Migrating such a file will add a harmless migration
+task but otherwise not affect the file.  Depending on her needs, a
+user might want to:
+
+1. Do this harmless migration, or
+1. Just copy the original file, or
+1. Do nothing.
+
+This software doesn't have an opinion on what to do and leaves it to
+you.  To check whether a VICAR file has binary labels, call
+`vf.has_binary_labels()` on the parsed `VicarFile` object.
+
+Note that migration optionally stores the original filepath.  If this
+is important for your back-migration needs, then you will want to
+migrate, not copy, even if the VICAR file has no binary labels.
+
 ## Back-migration: PDS4 back to original
 
 The key function for back-migration is `back_migrate_vicar_file()` in
 `BackMigration.py`.  It takes a parsed VICAR file object, and returns
 a 2-tuple of the original filepath given (may be `None`) and a parsed
 VICAR file object representing the original file, byte for byte.
+
+If the original file had no binary labels and was just copied instead
+of migrated, you can't back-migrate it.  Any file that has been
+migrated will have a migration task in its history labels.  You can
+check whether it has a migration task by calling
+`vf.has_migration_task()` on the parsed `VicarFile` object.
 
 # I/O
 
