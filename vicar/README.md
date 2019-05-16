@@ -97,11 +97,9 @@ check whether it has a migration task by calling
 # I/O
 
 To read a VICAR file, read its bytes and then pass them to
-`parse_vicar_file()` in `VicarFile.py`.  It will return a 2-tuple of
-any unparsed bytes (should be empty), and a `VicarFile` object.
-(Equivalently, running `parse_all(parse_vicar_file, input_bytes)` will
-verify that all bytes were consumed and return only the `VicarFile`
-object.)  Attempting to parse malformed files will raise an exception.
+`parse_all(parse_vicar_file, input_bytes)` in `VicarFile.py`.  It will
+return a `VicarFile` object.  Attempting to parse malformed files will
+raise an exception.
 
 To write a VICAR file `vf`, call `vf.to_byte_string()` then write the
 bytes to a file.
@@ -116,8 +114,9 @@ migrate it and write the PDS4 version out to an output file.  We then
 back-migrate and verify that the results are byte-for-byte equivalent
 to the original file.
 
-A limited but more realistic example is in `Migrate.py`, a script
-to migrate a VICAR file, writing it into the same directory but with a
+A limited but more realistic example is in `Migrate.py`, a script to
+migrate a single VICAR file, taking its name from the command line,
+then writing the migrated file into the same directory but with a
 different name.
 
 # Bugs and issues
