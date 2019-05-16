@@ -2,17 +2,17 @@
 
 This software uses the
 [Conda](https://docs.conda.io/en/latest/index.html) system to manage
-packages, dependencies, and environments.  It isolates any needed
-executables and packages into its own directory, so it will not mess
-up your standard system installation.
+packages, dependencies, and environments.  Conda isolates any needed
+executables and packages into its own directory, so it can run side by
+side with your standard Python system without affecting it.
 
 Miniconda is sufficient if you don't want to use the full Anaconda
 system.  Installers may be downloaded from
 [here](https://docs.conda.io/en/latest/miniconda.html).
 
 This software was developed on Mac OS.  While Python and Miniconda are
-platform-independent, the software has not (yet) been tested on other
-platforms.
+both in principle platform-independent, the software has not been
+tested on other platforms.
 
 # Installing the proper environment
 
@@ -25,7 +25,7 @@ cd vicar
 
 This will download the necessary packages and install them into a
 Conda environment called `pds-migration-vicar`.  To use that
-environment, in `bash`, type `source activate pds-migration-vicar` and
+environment in `bash`, type `source activate pds-migration-vicar` and
 that environment will be active until you deactivate it.
 
 # Removing the environment
@@ -39,9 +39,9 @@ cd vicar
 
 # Using the software
 
-At this point, it consists of building blocks; wrapper functions are
-yet to be written, but in the meantime you can easily write your own
-wrapper using the information below.
+At this point, the migration software consists mostly of building
+blocks.  Wrapper functions are yet to be written, but in the meantime
+you can easily write your own wrapper using the information below.
 
 # Migration entry points
 
@@ -49,11 +49,12 @@ wrapper using the information below.
 
 The key function for migration is `migrate_vicar_file()` in
 `Migration.py`.  It takes the original filepath (optional), a properly
-formatted `DAT_TIM` string which will go into the migration task, and
-a parsed VICAR file object.  It returns a VICAR file object with any
-binary labels pushed into the tail of the file and a migration task in
-the history labels with proper information to reconstruct the original
-file.  This resulting object will be compliant with PDS4.
+formatted `DAT_TIM` string which will act as a timestamp for the
+generated migration task, and a parsed VICAR file object.  It returns
+a VICAR file object with any binary labels pushed into the tail of the
+file and with a migration task in the history labels that contains
+sufficient information to reconstruct the original file.  This
+resulting object will be compliant with PDS4.
 
 The `DAT_TIM` string is passed in so that when doing bulk migration,
 all migrated files can be stamped with the same date-time, even if it
