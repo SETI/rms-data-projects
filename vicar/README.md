@@ -119,3 +119,10 @@ to the original file.
 A limited but more realistic example is in `Migrate.py`, a script
 to migrate a VICAR file, writing it into the same directory but with a
 different name.
+
+# Bugs and issues
+
+ * This software uses [ply](https://www.dabeaz.com/ply/) to generate
+parsers for the VICAR labels.  It may spew a lot of WARNING messages;
+they are harmless and may be ignored.  Nevertheless, this should be
+addressed in the future.
