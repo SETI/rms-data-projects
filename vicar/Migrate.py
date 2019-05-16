@@ -7,7 +7,7 @@ from Parsers import parse_all
 from VicarFile import parse_vicar_file
 
 
-def make_out_filepath(in_filepath):
+def make_output_filepath(in_filepath):
     # type: (str) -> str
     '''
     Given the path to the input file, generate a path to the output file.
@@ -18,11 +18,11 @@ def make_out_filepath(in_filepath):
 
 
 if __name__ == '__main__':
-    in_filepath = sys.argv[1]
-    out_filepath = make_out_filepath(in_filepath)
+    input_filepath = sys.argv[1]
+    output_filepath = make_output_filepath(input_filepath)
 
     # Read the file.
-    with open(in_filepath, 'r') as f:
+    with open(input_filepath, 'r') as f:
         pds3_bytes = f.read()
 
     # Parse it.
@@ -33,12 +33,14 @@ if __name__ == '__main__':
     dat_tim = now.strftime('%a %b %d %H:%M:%S %Y')
 
     # Migrate it.
-    pds4_vicar_file = migrate_vicar_file(in_filepath, dat_tim, pds3_vicar_file)
+    pds4_vicar_file = migrate_vicar_file(input_filepath,
+                                         dat_tim,
+                                         pds3_vicar_file)
 
     # Write it out
     pds4_bytes = pds4_vicar_file.to_byte_string()
-    with open(out_filepath, 'w') as f:
+    with open(output_filepath, 'w') as f:
         f.write(pds4_bytes)
 
     # Print progress message.
-    print "**** Migrated %s." % out_filepath
+    print "**** Migrated %s." % output_filepath

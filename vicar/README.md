@@ -108,9 +108,14 @@ bytes to a file.
 
 # Example usage
 
-See the bottom of `Migration.py` for example usage of the software.
+See the bottom of `Migration.py` for example usage of the software,
+using all of the functionality.
 
 We read in a VICAR file, parse it into a `VicarFile` object.  We
 migrate it and write the PDS4 version out to an output file.  We then
 back-migrate and verify that the results are byte-for-byte equivalent
 to the original file.
+
+A limited but more realistic example is in `Migrate.py`, a script
+to migrate a VICAR file, writing it into the same directory but with a
+different name.
