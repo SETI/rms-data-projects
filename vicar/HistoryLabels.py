@@ -12,11 +12,25 @@ if TYPE_CHECKING:
 
 def parse_history_labels(byte_str):
     # type: (str) -> Tuple[str, HistoryLabels]
+    """
+    Parse the given bytes into HistoryLabels.  Return a 2-tuple of any
+    remaining bytes (must be empty, by construction) and the
+    HistoryLabels object.
+
+    Parsing labels is context-independent (i.e., does not depend on
+    what came earlier in the file), so we pass the parsing off to the
+    PlyParser.
+    """
     import PlyParser  # to avoid circular import
     return '', PlyParser.ply_parse_history_labels(byte_str)
 
 
 class HistoryLabels(VicarSyntax):
+    """
+    An object representing the history labels of the VICAR file.  It
+    is made up of a list of Tasks.
+    """
+
     def __init__(self, tasks):
         # type: (List[Task]) -> None
         VicarSyntax.__init__(self)
@@ -64,7 +78,10 @@ def parse_task(byte_str):
 
 
 class Task(VicarSyntax):
-    """Represents a step in the processing history of the image."""
+    """
+    Represents a step in the processing history of the image.  It
+    consists of a list of LabelItems.
+    """
 
     def __init__(self, history_label_items):
         # type: (List[LabelItem]) -> None

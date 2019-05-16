@@ -15,7 +15,8 @@ class VicarSyntax(object):
         # type: () -> Optional[Parser]
         """
         Return a parser appropriate for this value's byte-string.
-        Used for testing only.
+        Used for testing only.  Overloaded appropriately in
+        subclasses.
         """
         return None
 

@@ -9,9 +9,9 @@ from VicarFile import parse_vicar_file
 
 def make_output_filepath(in_filepath):
     # type: (str) -> str
-    '''
+    """
     Given the path to the input file, generate a path to the output file.
-    '''
+    """
     dirname, basename = os.path.split(in_filepath)
     root, ext = os.path.splitext(basename)
     return os.path.join(dirname, root + "_pds4" + ext.lower())

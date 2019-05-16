@@ -16,6 +16,11 @@ if TYPE_CHECKING:
 
 def back_migrate_labels(pds4_labels):
     # type: (Labels) -> Tuple[MigrationInfo, Labels]
+    """
+    Extract saved information from the migration task.  Use it to
+    replace the old label items in the labels, and we trim any added
+    padding back off.
+    """
     migration_info, pds3_history_labels = remove_migration_task(
         pds4_labels.history_labels)
 
@@ -31,6 +36,9 @@ def back_migrate_labels(pds4_labels):
 
 def back_migrate_image_area(pds4_tail, pds4_image_area):
     # type: (Tail, ImageArea) -> ImageArea
+    """
+    Move any binary labels from the tail back into the image area.
+    """
     return ImageArea(pds4_tail.binary_header_at_tail,
                      pds4_tail.binary_prefixes_at_tail,
                      pds4_image_area.binary_image_lines)
@@ -41,6 +49,10 @@ def make_trimmed_labels(system_labels,
                         history_labels,
                         padding):
     # type: (SL, PL, HL, Optional[str]) -> Labels
+    """
+    Figure the original length of the labels and trim any added
+    padding.
+    """
     orig_lblsize = system_labels.get_int_value('LBLSIZE')
 
     # First, we figure out how long it would be with the PDS4 padding.
@@ -59,6 +71,10 @@ def make_trimmed_labels(system_labels,
 
 def back_migrate_eol_labels(orig_label_items, pds4_eol_labels):
     # type: (List[LabelItem], Labels) -> Labels
+    """
+    Replace old label items using information saved in the migration
+    task.  Trim any added padding.
+    """
     pds3_system_labels = pds4_eol_labels.system_labels.replace_label_items(
         orig_label_items)
 
@@ -72,6 +88,10 @@ def back_migrate_eol_labels(orig_label_items, pds4_eol_labels):
 
 def back_migrate_tail(tail_length, pds4_tail):
     # type: (int, Tail) -> Tail
+    """
+    Remove any binary labels stored in the tail and trim any added
+    padding.
+    """
     trimmed_tail_bytes = pds4_tail.tail_bytes[:tail_length]
     if len(trimmed_tail_bytes) == 0:
         trimmed_tail_bytes = None
@@ -80,6 +100,11 @@ def back_migrate_tail(tail_length, pds4_tail):
 
 def back_migrate_vicar_file(pds4_vicar_file):
     # type: (VicarFile) -> Tuple[Optional[str], VicarFile]
+    """
+    Extract the information stored in the migration task and use it to
+    back-migrate the parts of the VICAR file.  Return the optionally
+    saved original filepath and the VicarFile object.
+    """
     migration_info, pds3_labels = back_migrate_labels(
         pds4_vicar_file.labels)
 

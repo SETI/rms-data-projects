@@ -13,6 +13,14 @@ def parse_image_area(header_len,
                      image_width,
                      byte_str):
     # type: (int, int, int, int, str) -> Tuple[str, ImageArea]
+    """
+    Parse the given bytes into ImageArea.  Return a 2-tuple of any
+    remaming bytes and the ImageArea object.
+
+    Parsing the image area is context-dependent (i.e., depends on what
+    came early in the file), so we pass in this information as extra
+    arguments to control the parse.
+    """
 
     # Parse the header as necessary;
     if header_len > 0:
@@ -55,6 +63,11 @@ def parse_image_area(header_len,
 
 
 class ImageArea(VicarSyntax):
+    """
+    Represents the image area of the VICAR file.  May or may not
+    contain binary labels.
+    """
+
     def __init__(self,
                  binary_header,
                  binary_prefixes,

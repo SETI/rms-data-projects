@@ -20,6 +20,9 @@ PDS3_PREFIX = 'PDS3_'  # type: str
 
 def dict_value_to_value(v):
     # type: (DICT_VALUE) -> Value
+    """
+    Convert a string or an integer into a Value.
+    """
     if isinstance(v, int):
         return IntegerValue.from_raw_integer(v)
     elif isinstance(v, str):
@@ -30,6 +33,9 @@ def dict_value_to_value(v):
 
 def value_to_dict_value(v):
     # type: (Value) -> DICT_VALUE
+    """
+    Convert a Value into a string or an integer.
+    """
     if isinstance(v, IntegerValue):
         return v.to_raw_integer()
     elif isinstance(v, StringValue):
@@ -40,12 +46,22 @@ def value_to_dict_value(v):
 
 def dict_to_label_items(prefix, d):
     # type: (str, DICT) -> List[LabelItem]
+    """
+    Convert a dictionary containing strings and integers into a list
+    of label items.  Prefix the given string to each dictionary key to
+    make the LabelItem's keyword.
+    """
     return [LabelItem.create(prefix + k, dict_value_to_value(d[k]))
             for k in sorted(d.keys())]
 
 
 def label_items_to_dict(prefix, label_items):
     # type: (str, List[LabelItem]) -> (DICT)
+    """
+    Convert some LabelItems into a dictionary containing strings and
+    integers.  Use the keyword prefix to determine which items to
+    extract, and remove the prefix to make the dictionary's keys.
+    """
     prefix_len = len(prefix)
 
     def strip_prefix(kw):
@@ -59,6 +75,13 @@ def label_items_to_dict(prefix, label_items):
 
 
 class MigrationInfo(object):
+    """
+    A temporary object containing information needed for migration,
+    consisting of selected LabelItem from both the main label section
+    and the EOL label section, plus a dictionary of extra
+    miscellaneous integer and string values.
+    """
+
     def __init__(self, label_items, eol_label_items, pds3_dict):
         # type: (List[LabelItem], List[LabelItem], DICT) -> None
         self.label_items = label_items
@@ -83,6 +106,7 @@ class MigrationInfo(object):
 
     def to_label_items(self):
         # type: () -> List[LabelItem]
+        """Encode the migration info into a list of LabelItems."""
         return [label_item.to_saved_label_item(MAIN_PREFIX)
                 for label_item in self.label_items] + \
                [label_item.to_saved_label_item(EOL_PREFIX)
@@ -91,6 +115,8 @@ class MigrationInfo(object):
 
     @staticmethod
     def from_label_items(label_items):
+        """Decode a list of LabelItems into the original migration info."""
+
         # type: (List[LabelItem]) -> MigrationInfo
         def filter_by_prefix(prefix, label_items):
             # type: (str, List[LabelItem]) -> List[LabelItem]
@@ -111,11 +137,18 @@ class MigrationInfo(object):
 
     def to_migration_task(self, dat_tim):
         # type: (str) -> Task
+        """
+        Create a migration task from the migration info.  The DAT_TIM
+        is used as a timestamp.
+        """
         return Task.create_migration_task(dat_tim, *self.to_label_items())
 
     @staticmethod
     def from_migration_task(task):
         # type: (Task) -> MigrationInfo
+        """
+        Reconstruct the migration info from a migration task.
+        """
         assert task.is_migration_task()
         return MigrationInfo.from_label_items(
             task.get_migration_task_label_items())
@@ -123,12 +156,21 @@ class MigrationInfo(object):
 
 def add_migration_task(dat_tim, migration_info, history_labels):
     # type: (str, MigrationInfo, HistoryLabels) -> HistoryLabels
+    """
+    Use the migration info to build a task and insert it into the
+    HistoryLabels.
+    """
     migration_task = migration_info.to_migration_task(dat_tim)
     return HistoryLabels(history_labels.tasks + [migration_task])
 
 
 def remove_migration_task(history_labels):
     # type: (HistoryLabels) -> Tuple[MigrationInfo, HistoryLabels]
+    """
+    Remove the migration task from the HistoryLabels, extract the info
+    from it, and return a 2-tuple of the migration info and the
+    HistoryLabels without the task.
+    """
     assert history_labels.has_migration_task()
     tasks = history_labels.tasks
     return (MigrationInfo.from_migration_task(tasks[-1]),

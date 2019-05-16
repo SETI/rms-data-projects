@@ -1,6 +1,6 @@
 """
 Functionality to escape raw strings to their Vicar format and unescape
-them back.
+them back, and to generate blocks of bytes.
 """
 from typing import TYPE_CHECKING
 

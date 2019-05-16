@@ -29,28 +29,39 @@ def _get_int_value(label_items, keyword, default=0):
 
 def parse_vicar_file(byte_str):
     # type: (str) -> Tuple[str, VicarFile]
+    """
+    Parse the given bytes into a VicarFile.  Return a 2-tuple of any
+    remaining bytes (must be empty, by construction) and the VicarFile
+    object.
+    """
     from ImageArea import parse_image_area
     from Labels import parse_labels
 
+    # Parse the labels.
     byte_str, labels = parse_labels(byte_str)
 
+    # Extract info from the labels needed for further parsing.
     binary_header_size = labels.get_binary_header_size()
     image_height = labels.get_image_height()
     prefix_width = labels.get_binary_prefix_width()
     image_width = labels.get_image_width()
 
+    # Parse the image area.
     byte_str, image_area = parse_image_area(binary_header_size,
                                             image_height,
                                             prefix_width,
                                             image_width,
                                             byte_str)
 
+    # If there are EOL labels, parse them.
     has_eol_labels = labels.get_int_value('EOL')
     if has_eol_labels:
         byte_str, eol_labels = parse_labels(byte_str)
     else:
         eol_labels = None
 
+    # Parse the tail as either PDS3 or PDS4 depending on whether the
+    # image area has binary labels.
     has_binary_labels = image_area.has_binary_labels()
     if has_binary_labels:
         from Tail import parse_pds3_tail
@@ -71,10 +82,16 @@ def parse_vicar_file(byte_str):
                                          byte_str)
 
     assert not byte_str, 'should consume all input'
+
+    # Return the result.
     return byte_str, VicarFile(labels, image_area, eol_labels, tail)
 
 
 class VicarFile(VicarSyntax):
+    """
+    Represents a full VICAR file, whether unmigrated or migrated.
+    """
+
     def __init__(self,
                  labels,
                  image_area,
@@ -176,16 +193,20 @@ class VicarFile(VicarSyntax):
 
     def get_recsize(self):
         # type: () -> int
+        """Return the RECSIZE."""
         return self.labels.get_int_value('RECSIZE')
 
     def has_binary_labels(self):
         # type: () -> bool
+        """
+        Return True if there are a binary header or binary prefixes.
+        """
         return self.image_area.has_binary_labels()
 
     def has_migration_task(self):
         # type: () -> bool
         """
-        Return True if the last task in the HistoryLabels is s a
+        Return True if the last task in the HistoryLabels is a
         migration task.  It has to be the last task because we don't
         guarantee we can backmigrate the file if it's been further
         processed.

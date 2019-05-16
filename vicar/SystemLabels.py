@@ -10,6 +10,15 @@ if TYPE_CHECKING:
 
 def parse_system_labels(byte_str):
     # type: (str) -> Tuple[str, SystemLabels]
+    """
+    Parse the given bytes into SystemLabels.  Return a 2-tuple of any
+    remaining bytes (must be empty, by construction) and the
+    SystemLabels object.
+
+    Parsing labels is context-independent (i.e., does not depend on
+    what came earlier in the file), so we pass the parsing off to the
+    PlyParser.
+    """
     import PlyParser  # to avoid circular import
     return '', PlyParser.ply_parse_system_labels(byte_str)
 
@@ -26,6 +35,11 @@ def _lookup_label_items(keyword, label_items):
 
 
 class SystemLabels(VicarSyntax):
+    """
+    An object representing the label items of the VICAR, excluding
+    properties and tasks.
+    """
+
     def __init__(self, label_items):
         # type: (List[LabelItem]) -> None
         VicarSyntax.__init__(self)
@@ -68,18 +82,22 @@ class SystemLabels(VicarSyntax):
 
     def get_binary_header_size(self):
         # type: () -> int
+        """Return the size of any binary header or zero."""
         return self.get_int_value('RECSIZE') * self.get_int_value('NLB')
 
     def get_binary_prefix_width(self):
         # type: () -> int
+        """Return the width of any binary prefix or zero."""
         return self.get_int_value('NBB')
 
     def get_image_height(self):
         # type: () -> int
+        """Return the image height."""
         return self.get_int_value('N2') * self.get_int_value('N3')
 
     def get_image_width(self):
         # type: () -> int
+        """Return the image width."""
         return self.get_int_value('RECSIZE') - self.get_int_value('NBB')
 
     def get_int_value(self, keyword, default=0):

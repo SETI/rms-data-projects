@@ -20,22 +20,27 @@ if TYPE_CHECKING:
     SL = SystemLabels
 
 
-def _parse_to_null(byte_str):
-    nul_index = byte_str.find('\0')
-    if nul_index == -1:
-        return '', byte_str
-    else:
-        return bytes(nul_index)(byte_str)
-
-
 def parse_labels(byte_str):
     # type: (str) -> Tuple[str, Labels]
+    """
+    Parse the given bytes into Labels.  Return a 2-tuple of any
+    remaining bytes and the Labels object.
+    """
+
+    # First, find the LBLSIZE without consuming data.
     import PlyParser  # to avoid circular import
     lblsize = PlyParser.get_lblsize(byte_str)
+
+    # Now "consume" the first LBLSIZE bytes, returning the remaining
+    # bytes and it.
     byte_str, src = bytes(lblsize)(byte_str)
 
     def split_at_nul(byte_str):
         # type: (str) -> Tuple[str, str]
+        """
+        Look for a NUL; return a 2-tuple of the remaining bytes and
+        the bytes before the NUL.
+        """
         nul_index = byte_str.find('\0')
         if nul_index == -1:
             # return all of it
@@ -44,9 +49,16 @@ def parse_labels(byte_str):
             # return the non-NUL bytes
             return bytes(nul_index)(byte_str)
 
+    # Split the LBLSIZE bytes into the padding bytes and the
+    # significant bytes.
     padding, label_src = split_at_nul(src)
+
+    # Once we have the significant bytes, we can parse them with the
+    # context-independent PlyParser.
     system_labels, property_labels, history_labels = \
         PlyParser.ply_parse_labels(label_src)
+
+    # Return unconsumed bytes and the resulting Labels.
     labels = Labels(system_labels,
                     property_labels,
                     history_labels,
@@ -55,7 +67,10 @@ def parse_labels(byte_str):
 
 
 class Labels(VicarSyntax):
-    """A series of keyword-value pairs divided into three sections."""
+    """
+    A series of keyword-value pairs divided (like Gaul) into three
+    parts.
+    """
 
     def __init__(self, system_labels, property_labels, history_labels,
                  padding):
@@ -122,18 +137,22 @@ class Labels(VicarSyntax):
 
     def get_binary_header_size(self):
         # type: () -> int
+        """Return the size of any binary header or zero."""
         return self.system_labels.get_binary_header_size()
 
     def get_binary_prefix_width(self):
         # type: () -> int
+        """Return the width of any binary prefix or zero."""
         return self.system_labels.get_binary_prefix_width()
 
     def get_image_height(self):
         # type: () -> int
+        """Return the image height."""
         return self.system_labels.get_image_height()
 
     def get_image_width(self):
         # type: () -> int
+        """Return the image width."""
         return self.system_labels.get_image_width()
 
     def get_lblsize(self):
@@ -232,6 +251,7 @@ def _create_labels(recsize, system_labels, property_labels, history_labels,
 
 
 def round_to_multiple_of(n, m):
+    # type: (int, int) -> int
     assert m > 0
     excess = n % m
     if excess == 0:

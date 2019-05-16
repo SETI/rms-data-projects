@@ -71,9 +71,8 @@ class TestLabelItem(unittest.TestCase, VicarSyntaxTests):
         # test roundtripping on all the test values
         for arg in self.args_for_test():
             saved_label_item = arg.to_saved_label_item('PREFIX_')
-            
+
             self.assertTrue(saved_label_item.keyword.startswith('PREFIX_'))
             self.assertEqual(
                 arg,
                 LabelItem.from_saved_label_item(saved_label_item))
-

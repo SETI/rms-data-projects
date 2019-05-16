@@ -22,7 +22,8 @@ if TYPE_CHECKING:
 class VicarSyntaxTests(object):
     """
     An abstract base class providing tests for common functionality of
-    VicarSyntax elements.
+    VicarSyntax elements.  It should be incorporated into any test
+    class of a VicarSyntax element.
     """
     __metaclass__ = ABCMeta
 
@@ -75,6 +76,12 @@ class VicarSyntaxTests(object):
 
     def test_parsing(self):
         # type: () -> None
+        """
+        Test the parser for each object returned by args_for_test() by
+        turning each object into a byte-string, parsing it back, and
+        testing to see if the roundtripped object is the same as the
+        original.
+        """
         for arg in self.args_for_test():
             parser = self.syntax_parser_for_arg(arg)
             if parser is not None:

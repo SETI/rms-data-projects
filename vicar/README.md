@@ -2,7 +2,9 @@
 
 This software uses the
 [Conda](https://docs.conda.io/en/latest/index.html) system to manage
-packages, dependencies, and environments.
+packages, dependencies, and environments.  It isolates any needed
+executables and packages into its own directory, so it will not mess
+up your standard system installation.
 
 Miniconda is sufficient if you don't want to use the full Anaconda
 system.  Installers may be downloaded from

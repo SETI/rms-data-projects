@@ -14,6 +14,12 @@ if TYPE_CHECKING:
 
 def migrate_labels(dat_tim, migration_info, pds3_labels):
     # type: (str, MigrationInfo, Labels) -> Labels
+    """
+    Migrate the labels by adjusting the values of selected label
+    items; store the old label items into the migration task.  Add the
+    migration task to the history labels.  Adjust LBLSIZE and re-pad
+    the labels according to the new RECSIZE.
+    """
     old_recsize = pds3_labels.get_int_value('RECSIZE')
     old_nbb = pds3_labels.get_int_value('NBB')
     new_recsize = old_recsize - old_nbb
@@ -34,11 +40,17 @@ def migrate_labels(dat_tim, migration_info, pds3_labels):
 
 def migrate_image_area(pds3_image_area):
     # type: (ImageArea) -> ImageArea
+    """
+    Drop the binary labels.
+    """
     return ImageArea(None, None, pds3_image_area.binary_image_lines)
 
 
 def migrate_eol_labels(new_recsize, pds3_eol_labels):
     # type: (int, Labels) -> Labels
+    """
+    Adjust LBLSIZE and re-pad the labels according to the new RECSIZE.
+    """
     if pds3_eol_labels is None:
         return None
 
@@ -109,6 +121,10 @@ def build_migration_info(original_filepath, pds3_vicar_file):
 
 def migrate_vicar_file(original_filepath, dat_tim, pds3_vicar_file):
     # type: (Optional[str], str, VicarFile) -> VicarFile
+    """
+    Extract the information needed for migration, then migrate each
+    part of the VICAR file.
+    """
     migration_info = build_migration_info(original_filepath,
                                           pds3_vicar_file)
 

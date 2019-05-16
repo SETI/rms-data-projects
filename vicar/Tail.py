@@ -41,6 +41,11 @@ def parse_pds4_tail(hdr_bytes, img_height, prefix_width, byte_str):
 
 
 class Tail(VicarSyntax):
+    """
+    Represents the bytes in a VICAR file following the image area or
+    EOL labels, if they exist.
+    """
+
     def __init__(self,
                  binary_header_at_tail,
                  binary_prefixes_at_tail,
@@ -90,6 +95,10 @@ class Tail(VicarSyntax):
                             binary_prefixes_at_tail,
                             tail_bytes):
         # type: (int, str, List[str], str) -> Tail
+        """
+        Create a tail from the parts, adding padding to make it a
+        multiple of RECSIZE.
+        """
         if tail_bytes is None:
             tail_bytes = ''
         unadjusted_length = Tail(binary_header_at_tail,
@@ -106,6 +115,7 @@ class Tail(VicarSyntax):
 
 
 def round_to_multiple_of(n, m):
+    # type: (int, int) -> int
     assert m > 0
     excess = n % m
     if excess == 0:

@@ -9,6 +9,15 @@ if TYPE_CHECKING:
 
 def parse_property_labels(byte_str):
     # type: (str) -> Tuple[str, PropertyLabels]
+    """
+    Parse the given bytes into PropertyLabels.  Return a 2-tuple of
+    any remaining bytes (must be empty, by construction) and the
+    PropertyLabels object.
+
+    Parsing labels is context-independent (i.e., does not depend on
+    what came earlier in the file), so we pass the parsing off to the
+    PlyParser.
+    """
     import PlyParser  # to avoid circular import
     return '', PlyParser.ply_parse_property_labels(byte_str)
 
@@ -48,6 +57,15 @@ class PropertyLabels(VicarSyntax):
 
 def parse_property(byte_str):
     # type: (str) -> Tuple[str, Property]
+    """
+    Parse the given bytes into a Property.  Return a 2-tuple of
+    any remaining bytes (must be empty, by construction) and the
+    Property object.
+
+    Parsing labels is context-independent (i.e., does not depend on
+    what came earlier in the file), so we pass the parsing off to the
+    PlyParser.
+    """
     import PlyParser  # to avoid circular import
     return '', PlyParser.ply_parse_property(byte_str)
 

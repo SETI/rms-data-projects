@@ -37,11 +37,13 @@ class IntegerValue(Value):
 
     def to_raw_integer(self):
         # type: () -> int
+        """Extract the integer value."""
         return int(self.value_byte_string)
 
     @staticmethod
     def from_raw_integer(n):
         # type: (int) -> IntegerValue
+        """Create an IntegerValue from a Python int."""
         return IntegerValue(str(n))
 
 
@@ -62,14 +64,13 @@ class StringValue(Value):
 
     def to_raw_string(self):
         # type: () -> str
+        """Extract the string value."""
         return unescape_byte_string(self.value_byte_string)
 
     @staticmethod
     def from_raw_string(byte_str):
         # type: (str) -> StringValue
-        """
-        Programmatically create a StringValue from a raw Python string.
-        """
+        """Create a StringValue from a raw Python string."""
         return StringValue(escape_byte_string(byte_str))
 
 
