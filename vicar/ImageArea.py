@@ -160,13 +160,12 @@ class ImageArea(VicarSyntax):
 
         return header + prefixed_image
 
-    def has_binary_labels(self):
+    def has_binary_prefixes(self):
         # type: () -> bool
         """
-        Return True if there are a binary header or binary prefixes.
+        Return True if there are binary prefixes.
         """
-        return self.binary_header is not None or \
-               self.binary_prefixes is not None
+        return self.binary_prefixes is not None
 
     def implicit_nbb_value(self):
         # type: () ->  int

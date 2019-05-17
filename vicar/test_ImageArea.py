@@ -48,19 +48,19 @@ class TestImageArea(unittest.TestCase, VicarSyntaxTests):
                                                    image_width,
                                                    byte_str)
 
-    def test_has_binary_labels(self):
+    def test_has_binary_prefixes(self):
         header = generate_line(2)
         prefixes = generate_block(1, 1)
         image_lines = generate_block(1, 1)
 
         image_area = ImageArea(None, None, image_lines)
-        self.assertFalse(image_area.has_binary_labels())
+        self.assertFalse(image_area.has_binary_prefixes())
 
         image_area = ImageArea(None, prefixes, image_lines)
-        self.assertTrue(image_area.has_binary_labels())
+        self.assertTrue(image_area.has_binary_prefixes())
 
         image_area = ImageArea(header, None, image_lines)
-        self.assertTrue(image_area.has_binary_labels())
+        self.assertFalse(image_area.has_binary_prefixes())
 
         image_area = ImageArea(header, prefixes, image_lines)
-        self.assertTrue(image_area.has_binary_labels())
+        self.assertTrue(image_area.has_binary_prefixes())

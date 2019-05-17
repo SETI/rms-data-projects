@@ -14,14 +14,10 @@ class TestTail(unittest.TestCase, VicarSyntaxTests):
         return [Tail(None, None, None),
                 Tail(None, None, tail),
                 Tail(None, prefixes, None),
-                Tail(None, prefixes, tail),
-                Tail(header, None, None),
-                Tail(header, None, tail),
-                Tail(header, prefixes, None),
-                Tail(header, prefixes, tail)]
+                Tail(None, prefixes, tail)]
 
     def syntax_parser_for_arg(self, arg):
-        if arg.has_binary_labels():
+        if arg.has_binary_prefixes():
             # It's PDS4.
             if arg.binary_header_at_tail:
                 hdr_bytes = len(arg.binary_header_at_tail)
@@ -41,18 +37,12 @@ class TestTail(unittest.TestCase, VicarSyntaxTests):
             # It's PDS3.
             return parse_pds3_tail
 
-    def test_has_binary_labels(self):
+    def test_has_binary_prefixes(self):
         header = generate_line(2)
         prefixes = generate_block(1, 1)
 
         tail = Tail(None, None, None)
-        self.assertFalse(tail.has_binary_labels())
+        self.assertFalse(tail.has_binary_prefixes())
 
         tail = Tail(None, prefixes, None)
-        self.assertTrue(tail.has_binary_labels())
-
-        tail = Tail(header, None, None)
-        self.assertTrue(tail.has_binary_labels())
-
-        tail = Tail(header, prefixes, None)
-        self.assertTrue(tail.has_binary_labels())
+        self.assertTrue(tail.has_binary_prefixes())

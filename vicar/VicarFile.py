@@ -62,7 +62,7 @@ def parse_vicar_file(byte_str):
 
     # Parse the tail as either PDS3 or PDS4 depending on whether the
     # image area has binary labels.
-    has_binary_labels = image_area.has_binary_labels()
+    has_binary_labels = image_area.has_binary_prefixes()
     if has_binary_labels:
         from Tail import parse_pds3_tail
         byte_str, tail = parse_pds3_tail(byte_str)
@@ -139,13 +139,13 @@ class VicarFile(VicarSyntax):
         # check structures
 
         # migration must remove binary labels
-        assert not (image_area.has_binary_labels() and
+        assert not (image_area.has_binary_prefixes() and
                     labels.has_migration_task()), \
             'a migrated VICAR file cannot have binary labels'
 
         # binary labels either in ImageArea or Tail but not both
-        assert not (image_area.has_binary_labels() and
-                    tail.has_binary_labels()), \
+        assert not (image_area.has_binary_prefixes() and
+                    tail.has_binary_prefixes()), \
             'binary labels cannot appear in both ImageArea and Tail'
 
         # I shouldn't need to check consistency of saved NBB, NLB, and
@@ -196,12 +196,12 @@ class VicarFile(VicarSyntax):
         """Return the RECSIZE."""
         return self.labels.get_int_value('RECSIZE')
 
-    def has_binary_labels(self):
+    def has_binary_prefixes(self):
         # type: () -> bool
         """
-        Return True if there are a binary header or binary prefixes.
+        Return True if there are binary prefixes.
         """
-        return self.image_area.has_binary_labels()
+        return self.image_area.has_binary_prefixes()
 
     def has_migration_task(self):
         # type: () -> bool

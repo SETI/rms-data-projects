@@ -80,14 +80,12 @@ class Tail(VicarSyntax):
                         binary_prefixes,
                         maybe_bs(self.tail_bytes)])
 
-    def has_binary_labels(self):
+    def has_binary_prefixes(self):
         # type: () -> bool
         """
-        Return True if a binary header or binary prefixes are stored
-        in the tail.
+        Return True if binary prefixes are stored in the tail.
         """
-        return self.binary_header_at_tail is not None or \
-               self.binary_prefixes_at_tail is not None
+        return self.binary_prefixes_at_tail is not None
 
     @staticmethod
     def create_with_padding(recsize,
