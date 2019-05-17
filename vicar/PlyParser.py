@@ -358,7 +358,7 @@ def dump_tokens(lexer, data):
 
 def ply_parse(start, data):
     lexer = lex.lex()
-    parser = yacc.yacc(start=start)
+    parser = yacc.yacc(start=start, errorlog=yacc.NullLogger())
     return parser.parse(data)
 
 

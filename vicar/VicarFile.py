@@ -61,23 +61,24 @@ def parse_vicar_file(byte_str):
         eol_labels = None
 
     # Parse the tail as either PDS3 or PDS4 depending on whether the
-    # image area has binary labels.
-    has_binary_labels = image_area.has_binary_prefixes()
-    if has_binary_labels:
+    # image area has binary prefixes.
+    has_binary_prefixes = image_area.has_binary_prefixes()
+    if has_binary_prefixes:
         from Tail import parse_pds3_tail
         byte_str, tail = parse_pds3_tail(byte_str)
     else:
         # Figure out how long the binary header in the tail is.
-        migration_info, _history = remove_migration_task(labels.history_labels)
-        old_label_items = migration_info.label_items
-        old_nlb = _get_int_value(old_label_items, 'NLB')
-        old_recsize = _get_int_value(old_label_items, 'RECSIZE')
-        binary_header_length = old_nlb * old_recsize
+        if False:
+            migration_info, _history = remove_migration_task(
+                labels.history_labels)
+            old_label_items = migration_info.label_items
+            old_nlb = _get_int_value(old_label_items, 'NLB')
+            old_recsize = _get_int_value(old_label_items, 'RECSIZE')
+            binary_header_length = old_nlb * old_recsize
 
         # Parse the tail.
         from Tail import parse_pds4_tail
-        byte_str, tail = parse_pds4_tail(binary_header_length,
-                                         image_height,
+        byte_str, tail = parse_pds4_tail(image_height,
                                          prefix_width,
                                          byte_str)
 
@@ -117,17 +118,28 @@ class VicarFile(VicarSyntax):
             ('RECSIZE value not correct for image; should be %d' %
              image_area.implicit_recsize_value())
 
+        assert labels.to_byte_length() % recsize == 0, \
+            'Size of labels must be a multiple of RECSIZE'
+        
+        assert image_area.to_byte_length() % recsize == 0, \
+            'Size of image_area must be a multiple of RECSIZE'
+        
+        if eol_labels:
+            assert eol_labels.to_byte_length() % recsize == 0, \
+                'Size of eol_labels must be a multiple of RECSIZE'
+        
+
         # keyword NBB
         assert (labels.get_int_value('NBB') ==
                 image_area.implicit_nbb_value()), \
-            ('NBB value not correct for image; should be %d' %
-             image_area.implicit_nbb_value())
+            ('NBB value not correct for image; is %d but should be %d' %
+             (labels.get_int_value('NBB'), image_area.implicit_nbb_value()))
 
         # keyword NLB
         assert (labels.get_int_value('NLB') ==
                 image_area.implicit_nlb_value()), \
-            ('NLB value not correct for image; should be %d' %
-             image_area.implicit_nlb_value())
+            ('NLB value not correct for image; is %d but should be %d' %
+             (labels.get_int_value('NLB'), image_area.implicit_nlb_value()))
 
         # keyword LBLSIZE
         assert labels.get_lblsize() % recsize == 0, \
@@ -138,15 +150,15 @@ class VicarFile(VicarSyntax):
 
         # check structures
 
-        # migration must remove binary labels
+        # migration must remove binary prefixes
         assert not (image_area.has_binary_prefixes() and
                     labels.has_migration_task()), \
-            'a migrated VICAR file cannot have binary labels'
+            'a migrated VICAR file cannot have binary prefixes'
 
-        # binary labels either in ImageArea or Tail but not both
+        # binary prefixes either in ImageArea or Tail but not both
         assert not (image_area.has_binary_prefixes() and
                     tail.has_binary_prefixes()), \
-            'binary labels cannot appear in both ImageArea and Tail'
+            'binary prefixes cannot appear in both ImageArea and Tail'
 
         # I shouldn't need to check consistency of saved NBB, NLB, and
         # RECSIZE because they're right by construction.

@@ -6,6 +6,7 @@ from Labels import Labels
 from MigrationInfo import MigrationInfo, add_migration_task
 from Tail import Tail
 from VicarFile import VicarFile
+from VicarSyntax import round_to_multiple_of
 
 if TYPE_CHECKING:
     from typing import List, Optional
@@ -23,9 +24,15 @@ def migrate_labels(dat_tim, migration_info, pds3_labels):
     old_recsize = pds3_labels.get_int_value('RECSIZE')
     old_nbb = pds3_labels.get_int_value('NBB')
     new_recsize = old_recsize - old_nbb
+
+    old_nlb = pds3_labels.get_int_value('NLB')
+    old_header_len = old_nlb * old_recsize
+    new_header_len = round_to_multiple_of(old_header_len, new_recsize)
+    new_nlb = new_header_len / new_recsize
+
     pds4_system_labels = pds3_labels.system_labels.replace_label_items([
         LabelItem.create_int_item('NBB', 0),
-        LabelItem.create_int_item('NLB', 0),
+        LabelItem.create_int_item('NLB', new_nlb),
         LabelItem.create_int_item('RECSIZE', new_recsize)
     ])
 
@@ -38,12 +45,22 @@ def migrate_labels(dat_tim, migration_info, pds3_labels):
         pds3_labels.padding)
 
 
-def migrate_image_area(pds3_image_area):
-    # type: (ImageArea) -> ImageArea
+def migrate_image_area(new_recsize, pds3_image_area):
+    # type: (int, ImageArea) -> ImageArea
     """
     Drop the binary labels.
     """
-    return ImageArea(None, None, pds3_image_area.binary_image_lines)
+    if pds3_image_area.binary_header is None:
+        pds4_binary_header = None
+    else:
+        pds3_len = len(pds3_image_area.binary_header)
+        pds4_len = round_to_multiple_of(pds3_len, new_recsize)
+        excess = pds4_len - pds3_len
+        padding = excess * '\0'
+        pds4_binary_header = pds3_image_area.binary_header + padding
+    return ImageArea(pds4_binary_header,
+                     None,
+                     pds3_image_area.binary_image_lines)
 
 
 def migrate_eol_labels(new_recsize, pds3_eol_labels):
@@ -69,7 +86,6 @@ def migrate_tail(new_recsize, pds3_image_area, pds3_tail):
     PDS4 tail, and pad appropriately.
     """
     return Tail.create_with_padding(new_recsize,
-                                    pds3_image_area.binary_header,
                                     pds3_image_area.binary_prefixes,
                                     pds3_tail.tail_bytes)
 
@@ -133,7 +149,8 @@ def migrate_vicar_file(original_filepath, dat_tim, pds3_vicar_file):
                                  pds3_vicar_file.labels)
     new_recsize = pds4_labels.get_int_value('RECSIZE')
 
-    pds4_image_area = migrate_image_area(pds3_vicar_file.image_area)
+    pds4_image_area = migrate_image_area(new_recsize,
+                                         pds3_vicar_file.image_area)
 
     pds4_eol_labels = migrate_eol_labels(new_recsize,
                                          pds3_vicar_file.eol_labels)

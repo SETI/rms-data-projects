@@ -65,7 +65,7 @@ def parse_image_area(header_len,
 class ImageArea(VicarSyntax):
     """
     Represents the image area of the VICAR file.  May or may not
-    contain binary labels.
+    contain binary prefixes.
     """
 
     def __init__(self,

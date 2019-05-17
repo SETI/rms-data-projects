@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 from Parsers import bytes, repeat, rest_of_input
-from VicarSyntax import VicarSyntax, maybe_bs
+from VicarSyntax import VicarSyntax, maybe_bs, round_to_multiple_of
 
 if TYPE_CHECKING:
     from typing import List, Optional, Tuple
@@ -13,23 +13,17 @@ def parse_pds3_tail(byte_str):
     byte_str, res = rest_of_input(byte_str)
     if len(res) == 0:
         res = None
-    return (byte_str, Tail(None, None, res))
+    return (byte_str, Tail(None, res))
 
 
-def parse_pds4_tail(hdr_bytes, img_height, prefix_width, byte_str):
-    # type: (int, int, int, str) -> Tuple[str, Tail]
+def parse_pds4_tail(img_height, prefix_width, byte_str):
+    # type: (int, int, str) -> Tuple[str, Tail]
     """
     Parse a PDS4 tail.  Some of the bytes may be parts of the binary
-    header, some may be binary prefixes.  The rest goes into the
-    tail_bytes.  We determine what goes where from the integer
-    arguments: the length of the header and the dimensions of the
+    prefixes.  The rest goes into the tail_bytes.  We determine what
+    goes where from the integer arguments: the dimensions of the
     binary prefixes.
     """
-    if hdr_bytes > 0:
-        byte_str, hdr = bytes(hdr_bytes)(byte_str)
-    else:
-        hdr = None
-
     if prefix_width > 0:
         byte_str, prefs = repeat(img_height, bytes(prefix_width))(byte_str)
     else:
@@ -37,7 +31,7 @@ def parse_pds4_tail(hdr_bytes, img_height, prefix_width, byte_str):
     byte_str, rest = rest_of_input(byte_str)
     if len(rest) == 0:
         rest = None
-    return byte_str, Tail(hdr, prefs, rest)
+    return byte_str, Tail(prefs, rest)
 
 
 class Tail(VicarSyntax):
@@ -47,28 +41,23 @@ class Tail(VicarSyntax):
     """
 
     def __init__(self,
-                 binary_header_at_tail,
                  binary_prefixes_at_tail,
                  tail_bytes):
-        # type: (Optional[str], Optional[List[str]], Optional[str]) -> None
+        # type: (Optional[List[str]], Optional[str]) -> None
         VicarSyntax.__init__(self)
         if binary_prefixes_at_tail:
             for binary_prefix in binary_prefixes_at_tail:
                 assert binary_prefix is not None
-        self.binary_header_at_tail = binary_header_at_tail
         self.binary_prefixes_at_tail = binary_prefixes_at_tail
         self.tail_bytes = tail_bytes
 
     def __eq__(self, other):
-        return [self.binary_header_at_tail,
-                self.binary_prefixes_at_tail,
-                self.tail_bytes] == [other.binary_header_at_tail,
-                                     other.binary_prefixes_at_tail,
+        return [self.binary_prefixes_at_tail,
+                self.tail_bytes] == [other.binary_prefixes_at_tail,
                                      other.tail_bytes]
 
     def __repr__(self):
-        return 'Tail(%r, %r, %r)' % (self.binary_header_at_tail,
-                                     self.binary_prefixes_at_tail,
+        return 'Tail(%r, %r)' % (self.binary_prefixes_at_tail,
                                      self.tail_bytes)
 
     def to_byte_string(self):
@@ -76,8 +65,7 @@ class Tail(VicarSyntax):
             binary_prefixes = ''.join(self.binary_prefixes_at_tail)
         else:
             binary_prefixes = ''
-        return ''.join([maybe_bs(self.binary_header_at_tail),
-                        binary_prefixes,
+        return ''.join([binary_prefixes,
                         maybe_bs(self.tail_bytes)])
 
     def has_binary_prefixes(self):
@@ -89,34 +77,23 @@ class Tail(VicarSyntax):
 
     @staticmethod
     def create_with_padding(recsize,
-                            binary_header_at_tail,
                             binary_prefixes_at_tail,
                             tail_bytes):
-        # type: (int, str, List[str], str) -> Tail
+        # type: (int, List[str], str) -> Tail
         """
         Create a tail from the parts, adding padding to make it a
         multiple of RECSIZE.
         """
         if tail_bytes is None:
             tail_bytes = ''
-        unadjusted_length = Tail(binary_header_at_tail,
-                                 binary_prefixes_at_tail,
+        unadjusted_length = Tail(binary_prefixes_at_tail,
                                  tail_bytes).to_byte_length()
         final_length = round_to_multiple_of(unadjusted_length, recsize)
         new_padding_length = final_length - unadjusted_length
         padded_tail_bytes = tail_bytes + new_padding_length * '\0'
         if len(padded_tail_bytes) == 0:
             padded_tail_bytes = None
-        return Tail(binary_header_at_tail,
-                    binary_prefixes_at_tail,
+        return Tail(binary_prefixes_at_tail,
                     padded_tail_bytes)
 
 
-def round_to_multiple_of(n, m):
-    # type: (int, int) -> int
-    assert m > 0
-    excess = n % m
-    if excess == 0:
-        return n
-    else:
-        return n + m - excess

@@ -39,7 +39,7 @@ class TestVicarFile(unittest.TestCase, VicarSyntaxTests):
         image_area_hp = ImageArea(generate_line(2),
                                   generate_block(1, 1),
                                   generate_block(1, 1))
-        tail = Tail(None, None, None)
+        tail = Tail(None, None)
 
         # Verify that bad inputs raise an exception.
         # missing sections:
@@ -110,16 +110,9 @@ class TestVicarFile(unittest.TestCase, VicarSyntaxTests):
             VicarFile(gen_labels(2, RECSIZE=2, LBLSIZE=2, NBB=1),
                       image_area_p,
                       None,
-                      Tail(None, generate_block(2, 2), None))
+                      Tail(generate_block(2, 2), None))
 
-        # two binary_headers
-        with self.assertRaises(Exception):
-            VicarFile(gen_labels(2, RECSIZE=1, LBLSIZE=2, NLB=1),
-                      image_area_h,
-                      None,
-                      Tail(generate_line(2), None, None))
-
-        # TODO Create a case with both binary labels and a
+        # TODO Create a case with both binary prefixes and a
         # MigrationTask.
 
         # verify that these do not raise
@@ -149,7 +142,7 @@ class TestVicarFile(unittest.TestCase, VicarSyntaxTests):
         image_area_hp = ImageArea(generate_line(2),
                                   generate_block(1, 1),
                                   generate_block(1, 1))
-        tail = Tail(None, None, None)
+        tail = Tail(None, None)
         return [
             VicarFile(
                 gen_labels(RECSIZE=1, LBLSIZE=1),

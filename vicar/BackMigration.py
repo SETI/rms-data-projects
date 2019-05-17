@@ -34,12 +34,19 @@ def back_migrate_labels(pds4_labels):
     return migration_info, pds3_labels
 
 
-def back_migrate_image_area(pds4_tail, pds4_image_area):
-    # type: (Tail, ImageArea) -> ImageArea
+def back_migrate_image_area(old_binary_header_len, pds4_tail, pds4_image_area):
+    # type: (int, Tail, ImageArea) -> ImageArea
     """
-    Move any binary labels from the tail back into the image area.
+    Move any binary prefixes from the tail back into the image area.
+    Remove any added padding from the binary header.
     """
-    return ImageArea(pds4_tail.binary_header_at_tail,
+    if pds4_image_area.binary_header is None:
+        pds3_binary_header = None
+    else:
+        pds3_binary_header = \
+            pds4_image_area.binary_header[:old_binary_header_len]
+
+    return ImageArea(pds3_binary_header,
                      pds4_tail.binary_prefixes_at_tail,
                      pds4_image_area.binary_image_lines)
 
@@ -89,13 +96,16 @@ def back_migrate_eol_labels(orig_label_items, pds4_eol_labels):
 def back_migrate_tail(tail_length, pds4_tail):
     # type: (int, Tail) -> Tail
     """
-    Remove any binary labels stored in the tail and trim any added
+    Remove any binary prefixes stored in the tail and trim any added
     padding.
     """
-    trimmed_tail_bytes = pds4_tail.tail_bytes[:tail_length]
-    if len(trimmed_tail_bytes) == 0:
+    if pds4_tail.tail_bytes is None:
         trimmed_tail_bytes = None
-    return Tail(None, None, trimmed_tail_bytes)
+    else:
+        trimmed_tail_bytes = pds4_tail.tail_bytes[:tail_length]
+        if len(trimmed_tail_bytes) == 0:
+            trimmed_tail_bytes = None
+    return Tail(None, trimmed_tail_bytes)
 
 
 def back_migrate_vicar_file(pds4_vicar_file):
@@ -108,7 +118,12 @@ def back_migrate_vicar_file(pds4_vicar_file):
     migration_info, pds3_labels = back_migrate_labels(
         pds4_vicar_file.labels)
 
+    old_recsize = pds3_labels.get_int_value('RECSIZE')
+    old_nlb = pds3_labels.get_int_value('NLB')
+    old_binary_header_len = old_recsize * old_nlb
+
     pds3_image_area = back_migrate_image_area(
+        old_binary_header_len,
         pds4_vicar_file.tail,
         pds4_vicar_file.image_area)
 

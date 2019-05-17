@@ -39,3 +39,12 @@ def maybe_bs(byte_str):
         return ''
     else:
         return byte_str
+
+def round_to_multiple_of(n, m):
+    # type: (int, int) -> int
+    assert m > 0
+    excess = n % m
+    if excess == 0:
+        return n
+    else:
+        return n + m - excess

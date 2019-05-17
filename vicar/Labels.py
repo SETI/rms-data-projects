@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from LabelItem import LabelItem
 from Parsers import bytes
 from Value import *
-from VicarSyntax import maybe_bs
+from VicarSyntax import maybe_bs, round_to_multiple_of
 
 if TYPE_CHECKING:
     from typing import Optional, Tuple
@@ -248,13 +248,3 @@ def _create_labels(recsize, system_labels, property_labels, history_labels,
 
     assert final_labels_length == result.to_byte_length()
     return result
-
-
-def round_to_multiple_of(n, m):
-    # type: (int, int) -> int
-    assert m > 0
-    excess = n % m
-    if excess == 0:
-        return n
-    else:
-        return n + m - excess
