@@ -51,8 +51,8 @@ The key function for migration is `migrate_vicar_file()` in
 `Migration.py`.  It takes the original filepath (optional), a properly
 formatted `DAT_TIM` string which will act as a timestamp for the
 generated migration task, and a parsed VICAR file object.  It returns
-a VICAR file object with any binary labels pushed into the tail of the
-file and with a migration task in the history labels that contains
+a VICAR file object with any binary prefixes pushed into the tail of
+the file and with a migration task in the history labels that contains
 sufficient information to reconstruct the original file.  This
 resulting object will be compliant with PDS4.
 
@@ -67,7 +67,7 @@ now = datetime.datetime.utcnow()
 dat_tim_value = now.strftime('%a %b %d %H:%M:%S %Y')
 ```
 
-A VICAR file that does not have binary labels is already
+A VICAR file that does not have binary prefixes is already
 PDS4-compliant.  Migrating such a file will add a harmless migration
 task but otherwise not affect the file.  Depending on her needs, a
 user might want to:
@@ -77,12 +77,12 @@ user might want to:
 1. Do nothing.
 
 This software doesn't have an opinion on what to do and leaves it to
-you.  To check whether a VICAR file has binary labels, call
-`vf.has_binary_labels()` on the parsed `VicarFile` object.
+you.  To check whether a VICAR file has binary prefixes, call
+`vf.has_binary_prefixes()` on the parsed `VicarFile` object.
 
 Note that migration optionally stores the original filepath.  If this
 is important for your back-migration needs, then you will want to
-migrate, not copy, even if the VICAR file has no binary labels.
+migrate, not copy, even if the VICAR file has no binary prefixes.
 
 ## Back-migration: PDS4 back to original
 
@@ -91,10 +91,10 @@ The key function for back-migration is `back_migrate_vicar_file()` in
 a 2-tuple of the original filepath given (may be `None`) and a parsed
 VICAR file object representing the original file, byte for byte.
 
-If the original file had no binary labels and was just copied instead
-of migrated, you can't back-migrate it.  Any file that has been
-migrated will have a migration task in its history labels.  You can
-check whether it has a migration task by calling
+If the original file had no binary prefixes and was just copied
+instead of migrated, you can't back-migrate it.  Any file that has
+been migrated will have a migration task in its history labels.  You
+can check whether it has a migration task by calling
 `vf.has_migration_task()` on the parsed `VicarFile` object.
 
 # I/O
@@ -121,10 +121,3 @@ A limited but more realistic example is in `Migrate.py`, a script to
 migrate a single VICAR file, taking its name from the command line,
 then writing the migrated file into the same directory but with a
 different name.
-
-# Bugs and issues
-
- * This software uses [ply](https://www.dabeaz.com/ply/) to generate
-parsers for the VICAR labels.  It may spew a lot of WARNING messages;
-they are harmless and may be ignored.  Nevertheless, this should be
-addressed in the future.
