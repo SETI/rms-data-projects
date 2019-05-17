@@ -1,3 +1,15 @@
+"""
+Context-insensitive parsing.  VICAR labels are considered
+context-insensitive, because to parse VICAR labels, once you've
+determined which the input bytes are, you do not need any information
+other than the bytes themselves.
+
+Since writing parsers is error-prone, we mechanise it when we can.
+For the context-insensitive parts, we use ply
+(https://www.dabeaz.com/ply/) to construct the scanner and parsers
+from a grammar description.  That grammar description is found below.
+"""
+
 from ply import lex, yacc
 
 from HistoryLabels import HistoryLabels, Task
@@ -26,12 +38,16 @@ tokens = [
              'WHITESPACE'
          ] + list(reserved.values())
 
+# This software was originally written in Haskell, then ported to
+# Python.  The regular expressions were translated; in the process a
+# lot of parentheses were used.
+
 # There is a limitation in the Python 2.7 libraries (sre_compile.py)
 # in the number of parentheses allowed in a regular expression; the
 # error message is "sorry, but this version only supports 100 named
 # groups".  I hit this by wrapping *all* the regexps in parentheses,
 # then removed some to make it compile, but that also introduced bugs.
-# I *think* this version is correct, but if there are bugs in the
+# I *think* this version is correct, but if you later find bugs in the
 # scanning, this might be a good place to look.
 
 ################
@@ -332,7 +348,10 @@ def p_error(p):
 
 def get_lblsize(src):
     # type: (str) -> int
-    """Not exactly a parse, just a pick through the first few tokens."""
+    """
+    Not exactly a parse, just a pick through the first few tokens,
+    looking for the LBLSIZE.
+    """
     lexer = lex.lex()
     lexer.input(src)
     tok = lexer.token()
@@ -357,6 +376,10 @@ def dump_tokens(lexer, data):
 
 
 def ply_parse(start, data):
+    """
+    Create a parser for the given start symbol and parse the given
+    byte-string.
+    """
     lexer = lex.lex()
     parser = yacc.yacc(start=start, errorlog=yacc.NullLogger())
     return parser.parse(data)
