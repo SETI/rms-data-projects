@@ -151,5 +151,5 @@ class LabelItem(VicarSyntax):
         We typically add a LBLSIZE item with a wrong value, calculate
         the actual size, then go back and patch it.
         """
-        int_str = '%10d' % n
+        int_str = '%-10d' % n
         return LabelItem.create('LBLSIZE', IntegerValue(int_str))
