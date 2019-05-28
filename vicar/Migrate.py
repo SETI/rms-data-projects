@@ -19,6 +19,7 @@ def make_output_filepath(in_filepath):
 
 if __name__ == '__main__':
     input_filepath = sys.argv[1]
+    print "**** Migrating %s." % input_filepath
     output_filepath = make_output_filepath(input_filepath)
 
     # Read the file.
