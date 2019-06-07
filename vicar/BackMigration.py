@@ -135,7 +135,7 @@ def back_migrate_vicar_file(pds4_vicar_file):
             pds4_vicar_file.eol_labels)
 
     # Here we assure mypy that this is an int, not a string.
-    tail_length = cast(int, migration_info.pds3_dict['TAIL_LENGTH'])
+    tail_length = cast(int, migration_info.pds3_dict.get('TAIL_LENGTH', 0))
     pds3_tail = back_migrate_tail(tail_length, pds4_vicar_file.tail)
 
     try:

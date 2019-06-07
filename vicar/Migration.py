@@ -122,7 +122,9 @@ def build_migration_info(original_filepath, pds3_vicar_file):
 
         # We'll need the original tail length to peel off any added
         # padding when back-migrating.
-        dictionary = {'TAIL_LENGTH': tail_length}  # type: DICT
+        dictionary = {}  # type: DICT
+        if tail_length:
+            dictionary['TAIL_LENGTH'] = tail_length
 
         # If the user gave an original_filepath, archive it too.
         if original_filepath is not None:
