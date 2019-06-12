@@ -1,0 +1,66 @@
+ISS Conventions
+
+Filenames:
+  - all lower case  (our choice)
+  - use a dash as separator
+  - drop the _version, and move the leading letter (n or w)
+    to immediately after the 10 digit sclk.
+    
+  - preview products - filename root is the same as the 
+    supported data file, with '-full' appended
+  
+LIDS:
+  - all lower case  (PDS4 requirement)
+  - when you insert the filename root, copy exactly, otherwise
+  - use an underscore where a blank would be appropriate
+  - use a dash when 'and' would be appropriate
+  
+Product LIDS
+  urn:nasa:pds:<bundle LID>:<collection LID>:<filename root>
+     
+
+Bundle LIDs:
+
+This assumes we divide into two bundles with the start date 
+of the second bundle 1/1/2004. I've assumed we'll refer to these 
+as cruise and saturn. The alternative would be jupiter and 
+saturn, and we can make the changes fairly easily. 
+Obviously, if we end up breaking the data into four 
+bundles by date, we'll need to make adjustments.
+
+urn:nasa:pds:cassini_iss_cruise
+urn:nasa:pds:cassini_iss_saturn
+
+Collection LIDs
+
+ data collections
+ 
+ urn:nasa:pds:cassini_iss_saturn:data_raw
+ urn:nasa:pds:cassini_iss_saturn:data_calibrated
+ 
+ products in the data collection, 
+ 
+   append ':' and the filename root to the data collection 
+   LID, e.g.,
+
+   1454725799n.img
+     urn:nasa:pds:cassini_iss_saturn:data_raw:1454725799n
+   cum-body-inventory.tab
+     urn:nasa:pds:cassini_iss_saturn:data_raw:cum-body-inventory
+   
+   1454725799n-calib.img
+     urn:nasa:pds:cassini_iss_saturn:data_raw:1454725799n-calib
+   cum-body-inventory.tab
+     urn:nasa:pds:cassini_iss_saturn:data_calibrated:cum-body-inventory
+
+ browse collections
+ 
+ urn:nasa:pds:cassini_iss_saturn:browse_raw
+ urn:nasa:pds:cassini_iss_saturn:browse_calib
+   
+ products in the browse collection
+   
+   1454725799n-full.png
+     urn:nasa:pds:cassini_iss_saturn:browse_raw:1454725799n_full
+   1454725799n-calib-full.png
+     urn:nasa:pds:cassini_iss_saturn:browse_calib:1454725799n-calib-full

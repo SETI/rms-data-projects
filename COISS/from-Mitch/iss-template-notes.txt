@@ -1,0 +1,118 @@
+Line 52
+wavelength_range 
+
+  for which the permitted values are:
+
+     Far Infrared    The wavelength is between approximately 30 and 300 micrometers
+     Gamma Ray       The wavelength is less than approximately 0.01 nm
+     Infrared        The wavelength is between approximately 0.75 and 300 micrometers
+     Microwave       The wavelength is between millimeters and approximately one meter
+     Millimeter      The wavelength is between approximately one and a few millimeters
+     Near Infrared   The wavelength is between approximately 0.65 and 5.0 micrometers
+     Radio           The wavelength is between millimeters and hundreds of thousands of meters
+     Submillimeter   The wavelength is between approximately 0.3 and 1.0 millimeters
+     Ultraviolet     The wavelength is between approximately 10 and 400 nm
+     Visible         The wavelength is between approximately 390 and 700 nm
+     Xray            The wavelength is between approximately 0.01 and 10 nm
+     
+  Look-up tables of filter combination vs. wavelength range are in
+  iss-filter-to-wavelength.xlsx
+
+  These are based on information in the SIS and the two instrument.cat 
+  files. Rob's table from OPUS may have filter combinations not covered 
+  in this file.
+
+
+line 96
+Target_ Identification
+  Required attributes are name and type. I've include optional 
+  alternate_designation attributes, a caveat in an optional 
+  description attribute, and an optional Internal_Reference class.
+  
+  Type has an enumerated list. Target type information is not in the 
+  PDS3 label. Can we use the code Mark developed to populate 
+  Target_Identification in the HST pipeline?
+  
+	 
+      Asteroid	 
+ 	 	 	Calibration	 
+ 	 	 	Calibration Field	 
+ 	 	 	Calibrator	 
+ 	 	 	Centaur	 
+ 	 	 	Comet	 
+ 	 	 	Dust	 
+ 	 	 	Dwarf Planet	 
+ 	 	 	Equipment	 
+ 	 	 	Exoplanet System	 
+ 	 	 	Galaxy	 
+ 	 	 	Globular Cluster	 
+ 	 	 	Laboratory Analog	 
+ 	 	 	Lunar Sample	 
+ 	 	 	Magnetic Field	 
+ 	 	 	Meteorite	 
+ 	 	 	Meteoroid	 
+ 	 	 	Meteoroid Stream	 
+ 	 	 	Nebula	 
+ 	 	 	Open Cluster	 
+ 	 	 	Planet	 
+ 	 	 	Planetary Nebula	 
+ 	 	 	Planetary System	 
+ 	 	 	Plasma Cloud	 
+ 	 	 	Plasma Stream	 
+ 	 	 	Ring	 
+ 	 	 	Satellite	 
+ 	 	 	Star	 
+ 	 	 	Star Cluster	 
+ 	 	 	Sun	 
+ 	 	 	Synthetic Sample	 
+ 	 	 	Terrestrial Sample	 
+ 	 	 	Trans-Neptunian Object
+
+Line 174
+telemetry_format_id
+
+ PDS3 Value   PDS4 Value
+ 
+  S&ER1       s and er1  
+  S&ER2       s and er2  
+  S&ER3       s and er3  
+  S&ER4       s and er4  
+  S&ER5       s and er5  
+  S&ER5A      s and er5a 
+  S&ER6       s and er6  
+  SAF_142200  saf 142200
+
+Note: & and XML don't play nicely.
+
+Lines 244, 267, 299
+The arrays: telemetry, image, prefix
+  In the arrays, there is a class Element_Array which has an 
+  attribute, data_type, for which the permitted values are:
+
+      ComplexLSB16	 
+ 	 	 	ComplexLSB8	 
+ 	 	 	ComplexMSB16	 
+ 	 	 	ComplexMSB8	 
+ 	 	 	IEEE754LSBDouble	 
+ 	 	 	IEEE754LSBSingle	 
+ 	 	 	IEEE754MSBDouble	 
+ 	 	 	IEEE754MSBSingle	 
+ 	 	 	SignedBitString	 
+ 	 	 	SignedByte	 
+ 	 	 	SignedLSB2	 
+ 	 	 	SignedLSB4	 
+ 	 	 	SignedLSB8	 
+ 	 	 	SignedMSB2	 
+ 	 	 	SignedMSB4	 
+ 	 	 	SignedMSB8	 
+ 	 	 	UnsignedBitString	 
+ 	 	 	UnsignedByte	 
+ 	 	 	UnsignedLSB2	 
+ 	 	 	UnsignedLSB4	 
+ 	 	 	UnsignedLSB8	 
+ 	 	 	UnsignedMSB2	 
+ 	 	 	UnsignedMSB4	 
+ 	 	 	UnsignedMSB8 
+
+  Please confirm my guesses on data_type are correct.
+ 	 	 	

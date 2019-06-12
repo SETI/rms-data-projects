@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1B00.sch"
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+
+<Product_Browse 
+    xmlns="http://pds.nasa.gov/pds4/pds/v1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+    http://pds.nasa.gov/pds4/pds/v1 https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1B00.xsd">
+    
+    <Identification_Area>
+        <logical_identifier>urn:nasa:pds:cassini_iss_$cruise_or_saturn$:browse_raw:$basename[:-4]$</logical_identifier>
+        <version_id>1.0</version_id>
+        <title>Browse image for Cassini ISS Image $basename[:-9]$.img</title>
+        <information_model_version>1.11.0.0</information_model_version>
+        <product_class>Product_Browse</product_class>
+        <Citation_Information>
+            <author_list>M. R. Showalter, M. W. Evans</author_list>
+            <editor_list>M. K. Gordon</editor_list>
+            <publication_year>2019</publication_year>
+            <description>Full-resolution browse image for Cassini ISS image $basename[:-4]$.img</description>
+        </Citation_Information>
+        <Modification_History>
+            <Modification_Detail>
+                <modification_date>$modification_date$</modification_date>
+                <version_id>1.0</version_id>
+                <description>Initial version. Generated as part of the migration to PDS4.</description>
+            </Modification_Detail>
+        </Modification_History>
+    </Identification_Area>
+    <Reference_List>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_iss_$cruise_or_saturn$:data_raw:$basename[:-9]$</lid_reference>
+            <reference_type>browse_to_data</reference_type>
+        </Internal_Reference>
+    </Reference_List>
+    <File_Area_Browse>
+        <File>
+            <file_name>$basename$</file_name>
+            <creation_date_time>$creation_time$</creation_date_time>
+            <md5_checksum>$md5_checksum$</md5_checksum>
+        </File>
+        <Encoded_Image>
+            <offset unit="byte">0</offset>
+            <encoding_standard_id>PNG</encoding_standard_id>
+        </Encoded_Image>
+    </File_Area_Browse>
+</Product_Browse>

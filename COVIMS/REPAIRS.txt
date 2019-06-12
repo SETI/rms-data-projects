@@ -1,0 +1,261 @@
+COMMENTS for COVIMS_0001/data/2000262T073347_2000262T075206/v1347954434_3.qub
+    QUBE array padded with 8296 NULL item bytes
+COMMENTS for COVIMS_0002/data/2001007T142231_2001008T162558/v1357635912_2.qub
+    QUBE array padded with 8296 NULL item bytes
+COMMENTS for COVIMS_0003/data/2001087T092149_2001190T072621/v1373335865_1.qub
+    QUBE array padded with 8312 NULL item bytes
+COMMENTS for COVIMS_0003/data/2002065T102804_2002065T113932/v1394106462_1_002.qub
+    Header GROUP(s) moved to history
+COMMENTS for COVIMS_0003/data/2002065T102804_2002065T113932/v1394106462_1_003.qub
+    History ends with 512 unprintables
+    Header GROUP(s) moved to history
+    Data shifted by -512 byte(s)
+COMMENTS for COVIMS_0003/data/2002065T102804_2002065T113932/v1394106462_1_004.qub
+    History ends with 512 unprintables
+    Header GROUP(s) moved to history
+    Data shifted by -512 byte(s)
+COMMENTS for COVIMS_0003/data/2002065T102804_2002065T113932/v1394106462_1_005.qub
+    History ends with 512 unprintables
+    Header GROUP(s) moved to history
+    Data shifted by -512 byte(s)
+COMMENTS for COVIMS_0003/data/2002065T102804_2002065T113932/v1394106462_1_006.qub
+    History ends with 512 unprintables
+    Header GROUP(s) moved to history
+    Data shifted by -512 byte(s)
+COMMENTS for COVIMS_0003/data/2002065T102804_2002065T113932/v1394106462_1_007.qub
+    History ends with 512 unprintables
+    Header GROUP(s) moved to history
+    Data shifted by -512 byte(s)
+COMMENTS for COVIMS_0003/data/2002065T102804_2002065T113932/v1394106462_1_008.qub
+    History ends with 512 unprintables
+    Header GROUP(s) moved to history
+    Data shifted by -512 byte(s)
+COMMENTS for COVIMS_0003/data/2002065T113932_2002072T040304/v1394682859_1_002.qub
+    Header GROUP(s) moved to history
+COMMENTS for COVIMS_0003/data/2002065T113932_2002072T040304/v1394682859_1_003.qub
+    History ends with 512 unprintables
+    Header GROUP(s) moved to history
+    Data shifted by -512 byte(s)
+COMMENTS for COVIMS_0003/data/2002065T113932_2002072T040304/v1394682859_1_004.qub
+    History ends with 512 unprintables
+    Header GROUP(s) moved to history
+    Data shifted by -512 byte(s)
+COMMENTS for COVIMS_0003/data/2002279T022545_2002286T140932/v1412652997_1.qub
+    QUBE array padded with 8312 NULL item bytes
+COMMENTS for COVIMS_0003/data/2002338T155324_2003019T161332/v1417715579_1.qub
+    QUBE array padded with 8312 NULL item bytes
+COMMENTS for COVIMS_0004/data/2004195T003217_2004220T203542/v1470596093_8.qub
+    Header END repaired (was 'END\r')
+    History repaired (was '\nEND')
+    Data shifted by 1 byte(s)
+COMMENTS for COVIMS_0004/data/2004220T210428_2004224T005032/v1470708914_7.qub
+    Header END repaired (was 'END\r')
+    History repaired (was '\nEND')
+    Data shifted by 1 byte(s)
+COMMENTS for COVIMS_0004/data/2004220T210428_2004224T005032/v1470867004_5.qub
+    Header END repaired (was '')
+    History repaired (was 'END\r\nEND')
+    Data shifted by 5 byte(s)
+COMMENTS for COVIMS_0004/data/2004224T011252_2004227T092952/v1470878973_4.qub
+    Header END repaired (was 'END\r')
+    History repaired (was '\nEND')
+    Data shifted by 1 byte(s)
+COMMENTS for COVIMS_0004/data/2004224T011252_2004227T092952/v1471110940_14.qub
+    Header END repaired (was 'END\r')
+    History repaired (was '\nEND')
+    Data shifted by 1 byte(s)
+COMMENTS for COVIMS_0004/data/2004227T100023_2004231T024049/v1471376441_11.qub
+    Header END repaired (was 'END\r')
+    History repaired (was '\nEND')
+    Data shifted by 1 byte(s)
+COMMENTS for COVIMS_0004/data/2004227T100023_2004231T024049/v1471424777_11.qub
+    Header END repaired (was 'END')
+    History repaired (was '\r\nEND')
+    Data shifted by 2 byte(s)
+COMMENTS for COVIMS_0004/data/2004231T031136_2004234T061028/v1471632088_8.qub
+    Header END repaired (was 'END\r')
+    History repaired (was '\nEND')
+    Data shifted by 1 byte(s)
+COMMENTS for COVIMS_0004/data/2004234T064135_2004238T155134/v1471935105_5.qub
+    Header END repaired (was 'END\r')
+    History repaired (was '\nEND')
+    Data shifted by 1 byte(s)
+COMMENTS for COVIMS_0004/data/2004234T064135_2004238T155134/v1471944033_4.qub
+    Header END repaired (was 'E')
+    History repaired (was 'ND\r\nEND')
+    Data shifted by 4 byte(s)
+COMMENTS for COVIMS_0004/data/2004253T185713_2004257T082338/v1473695633_10.qub
+    Header END repaired (was 'END')
+    History repaired (was '\r\nEND')
+    Data shifted by 2 byte(s)
+COMMENTS for COVIMS_0004/data/2004253T185713_2004257T082338/v1473722545_9.qub
+    Header END repaired (was 'END\r')
+    History repaired (was '\nEND')
+    Data shifted by 1 byte(s)
+COMMENTS for COVIMS_0004/data/2004253T185713_2004257T082338/v1473743657_1.qub
+    QUBE array padded with 1938032 NULL item bytes
+COMMENTS for COVIMS_0005/data/2004289T225942_2004292T210316/v1476799535_8.qub
+    Header END repaired (was 'E')
+    History repaired (was 'ND\r\nEND')
+    Data shifted by 4 byte(s)
+COMMENTS for COVIMS_0005/data/2004289T225942_2004292T210316/v1476824749_8.qub
+    Header END repaired (was 'EN')
+    History repaired (was 'D\r\nEND')
+    Data shifted by 3 byte(s)
+COMMENTS for COVIMS_0005/data/2004292T210337_2004299T222753/v1476832501_8.qub
+    Header END repaired (was 'E')
+    History repaired (was 'ND\r\nEND')
+    Data shifted by 4 byte(s)
+COMMENTS for COVIMS_0005/data/2004292T210337_2004299T222753/v1476837212_7.qub
+    Header END repaired (was 'EN')
+    History repaired (was 'D\r\nEND')
+    Data shifted by 3 byte(s)
+COMMENTS for COVIMS_0005/data/2004292T210337_2004299T222753/v1476837501_7.qub
+    Header END repaired (was 'E')
+    History repaired (was 'ND\r\nEND')
+    Data shifted by 4 byte(s)
+COMMENTS for COVIMS_0005/data/2004292T210337_2004299T222753/v1476839217_7.qub
+    Header END repaired (was 'END')
+    History repaired (was '\r\nEND')
+    Data shifted by 2 byte(s)
+COMMENTS for COVIMS_0005/data/2004292T210337_2004299T222753/v1476858983_7.qub
+    Header END repaired (was 'END')
+    History repaired (was '\r\nEND')
+    Data shifted by 2 byte(s)
+COMMENTS for COVIMS_0005/data/2004292T210337_2004299T222753/v1476860359_7.qub
+    Header END repaired (was 'END')
+    History repaired (was '\r\nEND')
+    Data shifted by 2 byte(s)
+COMMENTS for COVIMS_0005/data/2004292T210337_2004299T222753/v1476913348_6.qub
+    Header END repaired (was 'E')
+    History repaired (was 'ND\r\nEND')
+    Data shifted by 4 byte(s)
+COMMENTS for COVIMS_0005/data/2004292T210337_2004299T222753/v1476921184_6.qub
+    Header END repaired (was 'EN')
+    History repaired (was 'D\r\nEND')
+    Data shifted by 3 byte(s)
+COMMENTS for COVIMS_0005/data/2004292T210337_2004299T222753/v1476923797_6.qub
+    Header END repaired (was 'E')
+    History repaired (was 'ND\r\nEND')
+    Data shifted by 4 byte(s)
+COMMENTS for COVIMS_0005/data/2004312T220120_2004322T183721/v1479238469_5.qub
+    Header END repaired (was 'END_OBJECT = QUB')
+    History repaired (was 'E\r\nEND\r\nEND')
+    Data shifted by 8 byte(s)
+COMMENTS for COVIMS_0005/data/2004322T193714_2004327T214306/v1479497433_6.qub
+    Header END repaired (was 'END_OBJECT = QU')
+    History repaired (was 'BE\r\nEND\r\nEND')
+    Data shifted by 9 byte(s)
+COMMENTS for COVIMS_0008/data/2005248T174142_2005248T183846/v1504635176_1.qub
+    QUBE array padded with 14912 NULL item bytes
+COMMENTS for COVIMS_0028/data/2008151T162549_2008152T051615/v1590903462_1_002.qub
+    Truncated header reconstructed
+    Data shifted by 1 byte(s)
+COMMENTS for COVIMS_0028/data/2008152T051633_2008152T054940/v1590905029_1_002.qub
+    Truncated header reconstructed
+    Data shifted by 511 byte(s)
+    QUBE array padded with 8196 NULL item bytes
+COMMENTS for COVIMS_0028/data/2008152T051633_2008152T054940/v1590905718_1_002.qub
+    Header GROUP(s) moved to history
+    Data shifted by 511 byte(s)
+COMMENTS for COVIMS_0028/data/2008152T051633_2008152T054940/v1590905969_1_002.qub
+    Truncated header reconstructed
+    Data shifted by 1 byte(s)
+COMMENTS for COVIMS_0028/data/2008152T051633_2008152T054940/v1590906220_1_001.qub
+    Header GROUP(s) moved to history
+    Data shifted by 511 byte(s)
+COMMENTS for COVIMS_0028/data/2008152T065649_2008152T073018/v1590910919_1_001.qub
+    Truncated header reconstructed
+    Data shifted by 511 byte(s)
+COMMENTS for COVIMS_0028/data/2008152T065649_2008152T073018/v1590910919_1_002.qub
+    Data shifted by 511 byte(s)
+    QUBE array padded with 8196 NULL item bytes
+COMMENTS for COVIMS_0028/data/2008152T065649_2008152T073018/v1590911380_1_001.qub
+    Truncated header reconstructed
+    Data shifted by 511 byte(s)
+COMMENTS for COVIMS_0028/data/2008152T065649_2008152T073018/v1590911756_1_002.qub
+    Truncated header reconstructed
+    Data shifted by 511 byte(s)
+COMMENTS for COVIMS_0028/data/2008152T073036_2008152T080343/v1590913385_1_001.qub
+    Header GROUP(s) moved to history
+    Data shifted by 511 byte(s)
+    QUBE array padded with 16388 NULL item bytes
+COMMENTS for COVIMS_0028/data/2008152T073036_2008152T080343/v1590914263_1_001.qub
+    Truncated header reconstructed
+    Data shifted by 511 byte(s)
+COMMENTS for COVIMS_0028/data/2008152T080402_2008152T083708/v1590914826_1_001.qub
+    Truncated header reconstructed
+    Data shifted by 1 byte(s)
+COMMENTS for COVIMS_0028/data/2008152T080402_2008152T083708/v1590915954_1_001.qub
+    Truncated header reconstructed
+    Data shifted by 511 byte(s)
+COMMENTS for COVIMS_0028/data/2008159T105543_2008159T113045/v1591531518_1_002.qub
+    Truncated header reconstructed
+    Data shifted by 511 byte(s)
+COMMENTS for COVIMS_0028/data/2008159T143109_2008159T150644/v1591544544_1_001.qub
+    Truncated header reconstructed
+    Data shifted by 511 byte(s)
+COMMENTS for COVIMS_0028/data/2008159T143109_2008159T150644/v1591544544_1_002.qub
+    Truncated header reconstructed
+    Data shifted by 511 byte(s)
+COMMENTS for COVIMS_0028/data/2008159T150730_2008159T154232/v1591546693_1_001.qub
+    Truncated header reconstructed
+    Data shifted by 511 byte(s)
+    QUBE array padded with 16388 NULL item bytes
+COMMENTS for COVIMS_0028/data/2008159T161906_2008159T165408/v1591550183_1_001.qub
+    Header GROUP(s) moved to history
+    Data shifted by 511 byte(s)
+    QUBE array padded with 8194 NULL item bytes
+COMMENTS for COVIMS_0028/data/2008164T223203_2008164T231739/v1592004809_1_012.qub
+    Header GROUP(s) moved to history
+    Data shifted by 511 byte(s)
+COMMENTS for COVIMS_0028/data/2008164T231823_2008165T010555/v1592012347_1_001.qub
+    Header GROUP(s) moved to history
+    Data shifted by 511 byte(s)
+    QUBE array padded with 16544 NULL item bytes
+COMMENTS for COVIMS_0028/data/2008165T015258_2008165T023834/v1592017907_4_001.qub
+    Truncated header reconstructed
+    Data shifted by 511 byte(s)
+COMMENTS for COVIMS_0028/data/2008165T023918_2008165T060401/v1592030090_1_001.qub
+    Truncated header reconstructed
+    Data shifted by 511 byte(s)
+    QUBE array padded with 8196 NULL item bytes
+COMMENTS for COVIMS_0028/data/2008165T060429_2008165T065613/v1592031594_1_001.qub
+    Truncated header reconstructed
+    Data shifted by 511 byte(s)
+COMMENTS for COVIMS_0028/data/2008165T060429_2008165T065613/v1592032700_1_002.qub
+    Data shifted by 511 byte(s)
+    QUBE array padded with 8196 NULL item bytes
+COMMENTS for COVIMS_0028/data/2008165T065641_2008165T074745/v1592034256_1_001.qub
+    Header GROUP(s) moved to history
+    Data shifted by 511 byte(s)
+COMMENTS for COVIMS_0028/data/2008165T065641_2008165T074745/v1592034256_1_002.qub
+    Truncated header reconstructed
+    Data shifted by 1 byte(s)
+COMMENTS for COVIMS_0028/data/2008165T065641_2008165T074745/v1592035154_1_001.qub
+    Truncated header reconstructed
+    Data shifted by 1 byte(s)
+COMMENTS for COVIMS_0028/data/2008165T065641_2008165T074745/v1592035436_1_002.qub
+    Truncated header reconstructed
+    Data shifted by 1 byte(s)
+COMMENTS for COVIMS_0028/data/2008165T065641_2008165T074745/v1592035530_1_001.qub
+    Header GROUP(s) moved to history
+    Data shifted by 511 byte(s)
+    QUBE array padded with 8194 NULL item bytes
+COMMENTS for COVIMS_0028/data/2008165T065641_2008165T074745/v1592035812_1_002.qub
+    Header GROUP(s) moved to history
+    Data shifted by 511 byte(s)
+COMMENTS for COVIMS_0028/data/2008165T074813_2008165T083905/v1592039394_1_002.qub
+    Truncated header reconstructed
+    Data shifted by 1 byte(s)
+COMMENTS for COVIMS_0030/data/2008234T074624_2008234T080914/v1597998797_4_033.qub
+    Header GROUP(s) moved to history
+    Data shifted by 511 byte(s)
+    QUBE array padded with 13208 NULL item bytes
+COMMENTS for COVIMS_0030/data/2008234T100549_2008235T060827/v1598006945_4_029.qub
+    Header GROUP(s) moved to history
+    Data shifted by 511 byte(s)
+COMMENTS for COVIMS_0070/data/2014261T225154_2014262T124414/v1789821771_1.qub
+    QUBE array padded with 871936 NULL item bytes
+COMMENTS for COVIMS_0070/data/2014262T124709_2014264T221427/v1789826136_1.qub
+    QUBE array padded with 16896 NULL item bytes

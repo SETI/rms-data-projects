@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1B00.sch"
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="https://pds.nasa.gov/pds4/disp/v1/PDS4_DISP_1B00.sch"
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="https://pds.nasa.gov/pds4/mission/cassini/v1/PDS4_CASSINI_1B00_1300.sch"
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+
+<Product_Observational 
+ xmlns="http://pds.nasa.gov/pds4/pds/v1"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:disp="http://pds.nasa.gov/pds4/disp/v1"
+ xmlns:cassini="http://pds.nasa.gov/pds4/mission/cassini/v1"
+ 
+ xsi:schemaLocation="
+ http://pds.nasa.gov/pds4/pds/v1 https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1B00.xsd
+ http://pds.nasa.gov/pds4/disp/v1 https://pds.nasa.gov/pds4/disp/v1/PDS4_DISP_1B00.xsd
+ http://pds.nasa.gov/pds4/mission/cassini/v1 https://pds.nasa.gov/pds4/mission/cassini/v1/PDS4_CASSINI_1B00_1300.xsd">    
+    
+    <Identification_Area>
+        <logical_identifier>urn:nasa:pds:cassini_iss_$cruise or saturn$:data_$raw or calibrated$:$filename modified$</logical_identifier>
+        <version_id>1.0</version_id>
+        <title>Cassini ISS Image $filename modified$</title>
+        <information_model_version>1.11.0.0</information_model_version>
+        <product_class>Product_Observational</product_class>
+        <Citation_Information>                                        
+            <publication_year>2019</publication_year>
+            <description>Cassini ISS $narrow or wide based on INSTRUMENT_ID$ angle camera image taken on $modified START_TIME$. </description>
+        </Citation_Information>
+        <Modification_History>
+            <Modification_Detail>
+                <modification_date>$later of the date the label and the date the data file were generated$</modification_date>
+                <version_id>1.0</version_id>
+                <description>Initial PDS4 Version. Migrated from the PDS3 data product.</description>
+            </Modification_Detail>
+        </Modification_History>
+    </Identification_Area>
+    <Observation_Area>
+        <comment>This product was migrated from the original PDS3 product. The 
+        	contents of the data file were reorganized in order to make the file
+          PDS4 compliant. Values for attributes in this label are based on the 
+          corresponding values in the PDS3 label.
+        </comment>                     
+        <Time_Coordinates>
+            <start_date_time>$START_TIME converted to yyyy-mm-ddT...$Z</start_date_time>
+            <stop_date_time>$START_TIME converted to yyyy-mm-ddT...$Z</stop_date_time>
+        </Time_Coordinates>
+        <Primary_Result_Summary>
+            <purpose>$IMAGE_OBSERVATION_TYPE$</purpose>                    <!-- [mkg]  If multivalued in PDS3, repeat this line, see value translation -->              
+            <processing_level>Raw</processing_level>
+            <Science_Facets>
+                <wavelength_range>$Look up Table$</wavelength_range>       <!-- [mkg]  use look up table  --> 
+                <discipline_name>Ring-Moon Systems</discipline_name>
+            </Science_Facets>
+        </Primary_Result_Summary>
+        <Investigation_Area>
+            <name>Cassini-Huygens</name>
+            <type>Mission</type>
+            <Internal_Reference>
+                <lid_reference>urn:nasa:pds:context:investigation:mission.cassini-huygens</lid_reference>
+                <reference_type>data_to_investigation</reference_type>
+            </Internal_Reference>
+        </Investigation_Area>
+        <Observing_System>
+            <name>Cassini Orbiter Imaging Science Subsystem</name>
+            <Observing_System_Component>
+                <name>Cassini Orbiter</name>
+                <type>Spacecraft</type>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:context:instrument_host:spacecraft.co</lid_reference>
+                    <reference_type>is_instrument_host</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+            
+<!-- [mkg]Choose one of the two following Observing_System_Component classes. 
+     If the PDS3 filename begins with N use the first, W the second   -->
+            
+            <Observing_System_Component>
+                <name>Cassini Orbiter Imaging Science Subsystem – Narrow Angle Camera</name>
+                <type>Spacecraft</type>
+                <description>$INSTRUMENT_ID$</description>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:context:instrument:issna.co</lid_reference>
+                    <reference_type>is_instrument</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+            <Observing_System_Component>
+                <name>Cassini Orbiter Imaging Science Subsystem – Wide Angle Camera</name>
+                <type>Spacecraft</type>
+                <description>$INSTRUMENT_ID$</description>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:context:instrument:isswa.co</lid_reference>
+                    <reference_type>is_instrument</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+        </Observing_System>
+        <Target_Identification>
+            <name>$TARGET_DESC$</name>                        
+            <alternate_designation>?</alternate_designation>  <!-- [mkg] from HST pipeline? -->
+            <alternate_designation>?</alternate_designation>
+            <type>$Choose from a list?$</type>
+            <description>The target given here is that identified in the PDS3 label, TARGET_DESC. This is the target used by the team to determine what exposure time to use. It may not be the actual target of the observation. </description>  
+            <Internal_Reference>
+                <lid_reference>?</lid_reference>
+                <reference_type>data_to_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+        <Mission_Area>
+            <cassini:Cassini>
+                <cassini:ISS_Specific_Attributes>
+                    <cassini:mission_phase_name>$determine from start date$</cassini:mission_phase_name>
+                    <cassini:spacecraft_clock_count_partition>1</cassini:spacecraft_clock_count_partition>
+                    <cassini:spacecraft_clock_start_count>$SPACECRAFT_CLOCK_START_COUNT$</cassini:spacecraft_clock_start_count>
+                    <cassini:spacecraft_clock_stop_count>$SPACECRAFT_CLOCK_STOP_COUNT$</cassini:spacecraft_clock_stop_count>
+                    <cassini:limitations>$DESCRIPTION$</cassini:limitations>
+                    <cassini:antiblooming_state_flag>$ANTIBLOOMING_STATE_FLAG$</cassini:antiblooming_state_flag>
+                    <cassini:bias_strip_mean>$BIAS_STRIP_MEAN$</cassini:bias_strip_mean>
+                    <cassini:calibration_lamp_state_flag>$CALIBRATION_LAMP_STATE_FLAG$</cassini:calibration_lamp_state_flag>
+                    <cassini:command_file_name>$COMMAND_FILE_NAME$</cassini:command_file_name>
+                    <cassini:command_sequence_number>$COMMAND_SEQUENCE_NUMBER$</cassini:command_sequence_number>
+                    <cassini:dark_strip_mean>$DARK_STRIP_MEAN$</cassini:dark_strip_mean>
+                    <cassini:data_conversion_type>$DATA_CONVERSION_TYPE$</cassini:data_conversion_type>
+                    <cassini:delayed_readout_flag>$DELAYED_READOUT_FLAG$</cassini:delayed_readout_flag>
+                    <cassini:detector_temperature unit="degC">$DETECTOR_TEMPERATURE$</cassini:detector_temperature>
+                    <cassini:electronics_bias>$ELECTRONICS_BIAS$</cassini:electronics_bias>
+                    <cassini:earth_received_start_time$EARTH_RECEIVED_START_TIME$</cassini:earth_received_start_time>
+                    <cassini:earth_received_stop_time$EARTH_RECEIVED_STOP_TIME$</cassini:earth_received_stop_time>
+                    <cassini:expected_maximum_1>$EXPECTED_MAXIMUM(1)$</cassini:expected_maximum_1>
+                    <cassini:expected_maximum_2>$EXPECTED_MAXIMUM(2)$</cassini:expected_maximum_2>
+                    <cassini:expected_packets>$EXPECTED_PACKETS$</cassini:expected_packets>
+                    <cassini:exposure_duration unit="milliseconds">$EXPOSURE_DURATION$</cassini:exposure_duration> 
+                    <cassini:filter_name_1>$FILTER_NAME (1)$</cassini:filter_name_1>                                   
+                    <cassini:filter_name_2>$FILTER_NAME$(2)</cassini:filter_name_2>                                   
+                    <cassini:filter_temperature unit="degC">$FILTER_TEMPERATURE$</cassini:filter_temperature>        
+                    <cassini:flight_software_version_id>$FLIGHT_SOFTWARE_VERSION_ID$</cassini:flight_software_version_id>
+                    <cassini:gain_mode_id>$GAIN_MODE_ID number only $ electrons per DN</cassini:gain_mode_id>
+                    <cassini:ground_software_version_id>$SOFTWARE_VERSION_ID$</cassini:flight_software_version_id>
+                    <cassini:image_number>$IMAGE_NUMBER$</cassini:image_number>
+                    <cassini:image_time$IMAGE_TIME$</cassini:image_time>
+                    <cassini:image_observation_type>$IMAGE_OBSERVATION_TYPE$</cassini:image_observation_type>      
+                    <cassini:instrument_data_rate>$INSTRUMENT_DATA_RATE$</cassini:instrument_data_rate>
+                    <cassini:instrument_mode_id>$INSTRUMENT_MODE_ID$</cassini:instrument_mode_id>
+                    <cassini:inst_cmprs_param_malgo>$INST_CMPRS_PARAM (1)$</cassini:inst_cmprs_param_malgo>                    <!-- [mkg] use 999 for N/A  -->
+                    <cassini:inst_cmprs_param_tb>$INST_CMPRS_PARAM (2)$</cassini:inst_cmprs_param_tb>                          <!-- [mkg] use 999 for N/A  -->
+                    <cassini:inst_cmprs_param_blocks>$INST_CMPRS_PARAM (3)$</cassini:inst_cmprs_param_blocks>                  <!-- [mkg] use 999 for N/A  -->
+                    <cassini:inst_cmprs_param_quant>$INST_CMPRS_PARAM (4)$</cassini:inst_cmprs_param_quant>                    <!-- [mkg] use 999 for N/A  -->
+                    <cassini:inst_cmprs_rate_expected_bits>$INST_CMPRS_RATE (1)$</cassini:inst_cmprs_rate_expected_bits>  
+                    <cassini:inst_cmprs_rate_actual_bits>$INST_CMPRS_RATE (2)$</cassini:inst_cmprs_rate_actual_bits>      
+                    <cassini:inst_cmprs_ratio>$INST_CMPRS_RATIO$</cassini:inst_cmprs_ratio>                                     <!-- [mkg] use 999.9 for N/A  -->
+                    <cassini:inst_cmprs_type>$INST_CMPRS_TYPE$</cassini:inst_cmprs_type>
+                    <cassini:light_flood_state_flag>$LIGHT_FLOOD_STATE_FLAG$</cassini:light_flood_state_flag>
+                    <cassini:method_description>$METHOD_DESC$</cassini:method_description>
+                    <cassini:missing_lines>$MISSING_LINES$</cassini:missing_lines>                              
+                    <cassini:missing_packet_flag>$MISSING_PACKET_FLAG$</cassini:missing_packet_flag>
+                    <cassini:observation_id>$OBSERVATION_ID$</cassini:observation_id>
+                    <cassini:optics_temperature_front unit="degC">$OPTICS_TEMPERATURE (1)$</cassini:optics_temperature_front>   <!-- [mkg] use -999.9 for N/A  -->
+                    <cassini:optics_temperature_back unit="degC">$OPTICS_TEMPERATURE (2)$</cassini:optics_temperature_back>     <!-- [mkg] use -999.9 for N/A  -->
+                    <cassini:order_number>$ORDER_NUMBER$</cassini:order_number>
+                    <cassini:parallel_clock_voltage_index>$PARALLEL_CLOCK_VOLTAGE_INDEX$</cassini:parallel_clock_voltage_index>
+                    <cassini:pds3_product_creation_time$PRODUCT_CREATION_TIME$</cassini:pds3_product_creation_time>
+                    <cassini:pre-pds_version_number>$last field in filename$</cassini:pre-pds_version_number>
+                    <cassini:prepare_cycle_index>$PREPARE_CYCLE_INDEX$</cassini:prepare_cycle_index>
+                    <cassini:product_version_type$PRODUCT_VERSION_TYPE$</cassini:product_version_type>
+                    <cassini:readout_cycle_index>$READOUT_CYCLE_INDEX$</cassini:readout_cycle_index>
+                    <cassini:received_packets>$RECEIVED_PACKETS$</cassini:received_packets>
+                    <cassini:sensor_head_electronics_temperature unit="degC">$SENSOR_HEAD_ELEC_TEMPERATURE$</cassini:sensor_head_electronics_temperature>
+                    <cassini:sequence_id>$SEQUENCE_ID$</cassini:sequence_id>
+                    <cassini:sequence_number>$SEQUENCE_NUMBER$</cassini:sequence_number>
+                    <cassini:sequence_title>$SEQUENCE_TITLE$</cassini:sequence_title>
+                    <cassini:shutter_mode_id>$SHUTTER_MODE_ID$</cassini:shutter_mode_id>              
+                    <cassini:shutter_state_id>$SHUTTER_STATE_ID$</cassini:shutter_state_id>
+                    <cassini:start_time_doy$START_TIME$</cassini:start_time_DOY>
+                    <cassini:stop_time_doy$STOP_TIME$</cassini:stop_time_DOY>
+                    <cassini:telemetry_format_id>$TELEMETRY_FORMAT_ID$</cassini:telemetry_format_id>  <!-- [mkg] see look up table -->
+                    <cassini:valid_maximum_full_well>$VALID_MAXIMUM (1)$</cassini:valid_maximum_full_well>  
+                    <cassini:valid_maximum_DN_sat>$VALID_MAXIMUM (2)$</cassini:valid_maximum_DN_sat>  
+                </cassini:ISS_Specific_Attributes>
+            </cassini:Cassini>
+        </Mission_Area>
+        <Discipline_Area>                                                                         
+            <disp:Display_Direction>
+                <disp:horizontal_display_axis>2</disp:horizontal_display_axis>
+                <disp:horizontal_display_direction>Left to Right</disp:horizontal_display_direction>
+                <disp:vertical_display_axis>1</disp:vertical_display_axis>
+                <disp:vertical_display_direction>Top_to_Bottom</disp:vertical_display_direction>
+            </disp:Display_Direction>
+            
+        </Discipline_Area>
+    </Observation_Area>
+
+    <Reference_List>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_iss_saturn:document:iss_data_user_guide</lid_reference>
+            <reference_type>data_to_document</reference_type>
+            <comment>This refers to the ISS Data User's Guide</comment>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_iss_$cruise or saturn$:data_$raw or calibrated$:cum-index</lid_reference>
+            <reference_type>data_to_resource</reference_type>
+            <comment>This refers to cummulative metadata table of basic parameters associated with each observation.</comment>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_iss_$cruise or saturn$:data_$raw or calibrated$:cum-body-inventory</lid_reference>
+            <reference_type>data_to_resource</reference_type>
+            <comment>This refers to a metadata table listing all satellites in the field of view for each observation.</comment>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_iss_$cruise or saturn$:data_$raw or calibrated$:cum-moon-summary</lid_reference>
+            <reference_type>data_to_resource</reference_type>
+            <comment>This refers to a metadata table providing, values for geometric parameters for each satellite in the FoV of each observation.</comment>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_iss_$cruise or saturn$:data_$raw or calibrated$:cum-ring-summary</lid_reference>
+            <reference_type>data_to_resource</reference_type>
+            <comment>This refers to a metadata table providing, values for geometric parameters for the rings when they are in the FoV of each observation.</comment>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_iss_$jupiter or saturn$:data_$raw or calibrated$:cum-saturn-summary</lid_reference>
+            <reference_type>data_to_resource</reference_type>
+            <comment>This refers to a metadata table providing values for geometric parameters for the planet for each observation in which the planet is in the FoV.</comment>  <!--  [mkg] will we do one for Venus?  -->
+        </Internal_Reference>
+        <Source_Product_External>
+            <external_source_product_identifier>$DATA_SET_ID$:$PRODUCT_ID$</external_source_product_identifier>
+            <reference_type>data_to_raw_source_product</reference_type>
+            <curating_facility>PDS RMS Node</curating_facility>
+            <description>This refers to the original PDS3 version of this product. The form of the reference is dataset_id:product_id.</description>
+        </Source_Product_External>
+    </Reference_List>
+
+    <File_Area_Observational>
+        <File>
+            <file_name>$$</file_name>
+            <creation_date_time>$$</creation_date_time>                           <!-- [mkg]  Optional, drop?  -->
+            <md5_checksum>$$</md5_checksum>                           
+
+<!-- The internal VICAR header  -->
+
+        </File>
+        <Header>
+            <offset unit="byte">0</offset>
+            <object_length unit="byte">$$</object_length>                
+            <parsing_standard_id>VICAR2</parsing_standard_id>             
+        </Header>
+        
+<!-- Telemetry Table  --->
+        
+        <Array>                                                                <!-- [mkg]  Is it always one row and two columns?  -->
+            <local_identifier>telemetry-table</local_identifier>
+            <offset unit="bytes">$$</offset>
+            <axes>1</axes>                                               
+            <axis_index_order>Last Index Fastest</axis_index_order>
+            <Element_Array>
+                <data_type>UnsignedMSB8</data_type>                                <!-- [mkg]  Is this correct?  -->
+            </Element_Array>
+            <Axis_Array>
+                <axis_name>telemetry</axis_name>
+                <elements>$COLUMNS in TELEMETRY_TABLE$</elements>                  <!--  [mkg] just 2 if there always are two and only two columns -->
+                <sequence_number>1</sequence_number>
+            </Axis_Array>
+        </Array>
+        
+<!--   The image   -->
+                
+        <Array_2D_Image>
+            <local_identifier>image</local_identifier>
+            <offset unit="byte">$$</offset>                               
+            <axes>2</axes>
+            <axis_index_order>Last Index Fastest</axis_index_order>
+            <Element_Array>
+                <data_type>UnsignedMSB8</data_type>                                 <!-- [mkg]  Is this correct?  -->
+                <unit>DN</unit>                                        
+            </Element_Array>
+            <Axis_Array>
+                <axis_name>Line</axis_name>
+                <local_identifier>down</local_identifier>
+                <elements>$$</elements>                               
+                <sequence_number>1</sequence_number>
+            </Axis_Array>
+            <Axis_Array>
+                <axis_name>Sample</axis_name>
+                <local_identifier>right</local_identifier>
+                <elements>$$</elements>                                
+                <sequence_number>2</sequence_number>
+            </Axis_Array>
+        </Array_2D_Image>
+
+<!-- VICAR footer  -->
+
+        <Header>
+            <offset unit="byte">$$</offset>
+            <object_length unit="byte">$$</object_length>                
+            <parsing_standard_id>VICAR2</parsing_standard_id>             
+        </Header>
+        
+<!-- Line prefix table  -->         
+    
+        <Array_2D>
+            <offset unit="bytes"></offset>
+            <axes>2</axes>
+            <axis_index_order>Last Index Fastest</axis_index_order>
+            <Element_Array>
+                <data_type>UnsignedMSB8</data_type>
+            </Element_Array>
+            <Axis_Array>
+                <axis_name>prefix-line</axis_name>                                    <!-- [mkg]  Is this correct?  -->
+                <elements>7</elements>
+                <sequence_number>1</sequence_number>
+            </Axis_Array>
+            <Axis_Array>
+                <axis_name>prefix-sample</axis_name>
+                <elements>$ROWS in LINE_PREFIX_TABLE</elements>
+                <sequence_number>1</sequence_number>
+            </Axis_Array>
+        </Array_2D>
+    </File_Area_Observational>
+</Product_Observational>
