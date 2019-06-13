@@ -119,8 +119,8 @@ $ONCE
                     <cassini:electronics_bias>$ELECTRONICS_BIAS$</cassini:electronics_bias>
                     <cassini:earth_received_start_time>$EARTH_RECEIVED_START_TIME$</cassini:earth_received_start_time>
                     <cassini:earth_received_stop_time>$EARTH_RECEIVED_STOP_TIME$</cassini:earth_received_stop_time>
-                    <cassini:expected_maximum_1>$EXPECTED_MAXIMUM[0]$</cassini:expected_maximum_1>
-                    <cassini:expected_maximum_2>$EXPECTED_MAXIMUM[1]$</cassini:expected_maximum_2>
+                    <cassini:expected_maximum_full_well>$EXPECTED_MAXIMUM[0]$</cassini:expected_maximum_full_well>
+                    <cassini:expected_maximum_DN>$EXPECTED_MAXIMUM[1]$</cassini:expected_maximum_DN>
                     <cassini:expected_packets>$EXPECTED_PACKETS$</cassini:expected_packets>
                     <cassini:exposure_duration unit="ms">$EXPOSURE_DURATION$</cassini:exposure_duration>
                     <cassini:filter_name_1>$FILTER_NAME[0]$</cassini:filter_name_1>
@@ -155,6 +155,9 @@ $ONCE
                     <cassini:order_number>$ORDER_NUMBER$</cassini:order_number>
                     <cassini:parallel_clock_voltage_index>$PARALLEL_CLOCK_VOLTAGE_INDEX$</cassini:parallel_clock_voltage_index>
                     <cassini:pds3_product_creation_time>$PRODUCT_CREATION_TIME$</cassini:pds3_product_creation_time>
+                    <cassini:pds3_target_desc>$TARGET_DESC$</cassini:pds3_target_desc>
+                    <cassini:pds3_target_list>$TARGET_LIST$</cassini:pds3_target_list>
+                    <cassini:pds3_target_name>$TARGET_NAME$</cassini:pds3_target_name>
                     <cassini:pre-pds_version_number>$pre_pds_version_number$</cassini:pre-pds_version_number>
                     <cassini:prepare_cycle_index>$PREPARE_CYCLE_INDEX$</cassini:prepare_cycle_index>
                     <cassini:product_version_type>$PRODUCT_VERSION_TYPE$</cassini:product_version_type>
