@@ -253,7 +253,7 @@ class XmlTemplate(object):
             # For an $IF section, first decide whether to include it
             elif header_type == '$IF':
                 result = eval(header_expr, lookup)
-                if results:
+                if result:
                     filled_out += fill_out_one_section(self.sections[k],
                                                        self.expressions[k],
                                                        self.assignments[k],

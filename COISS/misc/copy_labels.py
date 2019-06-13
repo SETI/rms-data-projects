@@ -14,7 +14,7 @@ def migrate1(pds3_file):
     out_dir = out_dir[:out_dir.index('xxx/')+4] + 'pds3-labels/%sxxxxx' % sclk[:5]
 
     pds4_file = os.path.join(out_dir, sclk + camera + '.lbl')
-    print os.path.exists(pds4_file), pds4_file
+#     print os.path.exists(pds4_file), pds4_file
     if os.path.exists(pds4_file): return
 
     if in_dir == out_dir:

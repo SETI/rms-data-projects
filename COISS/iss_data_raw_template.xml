@@ -1,4 +1,4 @@
-'<''?'xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1B00.sch"
     schematypens="http://purl.oclc.org/dsdl/schematron"?>
 <?xml-model href="https://pds.nasa.gov/pds4/disp/v1/PDS4_DISP_1B00.sch"
@@ -18,7 +18,7 @@
  http://pds.nasa.gov/pds4/mission/cassini/v1 https://pds.nasa.gov/pds4/mission/cassini/v1/PDS4_CASSINI_1B00_1300.xsd">
 
     <Identification_Area>
-        <logical_identifier>urn:nasa:pds:cassini_iss_$cruise_or_saturn=('cruise' if START_TIME < 2004 else 'saturn')$:data_raw:$BASENAME(datafile)$</logical_identifier>
+        <logical_identifier>urn:nasa:pds:cassini_iss_$cruise_or_saturn=('cruise' if START_TIME < '2004' else 'saturn')$:data_raw:$BASENAME(datafile)$</logical_identifier>
         <version_id>1.0</version_id>
         <title>Cassini ISS Image $BASENAME(datafile)$</title>
         <information_model_version>1.11.0.0</information_model_version>
@@ -29,7 +29,7 @@
         </Citation_Information>
         <Modification_History>
             <Modification_Detail>
-                <modification_date>$CURRENT_ZULU()$</modification_date>
+                <modification_date>$CURRENT_ZULU()[:10]$</modification_date>
                 <version_id>1.0</version_id>
                 <description>Initial PDS4 Version. Migrated from the PDS3 data product.</description>
             </Modification_Detail>
@@ -132,7 +132,9 @@ $ONCE
                     <cassini:image_mid_time>$IMAGE_TIME$</cassini:image_mid_time>
                     <cassini:image_number>$IMAGE_NUMBER$</cassini:image_number>
                     <cassini:image_time>$IMAGE_TIME$</cassini:image_time>
-                    <cassini:image_observation_type>$IMAGE_OBSERVATION_TYPE$</cassini:image_observation_type>
+$FOR_EACH(IMAGE_OBSERVATION_TYPE)
+                    <cassini:image_observation_type>$VALUE$</cassini:image_observation_type>
+$ONCE
                     <cassini:instrument_data_rate>$INSTRUMENT_DATA_RATE$</cassini:instrument_data_rate>
                     <cassini:instrument_mode_id>$INSTRUMENT_MODE_ID$</cassini:instrument_mode_id>
                     <cassini:inst_cmprs_param_malgo>$REPLACE_NA(INST_CMPRS_PARAM[0],999)$</cassini:inst_cmprs_param_malgo>
@@ -149,7 +151,7 @@ $ONCE
                     <cassini:missing_packet_flag>$MISSING_PACKET_FLAG$</cassini:missing_packet_flag>
                     <cassini:observation_id>$OBSERVATION_ID$</cassini:observation_id>
                     <cassini:optics_temperature_front unit="degC">$REPLACE_NA(OPTICS_TEMPERATURE[0],-999.9)$</cassini:optics_temperature_front>
-                    <cassini:optics_temperature_back unit="degC">$REPLACE_NA(OPTICS_TEMPERATURE[1],-999.9)$</cassini:optics_temperature_back>
+                    <cassini:optics_temperature_back unit="degC">$REPLACE_NA(REPLACE_NA(OPTICS_TEMPERATURE[1],-999.9,'UNK'),-999.9)$</cassini:optics_temperature_back>
                     <cassini:order_number>$ORDER_NUMBER$</cassini:order_number>
                     <cassini:parallel_clock_voltage_index>$PARALLEL_CLOCK_VOLTAGE_INDEX$</cassini:parallel_clock_voltage_index>
                     <cassini:pds3_product_creation_time>$PRODUCT_CREATION_TIME$</cassini:pds3_product_creation_time>
@@ -164,8 +166,8 @@ $ONCE
                     <cassini:sequence_title>$SEQUENCE_TITLE$</cassini:sequence_title>
                     <cassini:shutter_mode_id>$SHUTTER_MODE_ID$</cassini:shutter_mode_id>
                     <cassini:shutter_state_id>$SHUTTER_STATE_ID$</cassini:shutter_state_id>
-                    <cassini:start_time_doy>$START_TIME$</cassini:start_time_DOY>
-                    <cassini:stop_time_doy>$STOP_TIME$</cassini:stop_time_DOY>
+                    <cassini:start_time_doy>$START_TIME$</cassini:start_time_doy>
+                    <cassini:stop_time_doy>$STOP_TIME$</cassini:stop_time_doy>
                     <cassini:telemetry_format_id>$TELEMETRY_FORMAT_ID$</cassini:telemetry_format_id>
                     <cassini:valid_maximum_full_well>$VALID_MAXIMUM[0]$</cassini:valid_maximum_full_well>
                     <cassini:valid_maximum_DN_sat>$VALID_MAXIMUM[1]$</cassini:valid_maximum_DN_sat>
@@ -222,7 +224,7 @@ $ONCE
             <parsing_standard_id>VICAR2</parsing_standard_id>
         </Header>
 
-<!-- Telemetry Table --->
+<!-- Telemetry Table -->
 
         <Array>
             <local_identifier>telemetry-table</local_identifier>

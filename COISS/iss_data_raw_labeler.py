@@ -103,11 +103,14 @@ STAR_ABBREVS = {
     'CANOPUS'  : ('Canopus'    , ['alpha Car']),
     'FOMALHAUT': ('Fomalhaut'  , ['alpha PsA']),
     'SPICA'    : ('Spica'      , ['alpha Vir']),
+    'VEGA'     : ('Vega'       , ['alpha Lyr']),
     '26TAU'    : ('26 Tau'     , []),
     '3CEN'     : ('3 Cen'      , []),
     'ALPARA'   : ('alpha Ara'  , []),
     'ALPAUR'   : ('alpha Aur'  , []),
+    'ALPBOO'   : ('alpha Boo'  , ['Arcturus']),
     'ALPCEN'   : ('alpha Cen'  , []),
+    'ALPCMA'   : ('alpha CMa'  , []),
     'ALPCMI'   : ('alpha CMi'  , []),
     'ALPCRU'   : ('alpha Cru'  , []),
     'ALPCRU'   : ('alpha Cru'  , []),
@@ -162,9 +165,9 @@ STAR_ABBREVS = {
     'RCAS'     : ('R Cas'      , []),
     'RHYA'     : ('R Hya'      , []),
     'RLEO'     : ('R Leo'      , []),
-    'KAPCEN'   : ('kappa Cen'  , []),
     'THEARA'   : ('theta Ara'  , []),
     'THEHYA'   : ('theta Hya'  , []),
+    'WHYA'     : ('W Hya'      , []),
     'ZETAORI'  : ('zeta Ori'   , []),
     'ZETCEN'   : ('zeta Cen'   , []),
     'ZETCMA'   : ('zeta CMa'   , []),
@@ -220,16 +223,36 @@ def iss_target_info(target_name, target_desc, observation_id):
         return [TARGET_DICT[k.upper()] for k in keys]
 
     # Growing increasingly desperate...
-    if 'STAR' in (name, desc) or 'ST_' in OBSERVATION_ID:
+    if 'DARK' in observation_id:
+       return [('Dark', [], 'Calibration Field', 'N/A',
+                'urn:nasa:pds:context:target:calibration_field.dark')]
+
+    if 'SCAT' in observation_id:
+       return [('Scat Light', [], 'Calibration Field', 'N/A',
+                'urn:nasa:pds:context:target:calibration_field.scat_light')]
+
+    if 'LAMP' in observation_id:
+       return [('Cal Lamps', [], 'Calibrator', 'N/A',
+                'urn:nasa:pds:context:target:calibrator.cal_lamps')]
+
+    if 'FLAT' in observation_id:
+       return [('Flat Field', [], 'Calibrator', 'N/A',
+                'urn:nasa:pds:context:target:calibrator.flat_field')]
+
+    if 'TEST' in observation_id:
+       return [('Test Image', [], 'Calibrator', 'N/A',
+                'urn:nasa:pds:context:target:calibrator.test_image')]
+
+    if 'STAR' in (name, desc) or 'ST_' in observation_id:
        return [('Star', [], 'Star', 'N/A',
                 'urn:nasa:pds:context:target:calibration_field.star')]
 
-    if 'SKY' in (name, desc) or 'SK_' in OBSERVATION_ID:
+    if 'SKY' in (name, desc) or 'SK_' in observation_id:
        return [('Sky', [], 'Sky', 'N/A',
                 'urn:nasa:pds:context:target:calibration_field.sky')]
 
     raise ValueError('unrecognized target: %s %s %s', target_name, target_desc,
-                                                      abbrev)
+                                                      observation_id)
 
 ################################################################################
 
@@ -347,6 +370,31 @@ def iss_wavelength_range(filter1, filter2, instrument_id):
 
 ################################################################################
 
+PURPOSES = {
+    'SCIENCE'    : 'Science',
+    'SUPPORT'    : 'Observation Geometry',
+    'CALIBRATION': 'Calibration',
+    'OPNAV'      : 'Navigation',
+    'ENGINEERING': 'Engineering',
+}
+
+def iss_purpose(image_observation_type, observation_id):
+    """Image purpose, one of Calibration, Checkout, Engineering, Navigation,
+    Observation Geometry, or Science."""
+
+    if image_observation_type in PURPOSES:
+        return PURPOSES[image_observation_type]
+
+    if 'MASURSKY' in observation_id:
+        return 'Science'
+
+    if observation_id == "ISS_C22JU_17ATM1X1000_PRIME":
+        return 'Science'    # I don't know why this one was "UNK"
+
+    return 'Checkout'       # Seems to be right for everything that's left
+
+################################################################################
+
 def write_pds4_label(datafile, pds3_label):
 
     def get_naif_id(alts):
@@ -375,13 +423,16 @@ def write_pds4_label(datafile, pds3_label):
 
     # Define all the derived quantities
     lookup['datafile'] = datafile
-
     lookup['eol_lblsize'] = vicar_image.extension_lblsize
 
     lookup['wavelength_range'] = iss_wavelength_range(label['FILTER_NAME'][0],
                                                       label['FILTER_NAME'][1],
                                                       label['INSTRUMENT_ID'])
 
+    lookup['purposes'] = [iss_purpose(obstype, label['OBSERVATION_ID'])
+                          for obstype in label['IMAGE_OBSERVATION_TYPE']]
+
+    # Special care for target identifications
     target_info = iss_target_info(label['TARGET_NAME'],
                                   label['TARGET_DESC'],
                                   label['OBSERVATION_ID'])

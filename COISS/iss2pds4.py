@@ -7,6 +7,8 @@ def migrate1(pds3_file):
 
     (in_dir, basename) = os.path.split(pds3_file)
     out_dir = in_dir.replace('holdings/volumes', 'pds4')
+    out_dir = in_dir.replace('COISS_2xxx', 'COISS_xxxx')
+    out_dir = in_dir.replace('COISS_1xxx', 'COISS_xxxx')
 
     sclk = basename[1:11]
     camera = basename[0].lower()
