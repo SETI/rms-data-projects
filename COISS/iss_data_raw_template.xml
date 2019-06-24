@@ -120,7 +120,7 @@ $ONCE
                     <cassini:earth_received_start_time>$EARTH_RECEIVED_START_TIME$</cassini:earth_received_start_time>
                     <cassini:earth_received_stop_time>$EARTH_RECEIVED_STOP_TIME$</cassini:earth_received_stop_time>
                     <cassini:expected_maximum_full_well>$EXPECTED_MAXIMUM[0]$</cassini:expected_maximum_full_well>
-                    <cassini:expected_maximum_DN>$EXPECTED_MAXIMUM[1]$</cassini:expected_maximum_DN>
+                    <cassini:expected_maximum_DN_sat>$EXPECTED_MAXIMUM[1]$</cassini:expected_maximum_DN_sat>
                     <cassini:expected_packets>$EXPECTED_PACKETS$</cassini:expected_packets>
                     <cassini:exposure_duration unit="ms">$EXPOSURE_DURATION$</cassini:exposure_duration>
                     <cassini:filter_name_1>$FILTER_NAME[0]$</cassini:filter_name_1>
@@ -137,6 +137,7 @@ $FOR_EACH(IMAGE_OBSERVATION_TYPE)
 $ONCE
                     <cassini:instrument_data_rate>$INSTRUMENT_DATA_RATE$</cassini:instrument_data_rate>
                     <cassini:instrument_mode_id>$INSTRUMENT_MODE_ID$</cassini:instrument_mode_id>
+                    <cassini:inst_cmprs_type>$INST_CMPRS_TYPE$</cassini:inst_cmprs_type>
                     <cassini:inst_cmprs_param_malgo>$REPLACE_NA(INST_CMPRS_PARAM[0],999)$</cassini:inst_cmprs_param_malgo>
                     <cassini:inst_cmprs_param_tb>$REPLACE_NA(INST_CMPRS_PARAM[1],999)$</cassini:inst_cmprs_param_tb>
                     <cassini:inst_cmprs_param_blocks>$REPLACE_NA(INST_CMPRS_PARAM[2],999)$</cassini:inst_cmprs_param_blocks>
@@ -144,7 +145,6 @@ $ONCE
                     <cassini:inst_cmprs_rate_expected_bits>$INST_CMPRS_RATE[0]$</cassini:inst_cmprs_rate_expected_bits>
                     <cassini:inst_cmprs_rate_actual_bits>$INST_CMPRS_RATE[1]$</cassini:inst_cmprs_rate_actual_bits>
                     <cassini:inst_cmprs_ratio>$REPLACE_NA(INST_CMPRS_RATIO,999.9)$</cassini:inst_cmprs_ratio>
-                    <cassini:inst_cmprs_type>$INST_CMPRS_TYPE$</cassini:inst_cmprs_type>
                     <cassini:light_flood_state_flag>$LIGHT_FLOOD_STATE_FLAG$</cassini:light_flood_state_flag>
                     <cassini:method_description>$METHOD_DESC$</cassini:method_description>
                     <cassini:missing_lines>$MISSING_LINES$</cassini:missing_lines>
@@ -158,9 +158,9 @@ $ONCE
                     <cassini:pds3_target_desc>$TARGET_DESC$</cassini:pds3_target_desc>
                     <cassini:pds3_target_list>$TARGET_LIST$</cassini:pds3_target_list>
                     <cassini:pds3_target_name>$TARGET_NAME$</cassini:pds3_target_name>
+                    <cassini:pds3_product_version_type>$PRODUCT_VERSION_TYPE$</cassini:pds3_product_version_type>
                     <cassini:pre-pds_version_number>$pre_pds_version_number$</cassini:pre-pds_version_number>
                     <cassini:prepare_cycle_index>$PREPARE_CYCLE_INDEX$</cassini:prepare_cycle_index>
-                    <cassini:product_version_type>$PRODUCT_VERSION_TYPE$</cassini:product_version_type>
                     <cassini:readout_cycle_index>$READOUT_CYCLE_INDEX$</cassini:readout_cycle_index>
                     <cassini:received_packets>$RECEIVED_PACKETS$</cassini:received_packets>
                     <cassini:sensor_head_electronics_temperature unit="degC">$SENSOR_HEAD_ELEC_TEMPERATURE$</cassini:sensor_head_electronics_temperature>
