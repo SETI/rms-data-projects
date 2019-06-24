@@ -46,7 +46,7 @@
             <stop_date_time>$DATETIME(STOP_TIME)$</stop_date_time>
         </Time_Coordinates>
         <Primary_Result_Summary>
-$FOR_EACH(IMAGE_OBSERVATION_TYPE)
+$FOR_EACH(purposes)
             <purpose>$VALUE$</purpose>
 $ONCE
             <processing_level>Raw</processing_level>
@@ -248,7 +248,7 @@ $ONCE
 
         <Array_2D_Image>
             <local_identifier>image</local_identifier>
-            <offset unit="byte">$(LBLSIZE + RECSIZE * TELEMETRY_TABLE['ROWS'])$</offset>
+            <offset unit="byte">$(LBLSIZE + RECSIZE * NLB)$</offset>
             <axes>2</axes>
             <axis_index_order>Last Index Fastest</axis_index_order>
             <Element_Array>
@@ -271,7 +271,7 @@ $IF(EOL)
 <!-- VICAR footer -->
 
         <Header>
-            <offset unit="byte">$(LBLSIZE + RECSIZE * (TELEMETRY_TABLE['ROWS'] + IMAGE['LINES']))$</offset>
+            <offset unit="byte">$(LBLSIZE + RECSIZE * (NLB + IMAGE['LINES']))$</offset>
             <object_length unit="byte">$eol_lblsize$</object_length>
             <parsing_standard_id>VICAR2</parsing_standard_id>
         </Header>
@@ -280,7 +280,7 @@ $ONCE
 <!-- Line prefix bytes -->
 
         <Array_2D>
-            <offset unit="byte">$(LBLSIZE + RECSIZE * (TELEMETRY_TABLE['ROWS'] + IMAGE['LINES']) + eol_lblsize)$</offset>
+            <offset unit="byte">$(LBLSIZE + RECSIZE * (NLB + IMAGE['LINES']) + eol_lblsize)$</offset>
             <axes>2</axes>
             <axis_index_order>Last Index Fastest</axis_index_order>
             <Element_Array>
