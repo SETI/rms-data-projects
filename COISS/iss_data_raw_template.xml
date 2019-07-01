@@ -127,7 +127,7 @@ $ONCE
                     <cassini:filter_name_2>$FILTER_NAME[1]$</cassini:filter_name_2>
                     <cassini:filter_temperature unit="degC">$FILTER_TEMPERATURE$</cassini:filter_temperature>
                     <cassini:flight_software_version_id>$FLIGHT_SOFTWARE_VERSION_ID$</cassini:flight_software_version_id>
-                    <cassini:gain_mode_id>$GAIN_MODE_ID.split(' ')[0]$ electrons per DN</cassini:gain_mode_id>
+                    <cassini:gain_mode_id unit="electron/DN">$GAIN_MODE_ID.split(' ')[0]$</cassini:gain_mode_id>
                     <cassini:ground_software_version_id>$SOFTWARE_VERSION_ID$</cassini:ground_software_version_id>
                     <cassini:image_mid_time>$IMAGE_TIME$</cassini:image_mid_time>
                     <cassini:image_number>$IMAGE_NUMBER$</cassini:image_number>
@@ -155,10 +155,10 @@ $ONCE
                     <cassini:order_number>$ORDER_NUMBER$</cassini:order_number>
                     <cassini:parallel_clock_voltage_index>$PARALLEL_CLOCK_VOLTAGE_INDEX$</cassini:parallel_clock_voltage_index>
                     <cassini:pds3_product_creation_time>$PRODUCT_CREATION_TIME$</cassini:pds3_product_creation_time>
+                    <cassini:pds3_product_version_type>$PRODUCT_VERSION_TYPE$</cassini:pds3_product_version_type>
                     <cassini:pds3_target_desc>$TARGET_DESC$</cassini:pds3_target_desc>
                     <cassini:pds3_target_list>$TARGET_LIST$</cassini:pds3_target_list>
                     <cassini:pds3_target_name>$TARGET_NAME$</cassini:pds3_target_name>
-                    <cassini:pds3_product_version_type>$PRODUCT_VERSION_TYPE$</cassini:pds3_product_version_type>
                     <cassini:pre-pds_version_number>$pre_pds_version_number$</cassini:pre-pds_version_number>
                     <cassini:prepare_cycle_index>$PREPARE_CYCLE_INDEX$</cassini:prepare_cycle_index>
                     <cassini:readout_cycle_index>$READOUT_CYCLE_INDEX$</cassini:readout_cycle_index>
