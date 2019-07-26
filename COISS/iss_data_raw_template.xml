@@ -195,7 +195,7 @@ $ONCE
 
     <Reference_List>
         <Internal_Reference>
-            <lid_reference>urn:nasa:pds:cassini_iss_saturn:document:iss_data_user_guide</lid_reference>
+            <lid_reference>urn:nasa:pds:cassini_iss_saturn:document:iss-data-user-guide</lid_reference>
             <reference_type>data_to_document</reference_type>
             <comment>This refers to the ISS Data User's Guide</comment>
         </Internal_Reference>
