@@ -209,11 +209,7 @@ class XmlTemplate(object):
                 rec = recs[j]
 
                 # Evaluate within the namespaces
-                try:
-                    result = eval(rec, lookup, more)
-                except Exception:
-                    print 'Eval failure: ' + rec
-                    raise
+                result = eval(rec, lookup, more)
 
                 # Apply assignment if necessary
                 varname = assignments[jndex]
@@ -227,10 +223,7 @@ class XmlTemplate(object):
                         result = result[:-1]
 
                 # Otherwise, convert to string and escape
-                if str(result).startswith('NOESCAPE'):
-                    result = str(result)[8:]
-                else:
-                    result = escape(str(result))
+                result = escape(str(result))
 
                 recs[j] = result
 
@@ -306,14 +299,10 @@ class XmlTemplate(object):
 
         if value == flag:
             return na_value
+        elif type(value) == str:
+            raise ValueError('Illegal number! ' + value)
         else:
             return value
-
-    @staticmethod
-    def REPLACE_UNK(value, unk_value):
-        """Replace a string with the value 'UNK' with a numeric."""
-
-        return XmlTemplate.REPLACE_NA(value, unk_value, 'UNK')
 
     @staticmethod
     def CURRENT_ZULU():
@@ -383,7 +372,6 @@ class XmlTemplate(object):
 
 PREDEFINED_FUNCTIONS = {}
 PREDEFINED_FUNCTIONS['REPLACE_NA'  ] = XmlTemplate.REPLACE_NA
-PREDEFINED_FUNCTIONS['REPLACE_UNK' ] = XmlTemplate.REPLACE_UNK
 PREDEFINED_FUNCTIONS['CURRENT_ZULU'] = XmlTemplate.CURRENT_ZULU
 PREDEFINED_FUNCTIONS['DATETIME'    ] = XmlTemplate.DATETIME
 PREDEFINED_FUNCTIONS['BASENAME'    ] = XmlTemplate.BASENAME

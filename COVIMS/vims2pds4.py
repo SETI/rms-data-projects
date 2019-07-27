@@ -135,6 +135,27 @@ def append_rec(header_recs, template, header_dict, key):
 
 ################################################################################
 
+def get_spectral_summing(core):
+
+    for count in (2,4,8,16,32,64):
+        if not np.all(core[:,::count,:] == core[:,count-1::count,:]):
+            return count//2
+
+    return count
+
+def get_spectral_summing_allow_nulls(core):
+
+    for count in (2,4,8,16,32,64):
+        ok = ((core[:,::count,:] == core[:,count-1::count,:]) |
+              (core[:,::count,:] == -8192) |
+              (core[:,count-1::count,:] == -8192))
+        if not np.all(ok):
+            return count//2
+
+    return count
+
+################################################################################
+
 BAND_BIN_RECS = """\tGROUP = BAND_BIN
 \t\tBAND_BIN_CENTER = (0.35054,0.35895,0.36629,0.37322,0.37949,0.38790,0.39518,
         0.40252,0.40955,0.41731,0.42436,0.43184,0.43919,0.44652,0.45372,0.46163,

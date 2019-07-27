@@ -1,5 +1,5 @@
 ################################################################################
-# iss_data_raw_labeler.py
+# vims_data_raw_labeler.py
 #
 # Create XML labels for the PDS4-reformatted Cassini ISS images.
 #
@@ -36,20 +36,6 @@ for rec in TARGET_DICT.values():
     alt_names = rec[1]
     for alt_name in alt_names:
         TARGET_DICT[alt_name.upper()] = rec
-
-# These are known errors
-TARGET_DICT['HYROKKIN'] = TARGET_DICT['HYRROKKIN']
-TARGET_DICT['SKADI'   ] = TARGET_DICT['SKATHI'   ]
-TARGET_DICT['THRYM'   ] = TARGET_DICT['THRYMR'   ]
-TARGET_DICT['SUTTUNG' ] = TARGET_DICT['SUTTUNGR' ]
-TARGET_DICT['METHON'  ] = TARGET_DICT['METHONE'  ]
-TARGET_DICT['K07S4'   ] = TARGET_DICT['AEGAEON'  ]
-
-TARGET_DICT['S12_2004'] = TARGET_DICT['S/2004 S 12']
-TARGET_DICT['S13_2004'] = TARGET_DICT['S/2004 S 13']
-TARGET_DICT['S14_2004'] = TARGET_DICT['S/2004 S 14']
-TARGET_DICT['S18_2004'] = TARGET_DICT['S/2004 S 18']
-TARGET_DICT['S8_2004' ] = TARGET_DICT['S/2004 S 8' ]
 
 # Local additions...
 TARGET_DICT['MASURSKY'] = ('Masursky', ['2685 Masursky', 'NAIF ID 2002685'],
@@ -181,20 +167,22 @@ for (name, alts) in STAR_ABBREVS.values():
     TARGET_DICT[name.upper()] = (name, alts, 'Star', 'N/A',
         'urn:nasa:pds:context:target:star.%s' % name.lower().replace(' ','_'))
 
-def iss_target_info(target_name, target_desc, observation_id, filename):
+def vims_target_info(target_name, target_desc, observation_id):
 
     name = target_name.upper()
     desc = target_desc.upper()
-    obs_id = observation_id.upper()
 
-    # Special case
-    if obs_id == 'ISS_C39OT_INSTRADT001_CIRS':
-        return [TARGET_DICT['SATURN']]
+    # Special cases
+    if name == 'DUST' or desc == 'DUST_RAM_DIRECTION':
+        return ('Dust', [], 'Dust', 'N/A',
+                'urn:nasa:pds:context:target:dust.dust')
 
+    if 'MASURSKY' in observation_id:
+        return (
     # Read the target name out of the OBSERVATION_ID
     abbrev = ''
     try:
-        parts = obs_id.split('_')
+        parts = observation_id.split('_')
         abbrev = parts[1][-2:]
         obsname = CIMS_TARGET_ABBREVIATIONS[abbrev]
     except (KeyError, IndexError, ValueError):
@@ -218,7 +206,7 @@ def iss_target_info(target_name, target_desc, observation_id, filename):
 
     # Star IDs are sometimes encoded in the OBSERVATION_ID
     for (key,value) in STAR_ABBREVS.items():
-        if key in obs_id:
+        if key in observation_id:
             target_keys.add(value[0])
 
     # If our set is not empty, we're done:
@@ -228,186 +216,52 @@ def iss_target_info(target_name, target_desc, observation_id, filename):
         return [TARGET_DICT[k.upper()] for k in keys]
 
     # Growing increasingly desperate...
-    if 'DARK' in obs_id:
+    if 'DARK' in observation_id:
        return [('Dark', [], 'Calibration Field', 'N/A',
                 'urn:nasa:pds:context:target:calibration_field.dark')]
 
-    if 'SCAT' in obs_id:
+    if 'SCAT' in observation_id:
        return [('Scat Light', [], 'Calibration Field', 'N/A',
                 'urn:nasa:pds:context:target:calibration_field.scat_light')]
 
-    if 'LAMP' in obs_id:
+    if 'LAMP' in observation_id:
        return [('Cal Lamps', [], 'Calibrator', 'N/A',
                 'urn:nasa:pds:context:target:calibrator.cal_lamps')]
 
-    if 'FLAT' in obs_id:
+    if 'FLAT' in observation_id:
        return [('Flat Field', [], 'Calibrator', 'N/A',
                 'urn:nasa:pds:context:target:calibrator.flat_field')]
 
-    if 'TEST' in obs_id:
+    if 'TEST' in observation_id:
        return [('Test Image', [], 'Calibrator', 'N/A',
                 'urn:nasa:pds:context:target:calibrator.test_image')]
 
-    if 'STAR' in (name, desc) or 'ST_' in obs_id:
+    if 'STAR' in (name, desc) or 'ST_' in observation_id:
        return [('Star', [], 'Star', 'N/A',
                 'urn:nasa:pds:context:target:calibration_field.star')]
 
-    if 'SKY' in (name, desc) or 'SK_' in obs_id:
+    if 'SKY' in (name, desc) or 'SK_' in observation_id:
        return [('Sky', [], 'Sky', 'N/A',
                 'urn:nasa:pds:context:target:calibration_field.sky')]
 
-    if desc == 'PROBE':
-       return [('Probe', [], 'Equipment', 'N/A',
-                'urn:nasa:pds:context:target:equipment.probe')]
-
-    if 'TRIGGER' in obs_id or 'CHECKOUT' in obs_id:
-       return [('Checkout', [], 'Calibrator', 'N/A',
-                'urn:nasa:pds:context:target:calibrator.checkout')]
-
-    print 'unknown target: %s %s %s %s' % (target_name, target_desc,
-                                           observation_id, filename)
-
-    return [('Unknown', [], 'Calibrator', 'N/A',
-             'urn:nasa:pds:context:target:calibrator.unk')]
-
-################################################################################
-
-WIDE_WAVELENGTHS = {
-    'VIO'  :  420.,
-    'BL1'  :  463.,
-    'GRN'  :  568.,
-    'CL1'  :  634.,
-    'CL2'  :  634.,
-    'RED'  :  647.,
-    'HAL'  :  656.,
-    'IRP0' :  705.,
-    'IRP90':  705.,
-    'MT2'  :  728.,
-    'IR1'  :  740.,
-    'CB2'  :  752.,
-    'IR2'  :  852.,
-    'MT3'  :  890.,
-    'IR3'  :  917.,
-    'CB3'  :  939.,
-    'IR4'  : 1000.,
-    'IR5'  : 1027.,
-    ('IR1','IR2'): 826.,
-    ('IR2','IR1'): 826.,
-}
-
-NARROW_WAVELENGTHS = {
-    'UV1'   :  264.,
-    'UV2'   :  306.,
-    'UV3'   :  343.,
-    'BL2'   :  441.,
-    'BL1'   :  455.,
-    'GRN'   :  569.,
-    'CB1b'  :  603.,
-    'CB1B'  :  603.,
-    'CB1'   :  619.,
-    'MT1'   :  619.,
-    'P0'    :  633.,
-    'P120'  :  633.,
-    'P60'   :  633.,
-    'CB1a'  :  635.,
-    'CB1A'  :  635.,
-    'RED'   :  649.,
-    'CL1'   :  651.,
-    'CL2'   :  651.,
-    'HAL'   :  656.,
-    'MT2'   :  727.,
-    'IRP0'  :  738.,
-    'CB2'   :  750.,
-    'IR1'   :  750.,
-    'IR2'   :  861.,
-    'MT3'   :  889.,
-    'IR3'   :  928.,
-    'CB3'   :  938.,
-    'IR4'   : 1001.,
-
-    ('UV2','UV3'): 318.,
-    ('RED','GRN'): 601.,
-    ('RED','IR1'): 702.,
-    ('IR2','IR1'): 827.,
-    ('IR2','IR3'): 902.,
-    ('IR4','IR3'): 996.,
-
-    ('UV3','UV2'): 318.,
-    ('GRN','RED'): 601.,
-    ('IR1','RED'): 702.,
-    ('IR1','IR2'): 827.,
-    ('IR3','IR2'): 902.,
-    ('IR3','IR4'): 996.,
-}
-
-WAVELENGTHS = {
-    'ISSNA': NARROW_WAVELENGTHS,
-    'ISSWA': WIDE_WAVELENGTHS,
-}
-
-POLARIZERS = set(['IRP0', 'IRP90', 'P0', 'P60', 'P120'])
-
-def iss_wavelength_range(filter1, filter2, instrument_id):
-    """Return the wavelength range, one of Ultraviolet, Visible or Near
-    Infrared."""
-
-    def wavelength_nm(filter1, filter2, instrument_id):
-        if filter1 == 'CL1':
-            filter = filter2
-        elif filter2 == 'CL2':
-            filter = filter1
-        elif filter1 in POLARIZERS:
-            return filter2
-        elif filter2 in POLARIZERS:
-            return filter1
-        else:
-            filter = (filter1,filter2)
-
-        try:
-            return WAVELENGTHS[instrument_id][filter]
-        except KeyError:
-            pass
-
-        wavelength1 = WAVELENGTHS[instrument_id][filter1]
-        wavelength2 = WAVELENGTHS[instrument_id][filter2]
-
-        # OK because it's just for wavelength_range
-        return (wavelength1 + wavelength2) / 2.
-
-    wavelength = wavelength_nm(filter1, filter2, instrument_id)
-
-    if wavelength < 400:
-        return 'Ultraviolet'
-
-    if wavelength <= 651:   # 651, not 650, so CL1 and CL2 are Visible not NIR
-        return 'Visible'
-
-    return 'Near Infrared'
+    raise ValueError('unrecognized target: %s %s %s', target_name, target_desc,
+                                                      observation_id)
 
 ################################################################################
 
 PURPOSES = {
     'SCIENCE'    : 'Science',
-    'SUPPORT'    : 'Observation Geometry',
     'CALIBRATION': 'Calibration',
-    'OPNAV'      : 'Navigation',
     'ENGINEERING': 'Engineering',
 }
 
-def iss_purpose(image_observation_type, observation_id):
-    """Image purpose, one of Calibration, Checkout, Engineering, Navigation,
-    Observation Geometry, or Science."""
+def vims_purpose(image_observation_type):
+    """Image purpose, one of Calibration, Engineering, or Science."""
 
-    if image_observation_type in PURPOSES:
-        return PURPOSES[image_observation_type]
+    if isinstance(image_observation_type, tuple):
+        return [s.capitalize() for s in image_observation_type]
 
-    if 'MASURSKY' in observation_id:
-        return 'Science'
-
-    if observation_id == "ISS_C22JU_17ATM1X1000_PRIME":
-        return 'Science'    # I don't know why this one was "UNK"
-
-    return 'Checkout'       # Seems to be right for everything that's left
+    return [image_observation_type.capitalize()]
 
 ################################################################################
 
@@ -427,13 +281,9 @@ def write_pds4_label(datafile, pds3_label):
     label_text = open(pds3_label).read()
     label_text = label_text.replace('../../label/','')
     label_text = label_text.replace(' N/A\r\n', ' "N/A"\r\n')
-    label_text = label_text.replace('0000-000T00:00:00.000', 'INVALID_DATE')
     label_text = label_text.replace('\r','') # pyparsing is not set up for <CR>
 
     label = pdsparser.PdsLabel.from_string(label_text).as_dict()
-    if label['EARTH_RECEIVED_START_TIME'] == 'INVALID_DATE':    # known error
-        label['EARTH_RECEIVED_START_TIME'] = '0000-000T00:00:00.000'
-
     vicar_image = vicar.VicarImage.from_file(datafile)
     header = vicar_image.as_dict()
 
@@ -445,17 +295,12 @@ def write_pds4_label(datafile, pds3_label):
     lookup['datafile'] = datafile
     lookup['eol_lblsize'] = vicar_image.extension_lblsize
 
-    lookup['wavelength_range'] = iss_wavelength_range(label['FILTER_NAME'][0],
-                                                      label['FILTER_NAME'][1],
-                                                      label['INSTRUMENT_ID'])
-
-    lookup['purposes'] = [iss_purpose(obstype, label['OBSERVATION_ID'])
-                          for obstype in label['IMAGE_OBSERVATION_TYPE']]
+    lookup['purposes'] = vims_purpose
 
     # Special care for target identifications
-    target_info = iss_target_info(label['TARGET_NAME'],
-                                  label['TARGET_DESC'],
-                                  label['OBSERVATION_ID'], datafile)
+    target_info = vims_target_info(label['TARGET_NAME'],
+                                   label['TARGET_DESC'],
+                                   label['OBSERVATION_ID'])
 
     target_names    = []
     target_naif_ids = []

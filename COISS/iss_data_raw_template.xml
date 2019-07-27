@@ -18,7 +18,7 @@
  http://pds.nasa.gov/pds4/mission/cassini/v1 https://pds.nasa.gov/pds4/mission/cassini/v1/PDS4_CASSINI_1B00_1300.xsd">
 
     <Identification_Area>
-        <logical_identifier>urn:nasa:pds:cassini_iss_$cruise_or_saturn=('cruise' if START_TIME < '2004' else 'saturn')$:data_raw:$BASENAME(datafile)$</logical_identifier>
+        <logical_identifier>urn:nasa:pds:cassini_iss_$cruise_or_saturn=('cruise' if START_TIME < '2004' else 'saturn')$:data_raw:$BASENAME(datafile)[:-4]$</logical_identifier>
         <version_id>1.0</version_id>
         <title>Cassini ISS Image $BASENAME(datafile)$</title>
         <information_model_version>1.11.0.0</information_model_version>
@@ -83,18 +83,87 @@ $ONCE
                 </Internal_Reference>
             </Observing_System_Component>
         </Observing_System>
-$FOR_EACH(target_names)
         <Target_Identification>
-            <name>$VALUE$</name>
-            <type>$target_types[INDEX]$</type>
+            <name>$target_names[0]$</name>
+            <type>$target_types[0]$</type>
+$IF(target_naif_ids[0] != 'N/A')
             <description>
-                NAIF ID: $target_naif_ids[INDEX]$;
-                Center of motion: $primary_names[INDEX]$;
-                LID of central body: $primary_lids[INDEX]$;
-                NAIF ID of central body: $primary_naif_ids[INDEX]$.
+                NAIF ID: $target_naif_ids[0]$;
+                Center of motion: $primary_names[0]$;
+                LID of central body: $primary_lids[0]$;
+                NAIF ID of central body: $primary_naif_ids[0]$.
             </description>
+$ONCE
             <Internal_Reference>
-                <lid_reference>$target_lids[INDEX]$</lid_reference>
+                <lid_reference>$target_lids[0]$</lid_reference>
+                <reference_type>data_to_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+$IF(len(target_naif_ids) > 1)
+        <Target_Identification>
+            <name>$target_names[1]$</name>
+            <type>$target_types[1]$</type>
+$IF(len(target_naif_ids) > 1 and target_naif_ids[1] != 'N/A')
+            <description>
+                NAIF ID: $target_naif_ids[1]$;
+                Center of motion: $primary_names[1]$;
+                LID of central body: $primary_lids[1]$;
+                NAIF ID of central body: $primary_naif_ids[1]$.
+            </description>
+$IF(len(target_naif_ids) > 1)
+            <Internal_Reference>
+                <lid_reference>$target_lids[1]$</lid_reference>
+                <reference_type>data_to_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+$IF(len(target_naif_ids) > 2)
+        <Target_Identification>
+            <name>$target_names[2]$</name>
+            <type>$target_types[2]$</type>
+$IF(len(target_naif_ids) > 2 and target_naif_ids[2] != 'N/A')
+            <description>
+                NAIF ID: $target_naif_ids[2]$;
+                Center of motion: $primary_names[2]$;
+                LID of central body: $primary_lids[2]$;
+                NAIF ID of central body: $primary_naif_ids[2]$.
+            </description>
+$IF(len(target_naif_ids) > 2)
+            <Internal_Reference>
+                <lid_reference>$target_lids[2]$</lid_reference>
+                <reference_type>data_to_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+$IF(len(target_naif_ids) > 3)
+        <Target_Identification>
+            <name>$target_names[3]$</name>
+            <type>$target_types[3]$</type>
+$IF(len(target_naif_ids) > 3 and target_naif_ids[3] != 'N/A')
+            <description>
+                NAIF ID: $target_naif_ids[3]$;
+                Center of motion: $primary_names[3]$;
+                LID of central body: $primary_lids[3]$;
+                NAIF ID of central body: $primary_naif_ids[3]$.
+            </description>
+$IF(len(target_naif_ids) > 4)
+            <Internal_Reference>
+                <lid_reference>$target_lids[4]$</lid_reference>
+                <reference_type>data_to_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+$IF(len(target_naif_ids) > 4)
+        <Target_Identification>
+            <name>$target_names[4]$</name>
+            <type>$target_types[4]$</type>
+$IF(len(target_naif_ids) > 4 and target_naif_ids[4] != 'N/A')
+            <description>
+                NAIF ID: $target_naif_ids[4]$;
+                Center of motion: $primary_names[4]$;
+                LID of central body: $primary_lids[4]$;
+                NAIF ID of central body: $primary_naif_ids[4]$.
+            </description>
+$IF(len(target_naif_ids) > 4)
+            <Internal_Reference>
+                <lid_reference>$target_lids[4]$</lid_reference>
                 <reference_type>data_to_target</reference_type>
             </Internal_Reference>
         </Target_Identification>
@@ -106,74 +175,81 @@ $ONCE
                     <cassini:spacecraft_clock_count_partition>1</cassini:spacecraft_clock_count_partition>
                     <cassini:spacecraft_clock_start_count>$SPACECRAFT_CLOCK_START_COUNT$</cassini:spacecraft_clock_start_count>
                     <cassini:spacecraft_clock_stop_count>$SPACECRAFT_CLOCK_STOP_COUNT$</cassini:spacecraft_clock_stop_count>
-                    <cassini:limitations>$DESCRIPTION$</cassini:limitations>
+                    <cassini:limitations>$REPLACE_UNK(DESCRIPTION,"None known.")$</cassini:limitations>
                     <cassini:antiblooming_state_flag>$ANTIBLOOMING_STATE_FLAG$</cassini:antiblooming_state_flag>
                     <cassini:bias_strip_mean>$BIAS_STRIP_MEAN$</cassini:bias_strip_mean>
                     <cassini:calibration_lamp_state_flag>$CALIBRATION_LAMP_STATE_FLAG$</cassini:calibration_lamp_state_flag>
-                    <cassini:command_file_name>$COMMAND_FILE_NAME$</cassini:command_file_name>
-                    <cassini:command_sequence_number>$COMMAND_SEQUENCE_NUMBER$</cassini:command_sequence_number>
+                    <cassini:command_file_name>$REPLACE_UNK(COMMAND_FILE_NAME,"Information not provided.")$</cassini:command_file_name>
+                    <cassini:command_sequence_number>$REPLACE_UNK(COMMAND_SEQUENCE_NUMBER,-1)$</cassini:command_sequence_number>$"NOESCAPE  <!-- Unknown -->" if COMMAND_SEQUENCE_NUMBER == 'UNK' else ""$
                     <cassini:dark_strip_mean>$DARK_STRIP_MEAN$</cassini:dark_strip_mean>
                     <cassini:data_conversion_type>$DATA_CONVERSION_TYPE$</cassini:data_conversion_type>
                     <cassini:delayed_readout_flag>$DELAYED_READOUT_FLAG$</cassini:delayed_readout_flag>
                     <cassini:detector_temperature unit="degC">$DETECTOR_TEMPERATURE$</cassini:detector_temperature>
-                    <cassini:electronics_bias>$ELECTRONICS_BIAS$</cassini:electronics_bias>
+                    <cassini:electronics_bias>$REPLACE_UNK(ELECTRONICS_BIAS,-1)$</cassini:electronics_bias>$"NOESCAPE  <!-- Unknown -->" if ELECTRONICS_BIAS == 'UNK' else ""$
+$IF(EARTH_RECEIVED_START_TIME != 'UNK' and EARTH_RECEIVED_START_TIME[0] != '0')
                     <cassini:earth_received_start_time>$EARTH_RECEIVED_START_TIME$</cassini:earth_received_start_time>
+$IF(EARTH_RECEIVED_START_TIME == 'UNK' or EARTH_RECEIVED_START_TIME[0] == '0')
+<!--                <cassini:earth_received_start_time>$EARTH_RECEIVED_START_TIME$</cassini:earth_received_start_time>  (Information not provided)-->
+$IF(EARTH_RECEIVED_STOP_TIME != 'UNK')
                     <cassini:earth_received_stop_time>$EARTH_RECEIVED_STOP_TIME$</cassini:earth_received_stop_time>
-                    <cassini:expected_maximum_full_well>$EXPECTED_MAXIMUM[0]$</cassini:expected_maximum_full_well>
-                    <cassini:expected_maximum_DN_sat>$EXPECTED_MAXIMUM[1]$</cassini:expected_maximum_DN_sat>
-                    <cassini:expected_packets>$EXPECTED_PACKETS$</cassini:expected_packets>
+$IF(EARTH_RECEIVED_STOP_TIME == 'UNK')
+<!--                <cassini:earth_received_stop_time>$EARTH_RECEIVED_STOP_TIME$</cassini:earth_received_stop_time>  (Information not provided)-->
+$ONCE
+                    <cassini:expected_maximum_full_well>$REPLACE_UNK(EXPECTED_MAXIMUM[0],-1)$</cassini:expected_maximum_full_well>$"NOESCAPE  <!-- Unknown -->" if EXPECTED_MAXIMUM[0] == 'UNK' else ""$
+                    <cassini:expected_maximum_DN_sat>$REPLACE_UNK(EXPECTED_MAXIMUM[1],-1)$</cassini:expected_maximum_DN_sat>$"NOESCAPE  <!-- Unknown -->" if EXPECTED_MAXIMUM[1] == 'UNK' else ""$
+                    <cassini:expected_packets>$REPLACE_UNK(EXPECTED_PACKETS,-1)$</cassini:expected_packets>$"NOESCAPE  <!-- Unknown -->" if EXPECTED_PACKETS == 'UNK' else ""$
                     <cassini:exposure_duration unit="ms">$EXPOSURE_DURATION$</cassini:exposure_duration>
                     <cassini:filter_name_1>$FILTER_NAME[0]$</cassini:filter_name_1>
                     <cassini:filter_name_2>$FILTER_NAME[1]$</cassini:filter_name_2>
                     <cassini:filter_temperature unit="degC">$FILTER_TEMPERATURE$</cassini:filter_temperature>
-                    <cassini:flight_software_version_id>$FLIGHT_SOFTWARE_VERSION_ID$</cassini:flight_software_version_id>
+                    <cassini:flight_software_version_id>$REPLACE_UNK(FLIGHT_SOFTWARE_VERSION_ID,"Information not provided.")$</cassini:flight_software_version_id>
                     <cassini:gain_mode_id unit="electron/DN">$GAIN_MODE_ID.split(' ')[0]$</cassini:gain_mode_id>
                     <cassini:ground_software_version_id>$SOFTWARE_VERSION_ID$</cassini:ground_software_version_id>
                     <cassini:image_mid_time>$IMAGE_TIME$</cassini:image_mid_time>
                     <cassini:image_number>$IMAGE_NUMBER$</cassini:image_number>
                     <cassini:image_time>$IMAGE_TIME$</cassini:image_time>
 $FOR_EACH(IMAGE_OBSERVATION_TYPE)
-                    <cassini:image_observation_type>$VALUE$</cassini:image_observation_type>
+                    <cassini:image_observation_type>$REPLACE_UNK(VALUE,"Information not provided.")$</cassini:image_observation_type>
 $ONCE
                     <cassini:instrument_data_rate>$INSTRUMENT_DATA_RATE$</cassini:instrument_data_rate>
                     <cassini:instrument_mode_id>$INSTRUMENT_MODE_ID$</cassini:instrument_mode_id>
                     <cassini:inst_cmprs_type>$INST_CMPRS_TYPE$</cassini:inst_cmprs_type>
-                    <cassini:inst_cmprs_param_malgo>$REPLACE_NA(INST_CMPRS_PARAM[0],999)$</cassini:inst_cmprs_param_malgo>
-                    <cassini:inst_cmprs_param_tb>$REPLACE_NA(INST_CMPRS_PARAM[1],999)$</cassini:inst_cmprs_param_tb>
-                    <cassini:inst_cmprs_param_blocks>$REPLACE_NA(INST_CMPRS_PARAM[2],999)$</cassini:inst_cmprs_param_blocks>
-                    <cassini:inst_cmprs_param_quant>$REPLACE_NA(INST_CMPRS_PARAM[3],999)$</cassini:inst_cmprs_param_quant>
-                    <cassini:inst_cmprs_rate_expected_bits>$INST_CMPRS_RATE[0]$</cassini:inst_cmprs_rate_expected_bits>
-                    <cassini:inst_cmprs_rate_actual_bits>$INST_CMPRS_RATE[1]$</cassini:inst_cmprs_rate_actual_bits>
-                    <cassini:inst_cmprs_ratio>$REPLACE_NA(INST_CMPRS_RATIO,999.9)$</cassini:inst_cmprs_ratio>
+                    <cassini:inst_cmprs_param_malgo>$REPLACE_NA(INST_CMPRS_PARAM[0],999)$</cassini:inst_cmprs_param_malgo>$"NOESCAPE  <!-- Not applicable -->" if INST_CMPRS_PARAM[0] in (999,'N/A') else ""$
+                    <cassini:inst_cmprs_param_tb>$REPLACE_NA(INST_CMPRS_PARAM[1],999)$</cassini:inst_cmprs_param_tb>$"NOESCAPE  <!-- Not applicable -->" if INST_CMPRS_PARAM[1] in (999,'N/A') else ""$
+                    <cassini:inst_cmprs_param_blocks>$REPLACE_NA(INST_CMPRS_PARAM[2],999)$</cassini:inst_cmprs_param_blocks>$"NOESCAPE  <!-- Not applicable -->" if INST_CMPRS_PARAM[2] in (999,'N/A') else ""$
+                    <cassini:inst_cmprs_param_quant>$REPLACE_NA(INST_CMPRS_PARAM[3],999)$</cassini:inst_cmprs_param_quant>$"NOESCAPE  <!-- Not applicable -->" if INST_CMPRS_PARAM[3] in (999,'N/A') else ""$
+                    <cassini:inst_cmprs_rate_expected_bits>$REPLACE_UNK(INST_CMPRS_RATE[0],-1.)$</cassini:inst_cmprs_rate_expected_bits>$"NOESCAPE  <!-- Unknown -->" if INST_CMPRS_RATE[0] == 'UNK' else ""$
+                    <cassini:inst_cmprs_rate_actual_bits>$REPLACE_UNK(INST_CMPRS_RATE[1],-1.)$</cassini:inst_cmprs_rate_actual_bits>$"NOESCAPE  <!-- Unknown -->" if INST_CMPRS_RATE[1] == 'UNK' else ""$
+                    <cassini:inst_cmprs_ratio>$REPLACE_NA(INST_CMPRS_RATIO,-1.)$</cassini:inst_cmprs_ratio>$"NOESCAPE  <!-- Not applicable -->" if INST_CMPRS_RATIO == 'N/A' else ""$
                     <cassini:light_flood_state_flag>$LIGHT_FLOOD_STATE_FLAG$</cassini:light_flood_state_flag>
-                    <cassini:method_description>$METHOD_DESC$</cassini:method_description>
+                    <cassini:method_description>$REPLACE_UNK(METHOD_DESC,"Information not provided.")$</cassini:method_description>
                     <cassini:missing_lines>$MISSING_LINES$</cassini:missing_lines>
-                    <cassini:missing_packet_flag>$MISSING_PACKET_FLAG$</cassini:missing_packet_flag>
+                    <cassini:missing_packet_flag>$REPLACE_UNK(MISSING_PACKET_FLAG,"Information not provided.")$</cassini:missing_packet_flag>
                     <cassini:observation_id>$OBSERVATION_ID$</cassini:observation_id>
-                    <cassini:optics_temperature_front unit="degC">$REPLACE_NA(OPTICS_TEMPERATURE[0],-999.9)$</cassini:optics_temperature_front>
-                    <cassini:optics_temperature_back unit="degC">$REPLACE_NA(REPLACE_NA(OPTICS_TEMPERATURE[1],-999.9,'UNK'),-999.9)$</cassini:optics_temperature_back>
-                    <cassini:order_number>$ORDER_NUMBER$</cassini:order_number>
-                    <cassini:parallel_clock_voltage_index>$PARALLEL_CLOCK_VOLTAGE_INDEX$</cassini:parallel_clock_voltage_index>
+                    <cassini:optics_temperature_front unit="degC">$REPLACE_NA(REPLACE_UNK(OPTICS_TEMPERATURE[0],-999.),-999.)$</cassini:optics_temperature_front>$"NOESCAPE  <!-- Unknown -->" if OPTICS_TEMPERATURE[0] == ('UNK',-999.) else "NOESCAPE  <!-- Not applicable -->" if OPTICS_TEMPERATURE[0] == 'N/A' else ""$
+                    <cassini:optics_temperature_back unit="degC">$REPLACE_NA(REPLACE_UNK(OPTICS_TEMPERATURE[1],-999.),-999.)$</cassini:optics_temperature_back>$"NOESCAPE  <!-- Unknown -->" if OPTICS_TEMPERATURE[1] == ('UNK',-999.) else "NOESCAPE  <!-- Not applicable -->" if OPTICS_TEMPERATURE[1] == 'N/A' else ""$
+                    <cassini:order_number>$REPLACE_UNK(ORDER_NUMBER,-999)$</cassini:order_number>$"NOESCAPE  <!-- Unknown -->" if ORDER_NUMBER == 'UNK' else ""$
+                    <cassini:parallel_clock_voltage_index>$REPLACE_UNK(PARALLEL_CLOCK_VOLTAGE_INDEX,-1)$</cassini:parallel_clock_voltage_index>$"NOESCAPE  <!-- Unknown -->" if PARALLEL_CLOCK_VOLTAGE_INDEX == 'UNK' else ""$
                     <cassini:pds3_product_creation_time>$PRODUCT_CREATION_TIME$</cassini:pds3_product_creation_time>
                     <cassini:pds3_product_version_type>$PRODUCT_VERSION_TYPE$</cassini:pds3_product_version_type>
-                    <cassini:pds3_target_desc>$TARGET_DESC$</cassini:pds3_target_desc>
+                    <cassini:pds3_target_desc>$REPLACE_UNK(TARGET_DESC,"Information not provided.")$</cassini:pds3_target_desc>
                     <cassini:pds3_target_list>$TARGET_LIST$</cassini:pds3_target_list>
                     <cassini:pds3_target_name>$TARGET_NAME$</cassini:pds3_target_name>
                     <cassini:pre-pds_version_number>$pre_pds_version_number$</cassini:pre-pds_version_number>
                     <cassini:prepare_cycle_index>$PREPARE_CYCLE_INDEX$</cassini:prepare_cycle_index>
-                    <cassini:readout_cycle_index>$READOUT_CYCLE_INDEX$</cassini:readout_cycle_index>
-                    <cassini:received_packets>$RECEIVED_PACKETS$</cassini:received_packets>
+                    <cassini:readout_cycle_index>$REPLACE_UNK(READOUT_CYCLE_INDEX,-1)$</cassini:readout_cycle_index>$"NOESCAPE  <!-- Unknown -->" if READOUT_CYCLE_INDEX == 'UNK' else ""$
+                    <cassini:received_packets>$REPLACE_UNK(RECEIVED_PACKETS,-1)$</cassini:received_packets>$"NOESCAPE  <!-- Unknown -->" if RECEIVED_PACKETS == 'UNK' else ""$
                     <cassini:sensor_head_electronics_temperature unit="degC">$SENSOR_HEAD_ELEC_TEMPERATURE$</cassini:sensor_head_electronics_temperature>
-                    <cassini:sequence_id>$SEQUENCE_ID$</cassini:sequence_id>
-                    <cassini:sequence_number>$SEQUENCE_NUMBER$</cassini:sequence_number>
-                    <cassini:sequence_title>$SEQUENCE_TITLE$</cassini:sequence_title>
+                    <cassini:sequence_id>$REPLACE_UNK(SEQUENCE_ID,"Information not provided.")$</cassini:sequence_id>
+                    <cassini:sequence_number>$REPLACE_UNK(SEQUENCE_NUMBER,-1)$</cassini:sequence_number>$"NOESCAPE  <!-- Unknown -->" if SEQUENCE_NUMBER == 'UNK' else ""$
+                    <cassini:sequence_title>$REPLACE_UNK(SEQUENCE_TITLE,"Information not provided.")$</cassini:sequence_title>
                     <cassini:shutter_mode_id>$SHUTTER_MODE_ID$</cassini:shutter_mode_id>
                     <cassini:shutter_state_id>$SHUTTER_STATE_ID$</cassini:shutter_state_id>
                     <cassini:start_time_doy>$START_TIME$</cassini:start_time_doy>
                     <cassini:stop_time_doy>$STOP_TIME$</cassini:stop_time_doy>
-                    <cassini:telemetry_format_id>$TELEMETRY_FORMAT_ID$</cassini:telemetry_format_id>
-                    <cassini:valid_maximum_full_well>$VALID_MAXIMUM[0]$</cassini:valid_maximum_full_well>
-                    <cassini:valid_maximum_DN_sat>$VALID_MAXIMUM[1]$</cassini:valid_maximum_DN_sat>
+                    <cassini:telemetry_format_id>$REPLACE_UNK(TELEMETRY_FORMAT_ID,"Information not provided.")$</cassini:telemetry_format_id>
+                    <cassini:valid_maximum_full_well>$REPLACE_UNK(VALID_MAXIMUM[0],-1)$</cassini:valid_maximum_full_well>$"NOESCAPE  <!-- Unknown -->" if VALID_MAXIMUM[0] == 'UNK' else ""$
+                    <cassini:valid_maximum_DN_sat>$REPLACE_UNK(VALID_MAXIMUM[1],-1)$</cassini:valid_maximum_DN_sat>$"NOESCAPE  <!-- Unknown -->" if VALID_MAXIMUM[1] == 'UNK' else ""$
                 </cassini:ISS_Specific_Attributes>
             </cassini:Cassini>
         </Mission_Area>
@@ -202,7 +278,7 @@ $ONCE
         <Internal_Reference>
             <lid_reference>urn:nasa:pds:cassini_iss_$cruise_or_saturn$:data_raw:cum-index</lid_reference>
             <reference_type>data_to_resource</reference_type>
-            <comment>This refers to cumulative metadata table of basic parameters associated with each observation.</comment>
+            <comment>This refers to the cumulative index table of basic parameters associated with each observation.</comment>
         </Internal_Reference>
         <Source_Product_External>
             <external_source_product_identifier>$DATA_SET_ID$:$PRODUCT_ID$</external_source_product_identifier>
