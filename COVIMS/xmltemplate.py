@@ -53,36 +53,50 @@ class XmlTemplate(object):
                         LENGTH is replaced by the number of values.
 
     It is not necessary to start the template file with a header; "$ONCE" is
-    implied.
+    implied. Note that these headers cannot be nested.
 
     The following pre-defined functions can be used anywhere in a template:
 
         REPLACE_NA(value, if_na):
-            return the second argument if the value is a string "N/A";
+            the second argument if the value is a string "N/A";
+            otherwise, return the value.
+
+        REPLACE_UNK(value, if_unk):
+            the second argument if the value is a string "UNK";
             otherwise, return the value.
 
         CURRENT_ZULU():
-            return the current time UTC as a string "yyyy-mm-ddThh:mm:ssZ".
+            the current time UTC as a string "yyyy-mm-ddThh:mm:ssZ".
 
         DATETIME(string):
             convert the given date/time string to a year-month-day format with a
             trailing "Z"
 
         BASENAME(filename):
-            return the basename of a file, with leading directory paths removed.
+            the basename of a file, with leading directory paths removed.
 
         FILE_ZULU(filename):
-            return the modification time of a file as a UTC string
+            the modification time of a file as a UTC string
             "yyyy-mm-ddThh:mm:ss.sssZ".
 
         FILE_BYTES(filename):
-            return the size of a file in bytes.
+            the size of a file in bytes.
+
+        FILE_RECORDS(filename):
+            the number of records in an ASCII file; 0 if the file is binary.
 
         FILE_MD5(filepath):
             return the MD5 checksum of the file at the specified filepath.
 
     Note that these functions can be called from the user's Python program by
     importing them from XmlTemplate.
+
+    All character strings are "escaped" by default, meaning that "&" is changed
+    to "&amp;", ">" is changed to "&gt;", and "<" is changed to "&lt;". If you
+    do not wish for a string to be escaped, let it begin with "NOESCAPE". If
+    this starts a string, then these eight characters are removed and the
+    remainder of the string is returned without escaping. Use this if you want
+    to generate XML using this class.
     """
 
     TIMEZONE = 'America/Los_Angeles'    # convert to the name of the local
@@ -209,7 +223,11 @@ class XmlTemplate(object):
                 rec = recs[j]
 
                 # Evaluate within the namespaces
-                result = eval(rec, lookup, more)
+                try:
+                    result = eval(rec, lookup, more)
+                except Exception:
+                    print 'Eval failure: ' + rec
+                    raise
 
                 # Apply assignment if necessary
                 varname = assignments[jndex]
@@ -223,7 +241,10 @@ class XmlTemplate(object):
                         result = result[:-1]
 
                 # Otherwise, convert to string and escape
-                result = escape(str(result))
+                if str(result).startswith('NOESCAPE'):
+                    result = str(result)[8:]
+                else:
+                    result = escape(str(result))
 
                 recs[j] = result
 
@@ -297,12 +318,19 @@ class XmlTemplate(object):
     def REPLACE_NA(value, na_value, flag='N/A'):
         """Replace a string with the value 'N/A' with a numeric."""
 
+        if isinstance(value, str):
+            value = value.strip()
+
         if value == flag:
             return na_value
-        elif type(value) == str:
-            raise ValueError('Illegal number! ' + value)
         else:
             return value
+
+    @staticmethod
+    def REPLACE_UNK(value, unk_value):
+        """Replace a string with the value 'UNK' with a numeric."""
+
+        return XmlTemplate.REPLACE_NA(value, unk_value, 'UNK')
 
     @staticmethod
     def CURRENT_ZULU():
@@ -314,15 +342,21 @@ class XmlTemplate(object):
     def DATETIME(value):
         """Convert the given date/time string to a year-month-day format with a
         trailing "Z". The date can be in year-month-day or year-dayofyear
-        format. The time component (following a capital 'T') is unchanged."""
+        format. The time component (following a capital 'T') is unchanged. If
+        the value is "UNK", then "UNK" is returned."""
+
+        if value.strip() == 'UNK': return 'UNK'
 
         (date,hms) = value.split('T')     # fails if not exactly two parts
 
         # Convert the date to ymd if necessary
         parts = date.split('-')
         if len(parts) == 2:
-            day = time.strptime(date, '%Y-%j')
-            date = time.strftime('%Y-%m-%d', day)
+            # Note that strftime does not support dates before 1900. Some
+            # erroneous dates in some labels have erroneous years. This is a
+            # workaround.
+            day = time.strptime('19' + date[2:], '%Y-%j')
+            date = parts[0][:2] + time.strftime('%Y-%m-%d', day)[2:]
 
         # Reassemble
         return date + 'T' + hms + ('Z' if not hms.endswith('Z') else '')
@@ -354,6 +388,28 @@ class XmlTemplate(object):
 
         return os.path.getsize(filename)
 
+    @staticmethod
+    def FILE_RECORDS(filename):
+        """Return the number of records in a file; 0 if the file is binary."""
+
+        with open(filename) as f:
+            count = 0
+            asciis = 0
+            non_asciis = 0
+            for line in f:
+                for c in line:
+                    if c in string.printable:
+                        asciis += 1
+                    else:
+                        non_asciis += 1
+
+                count += 1
+
+        if non_asciis > 0.05 * asciis:
+            return 0
+
+        return count
+
     # From http://stackoverflow.com/questions/3431825/-
     @staticmethod
     def FILE_MD5(filename, blocksize=65536):
@@ -372,6 +428,7 @@ class XmlTemplate(object):
 
 PREDEFINED_FUNCTIONS = {}
 PREDEFINED_FUNCTIONS['REPLACE_NA'  ] = XmlTemplate.REPLACE_NA
+PREDEFINED_FUNCTIONS['REPLACE_UNK' ] = XmlTemplate.REPLACE_UNK
 PREDEFINED_FUNCTIONS['CURRENT_ZULU'] = XmlTemplate.CURRENT_ZULU
 PREDEFINED_FUNCTIONS['DATETIME'    ] = XmlTemplate.DATETIME
 PREDEFINED_FUNCTIONS['BASENAME'    ] = XmlTemplate.BASENAME

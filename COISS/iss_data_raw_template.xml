@@ -85,6 +85,9 @@ $ONCE
         </Observing_System>
         <Target_Identification>
             <name>$target_names[0]$</name>
+$FOR_EACH(target_alts[0])
+            <alternate_designation>$VALUE$</alternate_designation>
+$ONCE
             <type>$target_types[0]$</type>
 $IF(target_naif_ids[0] != 'N/A')
             <description>
@@ -102,6 +105,9 @@ $ONCE
 $IF(len(target_naif_ids) > 1)
         <Target_Identification>
             <name>$target_names[1]$</name>
+$FOR_EACH(target_alts[1] if len(target_naif_ids) > 1 else [])
+            <alternate_designation>$VALUE$</alternate_designation>
+$IF(len(target_naif_ids) > 1)
             <type>$target_types[1]$</type>
 $IF(len(target_naif_ids) > 1 and target_naif_ids[1] != 'N/A')
             <description>
@@ -119,6 +125,9 @@ $IF(len(target_naif_ids) > 1)
 $IF(len(target_naif_ids) > 2)
         <Target_Identification>
             <name>$target_names[2]$</name>
+$FOR_EACH(target_alts[2] if len(target_naif_ids) > 2 else [])
+            <alternate_designation>$VALUE$</alternate_designation>
+$IF(len(target_naif_ids) > 2)
             <type>$target_types[2]$</type>
 $IF(len(target_naif_ids) > 2 and target_naif_ids[2] != 'N/A')
             <description>
@@ -136,6 +145,9 @@ $IF(len(target_naif_ids) > 2)
 $IF(len(target_naif_ids) > 3)
         <Target_Identification>
             <name>$target_names[3]$</name>
+$FOR_EACH(target_alts[3] if len(target_naif_ids) > 3 else [])
+            <alternate_designation>$VALUE$</alternate_designation>
+$IF(len(target_naif_ids) > 3)
             <type>$target_types[3]$</type>
 $IF(len(target_naif_ids) > 3 and target_naif_ids[3] != 'N/A')
             <description>
@@ -153,6 +165,9 @@ $IF(len(target_naif_ids) > 4)
 $IF(len(target_naif_ids) > 4)
         <Target_Identification>
             <name>$target_names[4]$</name>
+$FOR_EACH(target_alts[4] if len(target_naif_ids) > 4 else [])
+            <alternate_designation>$VALUE$</alternate_designation>
+$IF(len(target_naif_ids) > 4)
             <type>$target_types[4]$</type>
 $IF(len(target_naif_ids) > 4 and target_naif_ids[4] != 'N/A')
             <description>
@@ -293,10 +308,10 @@ $ONCE
             <file_name>$BASENAME(datafile)$</file_name>
             <creation_date_time>$FILE_ZULU(datafile)$</creation_date_time>
             <md5_checksum>$FILE_MD5(datafile)$</md5_checksum>
+        </File>
 
 <!-- The internal VICAR header -->
 
-        </File>
         <Header>
             <offset unit="byte">0</offset>
             <object_length unit="byte">$LBLSIZE$</object_length>
