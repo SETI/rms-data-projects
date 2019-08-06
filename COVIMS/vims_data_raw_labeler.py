@@ -318,6 +318,11 @@ def write_pds4_label(datafile, pds3_label):
 
     label = pdsparser.PdsLabel.from_string(label_text).as_dict()
 
+    # Handle cases where a single string appears in place of a pair
+    if isinstance(label['BACKGROUND_SAMPLING_MODE_ID'], str):
+        print 'single value for BACKGROUND_SAMPLING_MODE_ID:', label['BACKGROUND_SAMPLING_MODE_ID']
+        label['BACKGROUND_SAMPLING_MODE_ID'] = (label['BACKGROUND_SAMPLING_MODE_ID'], 'Information not provided')
+
     # Read ISIS2 header
     isis_header = pdsparser.PdsLabel.from_file(datafile)
     header = isis_header.as_dict()
@@ -336,6 +341,7 @@ def write_pds4_label(datafile, pds3_label):
 
     lookup['qube_rec0'] = header['^QUBE'][0]
     lookup['qube_recs'] = header['^SIDEPLANE'][0] - header['^QUBE'][0]
+
 
     if '^PADDING' not in header:
         header['^PADDING'] = (header['FILE_RECORDS'] + 1, 'RECORDS')

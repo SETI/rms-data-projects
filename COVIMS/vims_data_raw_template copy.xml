@@ -22,8 +22,8 @@
     http://pds.nasa.gov/pds4/mission/cassini/v1 https://pds.nasa.gov/pds4/mission/cassini/v1/PDS4_CASSINI_1B00_1300.xsd">
 
     <Identification_Area>
-        <logical_identifier>urn:nasa:pds:cassini_vims_$cruise_or_saturn=('cruise' if START_TIME < '2004' else 'saturn')$:data_raw:$BASENAME(datafile)$</logical_identifier>
-        <version_id>1.0</version_id>
+        <logical_identifier>urn:nasa:pds:cassini_vims_$cruise_or_saturn=('cruise' if START_TIME < '2004' else 'saturn')$:data_raw:$BASENAME(datafile)[:-4].split('-')[0]$</logical_identifier>
+        <version_id>$'1.0' if '-v' not in datafile else datafile.split('-v')[1][0] + '.0'$</version_id>
         <title>Cassini VIMS 3D Array $BASENAME(datafile)$</title>
         <information_model_version>1.11.0.0</information_model_version>
         <product_class>Product_Observational</product_class>
@@ -48,7 +48,7 @@
         </comment>
         <Time_Coordinates>
             <start_date_time nilReason="inapplicable">$DATETIME(START_TIME)$</start_date_time>
-            <stop_date_time nilReason="inapplicable">$DATETIME(STOP_TIME)$</stop_date_time>
+            <stop_date_time nilReason="inapplicable">$DATETIME(STOP_TIME)$</stop_date_time>$"NOESCAPE  <!-- Invalid -->" if STOP_TIME[:2] not in ('19','20') else ""$
         </Time_Coordinates>
         <Primary_Result_Summary>
 $FOR_EACH(purposes)
@@ -195,44 +195,44 @@ $ONCE
         <Mission_Area>
             <cassini:Cassini>
                 <cassini:VIMS_Specific_Attributes>
-                    <cassini:mission_phase_name>$MISSION_PHASE_NAME$</cassini:mission_phase_name>
+                    <cassini:mission_phase_name>$MISSION_PHASE_NAME.strip() if MISSION_PHASE_NAME.strip() else "Information not provided"$</cassini:mission_phase_name>
                     <cassini:spacecraft_clock_count_partition>1</cassini:spacecraft_clock_count_partition>
                     <cassini:spacecraft_clock_start_count>$SPACECRAFT_CLOCK_START_COUNT[2:]$</cassini:spacecraft_clock_start_count>
                     <cassini:spacecraft_clock_stop_count>$SPACECRAFT_CLOCK_STOP_COUNT[2:]$</cassini:spacecraft_clock_stop_count>
                     <cassini:limitations>$REPLACE_NA(DESCRIPTION,"None known.")$</cassini:limitations>
-                    <cassini:antiblooming_state_flag>$REPLACE_NA(ANTIBLOOMING_STATE_FLAG,"Information not provided.")$</cassini:antiblooming_state_flag>
+                    <cassini:antiblooming_state_flag>$REPLACE_NA(ANTIBLOOMING_STATE_FLAG,"Information not provided")$</cassini:antiblooming_state_flag>
                     <cassini:background_sampling_frequency>$BACKGROUND_SAMPLING_FREQUENCY$</cassini:background_sampling_frequency>
-                    <cassini:background_sampling_mode_id_ir>$REPLACE_NA(BACKGROUND_SAMPLING_MODE_ID[0],"Not applicable.")$</cassini:background_sampling_mode_id_ir>
-                    <cassini:background_sampling_mode_id_vis>$REPLACE_NA(BACKGROUND_SAMPLING_MODE_ID[1],"Not applicable.")$</cassini:background_sampling_mode_id_vis>
+                    <cassini:background_sampling_mode_id_ir>$REPLACE_NA(BACKGROUND_SAMPLING_MODE_ID[0].strip(),"Not applicable")$</cassini:background_sampling_mode_id_ir>
+                    <cassini:background_sampling_mode_id_vis>$REPLACE_NA(BACKGROUND_SAMPLING_MODE_ID[1].strip(),"Not applicable")$</cassini:background_sampling_mode_id_vis>
                     <cassini:bias_state_id>$BIAS_STATE_ID$</cassini:bias_state_id>
                     <cassini:command_file_name>$COMMAND_FILE_NAME$</cassini:command_file_name>
                     <cassini:command_sequence_number>$COMMAND_SEQUENCE_NUMBER$</cassini:command_sequence_number>
-                    <cassini:compressor_id>$REPLACE_NA(COMPRESSOR_ID,"Information not provided.")$</cassini:compressor_id>
+                    <cassini:compressor_id>$REPLACE_NA(COMPRESSOR_ID,-1)$</cassini:compressor_id>$"NOESCAPE  <!-- Information not provided -->" if COMPRESSOR_ID.strip() == "N/A" else ""$
                     <cassini:data_buffer_state_flag>$DATA_BUFFER_STATE_FLAG$</cassini:data_buffer_state_flag>
-                    <cassini:detector_temperature_IR_high_res unit="K">$DETECTOR_TEMPERATURE[0]$</cassini:detector_temperature_IR_high_res>
-                    <cassini:detector_temperature_IR_low_res unit="K">$DETECTOR_TEMPERATURE[1]$</cassini:detector_temperature_IR_low_res>
-                    <cassini:detector_temperature_visible unit="K">$DETECTOR_TEMPERATURE[2]$</cassini:detector_temperature_visible>
+                    <cassini:detector_temperature_IR_high_res unit="K">$DETECTOR_TEMPERATURE[0]$</cassini:detector_temperature_IR_high_res>$"NOESCAPE  <!-- Unknown -->" if DETECTOR_TEMPERATURE[0] == -999. else ""$
+                    <cassini:detector_temperature_IR_low_res unit="K">$DETECTOR_TEMPERATURE[1]$</cassini:detector_temperature_IR_low_res>$"NOESCAPE  <!-- Unknown -->" if DETECTOR_TEMPERATURE[1] == -999. else ""$
+                    <cassini:detector_temperature_visible unit="K">$DETECTOR_TEMPERATURE[2]$</cassini:detector_temperature_visible>$"NOESCAPE  <!-- Unknown -->" if DETECTOR_TEMPERATURE[2] == -999. else ""$
                     <cassini:earth_received_start_time>$EARTH_RECEIVED_START_TIME$</cassini:earth_received_start_time>
                     <cassini:earth_received_stop_time>$EARTH_RECEIVED_STOP_TIME$</cassini:earth_received_stop_time>
                     <cassini:exposure_duration_ir unit="ms">$EXPOSURE_DURATION[0]$</cassini:exposure_duration_ir>
                     <cassini:exposure_duration_vis unit="ms">$EXPOSURE_DURATION[1]$</cassini:exposure_duration_vis>
-                    <cassini:fast_hk_item_name_1>$"Information not provided." if FAST_HK_ITEM_NAME == "UNK" else FAST_HK_ITEM_NAME[0]$</cassini:fast_hk_item_name_1>
-                    <cassini:fast_hk_item_name_2>$"Information not provided." if FAST_HK_ITEM_NAME == "UNK" else "Not applicable." if len(FAST_HK_ITEM_NAME) == 1 else REPLACE_NA(FAST_HK_ITEM_NAME[1],"Not applicable.")$</cassini:fast_hk_item_name_2>
-                    <cassini:fast_hk_item_name_3>$"Information not provided." if FAST_HK_ITEM_NAME == "UNK" else "Not applicable." if len(FAST_HK_ITEM_NAME) == 1 else REPLACE_NA(FAST_HK_ITEM_NAME[2],"Not applicable.")$</cassini:fast_hk_item_name_3>
-                    <cassini:fast_hk_item_name_4>$"Information not provided." if FAST_HK_ITEM_NAME == "UNK" else "Not applicable." if len(FAST_HK_ITEM_NAME) == 1 else REPLACE_NA(FAST_HK_ITEM_NAME[3],"Not applicable.")$</cassini:fast_hk_item_name_4>
-                    <cassini:fast_hk_pickup_rate>$REPLACE_NA(FAST_HK_PICKUP_RATE,-1)$</cassini:fast_hk_pickup_rate>$"NOESCAPE  <!-- Not applicable -->" if FAST_HK_PICKUP_RATE.strip() == 'N/A' else ""$
+                    <cassini:fast_hk_item_name_1>$"Information not provided" if FAST_HK_ITEM_NAME == "UNK" else FAST_HK_ITEM_NAME[0]$</cassini:fast_hk_item_name_1>
+                    <cassini:fast_hk_item_name_2>$"Information not provided" if FAST_HK_ITEM_NAME == "UNK" else "Not applicable" if len(FAST_HK_ITEM_NAME) == 1 else REPLACE_NA(FAST_HK_ITEM_NAME[1],"Not applicable")$</cassini:fast_hk_item_name_2>
+                    <cassini:fast_hk_item_name_3>$"Information not provided" if FAST_HK_ITEM_NAME == "UNK" else "Not applicable" if len(FAST_HK_ITEM_NAME) == 1 else REPLACE_NA(FAST_HK_ITEM_NAME[2],"Not applicable")$</cassini:fast_hk_item_name_3>
+                    <cassini:fast_hk_item_name_4>$"Information not provided" if FAST_HK_ITEM_NAME == "UNK" else "Not applicable" if len(FAST_HK_ITEM_NAME) == 1 else REPLACE_NA(FAST_HK_ITEM_NAME[3],"Not applicable")$</cassini:fast_hk_item_name_4>
+                    <cassini:fast_hk_pickup_rate>$REPLACE_NA(FAST_HK_PICKUP_RATE,-1)$</cassini:fast_hk_pickup_rate>$"NOESCAPE  <!-- Not applicable -->" if FAST_HK_PICKUP_RATE == 'N/A' else ""$
                     <cassini:flight_software_version_id>$FLIGHT_SOFTWARE_VERSION_ID$</cassini:flight_software_version_id>
-                    <cassini:gain_mode_id_ir>$REPLACE_NA(GAIN_MODE_ID[0],"Not applicable.")$</cassini:gain_mode_id_ir>
-                    <cassini:gain_mode_id_vis>$REPLACE_NA(GAIN_MODE_ID[1],"Not applicable.")$</cassini:gain_mode_id_vis>
+                    <cassini:gain_mode_id_ir>$REPLACE_NA(GAIN_MODE_ID[0],"Not applicable")$</cassini:gain_mode_id_ir>
+                    <cassini:gain_mode_id_vis>$REPLACE_NA(GAIN_MODE_ID[1],"Not applicable")$</cassini:gain_mode_id_vis>
                     <cassini:ground_software_version_id>$SOFTWARE_VERSION_ID$</cassini:ground_software_version_id>
-                    <cassini:housekeeping_clock_count>$REPLACE_NA(HOUSEKEEPING_CLOCK_COUNT,"Information not provided.")$</cassini:housekeeping_clock_count>
+                    <cassini:housekeeping_clock_count>$REPLACE_NA(HOUSEKEEPING_CLOCK_COUNT,"Information not provided")$</cassini:housekeeping_clock_count>
                     <cassini:image_observation_type>$IMAGE_OBSERVATION_TYPE$</cassini:image_observation_type>
                     <cassini:inst_cmprs_name>$INST_CMPRS_NAME$</cassini:inst_cmprs_name>
-                    <cassini:inst_cmprs_ratio>$INST_CMPRS_RATIO$</cassini:inst_cmprs_ratio>
+                    <cassini:inst_cmprs_ratio>$INST_CMPRS_RATIO$</cassini:inst_cmprs_ratio>$"NOESCAPE  <!-- Not compressed -->" if INST_CMPRS_RATIO == -999. else """$
                     <cassini:instrument_data_rate>$INSTRUMENT_DATA_RATE$</cassini:instrument_data_rate>
                     <cassini:instrument_mode_id>$INSTRUMENT_MODE_ID$</cassini:instrument_mode_id>
-                    <cassini:instrument_temperature_spectrometer unit="K">$INSTRUMENT_TEMPERATURE[0]$</cassini:instrument_temperature_spectrometer>
-                    <cassini:instrument_temperature_grating unit="K">$INSTRUMENT_TEMPERATURE[1]$</cassini:instrument_temperature_grating>
+                    <cassini:instrument_temperature_spectrometer unit="K">$INSTRUMENT_TEMPERATURE[0]$</cassini:instrument_temperature_spectrometer>$"NOESCAPE  <!-- Unknown -->" if INSTRUMENT_TEMPERATURE[0] == -999. else ""$
+                    <cassini:instrument_temperature_grating unit="K">$INSTRUMENT_TEMPERATURE[1]$</cassini:instrument_temperature_grating>$"NOESCAPE  <!-- Unknown -->" if INSTRUMENT_TEMPERATURE[1] == -999. else ""$
                     <cassini:integration_delay_flag>$INTEGRATION_DELAY_FLAG$</cassini:integration_delay_flag>
                     <cassini:interframe_delay_duration unit="ms">$INTERFRAME_DELAY_DURATION$</cassini:interframe_delay_duration>
                     <cassini:interline_delay_duration unit="ms">$INTERLINE_DELAY_DURATION$</cassini:interline_delay_duration>
@@ -240,27 +240,27 @@ $ONCE
                     <cassini:missing_pixels>$MISSING_PIXELS$</cassini:missing_pixels>
                     <cassini:native_start_time>$NATIVE_START_TIME$</cassini:native_start_time>
                     <cassini:native_stop_time>$NATIVE_STOP_TIME$</cassini:native_stop_time>
-                    <cassini:observation_id>$REPLACE_UNK(OBSERVATION_ID,"Information not provided.")$</cassini:observation_id>
+                    <cassini:observation_id>$REPLACE_UNK(OBSERVATION_ID,"Information not provided")$</cassini:observation_id>
                     <cassini:offset_flag>$OFFSET_FLAG$</cassini:offset_flag>
-                    <cassini:optics_temperature_ir_1 unit="K">$OPTICS_TEMPERATURE[0]$</cassini:optics_temperature_ir_1>
-                    <cassini:optics_temperature_ir_2 unit="K">$OPTICS_TEMPERATURE[1]$</cassini:optics_temperature_ir_2>
-                    <cassini:optics_temperature_vis unit="K">$OPTICS_TEMPERATURE[2]$</cassini:optics_temperature_vis>
+                    <cassini:optics_temperature_ir_1 unit="K">$OPTICS_TEMPERATURE[0]$</cassini:optics_temperature_ir_1>$"NOESCAPE  <!-- Unknown -->" if OPTICS_TEMPERATURE[0] == -999. else ""$
+                    <cassini:optics_temperature_ir_2 unit="K">$OPTICS_TEMPERATURE[1]$</cassini:optics_temperature_ir_2>$"NOESCAPE  <!-- Unknown -->" if OPTICS_TEMPERATURE[1] == -999. else ""$
+                    <cassini:optics_temperature_vis unit="K">$OPTICS_TEMPERATURE[2]$</cassini:optics_temperature_vis>$"NOESCAPE  <!-- Unknown -->" if OPTICS_TEMPERATURE[2] == -999. else ""$
                     <cassini:overwritten_channel_flag>$OVERWRITTEN_CHANNEL_FLAG$</cassini:overwritten_channel_flag>
                     <cassini:packing_flag>$PACKING_FLAG$</cassini:packing_flag>
                     <cassini:parameter_set_id>$PARAMETER_SET_ID$</cassini:parameter_set_id>
                     <cassini:pds3_product_creation_time>$PRODUCT_CREATION_TIME$</cassini:pds3_product_creation_time>
                     <cassini:pds3_product_version_type>$PRODUCT_VERSION_TYPE$</cassini:pds3_product_version_type>
-                    <cassini:pds3_target_desc>$REPLACE_UNK(TARGET_DESC,"Information not provided.")$</cassini:pds3_target_desc>
-                    <cassini:pds3_target_name>$REPLACE_UNK(TARGET_NAME,"Information not provided.")$</cassini:pds3_target_name>
+                    <cassini:pds3_target_desc>$REPLACE_UNK(TARGET_DESC,"Information not provided")$</cassini:pds3_target_desc>
+                    <cassini:pds3_target_name>$REPLACE_UNK(TARGET_NAME,"Information not provided")$</cassini:pds3_target_name>
                     <cassini:pre-pds_version_number>$pre_pds_version_number$</cassini:pre-pds_version_number>
                     <cassini:power_state_flag_ir>$POWER_STATE_FLAG[0]$</cassini:power_state_flag_ir>
                     <cassini:power_state_flag_vis>$POWER_STATE_FLAG[1]$</cassini:power_state_flag_vis>
-                    <cassini:sampling_mode_id_ir>$REPLACE_NA(SAMPLING_MODE_ID[0],"Not applicable.")$</cassini:sampling_mode_id_ir>
-                    <cassini:sampling_mode_id_vis>$REPLACE_NA(SAMPLING_MODE_ID[1],"Not applicable.")$</cassini:sampling_mode_id_vis>
+                    <cassini:sampling_mode_id_ir>$REPLACE_NA(SAMPLING_MODE_ID[0].strip(),"Not applicable")$</cassini:sampling_mode_id_ir>
+                    <cassini:sampling_mode_id_vis>$REPLACE_NA(SAMPLING_MODE_ID[1].strip(),"Not applicable")$</cassini:sampling_mode_id_vis>
                     <cassini:scan_mode_id>$SCAN_MODE_ID$</cassini:scan_mode_id>
                     <cassini:sequence_id>$SEQUENCE_ID$</cassini:sequence_id>
-                    <cassini:sequence_title>$REPLACE_NA(SEQUENCE_TITLE,"Information not provided.")$</cassini:sequence_title>
-                    <cassini:shutter_state_flagd>$SHUTTER_STATE_FLAG$</cassini:shutter_state_flag>
+                    <cassini:sequence_title>$REPLACE_NA(SEQUENCE_TITLE,"Information not provided")$</cassini:sequence_title>
+                    <cassini:shutter_state_flag>$SHUTTER_STATE_FLAG$</cassini:shutter_state_flag>
                     <cassini:snapshot_mode_flag>$SNAPSHOT_MODE_FLAG$</cassini:snapshot_mode_flag>
                     <cassini:spectral_editing_flag>$SPECTRAL_EDITING_FLAG$</cassini:spectral_editing_flag>
                     <cassini:spectral_summing_flag>$SPECTRAL_SUMMING_FLAG$</cassini:spectral_summing_flag>
@@ -268,7 +268,7 @@ $ONCE
                     <cassini:stop_time_doy>$STOP_TIME$</cassini:stop_time_doy>
                     <cassini:swath_length unit="pixel">$SWATH_LENGTH$</cassini:swath_length>
                     <cassini:swath_width unit="pixel">$SWATH_WIDTH$</cassini:swath_width>
-                    <cassini:telemetry_format_id>$REPLACE_UNK(TELEMETRY_FORMAT_ID,"Information not provided.")$</cassini:telemetry_format_id>
+                    <cassini:telemetry_format_id>$REPLACE_UNK(TELEMETRY_FORMAT_ID,"Information not provided")$</cassini:telemetry_format_id>
                     <cassini:x_offset unit="pixel">$X_OFFSET$</cassini:x_offset>
                     <cassini:z_offset unit="pixel">$Z_OFFSET$</cassini:z_offset>
                 </cassini:VIMS_Specific_Attributes>
@@ -281,7 +281,7 @@ $ONCE
                     <local_reference_type>display_settings_to_array</local_reference_type>
                 </Local_Internal_Reference>
                 <disp:Display_Direction>
-                    <disp:horizontal_display_axis>2</disp:horizontal_display_axis>
+                    <disp:horizontal_display_axis>3</disp:horizontal_display_axis>
                     <disp:horizontal_display_direction>Left to Right</disp:horizontal_display_direction>
                     <disp:vertical_display_axis>1</disp:vertical_display_axis>
                     <disp:vertical_display_direction>Top to Bottom</disp:vertical_display_direction>
@@ -295,22 +295,15 @@ $ONCE
                 <sp:spectrum_format>3D</sp:spectrum_format>
                 <sp:spectral_bin_type>wavelength</sp:spectral_bin_type>
                 <sp:Field_of_View>
-                    <sp:description>VIMS-V generally operates in a
-                        push-broom mode, acquiring an entire cross-track line simultaneously
-                        spread over its spectral dimension (from 0.35 to 1.0 microns) along the
-                        second dimension of its CCD detector. The second spatial dimension is
-                        acquired either using the S/C drift or the scanning of the VIMS-V
-                        telescope secondary mirror. VIMS-IR uses only a linear array detector,
-                        thus it acquires one pixel only spread over its spectral dimension (from
-                        0.85 to 5.2 microns). With two distinct scanning mechanisms, telescopes,
-                        and spectrometers, the boresight alignment and the Instantaneous Fields
-                        Of View (IFOV) within the full FOV are not identical by design, and in
-                        principle, are wavelength dependent.
+                    <sp:description>
+                        As described in detail by Brown et al. (2004), the size and shape of the VIMS instrument's
+                        field of view in any given product depends on a variety of parameters, including the
+                        swath_width, swath_length, instrument_mode_id, sampling_mode_id_ir, and sampling_mode_id_vis.
+                        Note that the fields of view are different for the visual and IR channels. Users of this
+                        product must consult the VIMS documentation in order to interpret the field of view of this
+                        product.
                     </sp:description>
-                    <sp:Complex_FOV>
-                        <sp:width_angle unit="deg">2.4</sp:width_angle>
-                        <sp:length_angle unit="deg">2.4</sp:length_angle>
-                    </sp:Complex_FOV>
+                    <sp:Complex_FOV></sp:Complex_FOV>  <!-- Consult the documentation -->
                     <Internal_Reference>
                         <lid_reference>urn:nasa:pds:cassini_vims_saturn:document:vims_instrument_description</lid_reference>
                         <reference_type>spectral_characteristics_to_document</reference_type>
@@ -320,11 +313,9 @@ $ONCE
                     <sp:bin_profile_description>
                         The binary portion of a VIMS file consists of two spatial and one
                         spectral dimension (Sample, Line and Band in ISIS terminology).
-                        While the spatial dimensions of the cube core will vary from cube to
-                        cube, the core of all cubes consists of 352 spectral bands (planes).
-                        Any bands not returned by the instrument are padded with CORE_NULL
-                        values and identified by the BAND_BIN_ORIGINAL_BAND keyword.
-                        Augmenting the core data are various suffix planes for ancillary data.
+                        While the spatial dimensions of the cube core vary, nearly all cubes
+                        consist of 352 spectral bands (planes). A very small number of cubes
+                        contain only 256 bands, corresponding to the IR wavelengths only.
 
                         If the value of the attribute cassini:spectral_summing_flag is ON,
                         This cube was obtained using spectral summing in steps of eight spectral
@@ -335,19 +326,20 @@ $ONCE
                     <sp:Spectral_Lookup>
                         <sp:Bin_Center_Lookup>
                             <Internal_Reference>
-                                <lid_reference>urn:nasa:pds:cassini_vims_saturn:data_raw:wavelength-bins</lid_reference>
+                                <lid_reference>urn:nasa:pds:cassini_vims_saturn:document:wavelength-bins</lid_reference>
                                 <reference_type>spectral_characteristics_to_bin_center_values</reference_type>
                                 <comment>
                                     This data was extracted from the VIMS Wavelength and Radiometric Calibration 19, Final Report,
                                     Clark et al. 2018. This updates the corresponding information contained in the original PDS3
                                     product. Those original values, based on ground based calibration, are retained in the ISIS2
-                                    header in the data file.
+                                    header in the data file. For those few files with 256 bands instead of 352, skip over the first
+                                    96 rows of this table.
                                 </comment>
                             </Internal_Reference>
                         </sp:Bin_Center_Lookup>
                         <sp:Bin_Width_Lookup>
                             <Internal_Reference>
-                                <lid_reference>urn:nasa:pds:cassini_vims_saturn:data_raw:wavelength-bins</lid_reference>
+                                <lid_reference>urn:nasa:pds:cassini_vims_saturn:document:wavelength-bins</lid_reference>
                                 <reference_type>spectral_characteristics_to_bin_width_values</reference_type>
                                 <comment>
                                     This data was extracted from the VIMS Wavelength and Radiometric Calibration 19, Final Report,
@@ -363,9 +355,9 @@ $ONCE
 
     <Reference_List>
         <Internal_Reference>
-            <lid_reference>urn:nasa:pds:cassini_vims_$cruise_or_saturn$:data_raw:cum-index</lid_reference>
+            <lid_reference>urn:nasa:pds:cassini_vims_$cruise_or_saturn$:data_raw:index</lid_reference>
             <reference_type>data_to_resource</reference_type>
-            <comment>This refers to cummulative metadata table of basic parameters associated with each observation.</comment>
+            <comment>This refers to cummulative index table of basic parameters associated with each observation.</comment>
         </Internal_Reference>
         <Internal_Reference>
             <lid_reference>urn:nasa:pds:cassini_vims_saturn:document:vims-wavelength-and-radiometric-calibration-report</lid_reference>
@@ -394,6 +386,14 @@ $ONCE
                 information was extracted from the PDS3 instrument catalog file.
             </comment>
         </Internal_Reference>
+        <External_Reference>
+            <doi>10.1007/s11214-004-1453-x</doi>
+            <reference_text>
+                Brown, R. H. et al., The Cassini Visual And Infrared Mapping 
+                Spectrometer (VIMS) Investigation, Space Science Reviews, Volume 115, 
+                Issue 1-4, pp. 111-168, 2004.
+            </reference_text>
+        </External_Reference>
         <Source_Product_External>
             <external_source_product_identifier>$DATA_SET_ID$:$PRODUCT_ID$</external_source_product_identifier>
             <reference_type>data_to_raw_source_product</reference_type>
@@ -425,7 +425,7 @@ $ONCE
                 <id_reference_type>has_primary_component</id_reference_type>
             </Local_ID_Reference>
 
-<!-- Identifying the supplemental objects: the PDS3 side- and backplanes. -->
+<!-- Identifying the supplemental objects: the PDS3 side- and backplanes -->
 
             <Local_ID_Reference>
                 <comment>
@@ -435,83 +435,14 @@ $ONCE
                 <id_reference_to>sideplane</id_reference_to>
                 <id_reference_type>has_component</id_reference_type>
             </Local_ID_Reference>
-$IF('SLICE_TIME_SECONDS' in BAND_SUFFIX_NAME)
-            <Local_ID_Reference>    <!-- band suffix plane SLICE_TIME_SECONDS -->
+$FOR_EACH(BAND_SUFFIX_NAME)
+            <Local_ID_Reference>    <!-- band suffix plane $VALUE$ -->
                 <comment>
-                    This refers to the SLICE_TIME_SECONDS backplane, which can be visualized as an
-                    extension of the band (wavelength) axis. The axes are (Line,Sample). The values
-                    are IR observation slice time seconds, which is the integer part of the spacecraft
-                    clock count.
+                    This refers to the $VALUE$ backplane, which can be visualized as an
+                    extension of the Band (wavelength) axis. The axes are (Line,Sample).
+                    Values are four-byte integers.
                 </comment>
-                <id_reference_to>backplane-slice-time-seconds</id_reference_to>
-                <id_reference_type>has_component</id_reference_type>
-            </Local_ID_Reference>
-$IF('SLICE_TIME_TICKS' in BAND_SUFFIX_NAME)
-            <Local_ID_Reference>    <!-- band suffix plane SLICE_TIME_TICKS -->
-                <comment>
-                    This refers to the SLICE_TIME_TICKS backplane, which can be visualized as an
-                    extension of the band (wavelength) axis. The axes are (Line,Sample). The values
-                    are IR observation slice time ticks, which is the sub-second portion of the VIMS
-                    internal clock.
-                </comment>
-                <id_reference_to>backplane-slice-time-ticks</id_reference_to>
-                <id_reference_type>has_component</id_reference_type>
-            </Local_ID_Reference>
-$IF('IR_DETECTOR_TEMP_HIGH_RES_1' in BAND_SUFFIX_NAME)
-            <Local_ID_Reference>    <!-- band suffix plane IR_DETECTOR_TEMP_HIGH_RES_1 -->
-                <comment>
-                    This refers to the IR_DETECTOR_TEMP_HIGH_RES_1 backplane visualized as an extension of the band (wavelength) axis.
-                    The axes are (Line,Sample). The values are integers that correspond to the temperature
-                    of the IR high resolution detector.
-                </comment>
-                <id_reference_to>backplane-ir-detector-temp-high-res-1</id_reference_to>
-                <id_reference_type>has_component</id_reference_type>
-            </Local_ID_Reference>
-$IF('IR_GRATING_TEMP' in BAND_SUFFIX_NAME)
-            <Local_ID_Reference>    <!-- band suffix plane IR_GRATING_TEMP -->
-                <comment>
-                    This refers to the IR_GRATING_TEMP backplane visualized as an extension of the band (wavelength) axis.
-                    The axes are (Line,Sample). The values are integers that correspond to the temperature
-                    of the IR instrument grating.
-                </comment>
-                <id_reference_to>backplane-ir-grating-temp</id_reference_to>
-                <id_reference_type>has_component</id_reference_type>
-            </Local_ID_Reference>
-$IF('IR_PRIMARY_OPTICS_TEMP' in BAND_SUFFIX_NAME)
-            <Local_ID_Reference>    <!-- band suffix plane IR_PRIMARY_OPTICS_TEMP -->
-                <comment>
-                    This refers to the IR_PRIMARY_OPTICS_TEMP backplane visualized as an extension of the band (wavelength) axis.
-                    The axes are (Line,Sample). The values are integers that correspond to the temperature
-                    of the IR primary optics.
-                </comment>
-                <id_reference_to>backplane-ir-primary-optics-temp</id_reference_to>
-                <id_reference_type>has_component </id_reference_type>
-            </Local_ID_Reference>
-$IF('IR_SPECTROMETER_BODY_TEMP_1' in BAND_SUFFIX_NAME)
-            <Local_ID_Reference>    <!-- band suffix plane IR_SPECTROMETER_BODY_TEMP_1 -->
-                <comment>
-                    This refers to the IR_SPECTROMETER_BODY_TEMP_1 backplane visualized as an extension of the band (wavelength) axis.
-                    The axes are (Line,Sample). The values are integers that correspond to the temperature
-                    of the the body of the IR spectrometer.
-                </comment>
-                <id_reference_to>backplane-ir-spectrometer-body-temp-1</id_reference_to>
-                <id_reference_type>has_component</id_reference_type>
-$IF('X_SCAN_DRIVE_CURRENT' in BAND_SUFFIX_NAME)
-            <Local_ID_Reference>    <!-- band suffix plane X_SCAN_DRIVE_CURRENT -->
-                <comment>
-                    This refers to the X_SCAN_DRIVE_CURRENT backplane visualized as an extension of the band (wavelength) axis.
-                    The axes are (Line,Sample).
-                </comment>
-                <id_reference_to>backplane-x-scan-drive-current</id_reference_to>
-                <id_reference_type>has_component</id_reference_type>
-            </Local_ID_Reference>
-$IF('MINUS_12_VOLTS' in BAND_SUFFIX_NAME)
-            <Local_ID_Reference>    <!-- band suffix plane MINUS_12_VOLTS -->
-                <comment>
-                    This refers to the MINUS_12_VOLTS backplane visualized as an extension of the band (wavelength) axis.
-                    The axes are (Line,Sample).
-                </comment>
-                <id_reference_to>backplane-minus-12-volts</id_reference_to>
+                <id_reference_to>backplane-$VALUE$</id_reference_to>
                 <id_reference_type>has_component</id_reference_type>
             </Local_ID_Reference>
 $ONCE
@@ -523,59 +454,18 @@ $ONCE
                 <id_reference_to>sideplane</id_reference_to>
                 <id_reference_type>has_backplane</id_reference_type>
             </Local_ID_Relation>
-$IF('SLICE_TIME_SECONDS' in BAND_SUFFIX_NAME)
-            <Local_ID_Relation>    <!-- band suffix plane SLICE_TIME_SECONDS -->
+$FOR_EACH(BAND_SUFFIX_NAME)
+            <Local_ID_Relation>    <!-- band suffix plane $VALUE$ -->
                 <id_reference_from>data-array</id_reference_from>
-                <id_reference_to>backplane-slice-time-seconds</id_reference_to>
+                <id_reference_to>backplane-$VALUE$</id_reference_to>
                 <id_reference_type>has_backplane</id_reference_type>
             </Local_ID_Relation>
-$IF('SLICE_TIME_TICKS' in BAND_SUFFIX_NAME)
-            <Local_ID_Relation>    <!-- band suffix plane SLICE_TIME_TICKS -->
-                <id_reference_from>data-array</id_reference_from>
-                <id_reference_to>backplane-slice-time-ticks</id_reference_to>
-                <id_reference_type>has_backplane</id_reference_type>
-            </Local_ID_Relation>
-$IF('IR_DETECTOR_TEMP_HIGH_RES_1' in BAND_SUFFIX_NAME)
-            <Local_ID_Relation>    <!-- band suffix plane IR_DETECTOR_TEMP_HIGH_RES_1 -->
-                <id_reference_from>data-array</id_reference_from>
-                <id_reference_to>backplane-ir-detector-temp-high-res-1</id_reference_to>
-                <id_reference_type>has_backplane</id_reference_type>
-            </Local_ID_Relation>
-$IF('IR_GRATING_TEMP' in BAND_SUFFIX_NAME)
-            <Local_ID_Relation>    <!-- band suffix plane IR_GRATING_TEMP -->
-                <id_reference_from>data-array</id_reference_from>
-                <id_reference_to>backplane-ir-grating-temp</id_reference_to>
-                <id_reference_type>has_backplane</id_reference_type>
-            </Local_ID_Relation>
-$IF('IR_PRIMARY_OPTICS_TEMP' in BAND_SUFFIX_NAME)
-            <Local_ID_Relation>    <!-- band suffix plane IR_PRIMARY_OPTICS_TEMP -->
-                <id_reference_from>data-array</id_reference_from>
-                <id_reference_to>backplane-ir-primary-optics-temp</id_reference_to>
-                <id_reference_type>has_backplane</id_reference_type>
-            </Local_ID_Relation>
-$IF('IR_SPECTROMETER_BODY_TEMP_1' in BAND_SUFFIX_NAME)
-            <Local_ID_Relation>    <!-- band suffix plane IR_SPECTROMETER_BODY_TEMP_1 -->
-                <id_reference_from>data-array</id_reference_from>
-                <id_reference_to>backplane-ir-spectrometer-body-temp-1</id_reference_to>
-                <id_reference_type>has_backplane</id_reference_type>
-            </Local_ID_Relation>
-$IF('X_SCAN_DRIVE_CURRENT' in BAND_SUFFIX_NAME)
-            <Local_ID_Relation>    <!-- band suffix plane X_SCAN_DRIVE_CURRENT -->
-                <id_reference_from>data-array</id_reference_from>
-                <id_reference_to>backplane-x-scan-drive-current</id_reference_to>
-                <id_reference_type>has_backplane</id_reference_type>
-            </Local_ID_Relation>
-$IF('MINUS_12_VOLTS' in BAND_SUFFIX_NAME)
-            <Local_ID_Relation>    <!-- band suffix plane MINUS_12_VOLTS -->
-                <id_reference_from>data-array</id_reference_from>
-                <id_reference_to>backplane-minus-12-volts</id_reference_to>
-                <id_reference_type>has_backplane</id_reference_type>
-            </Local_ID_Relation>
+$ONCE
         </Composite_Structure>
 
- <!-- Descriptions of the individual objects in the file  -->
+<!-- Descriptions of the individual objects in the file -->
 
-<!-- The internal ISIS2 Header  -->
+<!-- The internal ISIS2 Header -->
 
         <Header>
             <local_identifier>isis-header</local_identifier>
@@ -584,7 +474,7 @@ $IF('MINUS_12_VOLTS' in BAND_SUFFIX_NAME)
             <parsing_standard_id>ISIS2</parsing_standard_id>
         </Header>
 
-<!--  ISIS2 History  -->
+<!-- ISIS2 History -->
 
         <Header>
             <local_identifier>isis-history</local_identifier>
@@ -593,7 +483,7 @@ $IF('MINUS_12_VOLTS' in BAND_SUFFIX_NAME)
             <parsing_standard_id>ISIS2 History Label</parsing_standard_id>
         </Header>
 
-<!--  The Data 3D Array   -->
+<!-- The Data 3D Array -->
 
         <Array_3D_Spectrum>
             <name>raw data number</name>
@@ -606,7 +496,7 @@ $IF('MINUS_12_VOLTS' in BAND_SUFFIX_NAME)
             </Element_Array>
             <Axis_Array>
                 <axis_name>Line</axis_name>
-                <elements>$CORE_ITEMS[0]$</elements>
+                <elements>$CORE_ITEMS[2]$</elements>
                 <sequence_number>1</sequence_number>
             </Axis_Array>
             <Axis_Array>
@@ -617,7 +507,7 @@ $IF('MINUS_12_VOLTS' in BAND_SUFFIX_NAME)
             </Axis_Array>
             <Axis_Array>
                 <axis_name>Sample</axis_name>
-                <elements>$CORE_ITEMS[2]$</elements>
+                <elements>$CORE_ITEMS[0]$</elements>
                 <sequence_number>3</sequence_number>
             </Axis_Array>
             <Special_Constants>
@@ -625,7 +515,7 @@ $IF('MINUS_12_VOLTS' in BAND_SUFFIX_NAME)
                 <high_instrument_saturation>-32765</high_instrument_saturation>
                 <high_representation_saturation>-32764</high_representation_saturation>
                 <valid_minimum>-4095</valid_minimum>
-                <low_instrument_saturation>-32767</low_instrument_saturation>
+                <low_instrument_saturation>-32766</low_instrument_saturation>
                 <low_representation_saturation>-32767</low_representation_saturation>
             </Special_Constants>
         </Array_3D_Spectrum>
@@ -640,15 +530,15 @@ $IF('MINUS_12_VOLTS' in BAND_SUFFIX_NAME)
             <axis_index_order>Last Index Fastest</axis_index_order>
             <description>
                 This sideplane is visualized as an extension of the sample axis. The axes are (Line,Band).
-                The values are background data; however the visual and IR channels populate this array differently.
-                See the docunmentation referenced in the Reference_Area above.
+                The values are background data; however the visual and IR channels populate this array
+                differently; See the documentation referenced in the Reference_Area above.
             </description>
             <Element_Array>
                 <data_type>SignedMSB4</data_type>
             </Element_Array>
             <Axis_Array>
                 <axis_name>Line</axis_name>
-                <elements>$CORE_ITEMS[0]$</elements>
+                <elements>$CORE_ITEMS[2]$</elements>
                 <sequence_number>1</sequence_number>
             </Axis_Array>
             <Axis_Array>
@@ -661,26 +551,25 @@ $IF('MINUS_12_VOLTS' in BAND_SUFFIX_NAME)
                 <high_instrument_saturation>-32765</high_instrument_saturation>
                 <high_representation_saturation>-32764</high_representation_saturation>
                 <valid_minimum>-4095</valid_minimum>
-                <low_instrument_saturation>-32767</low_instrument_saturation>
+                <low_instrument_saturation>-32766</low_instrument_saturation>
                 <low_representation_saturation>-32767</low_representation_saturation>
             </Special_Constants>
         </Array_2D>
 $IF(SUFFIX_ITEMS[1])
 
-<!-- Backplane arrays,  described as individual 2D Arrays  -->
-$IF('SLICE_TIME_SECONDS' in BAND_SUFFIX_NAME)
+<!-- Backplane arrays, described as individual 2D Arrays -->
+$FOR_EACH(BAND_SUFFIX_NAME)
 
-        <Array_2D>      <!-- SLICE_TIME_SECONDS -->
-            <name>ir-slice-time-seconds</name>
-            <local_identifier>backplane-slice-time-seconds</local_identifier>
-            <offset unit="byte">$(sideplane_rec0 - 1) * 512 + backplane_bytes * bp_indices['SLICE_TIME_SECONDS']$</offset>
+        <Array_2D>
+            <name>$VALUE$</name>
+            <local_identifier>backplane-$VALUE$</local_identifier>
+            <offset unit="byte">$(backplane_rec0 - 1) * 512 + backplane_bytes * INDEX$</offset>
             <axes>2</axes>
             <axis_index_order>Last Index Fastest</axis_index_order>
             <description>
-                This is the SLICE_TIME_SECONDS backplane, which can be visualized as an
-                extension of the band (wavelength) axis. The axes are (Line,Sample). The values
-                are IR observation slice time seconds, which is the integer part of the spacecraft
-                clock count.
+                This is the $VALUE$ backplane, which can be visualized as an
+                extension of the Band (wavelength) axis. The axes are (Line,Sample).
+                Values are four-byte integers.
             </description>
             <Element_Array>
                 <data_type>SignedMSB4</data_type>
@@ -688,163 +577,12 @@ $IF('SLICE_TIME_SECONDS' in BAND_SUFFIX_NAME)
             </Element_Array>
             <Axis_Array>
                 <axis_name>Line</axis_name>
-                <elements>$CORE_ITEMS[0]$</elements>
+                <elements>$CORE_ITEMS[2]$</elements>
                 <sequence_number>1</sequence_number>
             </Axis_Array>
             <Axis_Array>
                 <axis_name>Sample</axis_name>
-                <elements>$CORE_ITEMS[2]$</elements>
-                <sequence_number>2</sequence_number>
-            </Axis_Array>
-            <Special_Constants>
-                <missing_constant>-8192</missing_constant>
-            </Special_Constants>
-        </Array_2D>
-$IF('SLICE_TIME_TICKS' in BAND_SUFFIX_NAME)
-
-        <Array_2D>      <!-- SLICE_TIME_TICKS -->
-            <name>ir-slice-time-seconds</name>
-            <local_identifier>backplane-slice-time-ticks</local_identifier>
-            <offset unit="byte">$(sideplane_rec0 - 1) * 512 + backplane_bytes * bp_indices['SLICE_TIME_TICKS']$</offset>
-            <axes>2</axes>
-            <axis_index_order>Last Index Fastest</axis_index_order>
-            <description>
-                This is the SLICE_TIME_TICKS backplane, which can be visualized as an
-                extension of the band (wavelength) axis. The axes are (Line,Sample). The values
-                are IR observation slice time ticks, which is the sub-second portion of the VIMS
-                internal clock.
-            </description>
-            <Element_Array>
-                <data_type>SignedMSB4</data_type>
-            </Element_Array>
-            <Axis_Array>
-                <axis_name>Line</axis_name>
                 <elements>$CORE_ITEMS[0]$</elements>
-                <sequence_number>1</sequence_number>
-            </Axis_Array>
-            <Axis_Array>
-                <axis_name>Sample</axis_name>
-                <elements>$CORE_ITEMS[2]$</elements>
-                <sequence_number>2</sequence_number>
-            </Axis_Array>
-            <Special_Constants>
-                <missing_constant>-8192</missing_constant>
-            </Special_Constants>
-        </Array_2D>
-$IF('IR_DETECTOR_TEMP_HIGH_RES_1' in BAND_SUFFIX_NAME)
-
-        <Array_2D>      <!-- IR_DETECTOR_TEMP_HIGH_RES_1 -->
-            <name>ir-slice-time-seconds</name>
-            <local_identifier>backplane-slice-time-ticks</local_identifier>
-            <offset unit="byte">$(sideplane_rec0 - 1) * 512 + backplane_bytes * bp_indices['IR_DETECTOR_TEMP_HIGH_RES_1']$</offset>
-            <axes>2</axes>
-            <axis_index_order>Last Index Fastest</axis_index_order>
-            <description>
-                This is the IR_DETECTOR_TEMP_HIGH_RES_1 backplane visualized as an extension of the band (wavelength) axis.
-                The axes are (Line,Sample). The values are integers that correspond to the temperature
-                of the IR high resolution detector.
-            </description>
-            <Element_Array>
-                <data_type>SignedMSB4</data_type>
-            </Element_Array>
-            <Axis_Array>
-                <axis_name>Line</axis_name>
-                <elements>$CORE_ITEMS[0]$</elements>
-                <sequence_number>1</sequence_number>
-            </Axis_Array>
-            <Axis_Array>
-                <axis_name>Sample</axis_name>
-                <elements>$CORE_ITEMS[2]$</elements>
-                <sequence_number>2</sequence_number>
-            </Axis_Array>
-            <Special_Constants>
-                <missing_constant>-8192</missing_constant>
-            </Special_Constants>
-        </Array_2D>
-$IF('IR_GRATING_TEMP' in BAND_SUFFIX_NAME)
-
-        <Array_2D>      <!-- IR_GRATING_TEMP -->
-            <name>ir-slice-time-seconds</name>
-            <local_identifier>backplane-slice-time-ticks</local_identifier>
-            <offset unit="byte">$(sideplane_rec0 - 1) * 512 + backplane_bytes * bp_indices['IR_GRATING_TEMP']$</offset>
-            <axes>2</axes>
-            <axis_index_order>Last Index Fastest</axis_index_order>
-            <description>
-                This is the IR_GRATING_TEMP backplane visualized as an extension of the band (wavelength) axis.
-                The axes are (Line,Sample). The values are integers that correspond to the temperature
-                of the IR instrument grating.
-            </description>
-            <Element_Array>
-                <data_type>SignedMSB4</data_type>
-            </Element_Array>
-            <Axis_Array>
-                <axis_name>Line</axis_name>
-                <elements>$CORE_ITEMS[0]$</elements>
-                <sequence_number>1</sequence_number>
-            </Axis_Array>
-            <Axis_Array>
-                <axis_name>Sample</axis_name>
-                <elements>$CORE_ITEMS[2]$</elements>
-                <sequence_number>2</sequence_number>
-            </Axis_Array>
-            <Special_Constants>
-                <missing_constant>-8192</missing_constant>
-            </Special_Constants>
-        </Array_2D>
-$IF('IR_PRIMARY_OPTICS_TEMP' in BAND_SUFFIX_NAME)
-
-        <Array_2D>      <!-- IR_PRIMARY_OPTICS_TEMP -->
-            <name>ir-slice-time-seconds</name>
-            <local_identifier>backplane-slice-time-ticks</local_identifier>
-            <offset unit="byte">$(sideplane_rec0 - 1) * 512 + backplane_bytes * bp_indices['IR_PRIMARY_OPTICS_TEMP']$</offset>
-            <axes>2</axes>
-            <axis_index_order>Last Index Fastest</axis_index_order>
-            <description>
-                This is the IR_PRIMARY_OPTICS_TEMP backplane visualized as an extension of the band (wavelength) axis.
-                The axes are (Line,Sample). The values are integers that correspond to the temperature
-                of the IR primary optics.
-            </description>
-            <Element_Array>
-                <data_type>SignedMSB4</data_type>
-            </Element_Array>
-            <Axis_Array>
-                <axis_name>Line</axis_name>
-                <elements>$CORE_ITEMS[0]$</elements>
-                <sequence_number>1</sequence_number>
-            </Axis_Array>
-            <Axis_Array>
-                <axis_name>Sample</axis_name>
-                <elements>$CORE_ITEMS[2]$</elements>
-                <sequence_number>2</sequence_number>
-            </Axis_Array>
-            <Special_Constants>
-                <missing_constant>-8192</missing_constant>
-            </Special_Constants>
-        </Array_2D>
-$IF('IR_SPECTROMETER_BODY_TEMP_1' in BAND_SUFFIX_NAME)
-
-        <Array_2D>      <!-- IR_SPECTROMETER_BODY_TEMP_1 -->
-            <name>ir-slice-time-seconds</name>
-            <local_identifier>backplane-slice-time-ticks</local_identifier>
-            <offset unit="byte">$(sideplane_rec0 - 1) * 512 + backplane_bytes * bp_indices['IR_SPECTROMETER_BODY_TEMP_1']$</offset>
-            <axes>2</axes>
-            <axis_index_order>Last Index Fastest</axis_index_order>
-            <description>
-                This is the IR_SPECTROMETER_BODY_TEMP_1 backplane visualized as an extension of the band (wavelength) axis.
-                The axes are (Line,Sample). The values are integers that correspond to the temperature
-                of the the body of the IR spectrometer.
-            </description>
-            <Element_Array>
-                <data_type>SignedMSB4</data_type>
-            </Element_Array>
-            <Axis_Array>
-                <axis_name>Line</axis_name>
-                <elements>$CORE_ITEMS[0]$</elements>
-                <sequence_number>1</sequence_number>
-            </Axis_Array>
-            <Axis_Array>
-                <axis_name>Sample</axis_name>
-                <elements>$CORE_ITEMS[2]$</elements>
                 <sequence_number>2</sequence_number>
             </Axis_Array>
             <Special_Constants>
@@ -853,7 +591,7 @@ $IF('IR_SPECTROMETER_BODY_TEMP_1' in BAND_SUFFIX_NAME)
         </Array_2D>
 $IF(SUFFIX_ITEMS[1])
 
-<!--  Corner 2D Array  -->
+<!-- Corner 2D Array -->
 
         <Array_2D>
             <local_identifier>corner</local_identifier>
@@ -864,19 +602,19 @@ $IF(SUFFIX_ITEMS[1])
                 <data_type>SignedMSB4</data_type>
             </Element_Array>
             <Axis_Array>
-                <axis_name>Line</axis_name>
-                <elements>$CORE_ITEMS[0]$</elements>
+                <axis_name>Backplane</axis_name>
+                <elements>$SUFFIX_ITEMS[1]</elements>
                 <sequence_number>1</sequence_number>
             </Axis_Array>
             <Axis_Array>
-                <axis_name>Backplane</axis_name>
-                <elements>$SUFFIX_ITEMS[1]$</elements>
+                <axis_name>Line</axis_name>
+                <elements>$CORE_ITEMS[2]$</elements>
                 <sequence_number>2</sequence_number>
             </Axis_Array>
         </Array_2D>
 $IF(padding_recs)
 
-<!--  Padding 1D Array  -->
+<!-- Padding 1D Array -->
 
         <Array>
             <local_identifier>padding</local_identifier>
@@ -888,10 +626,10 @@ $IF(padding_recs)
             </Element_Array>
             <Axis_Array>
                 <axis_name>padding</axis_name>
-                <elements>***** TBD *****</elements>
+                <elements>$padding_bytes$</elements>
                 <sequence_number>1</sequence_number>
             </Axis_Array>
         </Array>
+$ONCE
     </File_Area_Observational>
 </Product_Observational>
-$ONCE

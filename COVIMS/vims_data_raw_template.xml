@@ -22,8 +22,8 @@
     http://pds.nasa.gov/pds4/mission/cassini/v1 https://pds.nasa.gov/pds4/mission/cassini/v1/PDS4_CASSINI_1B00_1300.xsd">
 
     <Identification_Area>
-        <logical_identifier>urn:nasa:pds:cassini_vims_$cruise_or_saturn=('cruise' if START_TIME < '2004' else 'saturn')$:data_raw:$BASENAME(datafile)$</logical_identifier>
-        <version_id>1.0</version_id>
+        <logical_identifier>urn:nasa:pds:cassini_vims_$cruise_or_saturn=('cruise' if START_TIME < '2004' else 'saturn')$:data_raw:$BASENAME(datafile)[:-4].split('-')[0]$</logical_identifier>
+        <version_id>$'1.0' if '-v' not in datafile else datafile.split('-v')[1][0] + '.0'$</version_id>
         <title>Cassini VIMS 3D Array $BASENAME(datafile)$</title>
         <information_model_version>1.11.0.0</information_model_version>
         <product_class>Product_Observational</product_class>
@@ -195,19 +195,19 @@ $ONCE
         <Mission_Area>
             <cassini:Cassini>
                 <cassini:VIMS_Specific_Attributes>
-                    <cassini:mission_phase_name>$MISSION_PHASE_NAME$</cassini:mission_phase_name>
+                    <cassini:mission_phase_name>$MISSION_PHASE_NAME.strip() if MISSION_PHASE_NAME.strip() else "Information not provided"$</cassini:mission_phase_name>
                     <cassini:spacecraft_clock_count_partition>1</cassini:spacecraft_clock_count_partition>
                     <cassini:spacecraft_clock_start_count>$SPACECRAFT_CLOCK_START_COUNT[2:]$</cassini:spacecraft_clock_start_count>
                     <cassini:spacecraft_clock_stop_count>$SPACECRAFT_CLOCK_STOP_COUNT[2:]$</cassini:spacecraft_clock_stop_count>
                     <cassini:limitations>$REPLACE_NA(DESCRIPTION,"None known.")$</cassini:limitations>
-                    <cassini:antiblooming_state_flag>$REPLACE_NA(ANTIBLOOMING_STATE_FLAG,"Information not provided.")$</cassini:antiblooming_state_flag>
+                    <cassini:antiblooming_state_flag>$REPLACE_NA(ANTIBLOOMING_STATE_FLAG,"Information not provided")$</cassini:antiblooming_state_flag>
                     <cassini:background_sampling_frequency>$BACKGROUND_SAMPLING_FREQUENCY$</cassini:background_sampling_frequency>
-                    <cassini:background_sampling_mode_id_ir>$REPLACE_NA(BACKGROUND_SAMPLING_MODE_ID[0],"Not applicable.")$</cassini:background_sampling_mode_id_ir>
-                    <cassini:background_sampling_mode_id_vis>$REPLACE_NA(BACKGROUND_SAMPLING_MODE_ID[1],"Not applicable.")$</cassini:background_sampling_mode_id_vis>
+                    <cassini:background_sampling_mode_id_ir>$REPLACE_NA(BACKGROUND_SAMPLING_MODE_ID[0].strip(),"Not applicable")$</cassini:background_sampling_mode_id_ir>
+                    <cassini:background_sampling_mode_id_vis>$REPLACE_NA(BACKGROUND_SAMPLING_MODE_ID[1].strip(),"Not applicable")$</cassini:background_sampling_mode_id_vis>
                     <cassini:bias_state_id>$BIAS_STATE_ID$</cassini:bias_state_id>
                     <cassini:command_file_name>$COMMAND_FILE_NAME$</cassini:command_file_name>
                     <cassini:command_sequence_number>$COMMAND_SEQUENCE_NUMBER$</cassini:command_sequence_number>
-                    <cassini:compressor_id>$REPLACE_NA(COMPRESSOR_ID,"Information not provided.")$</cassini:compressor_id>
+                    <cassini:compressor_id>$REPLACE_NA(COMPRESSOR_ID,-1)$</cassini:compressor_id>$"NOESCAPE  <!-- Information not provided -->" if isinstance(COMPRESSOR_ID,str) else ""$
                     <cassini:data_buffer_state_flag>$DATA_BUFFER_STATE_FLAG$</cassini:data_buffer_state_flag>
                     <cassini:detector_temperature_IR_high_res unit="K">$DETECTOR_TEMPERATURE[0]$</cassini:detector_temperature_IR_high_res>$"NOESCAPE  <!-- Unknown -->" if DETECTOR_TEMPERATURE[0] == -999. else ""$
                     <cassini:detector_temperature_IR_low_res unit="K">$DETECTOR_TEMPERATURE[1]$</cassini:detector_temperature_IR_low_res>$"NOESCAPE  <!-- Unknown -->" if DETECTOR_TEMPERATURE[1] == -999. else ""$
@@ -216,19 +216,19 @@ $ONCE
                     <cassini:earth_received_stop_time>$EARTH_RECEIVED_STOP_TIME$</cassini:earth_received_stop_time>
                     <cassini:exposure_duration_ir unit="ms">$EXPOSURE_DURATION[0]$</cassini:exposure_duration_ir>
                     <cassini:exposure_duration_vis unit="ms">$EXPOSURE_DURATION[1]$</cassini:exposure_duration_vis>
-                    <cassini:fast_hk_item_name_1>$"Information not provided." if FAST_HK_ITEM_NAME == "UNK" else FAST_HK_ITEM_NAME[0]$</cassini:fast_hk_item_name_1>
-                    <cassini:fast_hk_item_name_2>$"Information not provided." if FAST_HK_ITEM_NAME == "UNK" else "Not applicable." if len(FAST_HK_ITEM_NAME) == 1 else REPLACE_NA(FAST_HK_ITEM_NAME[1],"Not applicable.")$</cassini:fast_hk_item_name_2>
-                    <cassini:fast_hk_item_name_3>$"Information not provided." if FAST_HK_ITEM_NAME == "UNK" else "Not applicable." if len(FAST_HK_ITEM_NAME) == 1 else REPLACE_NA(FAST_HK_ITEM_NAME[2],"Not applicable.")$</cassini:fast_hk_item_name_3>
-                    <cassini:fast_hk_item_name_4>$"Information not provided." if FAST_HK_ITEM_NAME == "UNK" else "Not applicable." if len(FAST_HK_ITEM_NAME) == 1 else REPLACE_NA(FAST_HK_ITEM_NAME[3],"Not applicable.")$</cassini:fast_hk_item_name_4>
+                    <cassini:fast_hk_item_name_1>$"Information not provided" if FAST_HK_ITEM_NAME == "UNK" else FAST_HK_ITEM_NAME[0]$</cassini:fast_hk_item_name_1>
+                    <cassini:fast_hk_item_name_2>$"Information not provided" if FAST_HK_ITEM_NAME == "UNK" else "Not applicable" if len(FAST_HK_ITEM_NAME) == 1 else REPLACE_NA(FAST_HK_ITEM_NAME[1],"Not applicable")$</cassini:fast_hk_item_name_2>
+                    <cassini:fast_hk_item_name_3>$"Information not provided" if FAST_HK_ITEM_NAME == "UNK" else "Not applicable" if len(FAST_HK_ITEM_NAME) == 1 else REPLACE_NA(FAST_HK_ITEM_NAME[2],"Not applicable")$</cassini:fast_hk_item_name_3>
+                    <cassini:fast_hk_item_name_4>$"Information not provided" if FAST_HK_ITEM_NAME == "UNK" else "Not applicable" if len(FAST_HK_ITEM_NAME) == 1 else REPLACE_NA(FAST_HK_ITEM_NAME[3],"Not applicable")$</cassini:fast_hk_item_name_4>
                     <cassini:fast_hk_pickup_rate>$REPLACE_NA(FAST_HK_PICKUP_RATE,-1)$</cassini:fast_hk_pickup_rate>$"NOESCAPE  <!-- Not applicable -->" if FAST_HK_PICKUP_RATE == 'N/A' else ""$
                     <cassini:flight_software_version_id>$FLIGHT_SOFTWARE_VERSION_ID$</cassini:flight_software_version_id>
-                    <cassini:gain_mode_id_ir>$REPLACE_NA(GAIN_MODE_ID[0],"Not applicable.")$</cassini:gain_mode_id_ir>
-                    <cassini:gain_mode_id_vis>$REPLACE_NA(GAIN_MODE_ID[1],"Not applicable.")$</cassini:gain_mode_id_vis>
+                    <cassini:gain_mode_id_ir>$REPLACE_NA(GAIN_MODE_ID[0],"Not applicable")$</cassini:gain_mode_id_ir>
+                    <cassini:gain_mode_id_vis>$REPLACE_NA(GAIN_MODE_ID[1],"Not applicable")$</cassini:gain_mode_id_vis>
                     <cassini:ground_software_version_id>$SOFTWARE_VERSION_ID$</cassini:ground_software_version_id>
-                    <cassini:housekeeping_clock_count>$REPLACE_NA(HOUSEKEEPING_CLOCK_COUNT,"Information not provided.")$</cassini:housekeeping_clock_count>
+                    <cassini:housekeeping_clock_count>$REPLACE_NA(HOUSEKEEPING_CLOCK_COUNT,"Information not provided")$</cassini:housekeeping_clock_count>
                     <cassini:image_observation_type>$IMAGE_OBSERVATION_TYPE$</cassini:image_observation_type>
                     <cassini:inst_cmprs_name>$INST_CMPRS_NAME$</cassini:inst_cmprs_name>
-                    <cassini:inst_cmprs_ratio>$INST_CMPRS_RATIO$</cassini:inst_cmprs_ratio>
+                    <cassini:inst_cmprs_ratio>$INST_CMPRS_RATIO$</cassini:inst_cmprs_ratio>$"NOESCAPE  <!-- Not compressed -->" if INST_CMPRS_RATIO == -999. else ""$
                     <cassini:instrument_data_rate>$INSTRUMENT_DATA_RATE$</cassini:instrument_data_rate>
                     <cassini:instrument_mode_id>$INSTRUMENT_MODE_ID$</cassini:instrument_mode_id>
                     <cassini:instrument_temperature_spectrometer unit="K">$INSTRUMENT_TEMPERATURE[0]$</cassini:instrument_temperature_spectrometer>$"NOESCAPE  <!-- Unknown -->" if INSTRUMENT_TEMPERATURE[0] == -999. else ""$
@@ -240,7 +240,7 @@ $ONCE
                     <cassini:missing_pixels>$MISSING_PIXELS$</cassini:missing_pixels>
                     <cassini:native_start_time>$NATIVE_START_TIME$</cassini:native_start_time>
                     <cassini:native_stop_time>$NATIVE_STOP_TIME$</cassini:native_stop_time>
-                    <cassini:observation_id>$REPLACE_UNK(OBSERVATION_ID,"Information not provided.")$</cassini:observation_id>
+                    <cassini:observation_id>$REPLACE_UNK(OBSERVATION_ID,"Information not provided")$</cassini:observation_id>
                     <cassini:offset_flag>$OFFSET_FLAG$</cassini:offset_flag>
                     <cassini:optics_temperature_ir_1 unit="K">$OPTICS_TEMPERATURE[0]$</cassini:optics_temperature_ir_1>$"NOESCAPE  <!-- Unknown -->" if OPTICS_TEMPERATURE[0] == -999. else ""$
                     <cassini:optics_temperature_ir_2 unit="K">$OPTICS_TEMPERATURE[1]$</cassini:optics_temperature_ir_2>$"NOESCAPE  <!-- Unknown -->" if OPTICS_TEMPERATURE[1] == -999. else ""$
@@ -250,16 +250,16 @@ $ONCE
                     <cassini:parameter_set_id>$PARAMETER_SET_ID$</cassini:parameter_set_id>
                     <cassini:pds3_product_creation_time>$PRODUCT_CREATION_TIME$</cassini:pds3_product_creation_time>
                     <cassini:pds3_product_version_type>$PRODUCT_VERSION_TYPE$</cassini:pds3_product_version_type>
-                    <cassini:pds3_target_desc>$REPLACE_UNK(TARGET_DESC,"Information not provided.")$</cassini:pds3_target_desc>
-                    <cassini:pds3_target_name>$REPLACE_UNK(TARGET_NAME,"Information not provided.")$</cassini:pds3_target_name>
+                    <cassini:pds3_target_desc>$REPLACE_UNK(TARGET_DESC,"Information not provided")$</cassini:pds3_target_desc>
+                    <cassini:pds3_target_name>$REPLACE_UNK(TARGET_NAME,"Information not provided")$</cassini:pds3_target_name>
                     <cassini:pre-pds_version_number>$pre_pds_version_number$</cassini:pre-pds_version_number>
                     <cassini:power_state_flag_ir>$POWER_STATE_FLAG[0]$</cassini:power_state_flag_ir>
                     <cassini:power_state_flag_vis>$POWER_STATE_FLAG[1]$</cassini:power_state_flag_vis>
-                    <cassini:sampling_mode_id_ir>$REPLACE_NA(SAMPLING_MODE_ID[0],"Not applicable.")$</cassini:sampling_mode_id_ir>
-                    <cassini:sampling_mode_id_vis>$REPLACE_NA(SAMPLING_MODE_ID[1],"Not applicable.")$</cassini:sampling_mode_id_vis>
+                    <cassini:sampling_mode_id_ir>$REPLACE_NA(SAMPLING_MODE_ID[0].strip(),"Not applicable")$</cassini:sampling_mode_id_ir>
+                    <cassini:sampling_mode_id_vis>$REPLACE_NA(SAMPLING_MODE_ID[1].strip(),"Not applicable")$</cassini:sampling_mode_id_vis>
                     <cassini:scan_mode_id>$SCAN_MODE_ID$</cassini:scan_mode_id>
                     <cassini:sequence_id>$SEQUENCE_ID$</cassini:sequence_id>
-                    <cassini:sequence_title>$REPLACE_NA(SEQUENCE_TITLE,"Information not provided.")$</cassini:sequence_title>
+                    <cassini:sequence_title>$REPLACE_NA(SEQUENCE_TITLE,"Information not provided")$</cassini:sequence_title>
                     <cassini:shutter_state_flag>$SHUTTER_STATE_FLAG$</cassini:shutter_state_flag>
                     <cassini:snapshot_mode_flag>$SNAPSHOT_MODE_FLAG$</cassini:snapshot_mode_flag>
                     <cassini:spectral_editing_flag>$SPECTRAL_EDITING_FLAG$</cassini:spectral_editing_flag>
@@ -268,7 +268,7 @@ $ONCE
                     <cassini:stop_time_doy>$STOP_TIME$</cassini:stop_time_doy>
                     <cassini:swath_length unit="pixel">$SWATH_LENGTH$</cassini:swath_length>
                     <cassini:swath_width unit="pixel">$SWATH_WIDTH$</cassini:swath_width>
-                    <cassini:telemetry_format_id>$REPLACE_UNK(TELEMETRY_FORMAT_ID,"Information not provided.")$</cassini:telemetry_format_id>
+                    <cassini:telemetry_format_id>$REPLACE_UNK(TELEMETRY_FORMAT_ID,"Information not provided")$</cassini:telemetry_format_id>
                     <cassini:x_offset unit="pixel">$X_OFFSET$</cassini:x_offset>
                     <cassini:z_offset unit="pixel">$Z_OFFSET$</cassini:z_offset>
                 </cassini:VIMS_Specific_Attributes>
@@ -425,7 +425,7 @@ $ONCE
                 <id_reference_type>has_primary_component</id_reference_type>
             </Local_ID_Reference>
 
-<!-- Identifying the supplemental objects: the PDS3 side- and backplanes. -->
+<!-- Identifying the supplemental objects: the PDS3 side- and backplanes -->
 
             <Local_ID_Reference>
                 <comment>
@@ -461,175 +461,179 @@ $FOR_EACH(BAND_SUFFIX_NAME)
                 <id_reference_type>has_backplane</id_reference_type>
             </Local_ID_Relation>
 $ONCE
+        </Composite_Structure>
 
- <!-- Descriptions of the individual objects in the file  -->
+<!-- Descriptions of the individual objects in the file -->
 
-<!-- The internal ISIS2 Header  -->
+<!-- The internal ISIS2 Header -->
 
-            <Header>
-                <local_identifier>isis-header</local_identifier>
-                <offset unit="byte">0</offset>
-                <object_length unit="byte">$LABEL_RECORDS * 512$</object_length>
-                <parsing_standard_id>ISIS2</parsing_standard_id>
-            </Header>
+        <Header>
+            <name>ISIS2 Header</name>
+            <local_identifier>isis-header</local_identifier>
+            <offset unit="byte">0</offset>
+            <object_length unit="byte">$LABEL_RECORDS * 512$</object_length>
+            <parsing_standard_id>ISIS2</parsing_standard_id>
+        </Header>
 
-<!--  ISIS2 History  -->
+<!-- ISIS2 History -->
 
-            <Header>
-                <local_identifier>isis-history</local_identifier>
-                <offset unit="byte">$(history_rec0 - 1) * 512$</offset>
-                <object_length unit="byte">$history_recs * 512$</object_length>
-                <parsing_standard_id>ISIS2 History Label</parsing_standard_id>
-            </Header>
+        <Header>
+            <name>Processing History</name>
+            <local_identifier>isis-history</local_identifier>
+            <offset unit="byte">$(history_rec0 - 1) * 512$</offset>
+            <object_length unit="byte">$history_recs * 512$</object_length>
+            <parsing_standard_id>ISIS2 History Label</parsing_standard_id>
+        </Header>
 
-<!--  The Data 3D Array   -->
+<!-- The Data 3D Array -->
 
-            <Array_3D_Spectrum>
-                <name>raw data number</name>
-                <local_identifier>data-array</local_identifier>
-                <offset unit="byte">$(qube_rec0 - 1) * 512$</offset>
-                <axes>3</axes>
-                <axis_index_order>Last Index Fastest</axis_index_order>
-                <Element_Array>
-                    <data_type>SignedMSB2</data_type>
-                </Element_Array>
-                <Axis_Array>
-                    <axis_name>Line</axis_name>
-                    <elements>$CORE_ITEMS[0]$</elements>
-                    <sequence_number>1</sequence_number>
-                </Axis_Array>
-                <Axis_Array>
-                    <axis_name>Band</axis_name>
-                    <local_identifier>wavelength-axis</local_identifier>
-                    <elements>$CORE_ITEMS[1]$</elements>
-                    <sequence_number>2</sequence_number>
-                </Axis_Array>
-                <Axis_Array>
-                    <axis_name>Sample</axis_name>
-                    <elements>$CORE_ITEMS[2]$</elements>
-                    <sequence_number>3</sequence_number>
-                </Axis_Array>
-                <Special_Constants>
-                    <missing_constant>-8192</missing_constant>
-                    <high_instrument_saturation>-32765</high_instrument_saturation>
-                    <high_representation_saturation>-32764</high_representation_saturation>
-                    <valid_minimum>-4095</valid_minimum>
-                    <low_instrument_saturation>-32767</low_instrument_saturation>
-                    <low_representation_saturation>-32767</low_representation_saturation>
-                </Special_Constants>
-            </Array_3D_Spectrum>
+        <Array_3D_Spectrum>
+            <name>Raw Data Number</name>
+            <local_identifier>data-array</local_identifier>
+            <offset unit="byte">$(qube_rec0 - 1) * 512$</offset>
+            <axes>3</axes>
+            <axis_index_order>Last Index Fastest</axis_index_order>
+            <Element_Array>
+                <data_type>SignedMSB2</data_type>
+            </Element_Array>
+            <Axis_Array>
+                <axis_name>Line</axis_name>
+                <elements>$CORE_ITEMS[2]$</elements>
+                <sequence_number>1</sequence_number>
+            </Axis_Array>
+            <Axis_Array>
+                <axis_name>Band</axis_name>
+                <local_identifier>wavelength-axis</local_identifier>
+                <elements>$CORE_ITEMS[1]$</elements>
+                <sequence_number>2</sequence_number>
+            </Axis_Array>
+            <Axis_Array>
+                <axis_name>Sample</axis_name>
+                <elements>$CORE_ITEMS[0]$</elements>
+                <sequence_number>3</sequence_number>
+            </Axis_Array>
+            <Special_Constants>
+                <missing_constant>-8192</missing_constant>
+                <high_instrument_saturation>-32765</high_instrument_saturation>
+                <high_representation_saturation>-32764</high_representation_saturation>
+                <valid_minimum>-4095</valid_minimum>
+                <low_instrument_saturation>-32766</low_instrument_saturation>
+                <low_representation_saturation>-32767</low_representation_saturation>
+            </Special_Constants>
+        </Array_3D_Spectrum>
 
 <!-- Side Plane 2D Array -->
 
-            <Array_2D>
-                <name>sample-suffix-backgrounds</name>
-                <local_identifier>sideplane</local_identifier>
-                <offset unit="byte">$(sideplane_rec0 - 1) * 512$</offset>
-                <axes>2</axes>
-                <axis_index_order>Last Index Fastest</axis_index_order>
-                <description>
-                    This sideplane is visualized as an extension of the sample axis. The axes are (Line,Band).
-                    The values are background data; however the visual and IR channels populate this array
-                    differently; See the documentation referenced in the Reference_Area above.
-                </description>
-                <Element_Array>
-                    <data_type>SignedMSB4</data_type>
-                </Element_Array>
-                <Axis_Array>
-                    <axis_name>Line</axis_name>
-                    <elements>$CORE_ITEMS[0]$</elements>
-                    <sequence_number>1</sequence_number>
-                </Axis_Array>
-                <Axis_Array>
-                    <axis_name>Band</axis_name>
-                    <elements>$CORE_ITEMS[1]$</elements>
-                    <sequence_number>2</sequence_number>
-                </Axis_Array>
-                <Special_Constants>
-                    <missing_constant>-8192</missing_constant>
-                    <high_instrument_saturation>-32765</high_instrument_saturation>
-                    <high_representation_saturation>-32764</high_representation_saturation>
-                    <valid_minimum>-4095</valid_minimum>
-                    <low_instrument_saturation>-32767</low_instrument_saturation>
-                    <low_representation_saturation>-32767</low_representation_saturation>
-                </Special_Constants>
-            </Array_2D>
+        <Array_2D>
+            <name>Sample Suffix Backgrounds</name>
+            <local_identifier>sideplane</local_identifier>
+            <offset unit="byte">$(sideplane_rec0 - 1) * 512$</offset>
+            <axes>2</axes>
+            <axis_index_order>Last Index Fastest</axis_index_order>
+            <description>
+                This sideplane is visualized as an extension of the sample axis. The axes are (Line,Band).
+                The values are background data; however the visual and IR channels populate this array
+                differently; See the documentation referenced in the Reference_Area above.
+            </description>
+            <Element_Array>
+                <data_type>SignedMSB4</data_type>
+            </Element_Array>
+            <Axis_Array>
+                <axis_name>Line</axis_name>
+                <elements>$CORE_ITEMS[2]$</elements>
+                <sequence_number>1</sequence_number>
+            </Axis_Array>
+            <Axis_Array>
+                <axis_name>Band</axis_name>
+                <elements>$CORE_ITEMS[1]$</elements>
+                <sequence_number>2</sequence_number>
+            </Axis_Array>
+            <Special_Constants>
+                <missing_constant>-8192</missing_constant>
+                <high_instrument_saturation>-32765</high_instrument_saturation>
+                <high_representation_saturation>-32764</high_representation_saturation>
+                <valid_minimum>-4095</valid_minimum>
+                <low_instrument_saturation>-32766</low_instrument_saturation>
+                <low_representation_saturation>-32767</low_representation_saturation>
+            </Special_Constants>
+        </Array_2D>
 $IF(SUFFIX_ITEMS[1])
 
-<!-- Backplane arrays, described as individual 2D Arrays  -->
+<!-- Backplane arrays, described as individual 2D Arrays -->
 $FOR_EACH(BAND_SUFFIX_NAME)
 
-            <Array_2D>
-                <name>$VALUE$</name>
-                <local_identifier>backplane-$VALUE$</local_identifier>
-                <offset unit="byte">$(sideplane_rec0 - 1) * 512 + backplane_bytes * INDEX$</offset>
-                <axes>2</axes>
-                <axis_index_order>Last Index Fastest</axis_index_order>
-                <description>
-                    This is the $VALUE$ backplane, which can be visualized as an
-                    extension of the Band (wavelength) axis. The axes are (Line,Sample).
-                    Values are four-byte integers.
-                </description>
-                <Element_Array>
-                    <data_type>SignedMSB4</data_type>
-                    <unit>sec</unit>
-                </Element_Array>
-                <Axis_Array>
-                    <axis_name>Line</axis_name>
-                    <elements>$CORE_ITEMS[0]$</elements>
-                    <sequence_number>1</sequence_number>
-                </Axis_Array>
-                <Axis_Array>
-                    <axis_name>Sample</axis_name>
-                    <elements>$CORE_ITEMS[2]$</elements>
-                    <sequence_number>2</sequence_number>
-                </Axis_Array>
-                <Special_Constants>
-                    <missing_constant>-8192</missing_constant>
-                </Special_Constants>
-            </Array_2D>
+        <Array_2D>
+            <name>Backplane $VALUE$</name>
+            <local_identifier>backplane-$VALUE$</local_identifier>
+            <offset unit="byte">$(backplane_rec0 - 1) * 512 + backplane_bytes * INDEX$</offset>
+            <axes>2</axes>
+            <axis_index_order>Last Index Fastest</axis_index_order>
+            <description>
+                This is the $VALUE$ backplane, which can be visualized as an
+                extension of the Band (wavelength) axis. The axes are (Line,Sample).
+                Values are four-byte integers.
+            </description>
+            <Element_Array>
+                <data_type>SignedMSB4</data_type>
+                <unit>sec</unit>
+            </Element_Array>
+            <Axis_Array>
+                <axis_name>Line</axis_name>
+                <elements>$CORE_ITEMS[2]$</elements>
+                <sequence_number>1</sequence_number>
+            </Axis_Array>
+            <Axis_Array>
+                <axis_name>Sample</axis_name>
+                <elements>$CORE_ITEMS[0]$</elements>
+                <sequence_number>2</sequence_number>
+            </Axis_Array>
+            <Special_Constants>
+                <missing_constant>-8192</missing_constant>
+            </Special_Constants>
+        </Array_2D>
 $IF(SUFFIX_ITEMS[1])
 
-<!--  Corner 2D Array  -->
+<!-- Corner 2D Array -->
 
-            <Array_2D>
-                <local_identifier>corner</local_identifier>
-                <offset unit="byte">$(corner_rec0 - 1) * 512$</offset>
-                <axes>2</axes>
-                <axis_index_order>Last Index Fastest</axis_index_order>
-                <Element_Array>
-                    <data_type>SignedMSB4</data_type>
-                </Element_Array>
-                <Axis_Array>
-                    <axis_name>Line</axis_name>
-                    <elements>$CORE_ITEMS[0]$</elements>
-                    <sequence_number>1</sequence_number>
-                </Axis_Array>
-                <Axis_Array>
-                    <axis_name>Backplane</axis_name>
-                    <elements>$SUFFIX_ITEMS[1] * CORE_ITEMS[0]$</elements>
-                    <sequence_number>2</sequence_number>
-                </Axis_Array>
-            </Array_2D>
+        <Array_2D>
+            <name>Corner Array</name>
+            <local_identifier>corner</local_identifier>
+            <offset unit="byte">$(corner_rec0 - 1) * 512$</offset>
+            <axes>2</axes>
+            <axis_index_order>Last Index Fastest</axis_index_order>
+            <Element_Array>
+                <data_type>SignedMSB4</data_type>
+            </Element_Array>
+            <Axis_Array>
+                <axis_name>Backplane</axis_name>
+                <elements>$SUFFIX_ITEMS[1]$</elements>
+                <sequence_number>1</sequence_number>
+            </Axis_Array>
+            <Axis_Array>
+                <axis_name>Line</axis_name>
+                <elements>$CORE_ITEMS[2]$</elements>
+                <sequence_number>2</sequence_number>
+            </Axis_Array>
+        </Array_2D>
 $IF(padding_recs)
 
-<!--  Padding 1D Array  -->
+<!-- Padding 1D Array -->
 
-            <Array>
-                <local_identifier>padding</local_identifier>
-                <offset unit="byte">$(padding_rec0 - 1) * 512$</offset>
-                <axes>1</axes>
-                <axis_index_order>Last Index Fastest</axis_index_order>
-                <Element_Array>
-                    <data_type>UnsignedByte</data_type>
-                </Element_Array>
-                <Axis_Array>
-                    <axis_name>padding</axis_name>
-                    <elements>$padding_bytes$</elements>
-                    <sequence_number>1</sequence_number>
-                </Axis_Array>
-            </Array>
+        <Array>
+            <name>Padding Bytes from PDS3 File</name>
+            <local_identifier>padding</local_identifier>
+            <offset unit="byte">$(padding_rec0 - 1) * 512$</offset>
+            <axes>1</axes>
+            <axis_index_order>Last Index Fastest</axis_index_order>
+            <Element_Array>
+                <data_type>UnsignedByte</data_type>
+            </Element_Array>
+            <Axis_Array>
+                <axis_name>padding</axis_name>
+                <elements>$padding_bytes$</elements>
+                <sequence_number>1</sequence_number>
+            </Axis_Array>
+        </Array>
 $ONCE
-        </Composite_Structure>
     </File_Area_Observational>
 </Product_Observational>

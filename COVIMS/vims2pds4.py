@@ -123,7 +123,7 @@ def update_header_values(header_recs, name, values, after=0):
 
     hide_header_rec(header_recs, name, after=k+1)
 
-def append_rec(header_recs, template, header_dict, key):
+def append_rec(header_recs, template, header_dict, key, indx=None):
     """Append a record to the header if the key exists in the header_dict."""
 
     try:
@@ -131,7 +131,10 @@ def append_rec(header_recs, template, header_dict, key):
     except KeyError:
         return
 
-    header_recs.append(template % value)
+    if indx is None:
+        header_recs.append(template % value)
+    else:
+        header_recs.append(template % value[indx])
 
 ################################################################################
 
@@ -608,35 +611,27 @@ def read_pds4(filename):
     """Returns the extracted data from a PDS4 VIMS file."""
 
     # Read and parse the ISIS2 header
-    header = pdsparser.PdsLabel.from_file(filename)
+    header = pdsparser.PdsLabel.from_file(filename).as_dict()
 
-    record_bytes = int(header['RECORD_BYTES'])
-    file_records = int(header['FILE_RECORDS'])
-    history_record = int(header['^HISTORY'])
-    qube_record   = int(header['^QUBE'])
-    splane_record = int(header['^SIDEPLANE'])
-    bplane_record = int(header['^BACKPLANE'])
-    corner_record = int(header['^CORNER'])
+    record_bytes = header['RECORD_BYTES']
+    file_records = header['FILE_RECORDS']
+    history_record = header['^HISTORY'][0]
+    qube_record   = header['^QUBE'][0]
+    splane_record = header['^SIDEPLANE'][0]
 
-    try:
-        padding_record = int(header['^PADDING'])
-    except KeyError:
-        padding_record = 0
+    padding_record = header.get('^PADDING', (file_records+1,'RECORD'))[0]
+    bplane_record = header.get('^BACKPLANE', (padding_record,'RECORD'))[0]
+    corner_record = header.get('^CORNER', (bplane_record,'RECORD'))[0]
 
     # Read the file
     with open(filename, 'rb') as f:
-        header_buffer = f.read(record_bytes * (history_record - 1))
-        history       = f.read(record_bytes * (qube_record - history_record))
-        core_buffer   = f.read(record_bytes * (splane_record - qube_record))
-        splane_buffer = f.read(record_bytes * (bplane_record - splane_record))
-        bplane_buffer = f.read(record_bytes * (corner_record - bplane_record))
-
-        if padding_record:
-            corner_buffer  = f.read(record_bytes * (padding_record - corner_record))
-            padding_buffer = f.read(record_bytes * (file_records + 1 - padding_record))
-        else:
-            corner_buffer  = f.read(record_bytes * (file_records + 1 - corner_record))
-            padding_buffer = ''
+        header_buffer  = f.read(record_bytes * (history_record - 1))
+        history        = f.read(record_bytes * (qube_record - history_record))
+        core_buffer    = f.read(record_bytes * (splane_record - qube_record))
+        splane_buffer  = f.read(record_bytes * (bplane_record - splane_record))
+        bplane_buffer  = f.read(record_bytes * (corner_record - bplane_record))
+        corner_buffer  = f.read(record_bytes * (padding_record - corner_record))
+        padding_buffer = f.read(record_bytes * (file_records + 1 - padding_record))
 
     header_recs = header_buffer.split('\r\n')
 
@@ -653,7 +648,7 @@ def read_pds4(filename):
     suffix_lines   = core_lines
 
     try:
-        suffix_bands = int(header['BACKPLANE']['CORE_ITEMS'][0])
+        suffix_bands = int(header['BACKPLANE']['CORE_ITEMS'][2])
     except KeyError:
         suffix_bands = 0
 
@@ -707,14 +702,15 @@ def read_pds4(filename):
 
     bplane_bytes = core_lines * suffix_bands * core_samples * suffix_item_bytes
     bplane = np.frombuffer(bplane_buffer[:bplane_bytes], dtype=suffix_dtype)
-    bplane = bplane.reshape((core_lines, core_samples, suffix_bands))
-    bplane = bplane.swapaxes(-1,-2)
+    bplane = bplane.reshape((suffix_bands, core_lines, core_samples))
+    bplane = bplane.swapaxes(0,1)
 
     corner_bytes = core_lines * suffix_bands * suffix_samples * suffix_item_bytes
     corner = np.frombuffer(corner_buffer[:corner_bytes], dtype=suffix_dtype)
-    corner = corner.reshape((core_lines, suffix_bands, suffix_samples))
+    corner = corner.reshape((suffix_bands, core_lines, suffix_samples))
+    corner = corner.swapaxes(0,1)
 
-    if padding_record:
+    if padding_buffer:
         padding_bytes = int(header['PADDING']['CORE_ITEMS'])
         padding = padding_buffer[:padding_bytes]
     else:
@@ -750,11 +746,16 @@ def write_pds4(filename, header, header_recs,
 
     (k, _, _) = find_header_rec(new_recs, '^QUBE')
     insert_header_values(new_recs, k+1, '^SIDEPLANE', '    ....')
-    insert_header_values(new_recs, k+2, '^BACKPLANE', '    ....')
-    insert_header_values(new_recs, k+3, '^CORNER', '       ....')
 
-    if len(padding):
-        insert_header_values(new_recs, k+4, '^PADDING', '      ....')
+    if suffix_bands:
+        insert_header_values(new_recs, k+2, '^BACKPLANE', '    ....')
+        insert_header_values(new_recs, k+3, '^CORNER', '       ....')
+
+        if len(padding):
+            insert_header_values(new_recs, k+4, '^PADDING', '      ....')
+
+    elif len(padding):
+        insert_header_values(new_recs, k+2, '^PADDING', '      ....')
 
     update_header_values(new_recs, 'FILE_RECORDS', '         ....')
     update_header_values(new_recs, 'LABEL_RECORDS', '         ....')
@@ -814,14 +815,13 @@ def write_pds4(filename, header, header_recs,
     append_rec(new_recs, '   CORE_VALID_MINIMUM = %s'        , qube, 'SAMPLE_SUFFIX_VALID_MINIMUM')
     append_rec(new_recs, '   CORE_NULL = %s'                 , qube, 'SAMPLE_SUFFIX_NULL')
     append_rec(new_recs, '   CORE_LOW_REPR_SATURATION = %s'  , qube, 'SAMPLE_SUFFIX_LOW_REPR_SAT')
-    append_rec(new_recs, '   CORE_LOW_INSTR_SATURATION = %s' , qube, 'SAMPLE_SUFFIX_HIGH_REPR_SAT')
+    append_rec(new_recs, '   CORE_LOW_INSTR_SATURATION = %s' , qube, 'SAMPLE_SUFFIX_LOW_INSTR_SAT')
     append_rec(new_recs, '   CORE_HIGH_REPR_SATURATION = %s' , qube, 'SAMPLE_SUFFIX_HIGH_REPR_SAT')
     append_rec(new_recs, '   CORE_HIGH_INSTR_SATURATION = %s', qube, 'SAMPLE_SUFFIX_HIGH_INSTR_SAT')
     append_rec(new_recs, '   CORE_NAME = %s'                 , qube, 'SAMPLE_SUFFIX_NAME')
     append_rec(new_recs, '   CORE_UNIT = %s'                 , qube, 'SAMPLE_SUFFIX_UNIT')
 
     new_recs += [
-        '   SUFFIX_ITEMS = (0,0,0)',
         'END_OBJECT = SIDEPLANE',
     ]
 
@@ -832,67 +832,58 @@ def write_pds4(filename, header, header_recs,
         '',
         'OBJECT = BACKPLANE',
         '   AXES = 3',
-        '   AXIS_NAME = (BACKPLANE,%s,%s)'   % (qube['AXIS_NAME'][0], qube['AXIS_NAME'][2]),
-        '   CORE_ITEMS = (%s,%s,%s)'         % (suffix_bands, core_samples, core_lines),
-        '   CORE_ITEM_BYTES = %s'            % band_suffix_item_bytes,
-        '   CORE_ITEM_TYPE = (%s,'           % qube['BAND_SUFFIX_ITEM_TYPE'][0],
+        '   AXIS_NAME = (%s,%s,BACKPLANE)'   % (qube['AXIS_NAME'][0], qube['AXIS_NAME'][2]),
+        '   CORE_ITEMS = (%s,%s,%s)'         % (core_samples, core_lines, suffix_bands),
+        '   CORE_ITEM_BYTES = 4',
+        '   CORE_ITEM_TYPE = %s'             % qube['BAND_SUFFIX_ITEM_TYPE'][0],
+        '   CORE_NAME = BACKPLANE_VALUE  /* See BACKPLANE_NAME below */',
+        '   CORE_UNIT = DIMENSIONLESS    /* See BACKPLANE_UNIT below */',
       ]
 
-      for k in range(1,len(qube['BAND_SUFFIX_ITEM_TYPE'])-1):
-        new_recs += [
-          '                     %s,' % qube['BAND_SUFFIX_ITEM_TYPE'][k]
-        ]
+      append_rec(new_recs, '   CORE_BASE = %s'                 , qube, 'BAND_SUFFIX_BASE'          , 0)
+      append_rec(new_recs, '   CORE_MULTIPLIER = %s'           , qube, 'BAND_SUFFIX_MULTIPLIER'    , 0)
+      append_rec(new_recs, '   CORE_VALID_MINIMUM = %s'        , qube, 'BAND_SUFFIX_VALID_MINIMUM' , 0)
+      append_rec(new_recs, '   CORE_NULL = %s'                 , qube, 'BAND_SUFFIX_NULL'          , 0)
+      append_rec(new_recs, '   CORE_LOW_REPR_SATURATION = %s'  , qube, 'BAND_SUFFIX_LOW_REPR_SAT'  , 0)
+      append_rec(new_recs, '   CORE_LOW_INSTR_SATURATION = %s' , qube, 'BAND_SUFFIX_LOW_INSTR_SAT' , 0)
+      append_rec(new_recs, '   CORE_HIGH_REPR_SATURATION = %s' , qube, 'BAND_SUFFIX_HIGH_REPR_SAT' , 0)
+      append_rec(new_recs, '   CORE_HIGH_INSTR_SATURATION = %s', qube, 'BAND_SUFFIX_HIGH_INSTR_SAT', 0)
 
       new_recs += [
-          '                     %s)' % qube['BAND_SUFFIX_ITEM_TYPE'][-1],
-      ]
-
-      append_rec(new_recs, '   CORE_BASE = %s'                 , qube, 'BAND_SUFFIX_BASE')
-      append_rec(new_recs, '   CORE_MULTIPLIER = %s'           , qube, 'BAND_SUFFIX_MULTIPLIER')
-      append_rec(new_recs, '   CORE_VALID_MINIMUM = %s'        , qube, 'BAND_SUFFIX_VALID_MINIMUM')
-      append_rec(new_recs, '   CORE_NULL = %s'                 , qube, 'BAND_SUFFIX_NULL')
-      append_rec(new_recs, '   CORE_LOW_REPR_SATURATION = %s'  , qube, 'BAND_SUFFIX_LOW_REPR_SAT')
-      append_rec(new_recs, '   CORE_LOW_INSTR_SATURATION = %s' , qube, 'BAND_SUFFIX_HIGH_REPR_SAT')
-      append_rec(new_recs, '   CORE_HIGH_REPR_SATURATION = %s' , qube, 'BAND_SUFFIX_HIGH_REPR_SAT')
-      append_rec(new_recs, '   CORE_HIGH_INSTR_SATURATION = %s', qube, 'BAND_SUFFIX_HIGH_INSTR_SAT')
-
-      new_recs += [
-          '   CORE_NAME = (%s,' % qube['BAND_SUFFIX_NAME'][0]
+          '   BACKPLANE_NAME = (%s,' % qube['BAND_SUFFIX_NAME'][0]
       ]
 
       for k in range(1,len(qube['BAND_SUFFIX_NAME'])-1):
         new_recs += [
-          '                %s,' % qube['BAND_SUFFIX_NAME'][k],
+          '                     %s,' % qube['BAND_SUFFIX_NAME'][k],
         ]
 
       new_recs += [
-          '                %s)' % qube['BAND_SUFFIX_NAME'][-1],
-          '   CORE_UNIT = (%s,' % qube['BAND_SUFFIX_UNIT'][0],
+          '                     %s)' % qube['BAND_SUFFIX_NAME'][-1],
+          '   BACKPLANE_UNIT = (%s,' % qube['BAND_SUFFIX_UNIT'][0],
       ]
 
       for k in range(1,len(qube['BAND_SUFFIX_UNIT'])-1):
         new_recs += [
-          '                %s,' % qube['BAND_SUFFIX_UNIT'][k],
+          '                     %s,' % qube['BAND_SUFFIX_UNIT'][k],
         ]
 
       new_recs += [
-          '                %s)' % qube['BAND_SUFFIX_UNIT'][-1],
-          '   SUFFIX_ITEMS = (0,0,0)',
+          '                     %s)' % qube['BAND_SUFFIX_UNIT'][-1],
           'END_OBJECT = BACKPLANE',
           '',
           '/* Array of values in the corner between sideplane and backplane */',
           '',
           'OBJECT = CORNER',
           '    AXES = 2',
-          '    AXIS_NAME = (BACKPLANE,%s)' % qube['AXIS_NAME'][2],
-          '    CORE_ITEMS = (%s,%s)'       % (suffix_bands, qube['CORE_ITEMS'][2]),
+          '    AXIS_NAME = (%s,BACKPLANE)' % qube['AXIS_NAME'][2],
+          '    CORE_ITEMS = (%s,%s)'       % (qube['CORE_ITEMS'][2], suffix_bands),
           '    CORE_ITEM_BYTES = %s'       % band_suffix_item_bytes,
           '    CORE_ITEM_TYPE = %s'        % qube['BAND_SUFFIX_ITEM_TYPE'][0],
           '    CORE_BASE = 0.',
           '    CORE_MULTIPLIER = 1.',
           '    CORE_NAME = CORNER_ITEMS',
           '    CORE_UNIT = DIMENSIONLESS',
-          '    SUFFIX_ITEMS = (0,0,0)',
           'END_OBJECT = CORNER',
       ]
 
@@ -909,7 +900,6 @@ def write_pds4(filename, header, header_recs,
         '   CORE_ITEM_TYPE = SUN_INTEGER',
         '   CORE_NAME = PADDING_BYTES',
         '   CORE_UNIT = DIMENSIONLESS',
-        '   SUFFIX_ITEMS = (0,0,0)',
         'END_OBJECT = PADDING',
       ]
 
@@ -1013,12 +1003,15 @@ def write_pds4(filename, header, header_recs,
     new_recs[k] = new_recs[k].replace('....', '%4d' % splane_rec)
 
     bplane_rec = splane_rec + splane_nrecs
-    (k, _, _) = find_header_rec(new_recs, '^BACKPLANE')
-    new_recs[k] = new_recs[k].replace('....', '%4d' % bplane_rec)
-
     corner_rec = bplane_rec + bplane_nrecs
-    (k, _, _) = find_header_rec(new_recs, '^CORNER')
-    new_recs[k] = new_recs[k].replace('....', '%4d' % corner_rec)
+    try:
+        (k, _, _) = find_header_rec(new_recs, '^BACKPLANE')
+        new_recs[k] = new_recs[k].replace('....', '%4d' % bplane_rec)
+
+        (k, _, _) = find_header_rec(new_recs, '^CORNER')
+        new_recs[k] = new_recs[k].replace('....', '%4d' % corner_rec)
+    except KeyError:
+        pass
 
     if len(padding):
         padding_rec = corner_rec + corner_nrecs
@@ -1039,9 +1032,9 @@ def write_pds4(filename, header, header_recs,
     f.write(np.zeros(core_padding, dtype='uint8'))
     f.write(splane.ravel())
     f.write(np.zeros(splane_padding, dtype='uint8'))
-    f.write(bplane.swapaxes(-1,-2).ravel())
+    f.write(bplane.swapaxes(0,1).ravel())
     f.write(np.zeros(bplane_padding, dtype='uint8'))
-    f.write(corner.ravel())
+    f.write(corner.swapaxes(0,1).ravel())
     f.write(np.zeros(corner_padding, dtype='uint8'))
     f.write(padding)
     f.write(np.zeros(padding_padding, dtype='uint8'))
@@ -1187,18 +1180,18 @@ def translate1(pds3_file, replace=True, validate=False, revalidate=False):
             success = True
             if lpds3 > ltest:
                 success = False
-                print '*** validation failed; file too small: ' + pds4_file
+                print '*** validation failed; file too small: ' + pds4_file[:-4] + '_test.qub'
             elif lpds3 == ltest:
               if pds3_bytes != test_bytes:
                 success = False
-                print '*** validation failed; mismatch: ' + pds4_file
+                print '*** validation failed; mismatch: ' + pds4_file[:-4] + '_test.qub'
             else:
               if (lpds3 % 512 == 0 or
                   ltest - lpds3 > 511 or
                   pds3_bytes != test_bytes[:lpds3] or
                   test_bytes[lpds3:] != BLANKS[:(ltest-lpds3)]):
                 success = False
-                print '*** validation failed; file too big: ' + pds4_file
+                print '*** validation failed; new file too big: ' + pds4_file[:-4] + '_test.qub'
 
             if success:
                 os.remove(test_file)
