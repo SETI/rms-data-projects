@@ -1149,6 +1149,7 @@ def translate1(pds3_file, replace=True, validate=False, revalidate=False):
 
         (in_dir, basename) = os.path.split(pds3_file)
         out_dir = in_dir.replace('holdings/volumes', 'pds4')
+        out_dir = out_dir.replace('Marks-Migration-HD', 'Migration2')
 
         if in_dir == out_dir:
             print 'Invalid input directory:', in_dir

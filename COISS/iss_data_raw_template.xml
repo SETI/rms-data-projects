@@ -194,7 +194,7 @@ $ONCE
                     <cassini:antiblooming_state_flag>$ANTIBLOOMING_STATE_FLAG$</cassini:antiblooming_state_flag>
                     <cassini:bias_strip_mean>$BIAS_STRIP_MEAN$</cassini:bias_strip_mean>
                     <cassini:calibration_lamp_state_flag>$CALIBRATION_LAMP_STATE_FLAG$</cassini:calibration_lamp_state_flag>
-                    <cassini:command_file_name>$REPLACE_UNK(COMMAND_FILE_NAME,"Information not provided.")$</cassini:command_file_name>
+                    <cassini:command_file_name>$REPLACE_UNK(COMMAND_FILE_NAME,"Information not provided")$</cassini:command_file_name>
                     <cassini:command_sequence_number>$REPLACE_UNK(COMMAND_SEQUENCE_NUMBER,-1)$</cassini:command_sequence_number>$"NOESCAPE  <!-- Unknown -->" if COMMAND_SEQUENCE_NUMBER == 'UNK' else ""$
                     <cassini:dark_strip_mean>$DARK_STRIP_MEAN$</cassini:dark_strip_mean>
                     <cassini:data_conversion_type>$DATA_CONVERSION_TYPE$</cassini:data_conversion_type>
@@ -217,14 +217,14 @@ $ONCE
                     <cassini:filter_name_1>$FILTER_NAME[0]$</cassini:filter_name_1>
                     <cassini:filter_name_2>$FILTER_NAME[1]$</cassini:filter_name_2>
                     <cassini:filter_temperature unit="degC">$FILTER_TEMPERATURE$</cassini:filter_temperature>
-                    <cassini:flight_software_version_id>$REPLACE_UNK(FLIGHT_SOFTWARE_VERSION_ID,"Information not provided.")$</cassini:flight_software_version_id>
+                    <cassini:flight_software_version_id>$REPLACE_UNK(FLIGHT_SOFTWARE_VERSION_ID,"Information not provided")$</cassini:flight_software_version_id>
                     <cassini:gain_mode_id unit="electron/DN">$GAIN_MODE_ID.split(' ')[0]$</cassini:gain_mode_id>
                     <cassini:ground_software_version_id>$SOFTWARE_VERSION_ID$</cassini:ground_software_version_id>
                     <cassini:image_mid_time>$IMAGE_TIME$</cassini:image_mid_time>
                     <cassini:image_number>$IMAGE_NUMBER$</cassini:image_number>
                     <cassini:image_time>$IMAGE_TIME$</cassini:image_time>
 $FOR_EACH(IMAGE_OBSERVATION_TYPE)
-                    <cassini:image_observation_type>$REPLACE_UNK(VALUE,"Information not provided.")$</cassini:image_observation_type>
+                    <cassini:image_observation_type>$REPLACE_UNK(VALUE,"Information not provided")$</cassini:image_observation_type>
 $ONCE
                     <cassini:instrument_data_rate>$INSTRUMENT_DATA_RATE$</cassini:instrument_data_rate>
                     <cassini:instrument_mode_id>$INSTRUMENT_MODE_ID$</cassini:instrument_mode_id>
@@ -237,9 +237,9 @@ $ONCE
                     <cassini:inst_cmprs_rate_actual_bits>$REPLACE_UNK(INST_CMPRS_RATE[1],-1.)$</cassini:inst_cmprs_rate_actual_bits>$"NOESCAPE  <!-- Unknown -->" if INST_CMPRS_RATE[1] == 'UNK' else ""$
                     <cassini:inst_cmprs_ratio>$REPLACE_NA(INST_CMPRS_RATIO,-1.)$</cassini:inst_cmprs_ratio>$"NOESCAPE  <!-- Not applicable -->" if INST_CMPRS_RATIO == 'N/A' else ""$
                     <cassini:light_flood_state_flag>$LIGHT_FLOOD_STATE_FLAG$</cassini:light_flood_state_flag>
-                    <cassini:method_description>$REPLACE_UNK(METHOD_DESC,"Information not provided.")$</cassini:method_description>
-                    <cassini:missing_lines>$MISSING_LINES$</cassini:missing_lines>
-                    <cassini:missing_packet_flag>$REPLACE_UNK(MISSING_PACKET_FLAG,"Information not provided.")$</cassini:missing_packet_flag>
+                    <cassini:method_description>$REPLACE_UNK(METHOD_DESC,"Information not provided")$</cassini:method_description>
+                    <cassini:missing_lines>$REPLACE_NA(MISSING_LINES,-1)$</cassini:missing_lines>$"NOESCAPE  <!-- Unknown -->" if MISSING_LINES == 'N/A' else ""$
+                    <cassini:missing_packet_flag>$REPLACE_UNK(MISSING_PACKET_FLAG,"Information not provided")$</cassini:missing_packet_flag>
                     <cassini:observation_id>$OBSERVATION_ID$</cassini:observation_id>
                     <cassini:optics_temperature_front unit="degC">$REPLACE_NA(REPLACE_UNK(OPTICS_TEMPERATURE[0],-999.),-999.)$</cassini:optics_temperature_front>$"NOESCAPE  <!-- Unknown -->" if OPTICS_TEMPERATURE[0] == ('UNK',-999.) else "NOESCAPE  <!-- Not applicable -->" if OPTICS_TEMPERATURE[0] == 'N/A' else ""$
                     <cassini:optics_temperature_back unit="degC">$REPLACE_NA(REPLACE_UNK(OPTICS_TEMPERATURE[1],-999.),-999.)$</cassini:optics_temperature_back>$"NOESCAPE  <!-- Unknown -->" if OPTICS_TEMPERATURE[1] == ('UNK',-999.) else "NOESCAPE  <!-- Not applicable -->" if OPTICS_TEMPERATURE[1] == 'N/A' else ""$
@@ -247,7 +247,7 @@ $ONCE
                     <cassini:parallel_clock_voltage_index>$REPLACE_UNK(PARALLEL_CLOCK_VOLTAGE_INDEX,-1)$</cassini:parallel_clock_voltage_index>$"NOESCAPE  <!-- Unknown -->" if PARALLEL_CLOCK_VOLTAGE_INDEX == 'UNK' else ""$
                     <cassini:pds3_product_creation_time>$PRODUCT_CREATION_TIME$</cassini:pds3_product_creation_time>
                     <cassini:pds3_product_version_type>$PRODUCT_VERSION_TYPE$</cassini:pds3_product_version_type>
-                    <cassini:pds3_target_desc>$REPLACE_UNK(TARGET_DESC,"Information not provided.")$</cassini:pds3_target_desc>
+                    <cassini:pds3_target_desc>$REPLACE_UNK(TARGET_DESC,"Information not provided")$</cassini:pds3_target_desc>
                     <cassini:pds3_target_list>$TARGET_LIST$</cassini:pds3_target_list>
                     <cassini:pds3_target_name>$TARGET_NAME$</cassini:pds3_target_name>
                     <cassini:pre-pds_version_number>$pre_pds_version_number$</cassini:pre-pds_version_number>
@@ -255,14 +255,14 @@ $ONCE
                     <cassini:readout_cycle_index>$REPLACE_UNK(READOUT_CYCLE_INDEX,-1)$</cassini:readout_cycle_index>$"NOESCAPE  <!-- Unknown -->" if READOUT_CYCLE_INDEX == 'UNK' else ""$
                     <cassini:received_packets>$REPLACE_UNK(RECEIVED_PACKETS,-1)$</cassini:received_packets>$"NOESCAPE  <!-- Unknown -->" if RECEIVED_PACKETS == 'UNK' else ""$
                     <cassini:sensor_head_electronics_temperature unit="degC">$SENSOR_HEAD_ELEC_TEMPERATURE$</cassini:sensor_head_electronics_temperature>
-                    <cassini:sequence_id>$REPLACE_UNK(SEQUENCE_ID,"Information not provided.")$</cassini:sequence_id>
+                    <cassini:sequence_id>$REPLACE_UNK(SEQUENCE_ID,"Information not provided")$</cassini:sequence_id>
                     <cassini:sequence_number>$REPLACE_UNK(SEQUENCE_NUMBER,-1)$</cassini:sequence_number>$"NOESCAPE  <!-- Unknown -->" if SEQUENCE_NUMBER == 'UNK' else ""$
-                    <cassini:sequence_title>$REPLACE_UNK(SEQUENCE_TITLE,"Information not provided.")$</cassini:sequence_title>
+                    <cassini:sequence_title>$REPLACE_UNK(SEQUENCE_TITLE,"Information not provided")$</cassini:sequence_title>
                     <cassini:shutter_mode_id>$SHUTTER_MODE_ID$</cassini:shutter_mode_id>
                     <cassini:shutter_state_id>$SHUTTER_STATE_ID$</cassini:shutter_state_id>
                     <cassini:start_time_doy>$START_TIME$</cassini:start_time_doy>
                     <cassini:stop_time_doy>$STOP_TIME$</cassini:stop_time_doy>
-                    <cassini:telemetry_format_id>$REPLACE_UNK(TELEMETRY_FORMAT_ID,"Information not provided.")$</cassini:telemetry_format_id>
+                    <cassini:telemetry_format_id>$REPLACE_UNK(TELEMETRY_FORMAT_ID,"Information not provided")$</cassini:telemetry_format_id>
                     <cassini:valid_maximum_full_well>$REPLACE_UNK(VALID_MAXIMUM[0],-1)$</cassini:valid_maximum_full_well>$"NOESCAPE  <!-- Unknown -->" if VALID_MAXIMUM[0] == 'UNK' else ""$
                     <cassini:valid_maximum_DN_sat>$REPLACE_UNK(VALID_MAXIMUM[1],-1)$</cassini:valid_maximum_DN_sat>$"NOESCAPE  <!-- Unknown -->" if VALID_MAXIMUM[1] == 'UNK' else ""$
                 </cassini:ISS_Specific_Attributes>

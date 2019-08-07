@@ -106,7 +106,7 @@ STAR_ABBREVS = {
     'SPICA'    : ('Spica'          , ['Alpha Virginis', 'Alpha Vir'],'alf_vir'),
     'VEGA'     : ('Vega'           , ['Alpha Lyrae', 'Alpha Lyr'],   'alf_lyr'),
     '26TAU'    : ('26 Tauri'       , ['26 Tau'],                     '26_tau' ),
-    '3CEN'     : ('3 Centaurus'    , ['3 Cen'],                      '3_cen'  ),
+    '3CEN'     : ('3 Centauri'     , ['3 Cen'],                      '3_cen'  ),
     '78TAU'    : ('78 Tauri'       , ['78 Tau'],                     '78_tau' ),
     'CALSTAR3' : ('HR 996'         , [],                             'hr_996' ),
 

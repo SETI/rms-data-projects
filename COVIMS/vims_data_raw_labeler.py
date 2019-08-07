@@ -90,7 +90,7 @@ STAR_ABBREVS = {
                                                                      'alf_psa'),
     'SPICA'    : ('Spica'          , ['Alpha Virginis', 'Alpha Vir'],'alf_vir'),
     'CALSTAR3' : ('HR 996'         , [],                             'hr_996' ),
-    '2CEN'     : ('2 Centauri'     , ['2 Cen'],                      '2 _cen' ),
+    '2CEN'     : ('2 Centauri'     , ['2 Cen'],                      '2_cen'  ),
     '30HER'    : ('30 Herculis'    , ['30 Her'],                     '30_her' ),
     '30PSC'    : ('30 Piscium'     , ['30 Psc'],                     '30_psc' ),
     '56LEO'    : ('56 Leonis'      , ['56 Leo'],                     '56_leo' ),
