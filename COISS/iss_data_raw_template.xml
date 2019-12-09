@@ -233,8 +233,8 @@ $ONCE
                     <cassini:inst_cmprs_param_tb>$REPLACE_NA(INST_CMPRS_PARAM[1],999)$</cassini:inst_cmprs_param_tb>$"NOESCAPE  <!-- Not applicable -->" if INST_CMPRS_PARAM[1] in (999,'N/A') else ""$
                     <cassini:inst_cmprs_param_blocks>$REPLACE_NA(INST_CMPRS_PARAM[2],999)$</cassini:inst_cmprs_param_blocks>$"NOESCAPE  <!-- Not applicable -->" if INST_CMPRS_PARAM[2] in (999,'N/A') else ""$
                     <cassini:inst_cmprs_param_quant>$REPLACE_NA(INST_CMPRS_PARAM[3],999)$</cassini:inst_cmprs_param_quant>$"NOESCAPE  <!-- Not applicable -->" if INST_CMPRS_PARAM[3] in (999,'N/A') else ""$
-                    <cassini:inst_cmprs_rate_expected_bits>$REPLACE_UNK(INST_CMPRS_RATE[0],-1.)$</cassini:inst_cmprs_rate_expected_bits>$"NOESCAPE  <!-- Unknown -->" if INST_CMPRS_RATE[0] == 'UNK' else ""$
-                    <cassini:inst_cmprs_rate_actual_bits>$REPLACE_UNK(INST_CMPRS_RATE[1],-1.)$</cassini:inst_cmprs_rate_actual_bits>$"NOESCAPE  <!-- Unknown -->" if INST_CMPRS_RATE[1] == 'UNK' else ""$
+                    <cassini:inst_cmprs_rate_expected_bits>$REPLACE_UNK(INST_CMPRS_RATE[0],-999.)$</cassini:inst_cmprs_rate_expected_bits>$"NOESCAPE  <!-- Unknown -->" if INST_CMPRS_RATE[0] == 'UNK' else ""$
+                    <cassini:inst_cmprs_rate_actual_bits>$REPLACE_UNK(INST_CMPRS_RATE[1],-999.)$</cassini:inst_cmprs_rate_actual_bits>$"NOESCAPE  <!-- Unknown -->" if INST_CMPRS_RATE[1] == 'UNK' else ""$
                     <cassini:inst_cmprs_ratio>$REPLACE_NA(INST_CMPRS_RATIO,-1.)$</cassini:inst_cmprs_ratio>$"NOESCAPE  <!-- Not applicable -->" if INST_CMPRS_RATIO == 'N/A' else ""$
                     <cassini:light_flood_state_flag>$LIGHT_FLOOD_STATE_FLAG$</cassini:light_flood_state_flag>
                     <cassini:method_description>$REPLACE_UNK(METHOD_DESC,"Information not provided")$</cassini:method_description>
@@ -275,9 +275,9 @@ $ONCE
                     <local_reference_type>display_settings_to_array</local_reference_type>
                 </Local_Internal_Reference>
                 <disp:Display_Direction>
-                    <disp:horizontal_display_axis>2</disp:horizontal_display_axis>
+                    <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
                     <disp:horizontal_display_direction>Left to Right</disp:horizontal_display_direction>
-                    <disp:vertical_display_axis>1</disp:vertical_display_axis>
+                    <disp:vertical_display_axis>Line</disp:vertical_display_axis>
                     <disp:vertical_display_direction>Top to Bottom</disp:vertical_display_direction>
                 </disp:Display_Direction>
             </disp:Display_Settings>

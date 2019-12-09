@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1B00.sch"
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="https://pds.nasa.gov/pds4/mission/cassini/v1/PDS4_CASSINI_1B00_1300.sch"
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+
+<Product_Observational
+    xmlns="http://pds.nasa.gov/pds4/pds/v1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:cassini="http://pds.nasa.gov/pds4/mission/cassini/v1"
+
+    xsi:schemaLocation="
+    http://pds.nasa.gov/pds4/pds/v1 https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1B00.xsd
+    http://pds.nasa.gov/pds4/mission/cassini/v1 https://pds.nasa.gov/pds4/mission/cassini/v1/PDS4_CASSINI_1B00_1300.xsd">
+
+    <Identification_Area>
+        <logical_identifier>urn:nasa:pds:cassini_uvis_$cruise_or_saturn=('cruise' if basename < '2004' else 'saturn')$:data_raw_hdac:$basename[:-4]$</logical_identifier>
+        <version_id>1.0</version_id>
+        <title>Cassini UVIS Hydrogen-Deuterium Absorption Cell (HDAC) Time Series $basename$</title>
+        <information_model_version>1.11.0.0</information_model_version>
+        <product_class>Product_Observational</product_class>
+        <Citation_Information>
+            <publication_year>2019</publication_year>
+            <description>Cassini UVIS HDAC observation obtained at $DATETIME(START_TIME)$.</description>
+        </Citation_Information>
+        <Modification_History>
+            <Modification_Detail>
+                <modification_date>$CURRENT_ZULU()[:10]$</modification_date>
+                <version_id>1.0</version_id>
+                <description>Initial PDS4 Version. Migrated from the PDS3 data product.</description>
+            </Modification_Detail>
+        </Modification_History>
+    </Identification_Area>
+
+    <Observation_Area>
+        <comment>
+            This product was migrated from the original PDS3 product.
+            Values for attributes in this label are based on the corresponding
+            values in the PDS3 label.
+        </comment>
+        <Time_Coordinates>
+            <start_date_time>$DATETIME(START_TIME,-0.125)$</start_date_time>
+            <stop_date_time>$DATETIME(START_TIME,duration-0.125)$</stop_date_time> <!-- calculated -->
+        </Time_Coordinates>
+        <Primary_Result_Summary>
+            <purpose>$purpose$</purpose>
+            <processing_level>Raw</processing_level>
+            <Science_Facets>
+                <discipline_name>Flux Measurements</discipline_name>
+                <facet1>Photometry</facet1>
+            </Science_Facets>
+        </Primary_Result_Summary>
+        <Investigation_Area>
+            <name>Cassini-Huygens</name>
+            <type>Mission</type>
+            <Internal_Reference>
+                <lid_reference>urn:nasa:pds:context:investigation:mission.cassini-huygens</lid_reference>
+                <reference_type>data_to_investigation</reference_type>
+            </Internal_Reference>
+        </Investigation_Area>
+        <Observing_System>
+            <name>Cassini Orbiter Ultraviolet Imaging Spectrograph</name>
+            <Observing_System_Component>
+                <name>Cassini Orbiter</name>
+                <type>Spacecraft</type>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:context:instrument_host:spacecraft.co</lid_reference>
+                    <reference_type>is_instrument_host</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+            <Observing_System_Component>
+                <name>Cassini Orbiter Ultraviolet Imaging Spectrograph</name>
+                <type>Instrument</type>
+                <description>UVIS</description>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:context:instrument:uvis.co</lid_reference>
+                    <reference_type>is_instrument</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+        </Observing_System>
+        <Target_Identification>
+            <name>$target_names[0]$</name>
+$FOR_EACH(target_alts[0])
+            <alternate_designation>$VALUE$</alternate_designation>
+$ONCE
+            <type>$target_types[0]$</type>
+$IF(target_naif_ids[0] != 'N/A')
+            <description>
+                NAIF ID: $target_naif_ids[0]$;
+                Center of motion: $primary_names[0]$;
+                LID of central body: $primary_lids[0]$;
+                NAIF ID of central body: $primary_naif_ids[0]$.
+            </description>
+$ONCE
+            <Internal_Reference>
+                <lid_reference>$target_lids[0]$</lid_reference>
+                <reference_type>data_to_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+$IF(len(target_naif_ids) > 1)
+        <Target_Identification>
+            <name>$target_names[1]$</name>
+$FOR_EACH(target_alts[1] if len(target_naif_ids) > 1 else [])
+            <alternate_designation>$VALUE$</alternate_designation>
+$IF(len(target_naif_ids) > 1)
+            <type>$target_types[1]$</type>
+$IF(len(target_naif_ids) > 1 and target_naif_ids[1] != 'N/A')
+            <description>
+                NAIF ID: $target_naif_ids[1]$;
+                Center of motion: $primary_names[1]$;
+                LID of central body: $primary_lids[1]$;
+                NAIF ID of central body: $primary_naif_ids[1]$.
+            </description>
+$IF(len(target_naif_ids) > 1)
+            <Internal_Reference>
+                <lid_reference>$target_lids[1]$</lid_reference>
+                <reference_type>data_to_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+$IF(len(target_naif_ids) > 2)
+        <Target_Identification>
+            <name>$target_names[2]$</name>
+$FOR_EACH(target_alts[2] if len(target_naif_ids) > 2 else [])
+            <alternate_designation>$VALUE$</alternate_designation>
+$IF(len(target_naif_ids) > 2)
+            <type>$target_types[2]$</type>
+$IF(len(target_naif_ids) > 2 and target_naif_ids[2] != 'N/A')
+            <description>
+                NAIF ID: $target_naif_ids[2]$;
+                Center of motion: $primary_names[2]$;
+                LID of central body: $primary_lids[2]$;
+                NAIF ID of central body: $primary_naif_ids[2]$.
+            </description>
+$IF(len(target_naif_ids) > 2)
+            <Internal_Reference>
+                <lid_reference>$target_lids[2]$</lid_reference>
+                <reference_type>data_to_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+$IF(len(target_naif_ids) > 3)
+        <Target_Identification>
+            <name>$target_names[3]$</name>
+$FOR_EACH(target_alts[3] if len(target_naif_ids) > 3 else [])
+            <alternate_designation>$VALUE$</alternate_designation>
+$IF(len(target_naif_ids) > 3)
+            <type>$target_types[3]$</type>
+$IF(len(target_naif_ids) > 3 and target_naif_ids[3] != 'N/A')
+            <description>
+                NAIF ID: $target_naif_ids[3]$;
+                Center of motion: $primary_names[3]$;
+                LID of central body: $primary_lids[3]$;
+                NAIF ID of central body: $primary_naif_ids[3]$.
+            </description>
+$IF(len(target_naif_ids) > 4)
+            <Internal_Reference>
+                <lid_reference>$target_lids[4]$</lid_reference>
+                <reference_type>data_to_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+$IF(len(target_naif_ids) > 4)
+        <Target_Identification>
+            <name>$target_names[4]$</name>
+$FOR_EACH(target_alts[4] if len(target_naif_ids) > 4 else [])
+            <alternate_designation>$VALUE$</alternate_designation>
+$IF(len(target_naif_ids) > 4)
+            <type>$target_types[4]$</type>
+$IF(len(target_naif_ids) > 4 and target_naif_ids[4] != 'N/A')
+            <description>
+                NAIF ID: $target_naif_ids[4]$;
+                Center of motion: $primary_names[4]$;
+                LID of central body: $primary_lids[4]$;
+                NAIF ID of central body: $primary_naif_ids[4]$.
+            </description>
+$IF(len(target_naif_ids) > 4)
+            <Internal_Reference>
+                <lid_reference>$target_lids[4]$</lid_reference>
+                <reference_type>data_to_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+$ONCE
+        <Mission_Area>
+            <cassini:Cassini>
+                <cassini:UVIS_Specific_Attributes>
+                    <cassini:mission_phase_name>$MISSION_PHASE_NAME$</cassini:mission_phase_name>
+                    <cassini:spacecraft_clock_count_partition>1</cassini:spacecraft_clock_count_partition>
+                    <cassini:spacecraft_clock_start_count>$SPACECRAFT_CLOCK_START_COUNT[2:]$</cassini:spacecraft_clock_start_count>
+                    <cassini:spacecraft_clock_start_count>$'%s.%03d' % (SPACECRAFT_CLOCK_START_COUNT[2:12], int(SPACECRAFT_CLOCK_START_COUNT[13:]))$</cassini:spacecraft_clock_start_count>
+<!--                <cassini:spacecraft_clock_stop_count>UNK</cassini:spacecraft_clock_stop_count>  (Not provided) -->
+                    <cassini:compression_type>$COMPRESSION_TYPE.replace('_',' ')$</cassini:compression_type>
+                    <cassini:high_voltage_power_supply_state>$HI_VOLTAGE_POWER_SUPPLY_STATE$</cassini:high_voltage_power_supply_state>
+                    <cassini:integration_duration unit ="ms">125</cassini:integration_duration>
+                    <cassini:observation_id>$OBSERVATION_ID$</cassini:observation_id>
+                    <cassini:odc_id>$ODC_ID$</cassini:odc_id>
+                    <cassini:reference_time_utc>$DATETIME(START_TIME)[:10]$T00:00:00.000Z</cassini:reference_time_utc>  <!-- For first/last_sampling_parameter_value below -->
+                    <cassini:start_time_doy>$START_TIME$Z</cassini:start_time_doy>  <!-- From the original PDS3 label, refers to second sample -->
+                    <cassini:stop_time_doy>$STOP_TIME$Z</cassini:stop_time_doy>    <!-- From the original PDS3 label; known to be incorrect -->
+                    <cassini:hdac_dwell_time>$DWELL_TIME$</cassini:hdac_dwell_time>
+                    <cassini:hdac_d_level_01>$D_LEVEL[0]$</cassini:hdac_d_level_01>
+                    <cassini:hdac_d_level_02>$D_LEVEL[1]$</cassini:hdac_d_level_02>
+                    <cassini:hdac_d_level_03>$D_LEVEL[2]$</cassini:hdac_d_level_03>
+                    <cassini:hdac_d_level_04>$D_LEVEL[3]$</cassini:hdac_d_level_04>
+                    <cassini:hdac_d_level_05>$D_LEVEL[4]$</cassini:hdac_d_level_05>
+                    <cassini:hdac_d_level_06>$D_LEVEL[5]$</cassini:hdac_d_level_06>
+                    <cassini:hdac_d_level_07>$D_LEVEL[6]$</cassini:hdac_d_level_07>
+                    <cassini:hdac_d_level_08>$D_LEVEL[7]$</cassini:hdac_d_level_08>
+                    <cassini:hdac_d_level_09>$D_LEVEL[8]$</cassini:hdac_d_level_09>
+                    <cassini:hdac_d_level_10>$D_LEVEL[9]$</cassini:hdac_d_level_10>
+                    <cassini:hdac_d_level_11>$D_LEVEL[10]$</cassini:hdac_d_level_11>
+                    <cassini:hdac_d_level_12>$D_LEVEL[11]$</cassini:hdac_d_level_12>
+                    <cassini:hdac_d_level_13>$D_LEVEL[12]$</cassini:hdac_d_level_13>
+                    <cassini:hdac_d_level_14>$D_LEVEL[13]$</cassini:hdac_d_level_14>
+                    <cassini:hdac_d_level_15>$D_LEVEL[14]$</cassini:hdac_d_level_15>
+                    <cassini:hdac_d_level_16>$D_LEVEL[15]$</cassini:hdac_d_level_16>
+                    <cassini:hdac_h_level_01>$H_LEVEL[0]$</cassini:hdac_h_level_01>
+                    <cassini:hdac_h_level_02>$H_LEVEL[1]$</cassini:hdac_h_level_02>
+                    <cassini:hdac_h_level_03>$H_LEVEL[2]$</cassini:hdac_h_level_03>
+                    <cassini:hdac_h_level_04>$H_LEVEL[3]$</cassini:hdac_h_level_04>
+                    <cassini:hdac_h_level_05>$H_LEVEL[4]$</cassini:hdac_h_level_05>
+                    <cassini:hdac_h_level_06>$H_LEVEL[5]$</cassini:hdac_h_level_06>
+                    <cassini:hdac_h_level_07>$H_LEVEL[6]$</cassini:hdac_h_level_07>
+                    <cassini:hdac_h_level_08>$H_LEVEL[7]$</cassini:hdac_h_level_08>
+                    <cassini:hdac_h_level_09>$H_LEVEL[8]$</cassini:hdac_h_level_09>
+                    <cassini:hdac_h_level_10>$H_LEVEL[9]$</cassini:hdac_h_level_10>
+                    <cassini:hdac_h_level_11>$H_LEVEL[10]$</cassini:hdac_h_level_11>
+                    <cassini:hdac_h_level_12>$H_LEVEL[11]$</cassini:hdac_h_level_12>
+                    <cassini:hdac_h_level_13>$H_LEVEL[12]$</cassini:hdac_h_level_13>
+                    <cassini:hdac_h_level_14>$H_LEVEL[13]$</cassini:hdac_h_level_14>
+                    <cassini:hdac_h_level_15>$H_LEVEL[14]$</cassini:hdac_h_level_15>
+                    <cassini:hdac_h_level_16>$H_LEVEL[15]$</cassini:hdac_h_level_16>
+                </cassini:UVIS_Specific_Attributes>
+            </cassini:Cassini>
+        </Mission_Area>
+    </Observation_Area>
+
+    <Reference_List>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_uvis_saturn:document:uvis-data-user-guide</lid_reference>
+            <reference_type>data_to_document</reference_type>
+            <comment>
+                The UVIS Data User's Guide
+            </comment>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_uvis_saturn:data_raw_hdac:supplemental-index</lid_reference>
+            <reference_type>data_to_resource</reference_type>
+            <comment>
+                The cumulative supplemental index table of basic parameters associated with each
+                observation. This index was generated at the PDS RMS Node.
+            </comment>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_uvis_saturn:document:uvis-description</lid_reference>
+            <reference_type>data_to_document</reference_type>
+            <comment>
+                A document providing an overview of the instrument and its components.
+                The information was extracted from the PDS3 instrument catalog file.
+            </comment>
+        </Internal_Reference>
+        <External_Reference>
+            <doi>10.1007/s11214-004-1455-8</doi>
+            <reference_text>
+                Esposito, L. W. et al., The Cassini Ultraviolet Imaging Spectrograph Investigation,
+                Space Science Reviews, Volume 115: Issue 1-4, pp. 299-361, 2004.
+            </reference_text>
+        </External_Reference>
+        <Source_Product_External>
+            <external_source_product_identifier>$DATA_SET_ID$:$PRODUCT_ID$</external_source_product_identifier>
+            <reference_type>data_to_raw_source_product</reference_type>
+            <curating_facility>PDS RMS Node</curating_facility>
+            <description>
+                The original PDS3 version of this product. The form of the reference is
+                dataset_id:product_id.
+            </description>
+        </Source_Product_External>
+    </Reference_List>
+
+    <File_Area_Observational>
+        <File>
+            <file_name>$basename$</file_name>
+            <creation_date_time>$FILE_ZULU(datafile)$</creation_date_time>
+            <md5_checksum>$FILE_MD5(datafile)$</md5_checksum>
+        </File>
+
+<!-- The Time Series -->
+
+        <Table_Binary>
+            <offset unit="byte">0</offset>
+            <records>$ROWS$</records>
+            <description>
+                This is the DESCRIPTION found in the original PDS3 file; see notes below!
+
+                    $DESCRIPTION.split('\n')[0].rstrip().replace('.  ','. ')$
+$FOR_EACH(DESCRIPTION.split('\n')[1:])
+            $VALUE.rstrip().replace('.  ','. ')$
+$ONCE
+
+                PDS4 migration notes:
+                - first_sampling_parameter_value defines the time at the beginning of the
+                  first data acquisition as elapsed seconds after reference_time_utc,
+                  which is $DATETIME(START_TIME)[:10]$T00:00:00.000Z.
+$IF(mode == 'photometer')
+                - Every HDAC sample corresponds to 0.125 seconds of integration, regardless
+                  of any statement above about the SAMPLING_PARAMETER_INTERVAL.
+$IF(mode == 'modulation')
+                - Every HDAC sample corresponds to 0.125 seconds of integration, regardless
+                  of any statement above about the DWELL_TIME.
+                - The voltage levels of the detectors changed every $('sample' if DWELL_TIME == 1 else ('%d samples' % DWELL_TIME))$;
+                  This is indicated by hdac_dwell_time = $DWELL_TIME$.
+                - The first $('measurement' if DWELL_TIME == 1 else ('set of %d measurements' % DWELL_TIME))$ was obtained using the
+                  pair of voltages defined by (hdac_d_level_01,hdac_h_level_01) = ($D_LEVEL[0]$,$H_LEVEL[0]$).
+                - The second $('measurement' if DWELL_TIME == 1 else ('set of %d measurements' % DWELL_TIME))$ was obtained using the
+                  pair of voltages defined by (hdac_d_level_02,hdac_h_level_02) = ($D_LEVEL[1]$,$H_LEVEL[1]$).
+                - This continued for 14 more iterations, ending with the pair of voltages
+                  defined by (hdac_d_level_16,hdac_h_level_16).
+                - This sequence of observations repeated every $DWELL_TIME * 16$ samples or $'%d' % (DWELL_TIME * 2)$ seconds.
+                - This file contains $ROWS / (DWELL_TIME * 16)$ repetitions of this sequence.
+$IF(mode == 'modulation' and zeros)
+                - However, the final repetition was not completed. The file was padded
+                  with $zeros$ trailing zeros to complete the final record. Values of
+                  zero indicate that the samples are missing.
+$ONCE
+            </description>
+            <Uniformly_Sampled>
+                <sampling_parameter_name>Time</sampling_parameter_name>
+                <sampling_parameter_interval>0.125</sampling_parameter_interval>
+                <sampling_parameter_unit>s</sampling_parameter_unit>
+                <first_sampling_parameter_value>$DAYSECS(START_TIME) -0.125$</first_sampling_parameter_value> <!-- Start of first sample, seconds after reference_time_utc ($DATETIME(START_TIME)[:10]$) -->
+                <last_sampling_parameter_value>$DAYSECS(START_TIME) - 0.125 + (ROWS-1) * 0.125$</last_sampling_parameter_value>   <!--Start (not end) of last sample -->
+                <sampling_parameter_scale>Linear</sampling_parameter_scale>
+            </Uniformly_Sampled>
+            <Record_Binary>
+                <fields>1</fields>
+                <groups>0</groups>
+                <record_length unit="byte">2</record_length>
+                <Field_Binary>
+                    <name>Photometer Counts</name>
+                    <field_location unit="byte">1</field_location>
+                    <data_type>UnsignedMSB2</data_type>
+                    <field_length unit="byte">2</field_length>
+$IF(mode == 'modulation')
+                    <Special_Constants>
+                        <missing_constant>0</missing_constant>
+                    </Special_Constants>
+$ONCE
+                </Field_Binary>
+            </Record_Binary>
+        </Table_Binary>
+    </File_Area_Observational>
+</Product_Observational>
