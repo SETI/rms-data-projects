@@ -23,10 +23,6 @@
         <title>Cassini ISS Image $BASENAME(datafile)$</title>
         <information_model_version>1.11.0.0</information_model_version>
         <product_class>Product_Observational</product_class>
-        <Citation_Information>
-            <publication_year>2019</publication_year>
-            <description>Cassini ISS $narrow_or_wide=('narrow' if INSTRUMENT_ID == 'ISSNA' else 'wide')$-angle camera image taken at $DATETIME(START_TIME)$.</description>
-        </Citation_Information>
         <Modification_History>
             <Modification_Detail>
                 <modification_date>$CURRENT_ZULU()[:10]$</modification_date>

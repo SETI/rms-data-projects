@@ -27,10 +27,6 @@
         <title>Cassini VIMS 3D Array $BASENAME(datafile)$</title>
         <information_model_version>1.11.0.0</information_model_version>
         <product_class>Product_Observational</product_class>
-        <Citation_Information>
-            <publication_year>2019</publication_year>
-            <description>Cassini VIMS observation taken at $DATETIME(START_TIME)$.</description>
-        </Citation_Information>
         <Modification_History>
             <Modification_Detail>
                 <modification_date>$CURRENT_ZULU()[:10]$</modification_date>
@@ -286,9 +282,9 @@ $ONCE
                         should be displayed in the vertical (line) and horizontal (sample) dimensions
                         of a display device.
                     </disp:comment>
-                    <disp:horizontal_display_axis>3</disp:horizontal_display_axis>
+                    <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
                     <disp:horizontal_display_direction>Left to Right</disp:horizontal_display_direction>
-                    <disp:vertical_display_axis>1</disp:vertical_display_axis>
+                    <disp:vertical_display_axis>Line</disp:vertical_display_axis>
                     <disp:vertical_display_direction>Top to Bottom</disp:vertical_display_direction>
                 </disp:Display_Direction>
             </disp:Display_Settings>
@@ -384,7 +380,7 @@ $ONCE
             </comment>
         </Internal_Reference>
         <Internal_Reference>
-            <lid_reference>urn:nasa:pds:cassini_vims_saturn:document:vims-description</lid_reference>
+            <lid_reference>urn:nasa:pds:cassini_vims_saturn:document:vims_instrument_description</lid_reference>
             <reference_type>data_to_document</reference_type>
             <comment>
                 This refers to a document providing an overview of the instrument and its components. The
@@ -415,6 +411,7 @@ $ONCE
             <file_name>$BASENAME(datafile)$</file_name>
             <creation_date_time>$FILE_ZULU(datafile)$</creation_date_time>
             <md5_checksum>$FILE_MD5(datafile)$</md5_checksum>
+            <comment>$PDS3_PDS4_COMMENT$</comment>
         </File>
         <Composite_Structure>
             <type_description>3D Spectral Array with suffix planes</type_description>
