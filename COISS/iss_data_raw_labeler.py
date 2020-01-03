@@ -107,8 +107,8 @@ STAR_ABBREVS = {
     'VEGA'     : ('Vega'           , ['Alpha Lyrae', 'Alpha Lyr'],   'alf_lyr'),
     '26TAU'    : ('26 Tauri'       , ['26 Tau'],                     '26_tau' ),
     '3CEN'     : ('3 Centauri'     , ['3 Cen'],                      '3_cen'  ),
-    '78TAU'    : ('78 Tauri'       , ['78 Tau'],                     '78_tau' ),
-    'CALSTAR3' : ('HR 996'         , [],                             'hr_996' ),
+    '78TAU'    : ('78 Tauri'       , ['78 Tau', 'tet02 Tau'],        'tet02_tau'),
+    'CALSTAR3' : ('HR 996'         , ['kap01 Cet'],                  'kap01_cet'),
 
     'ALPARA'   : ('Alpha Arae'     , ['Alpha Ara'],                  'alf_ara'),
     'ALPAUR'   : ('Capella'        , ['Alpha Aurigae', 'Alpha Aur'], 'alf_aur'),
@@ -137,9 +137,9 @@ STAR_ABBREVS = {
     'BETORI'   : ('Beta Orionis'   , ['Beta Ori'],                   'bet_ori'),
 #     'BETPER'   : ('Algol'          , ['Beta Perei', 'Beta Per'],     'bet_per'),
     'BETPER'   : ('Algol'          , ['Beta Persei', 'Beta Per'],    'bet_per'),
-    'BETSGR'   : ('Beta Sagittarii', ['Beta Sgr'],                   'bet_sgr'),
+    'BETSGR'   : ('Beta Sagittarii', ['Beta Sgr'],                   'bet01_sgr'),
     'CHICEN'   : ('Chi Centauri'   , ['Chi Cen'],                    'chi_cen'),
-    'CWLEO'    : ('CW Leonis'      , ['CW Leo' ],                    'cw_leo' ),
+    'CWLEO'    : ('CW Leonis'      , ['CW Leo', 'IRC +10216' ],      'irc_+10216'),
     'DELAQR'   : ('Delta Aquarii'  , ['Delta Aqr'],                  'del_aqr'),
     'DELCEN'   : ('Delta Centauri' , ['Delta Cen'],                  'del_cen'),
     'DELLUP'   : ('Delta Lupi'     , ['Delta Lup'],                  'del_lup'),
@@ -165,7 +165,7 @@ STAR_ABBREVS = {
     'GAMGRU'   : ('Gamma Gruis'    , ['Gamma Gru'],                  'gam_gru'),
     'GAMLUP'   : ('Gamma Lupi'     , ['Gamma Lup'],                  'gam_lup'),
     'GAMPEG'   : ('Gamma Pegasi'   , ['Gamma Peg'],                  'gam_peg'),
-    'Gamma_Ori': ('Gamma Orionis'  , ['Gamma Ori'],                  'gam_ori'),
+    'Gamma_Ori': ('Gamma Orionis'  , ['Gamma Ori', 'Bellatrix'],     'gam_ori'),
     'HD71334'  : ('HD 71334'       , ['HD 71334' ],                  'hd_71334'),
     'HD339'    : ('HD 339479'      , ['HD 339479'],                  'hd_339479'),
     'IOTCEN'   : ('Iota Centauri'  , ['Iota Cen'],                   'io_cen' ),
@@ -173,18 +173,17 @@ STAR_ABBREVS = {
     'KAPORI'   : ('Kappa Orionis'  , ['Kappa Ori'],                  'kap_ori'),
     'LAMCET'   : ('Lambda Ceti'    , ['Lambda Cet'],                 'lam_cet'),
     'LAMSCO'   : ('Lambda Scorpii' , ['Lambda Sco'],                 'lam_sco'),
-    'LMC303'   : ('LMC 303'        , ['LMC 303'],                    'lmc_303'),
     'MUPSA'    : ('Mu Piscis Austrini',
-                                     ['Mu PsA'],                     'mu_psa' ),
-    'NMLTAURI' : ('NML Tauri'      , ['NML Tau', 'IK Tau'],          'nml_tau'),
-    'NUCEN'    : ('Nu Centauri'    , ['Nu Cen'],                     'nu_cen' ),
+                                     ['Mu PsA'],                     'mu._psa'),
+    'NMLTAURI' : ('NML Tauri'      , ['NML Tau', 'IK Tau'],          'ik_tau'),
+    'NUCEN'    : ('Nu Centauri'    , ['Nu Cen'],                     'nu._cen'),
     'OMICET'   : ('Omicron Ceti'   , ['Omicron Cet'],                'omi_cet'),
     'PSICEN'   : ('Psi Centauri'   , ['Psi Cen'],                    'psi_cen'),
     'RCAS'     : ('R Cassiopeiae'  , ['R Cas'],                      'r_cas'  ),
     'RDORADUS' : ('R Doradus'      , ['R Dor'],                      'r_dor'  ),
     'RHYA'     : ('R Hydrae'       , ['R Hya'],                      'r_hya'  ),
     'RLEO'     : ('R Leo'          , ['R Leo'],                      'r_leo'  ),
-    'TAU78'    : ('78 Tauri'       , ['78 Tau'],                     '78_tau' ),
+    'TAU78'    : ('78 Tauri'       , ['78 Tau', 'tet02 Tau'],        'tet02_tau'),
     'THEARA'   : ('Theta Arae'     , ['Theta Ara'],                  'tet_ara'),
     'THEHYA'   : ('Theta Hydrae'   , ['Theta Hya'],                  'tet_hya'),
     'WHYA'     : ('W Hydrae'       , ['W Hya'],                      'w_hya'  ),
@@ -293,16 +292,20 @@ def iss_target_info(target_name, target_desc, observation_id, shutter_mode_id,
                      'urn:nasa:pds:context:target:calibration_field.sky')]
 
         if 'PLEIADES' in obs_id:
-            return [('Pleiades', [], 'Star Cluster', 'N/A',
-                     'urn:nasa:pds:context:target:star_cluster.pleiades')]
+            return [('Pleiades', ['Cl Melotte 22'], 'Star Cluster', 'N/A',
+                     'urn:nasa:pds:context:target:star_cluster.cl_melotte_22')]
 
         if 'DUSTBAND' in obs_id:
             return [('Dust', [], 'Dust', 'N/A',
-                     'urn:nasa:pds:context:target:dust.pleiades')]
+                     'urn:nasa:pds:context:target:dust.dust')]
 
         if 'FLAT' in obs_id:
             return [('Flat Field', [], 'Calibrator', 'N/A',
                      'urn:nasa:pds:context:target:calibrator.flat_field')]
+
+        if 'LMC303' in obs_id:
+            return [('LMC', ['Large Magellanic Cloud'], 'N/A',
+                     'urn:nasa:pds:context:target:galaxy.lmc')]
 
     if 'TEST' in obs_id or 'TEST' in sequence_title or 'NOISY' in obs_id:
         return [('Test Image', [], 'Calibrator', 'N/A',
