@@ -5,7 +5,7 @@
 ####################################################################################################################################################
 
 SOLAR_SYSTEM_TARGETS = [
-  ("Sun"           , ["NAIF ID 10"               ], "Sun"      , "N/A"    , "urn:nasa:pds:context:target:sun.sun"                                  ),
+  ("Sun"           , ["NAIF ID 10"               ], "Sun"      , "N/A"    , "urn:nasa:pds:context:target:star.sun"                                  ),
   ("Mercury"       , ["NAIF ID 199"              ], "Planet"   , "Sun"    , "urn:nasa:pds:context:target:planet.mercury"                           ),
   ("Venus"         , ["NAIF ID 299"              ], "Planet"   , "Sun"    , "urn:nasa:pds:context:target:planet.venus"                             ),
 

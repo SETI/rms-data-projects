@@ -89,9 +89,9 @@ STAR_ABBREVS = {
     'FOMALHAUT': ('Fomalhaut'      , ['Alpha Piscis Austrini', 'Alpha PsA'],
                                                                      'alf_psa'),
     'SPICA'    : ('Spica'          , ['Alpha Virginis', 'Alpha Vir'],'alf_vir'),
-    'CALSTAR3' : ('HR 996'         , [],                             'hr_996' ),
-    '2CEN'     : ('2 Centauri'     , ['2 Cen'],                      '2_cen'  ),
-    '30HER'    : ('30 Herculis'    , ['30 Her'],                     '30_her' ),
+    'CALSTAR3' : ('HR 996'         , ['kap1 Cet'],                   'kap01_cet'),
+    '2CEN'     : ('2 Centauri'     , ['2 Cen', 'g Cen'],             'g_cen'  ),
+    '30HER'    : ('30 Herculis'    , ['30 Her', 'g Her'],            'g_her' ),
     '30PSC'    : ('30 Piscium'     , ['30 Psc'],                     '30_psc' ),
     '56LEO'    : ('56 Leonis'      , ['56 Leo'],                     '56_leo' ),
     'ALPAUR'   : ('Capella'        , ['Alpha Aurigae', 'Alpha Aur'], 'alf_aur'),
@@ -116,7 +116,7 @@ STAR_ABBREVS = {
                                    , ['Beta UMi'],                   'bet_umi'),
     'CHIAQR'   : ('Chi Aquarii'    , ['Chi Aqr'],                    'chi_aqr'),
     'CHICYG'   : ('Chi Cygni'      , ['Chi Cyg'],                    'chi_cyg'),
-    'CWLEO'    : ('CW Leonis'      , ['CW Leo' ],                    'cw_leo' ),
+    'CWLEO'    : ('CW Leonis'      , ['CW Leo', 'IRC +10216' ],      'irc_+10216'),
     'DELOPH'   : ('Delta Ophiuchi' , ['Delta Oph'],                  'del_oph'),
     'DELVIR'   : ('Delta Virginis' , ['Delta Vir'],                  'del_vir'),
     'EPSMUS'   : ('Epsilon Muscae' , ['Epsilon Mus'],                'eps_mus'),
@@ -127,18 +127,18 @@ STAR_ABBREVS = {
     'GAMERI'   : ('Gamma Eridani'  , ['Gamma Eri'],                  'gam_eri'),
     'LAMAQR'   : ('Lambda Aquarii' , ['Lambda Aqr'],                 'lam_aqr'),
     'LAMVEL'   : ('Lambda Velorum' , ['Lambda Vel'],                 'lam_vel'),
-    'MUCEP'    : ('Mu Cephei'      , ['Mu Cep'],                     'mu_cep' ),
-    'MUGEM'    : ('Mu Geminorum'   , ['Mu Gem'],                     'mu_gem' ),
-    'NUVIR'    : ('Nu Virginis'    , ['Nu Vir'],                     'nu_vir' ),
+    'MUCEP'    : ('Mu Cephei'      , ['Mu Cep'],                     'mu._cep' ),
+    'MUGEM'    : ('Mu Geminorum'   , ['Mu Gem'],                     'mu._gem' ),
+    'NUVIR'    : ('Nu Virginis'    , ['Nu Vir'],                     'nu._vir' ),
     'OMEVIR'   : ('Omega Virginis' , ['Omega Vir'],                  'ome_vir'),
     'OMICET'   : ('Omicron Ceti'   , ['Omicron Cet'],                'omi_cet'),
-    'PI1GRU'   : ('Pi1 Gruis'      , ['Pi1 Gru'],                    'pi1_gru'),
+    'PI1GRU'   : ('Pi1 Gruis'      , ['Pi1 Gru'],                    'pi.01_gru'),
     'RAQR'     : ('R Aquarii'      , ['R Aqr'],                      'r_aqr'  ),
     'RCAS'     : ('R Cassiopeiae'  , ['R Cas'],                      'r_cas'  ),
     'RHOPER'   : ('Rho Persei'     , ['Rho Per'],                    'rho_per'),
     'RHYA'     : ('R Hydrae'       , ['R Hya'],                      'r_hya'  ),
     'RLEO'     : ('R Leo'          , ['R Leo'],                      'r_leo'  ),
-    'RLYR'     : ('R Lyrae'        , ['R Lyr'],                      'r_lyr'  ),
+    'RLYR'     : ('R Lyrae'        , ['R Lyr', '13 Lyr'],            '13_lyr' ),
     'RWLMI'    : ('RW Leonis Minoris'
                                    , ['RW LMi'],                     'rw_lmi' ),
     'RXLEP'    : ('RX Leporis'     , ['RX Lep'],                     'rx_lep' ),
@@ -238,8 +238,8 @@ def vims_target_info(target_name, target_desc, observation_id,
                  'urn:nasa:pds:context:target:calibration_field.sky')]
 
     if 'PLEIADES' in obs_id:
-        return [('Pleiades', [], 'Star Cluster', 'N/A',
-                 'urn:nasa:pds:context:target:star_cluster.pleiades')]
+        return [('Pleiades', ['Cl Melotte 22'], 'Star Cluster', 'N/A',
+                 'urn:nasa:pds:context:target:star_cluster.cl_melotte_22')]
 
     if name == 'DUST':
         return [('Dust', [], 'Dust', 'N/A',
