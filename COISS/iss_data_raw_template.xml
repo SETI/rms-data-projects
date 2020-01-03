@@ -70,7 +70,7 @@ $ONCE
                 </Internal_Reference>
             </Observing_System_Component>
             <Observing_System_Component>
-                <name>Cassini Orbiter Imaging Science Subsystem - $narrow_or_wide.title()$ Angle Camera</name>
+                <name>Cassini Orbiter Imaging Science Subsystem - $'Narrow' if INSTRUMENT_ID == 'ISSNA' else 'Wide'$ Angle Camera</name>
                 <type>Instrument</type>
                 <description>$INSTRUMENT_ID$</description>
                 <Internal_Reference>
