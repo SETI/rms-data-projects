@@ -146,16 +146,20 @@ CIMS_TARGET_ABBREVIATIONS = {
     'SW': 'SOLAR WIND',
 }
 
+# Checked by MRS on May 6, 2020
+# Updated by MRS on May 16-17, 2020
 STAR_ABBREVS = {
+    '126TAU'   : ('126 Tauri'           , ['126 Tau'],                      '126_tau'),
+    '28SGR'    : ('28 Sagittarii'       , ['28 Sgr'],                       '28_sgr'),
     '205839'   : ('b Centauri'          , ['b Cen', 'HD 129116', 'SAO 205839'], 'b_cen'),
     '26TAU'    : ('26 Tauri'            , ['26 Tau'],                       '26_tau' ),
     '2CEN'     : ('g Centauri'          , ['g Cen', '2 Cen'],               'g_cen'  ),
-    '30HER'    : ('30 Herculis'         , ['30 Her'],                       '30_her' ),
+    '30HER'    : ('30 Herculis'         , ['30 Her'],                       'g_her' ),
     '30PSC'    : ('30 Piscium'          , ['30 Psc'],                       '30_psc' ),
     '3CEN'     : ('3 Centauri'          , ['3 Cen'],                        '3_cen'  ),
     '56LEO'    : ('56 Leonis'           , ['56 Leo'],                       '56_leo' ),
-    '78TAU'    : ('78 Tauri'            , ['78 Tau'],                       '78_tau' ),
-    'ALP1CRU'  : ('Alpha1 Crucis'       , ['Alpha1 Cru'],                   'alf1_cru'),
+    '78TAU'    : ('78 Tauri'            , ['78 Tau'],                       'tet02_tau' ),
+    'ALP1CRU'  : ('Alpha1 Crucis'       , ['Alpha1 Cru'],                   'alf01_cru'),
     'ALPARA'   : ('Alpha Arae'          , ['Alpha Ara'],                    'alf_ara'),
     'ALPAUR'   : ('Capella'             , ['Alpha Aurigae', 'Alpha Aur'],   'alf_aur'),
     'ALPCEN'   : ('Alpha Centauri'      , ['Alpha Cen'],                    'alf_cen'),
@@ -188,14 +192,14 @@ STAR_ABBREVS = {
     'BETPEG'   : ('Beta Pegasi'         , ['Beta Peg'],                     'bet_peg'),
     'BETPER'   : ('Algol'               , ['Beta Perei', 'Beta Per'],       'bet_per'),
     'BETPSA'   : ('Beta Piscis Austrini', ['Beta PsA'],                     'bet_psa'),
-    'BETSGR'   : ('Beta Sagittarii'     , ['Beta Sgr'],                     'bet_sgr'),
+    'BETSGR'   : ('Beta1 Sagittarii'    , ['Beta1 Sgr'],                    'bet01_sgr'),
     'BETUMI'   : ('Beta Ursae Minoris'  , ['Beta UMi'],                     'bet_umi'),
-    'CALSTAR3' : ('HR 996'              , [],                               'hr_996' ),
+    'CALSTAR3' : ('HR 996'              , ['Kappa1 Cet'],                   'kap01_cet'),
     'CANOPUS'  : ('Canopus'             , ['Alpha Carinae', 'Alpha Car'],   'alf_car'),
     'CHIAQR'   : ('Chi Aquarii'         , ['Chi Aqr'],                      'chi_aqr'),
     'CHICEN'   : ('Chi Centauri'        , ['Chi Cen'],                      'chi_cen'),
     'CHICYG'   : ('Chi Cygni'           , ['Chi Cyg'],                      'chi_cyg'),
-    'CWLEO'    : ('CW Leonis'           , ['CW Leo' ],                      'cw_leo' ),
+    'CWLEO'    : ('CW Leonis'           , ['CW Leo', 'IRC +10216'],         'irc_+10216' ),
     'DELAQR'   : ('Delta Aquarii'       , ['Delta Aqr'],                    'del_aqr'),
     'DELCEN'   : ('Delta Centauri'      , ['Delta Cen'],                    'del_cen'),
     'DELCET'   : ('Delta Ceti'          , ['Delta Cet'],                    'del_cet'),
@@ -207,11 +211,12 @@ STAR_ABBREVS = {
     'DELVIR'   : ('Delta Virginis'      , ['Delta Vir'],                    'del_vir'),
     'EPSCAS'   : ('Epsilon Cassiopeiae' , ['Epsilon Cas'],                  'eps_cas'),
     'EPSCEN'   : ('Epsilon Centauri'    , ['Epsilon Cen'],                  'eps_cen'),
-    'EPSCMA'   : ('Epsilon Canis Majoris', ['Epsilon CMa'],                 'eps_cma'),
+    'EPSCMA'   : ('Epsilon Canis Majoris',['Epsilon CMa'],                  'eps_cma'),
     'EPSLUP'   : ('Epsilon Lupi'        , ['Epsilon Lup'],                  'eps_lup'),
     'EPSMIC'   : ('Epsilon Microscopii' , ['Epsilon Mic'],                  'eps_mic'),
     'EPSMUS'   : ('Epsilon Muscae'      , ['Epsilon Mus'],                  'eps_mus'),
     'EPSORI'   : ('Epsilon Orionis'     , ['Epsilon Ori'],                  'eps_ori'),
+    'EPSPEG'   : ('Epsilon Pegasi'      , ['Epsilon Peg'],                  'eps_peg'),
     'EPSPER'   : ('Epsilon Persei'      , ['Epsilon Per'],                  'eps_per'),
     'EPSPSA'   : ('Epsilon Piscis Austrini', ['Epsilon PsA'],               'eps_psa'),
     'EPSSGR'   : ('Epsilon Sagittarii'  , ['Epsilon Sgr'],                  'eps_sgr'),
@@ -232,8 +237,10 @@ STAR_ABBREVS = {
     'GAMLUP'   : ('Gamma Lupi'          , ['Gamma Lup'],                    'gam_lup'),
     'GAMORI'   : ('Gamma Orionis'       , ['Gamma Ori'],                    'gam_ori'),
     'GAMPEG'   : ('Gamma Pegasi'        , ['Gamma Peg'],                    'gam_peg'),
-    'HD339'    : ('HD 339479'           , ['HD 339479'],                    'hd_339479'),
-    'HD71334'  : ('HD 71334'            , ['HD 71334' ],                    'hd_71334'),
+    'HD339'    : ('HD 339479'           , [],                               'hd_339479'),
+    'HD37962'  : ('HD 37962'            , [],                               'hd_37962'),
+    'HD205905' : ('HD 205905'           , [],                               'hd_205905'),
+    'HD71334'  : ('HD 71334'            , [],                               'hd_71334'),
     'IOTCEN'   : ('Iota Centauri'       , ['Iota Cen'],                     'io_cen' ),
     'IOTORI'   : ('Iota Orionis'        , ['Iota Ori'],                     'io_ori' ),
     'KAPCEN'   : ('Kappa Centauri'      , ['Kappa Cen'],                    'kap_cen'),
@@ -241,6 +248,7 @@ STAR_ABBREVS = {
     'KAPORI'   : ('Kappa Orionis'       , ['Kappa Ori'],                    'kap_ori'),
     'KAPSCO'   : ('Kappa Scorpii'       , ['Kappa Sco'],                    'kap_sco'),
     'KAPVEL'   : ('Kappa Velorum'       , ['Kappa Vel'],                    'kap_vel'),
+    'L2PUP'    : ('L2 Puppis'           , ['L2 Pup'],                       'l02_pup'),
     'LAMAQL'   : ('Lambda Aquilae'      , ['Lambda Aql'],                   'lam_aql'),
     'LAMAQR'   : ('Lambda Aquarii'      , ['Lambda Aqr'],                   'lam_aqr'),
     'LAMCET'   : ('Lambda Ceti'         , ['Lambda Cet'],                   'lam_cet'),
@@ -254,27 +262,30 @@ STAR_ABBREVS = {
     'MUPSA'    : ('Mu Piscis Austrini'  , ['Mu PsA'],                       'mu_psa' ),
     'MUSCO'    : ('Mu Scorpii'          , ['Mu Sco'],                       'mu_sco' ),
     'MUSGR'    : ('Mu Sagittarii'       , ['Mu Sgr'],                       'mu_sgr' ),
-    'NMLTAURI' : ('NML Tauri'           , ['NML Tau', 'IK Tau'],            'nml_tau'),
+    'NMLTAURI' : ('IK Tauri'            , ['IK Tau', 'NML Tau'],            'ik_tau'),
     'NUCEN'    : ('Nu Centauri'         , ['Nu Cen'],                       'nu_cen' ),
     'NUVIR'    : ('Nu Virginis'         , ['Nu Vir'],                       'nu_vir' ),
     'OMEVIR'   : ('Omega Virginis'      , ['Omega Vir'],                    'ome_vir'),
     'OMICET'   : ('Omicron Ceti'        , ['Omicron Cet'],                  'omi_cet'),
-    'PI1GRU'   : ('Pi1 Gruis'           , ['Pi1 Gru'],                      'pi1_gru'),
-    'PI4ORI'   : ('Pi4 Orionis'         , ['Pi4 Ori'],                      'pi4_ori'),
+    'PI1GRU'   : ('Pi1 Gruis'           , ['Pi1 Gru'],                      'pi.01_gru'),
+    'PI4ORI'   : ('Pi4 Orionis'         , ['Pi4 Ori'],                      'pi.04_ori'),
     'PSICEN'   : ('Psi Centauri'        , ['Psi Cen'],                      'psi_cen'),
+    'RAQL'     : ('R Aquila'            , ['R Aql'],                        'r_aql'  ),
     'RAQR'     : ('R Aquarii'           , ['R Aqr'],                        'r_aqr'  ),
+    'RCAR'     : ('R Carina'            , ['R Car'],                        'r_car'  ),
     'RCAS'     : ('R Cassiopeiae'       , ['R Cas'],                        'r_cas'  ),
     'RDORADUS' : ('R Doradus'           , ['R Dor'],                        'r_dor'  ),
     'RHOPER'   : ('Rho Persei'          , ['Rho Per'],                      'rho_per'),
     'RHYA'     : ('R Hydrae'            , ['R Hya'],                        'r_hya'  ),
     'RLEO'     : ('R Leo'               , ['R Leo'],                        'r_leo'  ),
-    'RLYR'     : ('R Lyrae'             , ['R Lyr'],                        'r_lyr'  ),
+    'RLYR'     : ('R Lyrae'             , ['R Lyr', '13 Lyr'],              '13_lyr' ),
+    'RSCNC'    : ('RS Cancer'           , ['RS Cnc'],                       'rs_cnc' ),
     'RWLMI'    : ('RW Leonis Minoris'   , ['RW LMi'],                       'rw_lmi' ),
     'RXLEP'    : ('RX Leporis'          , ['RX Lep'],                       'rx_lep' ),
     'SIGSGR'   : ('Sigma Sagittarii'    , ['Sigma Sgr'],                    'sig_sgr'),
     'SLEP'     : ('S Leporis'           , ['S Lep'],                        's_lep'  ),
     'SPICA'    : ('Spica'               , ['Alpha Virginis', 'Alpha Vir'],  'alf_vir'),
-    'TAU78'    : ('78 Tauri'            , ['78 Tau'],                       '78_tau' ),
+    'TAU78'    : ('78 Tauri'            , ['78 Tau'],                       'tet02_tau'),
     'TCEP'     : ('T Cephei'            , ['T Cep'],                        't_cep'  ),
     'THEARA'   : ('Theta Arae'          , ['Theta Ara'],                    'tet_ara'),
     'THECAR'   : ('Theta Carinae'       , ['Theta Car'],                    'tet_car'),
@@ -283,9 +294,10 @@ STAR_ABBREVS = {
     'VEGA'     : ('Vega'                , ['Alpha Lyrae', 'Alpha Lyr'],     'alf_lyr'),
     'VHYA'     : ('V Hydrae'            , ['V Hya'],                        'v_hya'  ),
     'VXSGR'    : ('VX Sagittarii'       , ['VX Sgr'],                       'vx_sgr' ),
+    'VYCMA'    : ('VY Canis Majoris'    , ['VY CMa'],                       'vy_cma' ),
     'WAQL'     : ('W Aquilae'           , ['W Aql'],                        'w_aql'  ),
     'WHYA'     : ('W Hydrae'            , ['W Hya'],                        'w_hya'  ),
-    'XICET'    : ('Xi Ceti'             , ['Xi Cet'],                       'xi_cet' ),
+    'XICET'    : ('Xi2 Ceti'            , ['Xi2 Cet'],                      'ksi02_cet'),
     'XOPH'     : ('X Ophiuchi'          , ['X Oph'],                        'x_oph'  ),
     'ZETCEN'   : ('Zeta Centauri'       , ['Zeta Cen'],                     'zet_cen'),
     'ZETCMA'   : ('Zeta Canis Majoris'  , ['Zeta CMa'],                     'zet_cma'),
@@ -302,17 +314,20 @@ STAR_ABBREVS['ALFORI'   ] = STAR_ABBREVS['ALPORI'  ]
 STAR_ABBREVS['ALFSCO'   ] = STAR_ABBREVS['ALPSCO'  ]
 STAR_ABBREVS['ALPBOO'   ] = STAR_ABBREVS['ARCTURUS']
 STAR_ABBREVS['ALPVIR'   ] = STAR_ABBREVS['SPICA'   ]
+STAR_ABBREVS['ALFVIR'   ] = STAR_ABBREVS['SPICA'   ]
 STAR_ABBREVS['CALSTAR1' ] = STAR_ABBREVS['VEGA'    ]
 STAR_ABBREVS['CALSTAR2' ] = STAR_ABBREVS['78TAU'   ]
 STAR_ABBREVS['CWSTAR'   ] = STAR_ABBREVS['CWLEO'   ]
 STAR_ABBREVS['ECSTAR'   ] = STAR_ABBREVS['ETACAR'  ]
 STAR_ABBREVS['GAMMA_ORI'] = STAR_ABBREVS['GAMORI'  ]
 STAR_ABBREVS['OMICRONCT'] = STAR_ABBREVS['OMICET'  ]
+STAR_ABBREVS['SAO205839'] = STAR_ABBREVS['205839'  ]
 STAR_ABBREVS['STARCALCW'] = STAR_ABBREVS['CWLEO'   ]
 STAR_ABBREVS['STARCALEC'] = STAR_ABBREVS['ETACAR'  ]
 STAR_ABBREVS['STARCHRCW'] = STAR_ABBREVS['CWLEO'   ]
 STAR_ABBREVS['STARCHREC'] = STAR_ABBREVS['ETACAR'  ]
 STAR_ABBREVS['WHYDRAE'  ] = STAR_ABBREVS['WHYA'    ]
+STAR_ABBREVS['XI2CET'   ] = STAR_ABBREVS['XICET'   ]
 STAR_ABBREVS['ZETAORI'  ] = STAR_ABBREVS['ZETORI'  ]
 
 # Add stars to the target list

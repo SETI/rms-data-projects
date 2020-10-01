@@ -4,7 +4,7 @@
 # Print out a rough draft of the XML File object based on a data file.
 #
 # Syntax:
-#   python file_xml.py data_file.dat
+#   python file_xml.py <optional_indent> data_file.dat
 #
 # The program will print the object to standard output.
 ################################################################################
@@ -109,9 +109,14 @@ def file_xml(datafile, indent, tab=4, comment='**** REVIEW ****'):
 def main():
 
     # Get the command line args
-    datafile = sys.argv[1]
-    indent = int(sys.argv[2])
-    if len(sys.argv) == 3:
+    datafile = sys.argv[-1]
+
+    if len(sys.argv) > 2:
+        indent = int(sys.argv[1])
+    else:
+        indent = 0
+
+    if len(sys.argv) <= 3:
         comment = "**** REVIEW ****"
     elif len(sys.argv) == 4:
         comment = sys.argv[3]

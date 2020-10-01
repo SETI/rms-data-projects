@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1B00.sch"
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+
+<Product_Browse
+    xmlns="http://pds.nasa.gov/pds4/pds/v1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+    http://pds.nasa.gov/pds4/pds/v1 https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1B00.xsd">
+
+    <Identification_Area>
+        <logical_identifier>urn:nasa:pds:cassini_vims_$cruise_or_saturn=('cruise' if filename < '1454' else 'saturn')$:browse_raw:$BASENAME(filename)[:-4]$</logical_identifier>
+        <version_id>1.0</version_id>
+        <title>Browse image for Cassini VIMS Cube $BASENAME(filename)[:-9]$.qub</title>
+        <information_model_version>1.11.0.0</information_model_version>
+        <product_class>Product_Browse</product_class>
+        <Modification_History>
+            <Modification_Detail>
+                <modification_date>$CURRENT_ZULU()[:10]$</modification_date>
+                <version_id>1.0</version_id>
+                <description>Initial version. Generated as part of the migration to PDS4.</description>
+            </Modification_Detail>
+        </Modification_History>
+    </Identification_Area>
+    <Reference_List>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_vims_$cruise_or_saturn$:data_raw:$BASENAME(filename)[:-9]$</lid_reference>
+            <reference_type>browse_to_data</reference_type>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_vims_saturn:document:vims-browse-raw-key</lid_reference>
+            <reference_type>data_to_document</reference_type>
+            <comment>
+                This is a guide to interpreting the products in the browse collection for the raw VIMS
+                data. Each browse product contains up to four individual panels. Each panel illustrates
+                a different aspect of the spectral information found in the associated raw data cube.
+            </comment>
+        </Internal_Reference>
+    </Reference_List>
+    <File_Area_Browse>
+        <File>
+            <file_name>$BASENAME(filename)$</file_name>
+            <creation_date_time>$FILE_ZULU(filename)$</creation_date_time>
+            <md5_checksum>$FILE_MD5(filename)$</md5_checksum>
+        </File>
+        <Encoded_Image>
+            <offset unit="byte">0</offset>
+            <encoding_standard_id>PNG</encoding_standard_id>
+        </Encoded_Image>
+    </File_Area_Browse>
+</Product_Browse>

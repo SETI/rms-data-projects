@@ -4,6 +4,7 @@
 
 import os
 import time, datetime, pytz
+import julian
 import hashlib
 from xml.sax.saxutils import escape
 
@@ -71,6 +72,9 @@ class XmlTemplate(object):
         DATETIME(string):
             convert the given date/time string to a year-month-day format with a
             trailing "Z"
+
+        DAYSECS(string):
+            the number of elapsed seconds since the beginning of the day
 
         BASENAME(filename):
             the basename of a file, with leading directory paths removed.
@@ -149,7 +153,9 @@ class XmlTemplate(object):
             new_recs = []
             for rec in section:
                 parts = rec.split('$')
-                assert len(parts) % 2 == 1
+                if len(parts) % 2 != 1:
+                    print rec
+                    raise ValueError('Unmatched "$"')
 
                 # List the index of every part that needs to be evaluated
                 for j in range(1,len(parts),2):
@@ -295,7 +301,7 @@ class XmlTemplate(object):
                                                        lookup,
                                                        VALUE=result,
                                                        INDEX=j,
-                                                       LENGTH=len(result))
+                                                       LENGTH=len(results))
 
         return filled_out
 
@@ -339,27 +345,49 @@ class XmlTemplate(object):
         return time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
 
     @staticmethod
-    def DATETIME(value):
+    def DATETIME(value, offset=0):
         """Convert the given date/time string to a year-month-day format with a
         trailing "Z". The date can be in year-month-day or year-dayofyear
         format. The time component (following a capital 'T') is unchanged. If
         the value is "UNK", then "UNK" is returned."""
 
+        if isinstance(value, float):
+            return julian.ymdhms_format_from_tai(value + offset, 'T', 3, 'Z')
+
         if value.strip() == 'UNK': return 'UNK'
 
         (date,hms) = value.split('T')     # fails if not exactly two parts
-
-        # Convert the date to ymd if necessary
         parts = date.split('-')
-        if len(parts) == 2:
+        if len(parts) == 3 and offset == 0:
+            return date + 'T' + hms + ('Z' if not hms.endswith('Z') else '')
+
+        if len(parts) == 2 and offset == 0:
             # Note that strftime does not support dates before 1900. Some
             # erroneous dates in some labels have erroneous years. This is a
             # workaround.
             day = time.strptime('19' + date[2:], '%Y-%j')
             date = parts[0][:2] + time.strftime('%Y-%m-%d', day)[2:]
 
-        # Reassemble
-        return date + 'T' + hms + ('Z' if not hms.endswith('Z') else '')
+            return date + 'T' + hms + ('Z' if not hms.endswith('Z') else '')
+
+        tai = julian.tai_from_iso(value) + offset
+        parts = value.split('.')
+        digits = len(parts[-1]) if len(parts) > 1 else 0
+        return julian.ymdhms_format_from_tai(tai, 'T', digits, 'Z')
+
+    @staticmethod
+    def DAYSECS(value):
+        """The number of elapsed seconds after the beginning of the day."""
+
+        if isinstance(value, float):
+            (day, secs) = julian.day_sec_from_tai(value)
+            return secs
+
+        if value.strip() == 'UNK': return 'UNK'
+
+        (date,hms) = value.split('T')     # fails if not exactly two parts
+        (h,m,s) = hms.split(':')
+        return 3600.*int(h) + 60.*int(m) + float(s)
 
     ############################################################################
     # Info about a file
@@ -431,6 +459,7 @@ PREDEFINED_FUNCTIONS['REPLACE_NA'  ] = XmlTemplate.REPLACE_NA
 PREDEFINED_FUNCTIONS['REPLACE_UNK' ] = XmlTemplate.REPLACE_UNK
 PREDEFINED_FUNCTIONS['CURRENT_ZULU'] = XmlTemplate.CURRENT_ZULU
 PREDEFINED_FUNCTIONS['DATETIME'    ] = XmlTemplate.DATETIME
+PREDEFINED_FUNCTIONS['DAYSECS'     ] = XmlTemplate.DAYSECS
 PREDEFINED_FUNCTIONS['BASENAME'    ] = XmlTemplate.BASENAME
 PREDEFINED_FUNCTIONS['FILE_ZULU'   ] = XmlTemplate.FILE_ZULU
 PREDEFINED_FUNCTIONS['FILE_BYTES'  ] = XmlTemplate.FILE_BYTES

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1B00.sch"
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+
+<Product_Ancillary
+    xmlns="http://pds.nasa.gov/pds4/pds/v1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pds.nasa.gov/pds4/pds/v1 https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1B00.xsd">
+    <Identification_Area>
+        <logical_identifier>urn:nasa:pds:cassini_vims_$'cruise' if 'cruise' in datafile else 'saturn'$:calibration:wavelength-bins-$datafile[-13:-4].replace('-','.')$</logical_identifier>
+        <version_id>1.0</version_id>
+        <title>Cassini VIMS Wavelength Bin Information Starting $datafile[-13:-4].replace('-','.')$</title>
+        <information_model_version>1.11.0.0</information_model_version>
+        <product_class>Product_Ancillary</product_class>
+        <Citation_Information>
+            <editor_list>M.R. Showalter, M.K. Gordon, M.W. Evans</editor_list>
+            <publication_year>2020</publication_year>
+            <keyword>vims bin center wavelength</keyword>
+            <keyword>vims bin wavelength widths</keyword>
+            <description>Table of values for VIMS wavelength bins.</description>
+        </Citation_Information>
+        <Modification_History>
+            <Modification_Detail>
+                <modification_date>$CURRENT_ZULU()[:10]$</modification_date>
+                <version_id>1.0</version_id>
+                <description>Initial version</description>
+            </Modification_Detail>
+        </Modification_History>
+    </Identification_Area>
+    <Context_Area>
+        <Time_Coordinates>
+            <start_date_time>$DATES[BASENAME(datafile)][0]$Z</start_date_time>
+            <stop_date_time>$DATES[BASENAME(datafile)][1]$Z</stop_date_time>
+        </Time_Coordinates>
+    </Context_Area>
+    <File_Area_Ancillary>
+        <File>
+            <file_name>$BASENAME(datafile)$</file_name>
+            <creation_date_time>$FILE_ZULU(datafile)$</creation_date_time>
+            <md5_checksum>$FILE_MD5(datafile)$</md5_checksum>
+            <comment>
+                This file provides the values for the center wavelength of VIMS data
+                array bins for a specific date range. The team determined that these
+                values drifted over the lifetime of the mission. Individual PDS4 VIMS
+                data products reference a specific wavelength bin table based on the
+                observation start time. The values in this file were as determined
+                for the final "RC19" calibration.
+            </comment>
+        </File>
+        <Table_Character>
+            <offset unit="byte">0</offset>
+            <records>352</records>
+            <description>
+                This table provides the center wavelength and the value for the
+                FWHM for each bin in a VIMS cube.
+            </description>
+            <record_delimiter>Carriage-Return Line-Feed</record_delimiter>
+            <Record_Character>
+                <fields>3</fields>
+                <groups>0</groups>
+                <record_length unit="byte">23</record_length>
+                <Field_Character>
+                    <name>Bin Number</name>
+                    <field_number>1</field_number>
+                    <field_location unit="byte">1</field_location>
+                    <data_type>ASCII_Integer</data_type>
+                    <field_length unit="byte">3</field_length>
+                    <description>
+                        The bin number, numbered starting from one. Bins 1-96
+                        refer to the VIS channel of the instrument; bins 97-256
+                        refer to the IR channel.
+                    </description>
+                </Field_Character>
+                <Field_Character>
+                    <name>Bin Center Wavelength</name>
+                    <field_number>2</field_number>
+                    <field_location unit="byte">5</field_location>
+                    <data_type>ASCII_Real</data_type>
+                    <field_length unit="byte">8</field_length>
+                    <unit>Micron</unit>
+                    <description>
+                        The approximate center wavelength of the bin.
+                    </description>
+                </Field_Character>
+                <Field_Character>
+                    <name>Bin FWHM</name>
+                    <field_number>3</field_number>
+                    <field_location unit="byte">14</field_location>
+                    <data_type>ASCII_Real</data_type>
+                    <field_length unit="byte">8</field_length>
+                    <unit>Micron</unit>
+                    <description>
+                        The full-width half-maximum (FWHM) of the bin. Each bin
+                        is estimated to extend between the half-way points to
+                        each of the adjacent bins.
+                    </description>
+                </Field_Character>
+            </Record_Character>
+        </Table_Character>
+    </File_Area_Ancillary>
+</Product_Ancillary>

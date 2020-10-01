@@ -5,7 +5,7 @@
 ####################################################################################################################################################
 
 SOLAR_SYSTEM_TARGETS = [
-  ("Sun"           , ["NAIF ID 10"               ], "Sun"      , "N/A"    , "urn:nasa:pds:context:target:star.sun"                                  ),
+  ("Sun"           , ["NAIF ID 10"               ], "Sun"      , "N/A"    , "urn:nasa:pds:context:target:star.sun"                                 ),
   ("Mercury"       , ["NAIF ID 199"              ], "Planet"   , "Sun"    , "urn:nasa:pds:context:target:planet.mercury"                           ),
   ("Venus"         , ["NAIF ID 299"              ], "Planet"   , "Sun"    , "urn:nasa:pds:context:target:planet.venus"                             ),
 
@@ -16,7 +16,7 @@ SOLAR_SYSTEM_TARGETS = [
 
 
   ("Mars"          , ["NAIF ID 499"              ], "Planet"   , "Sun"    , "urn:nasa:pds:context:target:planet.mars"                              ),
-  ("Mars Rings"    , [                           ], "Ring"     , "Mars"   , "urn:nasa:pds:context:target:ring.mars_rings"                          ),
+  ("Mars Rings"    , [                           ], "Ring"     , "Mars"   , "urn:nasa:pds:context:target:ring.mars.rings"                          ),
   ("Phobos"        , ["Mars I (Phobos)",
                       "NAIF ID 401"              ], "Satellite", "Mars"   , "urn:nasa:pds:context:target:satellite.mars.phobos"                    ),
   ("Deimos"        , ["Mars II (Deimos)",
@@ -24,7 +24,7 @@ SOLAR_SYSTEM_TARGETS = [
 
 
   ("Jupiter"       , ["NAIF ID 599"              ], "Planet"   , "Sun"    , "urn:nasa:pds:context:target:planet.jupiter"                           ),
-  ("Jupiter Rings" , [                           ], "Ring"     , "Jupiter", "urn:nasa:pds:context:target:ring.jupiter_rings"                       ),
+  ("Jupiter Rings" , [                           ], "Ring"     , "Jupiter", "urn:nasa:pds:context:target:ring.jupiter.rings"                       ),
   ("Io"            , ["Jupiter I (Io)",
                       "NAIF ID 501"              ], "Satellite", "Jupiter", "urn:nasa:pds:context:target:satellite.jupiter.io"                     ),
   ("Europa"        , ["Jupiter II (Europa)",
@@ -188,7 +188,7 @@ SOLAR_SYSTEM_TARGETS = [
 
 
   ("Saturn"        , ["NAIF ID 699"              ], "Planet"   , "Sun"   , "urn:nasa:pds:context:target:planet.saturn"                             ),
-  ("Saturn Rings"  , [                           ], "Ring"     , "Saturn", "urn:nasa:pds:context:target:ring.saturn_rings"                         ),
+  ("Saturn Rings"  , [                           ], "Ring"     , "Saturn", "urn:nasa:pds:context:target:ring.saturn.rings"                         ),
   ("Mimas"         , ["Saturn I (Mimas)",
                       "NAIF ID 601"              ], "Satellite", "Saturn", "urn:nasa:pds:context:target:satellite.saturn.mimas"                    ),
   ("Enceladus"     , ["Saturn II (Enceladus)",
@@ -347,7 +347,7 @@ SOLAR_SYSTEM_TARGETS = [
 
 
   ("Uranus"        , ["NAIF ID 799"              ], "Planet"   , "Sun"   , "urn:nasa:pds:context:target:planet.uranus"                             ),
-  ("Uranus Rings"  , [                           ], "Ring"     , "Uranus", "urn:nasa:pds:context:target:ring.uranus_rings"                         ),
+  ("Uranus Rings"  , [                           ], "Ring"     , "Uranus", "urn:nasa:pds:context:target:ring.uranus.rings"                         ),
   ("Ariel"         , ["Uranus I (Ariel)",
                       "NAIF ID 701"              ], "Satellite", "Uranus", "urn:nasa:pds:context:target:satellite.uranus.ariel"                    ),
   ("Umbriel"       , ["Uranus II (Umbriel)",
@@ -426,7 +426,7 @@ SOLAR_SYSTEM_TARGETS = [
 
 
   ("Neptune"       , ["NAIF ID 899"              ], "Planet"   , "Sun"    , "urn:nasa:pds:context:target:planet.neptune"                           ),
-  ("Neptune Rings" , [                           ], "Ring"     , "Neptune", "urn:nasa:pds:context:target:ring.neptune_rings"                       ),
+  ("Neptune Rings" , [                           ], "Ring"     , "Neptune", "urn:nasa:pds:context:target:ring.neptune.rings"                       ),
   ("Triton"        , ["Neptune I (Triton)",
                       "NAIF ID 801"              ], "Satellite", "Neptune", "urn:nasa:pds:context:target:satellite.neptune.triton"                 ),
   ("Nereid"        , ["Neptune II (Nereid)",

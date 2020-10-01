@@ -38,8 +38,8 @@ targets = list(targets)
 targets.sort()
 
 # Save as a pickle file for future examination
-with open('all_targets.pickle', 'w') as f:
-    pickle.dump(targets,f)
+# with open('all_targets.pickle', 'w') as f:
+#     pickle.dump(targets,f)
 
 # Print the target objects
 for target in targets:

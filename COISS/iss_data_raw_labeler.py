@@ -24,6 +24,13 @@ from SOLAR_SYSTEM_TARGETS import SOLAR_SYSTEM_TARGETS
 
 TEMPLATE = XmlTemplate('iss_data_raw_template.xml')
 
+PDS3_FILEPATHS = {}
+for filename in ['COISS_1xxx.lis', 'COISS_2xxx.lis']:
+    with open(filename) as f:
+        for rec in f:
+            key = rec[39:49] + rec[38].lower() + '.img'
+            PDS3_FILEPATHS[key] = rec.rstrip()
+
 ################################################################################
 
 # Create a dictionary keyed by the body name in upper case
@@ -238,6 +245,11 @@ def iss_target_info(target_name, target_desc, observation_id, shutter_mode_id,
             pass
 
     target_keys = set()
+
+    # This might be Jupiter's rings, not Saturn's rings
+    if name == 'JUPITER' and obsname == 'SATURN RINGS':
+        obsname = 'JUPITER RINGS'
+        name = ''
 
     # If target_name is 'SATURN', but it's really a ring image, omit Saturn
     if name == 'SATURN' and ('RING' in desc or obsname == 'SATURN RINGS'):
@@ -482,7 +494,11 @@ def iss_purpose(image_observation_type, observation_id):
 
 ################################################################################
 
+PREV_MISSION_PHASE_NAME = None
+
 def write_pds4_label(datafile, pds3_label):
+
+    global PREV_MISSION_PHASE_NAME
 
     def get_naif_id(alts):
         """Find the NAIF ID among the alt names for a target."""
@@ -566,6 +582,13 @@ def write_pds4_label(datafile, pds3_label):
 
     pds3_filename = label['^IMAGE'][0]
     lookup['pre_pds_version_number'] = pds3_filename.split('_')[1][:-4]
+
+    lookup['pds3_filepath'] = PDS3_FILEPATHS[os.path.basename(datafile)]
+
+    if not lookup['MISSION_PHASE_NAME'].strip():
+        lookup['MISSION_PHASE_NAME'] = PREV_MISSION_PHASE_NAME
+    else:
+        PREV_MISSION_PHASE_NAME = lookup['MISSION_PHASE_NAME']
 
     # Write the label
     labelfile = datafile[:-4] + '.xml'

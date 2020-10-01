@@ -7,15 +7,15 @@
     schematypens="http://purl.oclc.org/dsdl/schematron"?>
 
 <Product_Observational
- xmlns="http://pds.nasa.gov/pds4/pds/v1"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xmlns:disp="http://pds.nasa.gov/pds4/disp/v1"
- xmlns:cassini="http://pds.nasa.gov/pds4/mission/cassini/v1"
+  xmlns="http://pds.nasa.gov/pds4/pds/v1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:disp="http://pds.nasa.gov/pds4/disp/v1"
+  xmlns:cassini="http://pds.nasa.gov/pds4/mission/cassini/v1"
 
- xsi:schemaLocation="
- http://pds.nasa.gov/pds4/pds/v1 https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1B00.xsd
- http://pds.nasa.gov/pds4/disp/v1 https://pds.nasa.gov/pds4/disp/v1/PDS4_DISP_1B00.xsd
- http://pds.nasa.gov/pds4/mission/cassini/v1 https://pds.nasa.gov/pds4/mission/cassini/v1/PDS4_CASSINI_1B00_1300.xsd">
+  xsi:schemaLocation="
+  http://pds.nasa.gov/pds4/pds/v1 https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1B00.xsd
+  http://pds.nasa.gov/pds4/disp/v1 https://pds.nasa.gov/pds4/disp/v1/PDS4_DISP_1B00.xsd
+  http://pds.nasa.gov/pds4/mission/cassini/v1 https://pds.nasa.gov/pds4/mission/cassini/v1/PDS4_CASSINI_1B00_1300.xsd">
 
     <Identification_Area>
         <logical_identifier>urn:nasa:pds:cassini_iss_$cruise_or_saturn=('cruise' if START_TIME < '2004' else 'saturn')$:data_raw:$BASENAME(datafile)[:-4]$</logical_identifier>
@@ -32,10 +32,15 @@
         </Modification_History>
     </Identification_Area>
     <Observation_Area>
-        <comment>This product was migrated from the original PDS3 product. The
-          contents of the data file were reorganized in order to make the file
-          PDS4 compliant. Values for attributes in this label are based on the
-          corresponding values in the PDS3 label.
+        <comment>
+            This data file was migrated from the original PDS3 file:
+                $pds3_filepath$
+            The content of this data file was reorganized in order to make it PDS4
+            compliant. Specifically, prefix bytes were removed from each line of
+            the image and appended at the end. The resulting data file remains
+            compatible with the VICAR standard. Values for instrument attributes
+            have been derived from the corresponding values in the original PDS3
+            label.
         </comment>
         <Time_Coordinates>
             <start_date_time>$DATETIME(START_TIME)$</start_date_time>
@@ -234,9 +239,9 @@ $ONCE
                     <cassini:inst_cmprs_ratio>$REPLACE_NA(INST_CMPRS_RATIO,-1.)$</cassini:inst_cmprs_ratio>$"NOESCAPE  <!-- Not applicable -->" if INST_CMPRS_RATIO == 'N/A' else ""$
                     <cassini:light_flood_state_flag>$LIGHT_FLOOD_STATE_FLAG$</cassini:light_flood_state_flag>
                     <cassini:method_description>$REPLACE_UNK(METHOD_DESC,"Information not provided")$</cassini:method_description>
-                    <cassini:missing_lines>$REPLACE_NA(MISSING_LINES,-1)$</cassini:missing_lines>$"NOESCAPE  <!-- Unknown -->" if MISSING_LINES == 'N/A' else ""$
+                    <cassini:missing_lines>$REPLACE_NA(REPLACE_UNK(MISSING_LINES,-1),-1)$</cassini:missing_lines>$"NOESCAPE  <!-- Unknown -->" if MISSING_LINES in ('N/A','UNK') else ""$
                     <cassini:missing_packet_flag>$REPLACE_UNK(MISSING_PACKET_FLAG,"Information not provided")$</cassini:missing_packet_flag>
-                    <cassini:observation_id>$OBSERVATION_ID$</cassini:observation_id>
+                    <cassini:observation_id>$OBSERVATION_ID if OBSERVATION_ID.strip() else 'Information not provided'$</cassini:observation_id>
                     <cassini:optics_temperature_front unit="degC">$REPLACE_NA(REPLACE_UNK(OPTICS_TEMPERATURE[0],-999.),-999.)$</cassini:optics_temperature_front>$"NOESCAPE  <!-- Unknown -->" if OPTICS_TEMPERATURE[0] == ('UNK',-999.) else "NOESCAPE  <!-- Not applicable -->" if OPTICS_TEMPERATURE[0] == 'N/A' else ""$
                     <cassini:optics_temperature_back unit="degC">$REPLACE_NA(REPLACE_UNK(OPTICS_TEMPERATURE[1],-999.),-999.)$</cassini:optics_temperature_back>$"NOESCAPE  <!-- Unknown -->" if OPTICS_TEMPERATURE[1] == ('UNK',-999.) else "NOESCAPE  <!-- Not applicable -->" if OPTICS_TEMPERATURE[1] == 'N/A' else ""$
                     <cassini:order_number>$REPLACE_UNK(ORDER_NUMBER,-999)$</cassini:order_number>$"NOESCAPE  <!-- Unknown -->" if ORDER_NUMBER == 'UNK' else ""$
@@ -282,20 +287,48 @@ $ONCE
 
     <Reference_List>
         <Internal_Reference>
-            <lid_reference>urn:nasa:pds:cassini_iss_saturn:document:iss-data-user-guide</lid_reference>
-            <reference_type>data_to_document</reference_type>
-            <comment>This refers to the ISS Data User's Guide</comment>
+            <lid_reference>urn:nasa:pds:cassini_iss_$cruise_or_saturn$:data_raw:index</lid_reference>
+            <reference_type>data_to_resource</reference_type>
+            <comment>The index table of basic parameters associated with each observation.</comment>
         </Internal_Reference>
         <Internal_Reference>
-            <lid_reference>urn:nasa:pds:cassini_iss_$cruise_or_saturn$:data_raw:cum-index</lid_reference>
+            <lid_reference>urn:nasa:pds:cassini_iss_$cruise_or_saturn$:data_raw:body-geometry</lid_reference>
             <reference_type>data_to_resource</reference_type>
-            <comment>This refers to the cumulative index table of basic parameters associated with each observation.</comment>
+            <comment>The index table of body surface geometry information associated with each observation.</comment>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_iss_$cruise_or_saturn$:body-inventory</lid_reference>
+            <reference_type>data_to_resource</reference_type>
+            <comment>An index listing every Saturn system body expected to fall within each field of view.</comment>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_iss_$cruise_or_saturn$:ring-geometry</lid_reference>
+            <reference_type>data_to_resource</reference_type>
+            <comment>The index table of ring geometry information associated with each observation.</comment>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_iss_saturn:document:iss-data-user-guide</lid_reference>
+            <reference_type>data_to_document</reference_type>
+            <comment>The ISS Data User's Guide</comment>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_iss_$cruise_or_saturn$:browse_raw:$BASENAME(datafile)[:-4]$-full</lid_reference>
+            <reference_type>data_to_browse</reference_type>
+            <comment>
+                The browse image in JPEG format that illustrates the scientific content
+                of this image.
+            </comment>
         </Internal_Reference>
         <Source_Product_External>
-            <external_source_product_identifier>$DATA_SET_ID$:$PRODUCT_ID$</external_source_product_identifier>
+            <external_source_product_identifier>
+                $DATA_SET_ID$:$pds3_filepath[:10]$:$pds3_filepath[11:37]$:$pds3_filepath[38:]$
+            </external_source_product_identifier>
             <reference_type>data_to_raw_source_product</reference_type>
             <curating_facility>PDS RMS Node</curating_facility>
-            <description>This refers to the original PDS3 version of this product. The form of the reference is dataset_id:product_id.</description>
+            <description>
+                The original PDS3 version of this product. The form of the reference is
+                dataset_id:volume_id:directory_path:file_name.
+            </description>
         </Source_Product_External>
     </Reference_List>
 

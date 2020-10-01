@@ -2,7 +2,7 @@
 # table_character_xml.py
 #
 # Print out a rough draft of the XML Table_Character object based on the PDS3
-# lable for an ASCII table.
+# label for an ASCII table.
 #
 # Syntax:
 #   python table_character_xml.py pds3_label_path.lbl indent [col_offset char_offset]

@@ -6,7 +6,7 @@
 # Syntax:
 #   python iss_data_raw_labeler.py [--replace] path [path ...]
 #
-# A label will be created for each image file ("*.img") found in each given
+# A label will be created for each cube file ("*.qub") found in each given
 # path, recursively. This can be any combination of directories and individual
 # image files.
 #
@@ -20,8 +20,38 @@ import traceback
 from xmltemplate import XmlTemplate
 
 from SOLAR_SYSTEM_TARGETS import SOLAR_SYSTEM_TARGETS
+from rc19_id import rc19_id_from_filename
 
 TEMPLATE = XmlTemplate('vims_data_raw_template.xml')
+
+# Create a mapping from new basename to PDS3 filepath
+from VERSIONS import VERSIONS
+
+PDS3_FILEPATHS = {}
+
+# Fill in filepaths; results are ambiguous for files with multiple versions
+with open('PDS3_FILES.txt') as f:
+    paths = f.readlines()
+
+for path in paths:
+    path = path.rstrip()
+    sclk = path[48:58]
+    line = path[-8:-4]
+    if line[0] == '_':
+        newname = sclk + line + '.qub'
+    else:
+        newname = sclk + '.qub'
+    PDS3_FILEPATHS[newname] = (path, [])
+
+# Update info for versioned files
+for (newname, label_tag, data_tag, path) in VERSIONS:
+    newname = newname + '.qub'
+    (best_path, version_list) = PDS3_FILEPATHS[newname]
+    if label_tag == '1.0':
+        PDS3_FILEPATHS[newname] = (path, version_list)
+    else:
+        version_list.append((path, label_tag, data_tag))
+        PDS3_FILEPATHS[newname] = (best_path, version_list)
 
 ################################################################################
 
@@ -192,6 +222,11 @@ def vims_target_info(target_name, target_desc, observation_id,
 
     target_keys = set()
 
+    # This might be Jupiter's rings, not Saturn's rings
+    if name == 'JUPITER' and obsname == 'SATURN RINGS':
+        obsname = 'JUPITER RINGS'
+        name = ''
+
     # If target_name is 'SATURN', but it's really a ring image, omit Saturn
     if name == 'SATURN' and ('RING' in desc or obsname == 'SATURN RINGS'):
         name = ''
@@ -292,7 +327,8 @@ def write_pds4_label(datafile, pds3_label):
         return naif_id
 
     # Read the PDS3 label and the ISIS2 header, fixing known syntax errors
-    label_text = open(pds3_label).read()
+    with open(pds3_label) as f:
+        label_text = f.read()
 
     # Add missing quotes around N/A in many labels
     label_text = label_text.replace('" N/A"', ' "N/A"')
@@ -321,7 +357,8 @@ def write_pds4_label(datafile, pds3_label):
     # Handle cases where a single string appears in place of a pair
     if isinstance(label['BACKGROUND_SAMPLING_MODE_ID'], str):
         print 'single value for BACKGROUND_SAMPLING_MODE_ID:', label['BACKGROUND_SAMPLING_MODE_ID']
-        label['BACKGROUND_SAMPLING_MODE_ID'] = (label['BACKGROUND_SAMPLING_MODE_ID'], 'Information not provided')
+        label['BACKGROUND_SAMPLING_MODE_ID'] = (label['BACKGROUND_SAMPLING_MODE_ID'],
+                                                'Information not provided')
 
     # Read ISIS2 header
     isis_header = pdsparser.PdsLabel.from_file(datafile)
@@ -336,12 +373,13 @@ def write_pds4_label(datafile, pds3_label):
     lookup['datafile'] = datafile
     lookup['purposes'] = vims_purpose(label['IMAGE_OBSERVATION_TYPE'])
 
-    lookup['history_rec0'] = header['^HISTORY'][0]
-    lookup['history_recs'] = header['^QUBE'][0] - header['^HISTORY'][0]
+    history_rec0 = header['^HISTORY'][0]
+    history_recs = header['^QUBE'][0] - header['^HISTORY'][0]
+    lookup['history_rec0'] = history_rec0
+    lookup['history_recs'] = history_recs
 
     lookup['qube_rec0'] = header['^QUBE'][0]
     lookup['qube_recs'] = header['^SIDEPLANE'][0] - header['^QUBE'][0]
-
 
     if '^PADDING' not in header:
         header['^PADDING'] = (header['FILE_RECORDS'] + 1, 'RECORDS')
@@ -410,17 +448,37 @@ def write_pds4_label(datafile, pds3_label):
     lookup['target_alts'     ] = target_alts
     lookup['target_naif_ids' ] = target_naif_ids
     lookup['target_types'    ] = target_types
-    lookup['target_lids'     ] = target_lids 
+    lookup['target_lids'     ] = target_lids
     lookup['primary_names'   ] = primary_names
     lookup['primary_naif_ids'] = primary_naif_ids
     lookup['primary_lids'    ] = primary_lids
 
     pds3_filename = label['^QUBE'][0]
     if '_' in pds3_filename:
-        pre_pds_version_number = pds3_filename.split('_')[1].split('.')[0]
-    else:           # handle missing pre-PDS version in at least one label
-        pre_pds_version_number = 1
-    lookup['pre_pds_version_number'] = pre_pds_version_number
+        pre_pds4_version_number = pds3_filename.split('_')[1].split('.')[0]
+    else:           # handle missing pre-PDS4 version in at least one label
+        pre_pds4_version_number = 1
+    lookup['pre_pds4_version_number'] = pre_pds4_version_number
+
+    # Look at the history section of the ISIS2 header for any comments
+    with open(datafile, 'rb') as f:
+        f.seek((history_rec0 - 1) * 512)
+        buffer = f.read(history_recs * 512)
+
+#     buffer = buffer.replace('\r','')
+    recs = buffer.split('\r\n')
+    recs = [r for r in recs if not r.startswith('|')]   # remove comments if any
+    buffer = '\n'.join(recs)
+
+    history_header = pdsparser.PdsLabel.from_string(buffer)
+    lookup['HISTORY'] = history_header.as_dict()['VIMS2PDS4']
+
+    # Determine the RC19 ID for the wavelength bin mapping
+    lookup['RC19_ID'] = rc19_id_from_filename(datafile)
+
+    # PDS3 filepath
+    (lookup['pds3_filepath'],
+     lookup['versions']) = PDS3_FILEPATHS[os.path.basename(datafile)]
 
     # Write the label
     labelfile = datafile[:-4] + '.xml'
