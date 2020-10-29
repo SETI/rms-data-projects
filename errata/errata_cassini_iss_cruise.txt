@@ -1,0 +1,29 @@
+in bundle.xml
+
+*****************************************************
+     <Time_Coordinates>
+     <start_date_time nilReason="inapplicable">2004-01-01T00:00:00Z</start_date_time>
+     <stop_date_time nilReason="inapplicable">2017-09-14T20:00:00Z</stop_date_time>
+     </Time_Coordinates>
+
+   nilReasons="inapplicable" should be removed, it should only appear if there is no value
+
+*****************************************************
+
+      <Primary_Result_Summary>
+      <purpose>Science</purpose>
+      <processing_level>Raw</processing_level>
+      <description>
+      This bundle contains raw Cassini ISS images and associated documentation and metadata from the Saturn encounter - January 2004 through end of mission in September 2017.
+      </description>
+
+   Should be
+
+      <Primary_Result_Summary>
+      <purpose>Science</purpose>
+      <processing_level>Raw</processing_level>
+      <description>
+      This bundle contains raw Cassini ISS images and associated documentation and metadata from the cruise to Saturn - October 1997 theough December 2003.$
+      </description>
+
+*******************************************************

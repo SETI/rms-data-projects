@@ -1,0 +1,14 @@
+in bundle.xml
+
+***********************************
+
+    <Context_Area>
+        <Time_Coordinates>
+            <start_date_time nilReason="inapplicable">1999-01-10T05:40:00Z</start_date_time>
+            <stop_date_time nilReason="inapplicable">2003-12-25T11:00:00Z</stop_date_time>
+        </Time_Coordinates>
+
+   nilReason="inapplicable" should be removed, it only appears when there is no value
+
+**********************************
+

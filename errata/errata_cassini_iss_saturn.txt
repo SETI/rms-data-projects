@@ -1,0 +1,26 @@
+missing images -- recovered by ISS after delivery of relevant archive volume
+
+********************************************
+
+N1469012188_2.IMG
+W1477893153_2.IMG
+N1492075956_1.IMG
+N1492096602_2.IMG
+
+********************************************
+
+in bundle.xml
+
+********************************************
+
+    <Context_Area>
+        <Time_Coordinates>
+            <start_date_time nilReason="inapplicable">2004-01-01T00:00:00Z</start_date_time>
+            <stop_date_time nilReason="inapplicable">2017-09-14T20:00:00Z</stop_date_time>
+        </Time_Coordinates>
+
+   nilReason="inapplicable" should be removed, it only appears when ther is no value
+
+*********************************************
+
+
