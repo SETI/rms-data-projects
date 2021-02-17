@@ -1,0 +1,4 @@
+--suffix _thumb --frame 100 100 -x jpg
+--suffix _small --frame 200 200 -x jpg
+--suffix _med   --scale 50 -x jpg
+--suffix _full  -x jpg

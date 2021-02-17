@@ -1,0 +1,51 @@
+================================================================================
+
+Some UVIS occultations have bad start or stop times.
+
+UVIS_HSP_2004_280_XI2CET_E_TAU01KM *** Bad start/stop time 2004-280T16:33:09.134 2009-062T05:44:39.586 - looking at data file
+UVIS_HSP_2005_139_PSICEN_E_TAU01KM *** Bad start/stop time 2005-139T14:25:07.672 2007-038T01:32:45.069 - looking at data file
+UVIS_HSP_2005_139_THEHYA_E_TAU01KM *** Bad start/stop time 2005-139T05:33:40.891 2009-062T05:44:56.431 - looking at data file
+UVIS_HSP_2007_038_SAO205839_I_TAU01KM *** Bad start/stop time 2007-038T01:32:47.207 2008-026T15:29:57.679 - looking at data file
+
+================================================================================
+
+Some UVIS occultations have the MINIMUM_DETECTABLE_OPACITY and
+MAXIMUM_DETECTABLE_OPACITY in the wrong order.
+
+DATA/UVIS_HSP_2007_063_BETPSA_I_TAU01KM.LBL Opacities are in wrong order 1.41 0.97
+DATA/UVIS_HSP_2008_014_IOTCEN_E_TAU01KM.LBL Opacities are in wrong order 1.42 1.09
+DATA/UVIS_HSP_2014_172_GAMCOL_E_TAU01KM.LBL Opacities are in wrong order 2.81 1.24
+DATA/UVIS_HSP_2016_177_ALPSCO_E_TAU01KM.LBL Opacities are in wrong order 1.23 0.76
+
+================================================================================
+
+The SOURCE_PRODUCT_NAME is wrong in all cases.
+
+================================================================================
+
+The SPACECRAFT_CLOCK_START_COUNT and SPACECRAFT_CLOCK_STOP_COUNT are
+reversed in many cases.
+
+================================================================================
+
+The ORBIT_NUMBER field is a string and its value should be in quotes. This
+is a problem for orbit 00A.
+
+================================================================================
+
+Three profiles appear to have filenames that encode the wrong year and date:
+
+HSP_2005_139_PSICEN_E has data that starts 2007-037T22:07:13.135 (note the year)
+and a Cassini observation name of UVIS_038ST_URPSICEN008_PRIME, which agrees
+with the ORBIT_NUMBER in the label. However, orbit 38 was not in 2005, it was in
+2007. It seems like the filename is wrong.
+
+HSP_2005_139_THEHYA_E has data that starts 2009-062T04:56:13.865 (note the year)
+and a Cassini observation name of UVIS_104ST_URTHEHYA001_PRIME, which agrees
+with the ORBIT_NUMBER in the label. However, orbit 104 was not in 2005, it was
+in 2009. It seems like the filename is wrong.
+
+HSP_2007_038_SAO205839_I has data that starts 2008-026T14:34:30.285 (note the
+year) and a Cassini observation name of UVIS_057ST_UR205839001_PRIME, which
+agrees with the ORBIT_NUMBER in the label. However, orbit 57 was not in 2007,
+it was in 2008. It seems like the filename is wrong.

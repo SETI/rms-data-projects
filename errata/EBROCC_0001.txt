@@ -1,0 +1,6 @@
+================================================================================
+
+https://github.com/SETI/pds-webserver/issues/30
+
+The index label files MCD_INDEX.LBL and PAL_INDEX.LBL refer to the table
+LIC_INDEX.TAB instead of the proper .TAB file.

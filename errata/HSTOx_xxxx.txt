@@ -1,0 +1,309 @@
+================================================================================
+
+https://github.com/SETI/pds-webserver/issues/6
+
+The wavelength resolution for HST STIS is derived from the data handbook
+Table 1.1, where the resolution is in Angstroms. However, the label says it is
+in MICRONS, so we are currently off by a factor of 10,000 in most cases.
+However, sometimes they are just wrong, too.
+
+Example:
+
+https://opus.pds-rings.seti.org/#/instrument=Hubble+STIS&HSTdetector=STIS-CCD&qtype-waveres=any&cols=opusid,instrument,waveres1,waveres2&widgets=HSTdetector,waveres,instrument,planet,target&order=time1,opusid&view=detail&browse=data&cart_browse=gallery&startobs=1&cart_startobs=1&detail=hst-07717-stis-o4ym03010
+
+OPUS wavelength resolution = 1.35 micron/pixel
+Optical Element = G230LB
+From Table 1.1 resolution = 1.35 Angstrom/pixel
+
+Example 2:
+
+https://opus.pds-rings.seti.org/#/instrument=Hubble+STIS&HSTdetector=STIS-CCD&qtype-waveres=any&cols=opusid,instrument,waveres1,waveres2&widgets=HSTdetector,waveres,instrument,planet,target&order=time1,opusid&view=detail&browse=data&cart_browse=gallery&startobs=1&cart_startobs=1&detail=hst-07317-stis-o4wg010j0
+
+OPUS wavelength resolution = 0.000135 micron/pixel
+Optical element = G430L
+From Table 1.1 resolution = 2.73 Angstrom / pixel
+
+================================================================================
+
+https://github.com/SETI/pds-webserver/issues/7
+
+In some HST STIS volumes, the fields "MINIMUM_WAVELENGTH" and
+"MAXIMUM_WAVELENGTH" appear to be backwards. This is true for 209 observations
+in the current data set.
+
+For example, consider the following two lines in INDEX.TAB for volume
+HSTO0_9440:
+
+"HSTO0_9440","DATA/VISIT_A4/O6N5A4OKQ.LBL","O6N5A4OKQ","O6N5A4OKQ", 9440,"Spencer, John R. ","HST-J-STIS-5-ID9440-V1.0 ","STIS ","CCD ","IMAGING ","HST_PREVIEW_DOCUMENT","BINARY","2003-03-22","2017-07-25T12:46:45","2003-03-22T15:11:30","2003-03-22T15:11:30", 0.1,"JUPITER","EUROPA ","EUROPA ","LONG_PASS ","MIRVIS", 7.2300E-05, 2.7200E-05, 2.7200E-05, 2.7200E-05, 8.5900E-05, 5.8700E-05,F28X50LP ","F28X50LP ","NORMAL ","FINE ","A2D0.","ACQ ", 126, 126
+
+"HSTO0_9440","DATA/VISIT_B1/O6N5B1010.LBL","O6N5B1010","O6N5B1010", 9440,"Spencer, John R. ","HST-J-STIS-5-ID9440-V1.0 ","STIS ","CCD ","SPECTROSCOPIC ","HST_PREVIEW_DOCUMENT","BINARY","2006-11-23","2017-07-25T12:46:45","2003-02-24T02:11:36","2003-02-24T02:20:31", 535.0,"JUPITER","IO ","IO-PELE ","CLEAR ","230LB ", 3.4270E-05,-7.3500E-06, 1.3500E-04, 1.3500E-04, 3.0600E-05, 3.7950E-05,2X0.1 ","52X0.1E1 ","NORMAL ","FINE ","A2D1.","ACCUM ",1062,1044
+
+In the first case max > min but in the second max < min. In OPUS we simply flip
+min and max to make them in the correct order.
+
+2020-05-16 16:52:52 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 1] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:52 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 2] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:52 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 3] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:52 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 4] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:52 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 5] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 6] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 7] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 8] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 9] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 10] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 11] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 12] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 13] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 14] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 15] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 16] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 17] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 18] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 19] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 20] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 21] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 22] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 23] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 24] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 25] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 26] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 27] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 28] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 29] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 30] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 31] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 32] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 33] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 34] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 35] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 36] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 37] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 38] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 39] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 40] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 41] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 42] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 43] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 44] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 45] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 46] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 47] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 48] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 49] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 50] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 51] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 52] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 53] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 54] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 55] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:25 | pds.opus_import.main |--| WARNING | [HSTO0_9112 index row 1] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:25 | pds.opus_import.main |--| WARNING | [HSTO0_9112 index row 2] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:25 | pds.opus_import.main |--| WARNING | [HSTO0_9112 index row 4] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:25 | pds.opus_import.main |--| WARNING | [HSTO0_9112 index row 5] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 3] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 4] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 5] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 6] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 7] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 8] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 9] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 10] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 11] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 12] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 13] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 14] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 15] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 16] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 17] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 18] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 19] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 20] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 21] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 22] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 23] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 24] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 25] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 26] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 27] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 28] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 29] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 30] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 31] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 32] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 33] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 34] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 35] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:28 | pds.opus_import.main |--| WARNING | [HSTO0_9330 index row 36] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 1] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 2] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 3] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 4] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 5] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 6] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 7] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 8] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 9] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 10] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 11] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 12] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 13] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 14] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 15] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 16] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 17] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 18] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 19] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 20] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 21] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 22] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 23] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 24] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 25] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 26] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 27] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 28] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 29] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 30] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 31] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 32] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 33] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 34] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 35] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 36] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 37] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:42 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 38] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 39] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 40] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 41] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 42] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 43] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 44] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 45] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 46] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 47] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 48] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 49] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 50] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 51] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 52] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 53] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 54] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 55] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 56] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 57] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 58] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 59] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 60] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 61] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 62] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 63] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:53:43 | pds.opus_import.main |--| WARNING | [HSTO1_2900 index row 64] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 15] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 16] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 17] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 18] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 19] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 20] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 21] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 22] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 23] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 24] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 25] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 26] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 27] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 28] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 29] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 30] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 31] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 32] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 33] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 34] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 35] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 36] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 37] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 38] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 39] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 40] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 41] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 42] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 43] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 44] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 45] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 46] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 47] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 48] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 49] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 50] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 51] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:01 | pds.opus_import.main |--| WARNING | [HSTO1_4113 index row 52] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:03 | pds.opus_import.main |--| WARNING | [HSTO1_4903 index row 2] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:03 | pds.opus_import.main |--| WARNING | [HSTO1_4903 index row 3] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:05 | pds.opus_import.main |--| WARNING | [HSTO1_5371 index row 1] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:05 | pds.opus_import.main |--| WARNING | [HSTO1_5371 index row 2] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:05 | pds.opus_import.main |--| WARNING | [HSTO1_5371 index row 3] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:05 | pds.opus_import.main |--| WARNING | [HSTO1_5371 index row 6] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:05 | pds.opus_import.main |--| WARNING | [HSTO1_5371 index row 7] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:05 | pds.opus_import.main |--| WARNING | [HSTO1_5371 index row 8] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:05 | pds.opus_import.main |--| WARNING | [HSTO1_5371 index row 11] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:05 | pds.opus_import.main |--| WARNING | [HSTO1_5371 index row 12] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:05 | pds.opus_import.main |--| WARNING | [HSTO1_5371 index row 15] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:05 | pds.opus_import.main |--| WARNING | [HSTO1_5371 index row 16] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:05 | pds.opus_import.main |--| WARNING | [HSTO1_5371 index row 17] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+2020-05-16 16:54:05 | pds.opus_import.main |--| WARNING | [HSTO1_5371 index row 18] MAXIMUM_WAVELENGTH < MINIMUM_WAVELENGTH; swapping
+
+================================================================================
+
+https://github.com/SETI/pds-webserver/issues/7
+
+In some HST STIS volumes, the fields "MINIMUM_WAVELENGTH_RESOLUTION" and
+"MAXIMUM_WAVELENGTH_RESOLUTION" appear to be backwards. This is true for 22
+observations in the current data set. In OPUS we simply flip min and max to
+make them in the correct order.
+
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 14] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:52:53 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 30] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 35] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 45] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 47] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:52:54 | pds.opus_import.main |--| WARNING | [HSTO0_7308 index row 55] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:53:19 | pds.opus_import.main |--| WARNING | [HSTO0_8657 index row 32] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:53:19 | pds.opus_import.main |--| WARNING | [HSTO0_8657 index row 33] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:53:20 | pds.opus_import.main |--| WARNING | [HSTO0_8657 index row 75] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:53:20 | pds.opus_import.main |--| WARNING | [HSTO0_8657 index row 76] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:53:20 | pds.opus_import.main |--| WARNING | [HSTO0_8657 index row 82] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:53:20 | pds.opus_import.main |--| WARNING | [HSTO0_8657 index row 83] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:53:20 | pds.opus_import.main |--| WARNING | [HSTO0_8657 index row 93] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:53:20 | pds.opus_import.main |--| WARNING | [HSTO0_8657 index row 94] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:54:04 | pds.opus_import.main |--| WARNING | [HSTO1_4931 index row 3] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:54:04 | pds.opus_import.main |--| WARNING | [HSTO1_4931 index row 4] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:54:04 | pds.opus_import.main |--| WARNING | [HSTO1_4931 index row 5] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:54:04 | pds.opus_import.main |--| WARNING | [HSTO1_4931 index row 6] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:54:04 | pds.opus_import.main |--| WARNING | [HSTO1_4931 index row 7] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:54:04 | pds.opus_import.main |--| WARNING | [HSTO1_4931 index row 11] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:54:04 | pds.opus_import.main |--| WARNING | [HSTO1_4931 index row 12] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+2020-05-16 16:54:05 | pds.opus_import.main |--| WARNING | [HSTO1_4931 index row 13] MAXIMUM_WAVELENGTH_RESOLUTION < MINIMUM_WAVELENGTH_RESOLUTION; swapping
+
+================================================================================
+
+https://github.com/SETI/pds-webserver/issues/10
+
+The index field "OBSERVATION_TYPE" is supposed to be one of "SPECTRUM" or
+"IMAGE". However, for all of HST STIS, it has the values of "SPECTROSCOPIC" and
+"IMAGING" instead.
+
+2020-05-16 16:52:51 | pds.opus_import.main |--| WARNING | [HSTO0_6854 index row 1] Converting bad observation_type IMAGING
+2020-05-16 16:52:52 | pds.opus_import.main |--| WARNING | [HSTO0_6854 index row 10] Converting bad observation_type SPECTROSCOPIC
+
+================================================================================
+
+https://github.com/SETI/pds-webserver/issues/26
+
+One observation in HSTO0_9330 has the DETECTOR_ID as "CD" instead of "CCD".
+
+"HSTO0_9330","DATA/VISIT_A1/O6L7A1VTQ.LBL","O6L7A1VTQ","O6L7A1VTQ", 9330,"Karkoschka, Erich ","HST-N-STIS-5-ID9330-V1.0 ","STIS ","CD ","SPECTROSCOPIC ","HST_PREVIEW_DOCUMENT","BINARY","2003-08-03","2018-07-11T18:14:50","2003-08-03T06:33:22","2003-08-03T06:33:28", 6.2,"NEPTUNE","CALIBRATION ","WAVEHITM ","CLEAR ","G750L ", 7.7550E-01, 5.0300E-01, 4.9200E-04, 4.9200E-04, 1.0270E+00, 5.2400E-01,"52X0.1 ","52X0.1E1 ","NORMAL ","FINE ","A2D4.","CCUM ",1062,1044
+
+================================================================================
+
+https://github.com/SETI/pds-webserver/issues/27
+
+The HST STIS APERTURE_TYPE field has illegal values.

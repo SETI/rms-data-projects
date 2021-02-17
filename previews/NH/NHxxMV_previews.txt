@@ -1,0 +1,4 @@
+--suffix=_full
+--suffix=_med   --frame 512 512 --tint --wrap --overlaps 10 20
+--suffix=_small --frame 256 256 --tint --wrap --overlaps 10 20
+--suffix=_thumb --frame 100 100 --tint --wrap --overlaps 10 20

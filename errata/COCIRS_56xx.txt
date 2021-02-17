@@ -1,0 +1,47 @@
+================================================================================
+
+https://github.com/SETI/pds-webserver/issues/32
+
+There are 6 COCIRS observations that have SPACECRAFT_CLOCK_START_COUNT and
+SPACECRAFT_CLOCK_STOP_COUNT in the wrong order. In OPUS we set the stop time
+equal to the start time.
+
+mysql> select opus_id, spacecraft_clock_count1, spacecraft_clock_count2
+       from obs_mission_cassini
+       where spacecraft_clock_count1 > spacecraft_clock_count2 and
+       volume_id like 'COCIRS%';
+
++------------------------+-------------------------+-------------------------+
+| opus_id                | spacecraft_clock_count1 | spacecraft_clock_count2 |
++------------------------+-------------------------+-------------------------+
+| co-cirs-0908072034-fp3 |              1628370973 |              1628368546 |
+| co-cirs-0908072034-fp4 |              1628370973 |              1628368546 |
+| co-cirs-1001192345-fp1 |              1642638539 |              1642638097 |
+| co-cirs-1001202345-fp1 |              1642724940 |              1642724649 |
+| co-cirs-1001202345-fp3 |              1642724940 |              1642724649 |
+| co-cirs-1001202345-fp4 |              1642724940 |              1642724649 |
++------------------------+-------------------------+-------------------------+
+
+================================================================================
+
+https://github.com/SETI/pds-webserver/issues/33
+
+There are two COCIRS_5905 observations that have illegally formatted
+SPACECRAFT_CLOCK_STOP_COUNT.
+
+2019-06-11 02:36:01 | pds.opus_import.main |--| WARNING | [COCIRS_5905 index row 1] Badly formatted SPACECRAFT_CLOCK_STOP_COUNT "0/ 50.000"
+2019-06-11 02:36:02 | pds.opus_import.main |--| WARNING | [COCIRS_5905 index row 2] Badly formatted SPACECRAFT_CLOCK_STOP_COUNT "1/ 50.000"
+
+================================================================================
+
+START_TIME and STOP_TIME are backwards in some COCIRS observations. This affects
+8 observations. In OPUS we set the stop time equal to the start time.
+
+2020-05-17 06:13:56 | pds.opus_import.main |--| WARNING | [COCIRS_5705 index row 288] time1 (2007-05-25T02:11:12) and time2 (2007-05-25T02:11:04) are in the wrong order - setting to time1
+2020-05-17 06:22:43 | pds.opus_import.main |--| WARNING | [COCIRS_5901 index row 244] time1 (2009-01-23T05:28:03) and time2 (2009-01-23T04:52:05) are in the wrong order - setting to time1
+2020-05-17 06:24:02 | pds.opus_import.main |--| WARNING | [COCIRS_5905 index row 1] time1 (2009-05-01T00:00:06) and time2 (1970-01-01T00:00:50) are in the wrong order - setting to time1
+2020-05-17 06:24:09 | pds.opus_import.main |--| WARNING | [COCIRS_5905 index row 134] time1 (2009-05-10T06:07:53) and time2 (2009-05-10T05:49:04) are in the wrong order - setting to time1
+2020-05-17 06:25:11 | pds.opus_import.main |--| WARNING | [COCIRS_5908 index row 150] time1 (2009-08-11T20:01:16) and time2 (2009-08-11T19:14:43) are in the wrong order - setting to time1
+2020-05-17 06:26:40 | pds.opus_import.main |--| WARNING | [COCIRS_6001 index row 307] time1 (2010-01-19T23:45:11) and time2 (2010-01-19T23:37:49) are in the wrong order - setting to time1
+2020-05-17 06:26:40 | pds.opus_import.main |--| WARNING | [COCIRS_6001 index row 317] time1 (2010-01-20T23:45:11) and time2 (2010-01-20T23:40:20) are in the wrong order - setting to time1
+2020-05-17 06:28:06 | pds.opus_import.main |--| WARNING | [COCIRS_6006 index row 323] time1 (2010-06-28T23:05:11) and time2 (2010-06-28T22:41:31) are in the wrong order - setting to time1
