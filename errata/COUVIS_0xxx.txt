@@ -1,0 +1,89 @@
+================================================================================
+
+https://github.com/SETI/pds-webserver/issues/4
+
+All of the observations in COUVIS_0007 are from Cassini rev_no 000 except for
+"co-uvis-fuv2004_167_10_44" which is from rev_no 5.
+
+Second to final observation:
+
+OPUS ID: co-uvis-fuv2004_173_12_42
+
+General Constraints
+
+Planet: Saturn
+Intended Target Name: Enceladus
+Nominal Target Class: Regular Satellite
+Mission: Cassini
+Instrument Host Name: Cassini
+Instrument Name: Cassini UVIS
+Observation Type: Spectral Cube
+Observation Start Time (UTC): 2004-06-21T12:42:40.237
+Observation Stop Time (UTC): 2004-06-21T13:42:40.237
+Cassini Mission Constraints
+
+Observation Name: UVIS_000EN_ICYLON004_ISS
+Activity Name: ICYLON
+Mission Phase: Tour Pre-Huygens
+Cassini Target Code: EN (Enceladus)
+Saturn Orbit Number: 000
+Final observation:
+
+OPUS ID: co-uvis-fuv2004_167_10_44
+
+General Constraints
+
+Planet: Saturn
+Intended Target Name: Titan
+Nominal Target Class: Regular Satellite
+Mission: Cassini
+Instrument Host Name: Cassini
+Instrument Name: Cassini UVIS
+Observation Type: Spectral Cube
+Observation Start Time (UTC): 2005-04-01T04:26:07.654
+Observation Stop Time (UTC): 2005-04-01T04:26:30.154
+Cassini Mission Constraints
+
+Observation Name: UVIS_005TI_FIRNADCMP003_CIRS
+Activity Name: FIRNADCMP
+Mission Phase: Tour
+Cassini Target Code: TI (Titan)
+Saturn Orbit Number: 005
+
+================================================================================
+
+https://github.com/SETI/pds-webserver/issues/21
+
+START_TIME and STOP_TIME are backwards in some COUVIS observations. This affects
+3 observations. In OPUS we set the stop time equal to the start time.
+
+2020-05-17 03:19:02 | pds.opus_import.main |--| WARNING | [COUVIS_0001 index row 892] time1 (2000-180T15:16:21.813) and time2 (2000-177T13:43:26.901) are in the wrong order - setting to time1
+2020-05-17 03:19:02 | pds.opus_import.main |--| WARNING | [COUVIS_0001 index row 893] time1 (2000-180T15:16:21.813) and time2 (2000-177T13:43:26.901) are in the wrong order - setting to time1
+2020-05-17 03:24:42 | pds.opus_import.main |--| WARNING | [COUVIS_0003 index row 12364] time1 (2001-333T00:08:16.120) and time2 (2001-330T19:00:25.208) are in the wrong order - setting to time1
+
+================================================================================
+
+https://github.com/SETI/pds-opus/issues/336
+
+SPACECRAFT_CLOCK_START/STOP_COUNT have invalid suffixes in COUVIS
+observations. In OPUS we set them to .000.
+
+In OPUS we work around this by replacing 0.320 with 0.032, etc.
+
+Examples:
+
+2018-06-24 23:39:12 | pds.opus_import.main |--| ERROR | [COUVIS_0043 index row 191] Unable to parse Cassini SCLK "1/1744970301.324": Cassini clock trailing field out of range 0-255: 1744970301.324
+2018-06-24 23:39:18 | pds.opus_import.main |--| ERROR | [COUVIS_0043 index row 747] Unable to parse Cassini SCLK "1/1748402051.324": Cassini clock trailing field out of range 0-255: 1748402051.324
+2018-06-24 23:39:19 | pds.opus_import.main |--| ERROR | [COUVIS_0043 index row 921] Unable to parse Cassini SCLK "1/1749744651.324": Cassini clock trailing field out of range 0-255: 1749744651.324
+2018-06-24 23:39:20 | pds.opus_import.main |--| ERROR | [COUVIS_0043 index row 940] Unable to parse Cassini SCLK "1/1749966961.324": Cassini clock trailing field out of range 0-255: 1749966961.324
+2018-06-20 19:31:40 | pds.opus_import.main |--| ERROR | [COUVIS_0048 index row 5923] Unable to parse Cassini SCLK "1/1790616709.320": Cassini clock trailing field out of range 0-255: 1790616709.320
+2018-06-20 19:31:40 | pds.opus_import.main |--| ERROR | [COUVIS_0048 index row 5924] Unable to parse Cassini SCLK "1/1790616791.640": Cassini clock trailing field out of range 0-255: 1790616791.640
+
+================================================================================
+
+HSP has incorrect STOP_TIMEs in all cases (off by a factor of 2).
+
+================================================================================
+
+HSP integration durations are in milliseconds while all other durations are
+in seconds. These units are mixed together in the same index file.

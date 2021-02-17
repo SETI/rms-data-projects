@@ -1,0 +1,128 @@
+PDS_VERSION_ID                  = PDS3
+RECORD_TYPE                     = FIXED_LENGTH
+FILE_RECORDS                    = $RECORDS$
+RECORD_BYTES                    = 176
+^SUPPLEMENTAL_INDEX_TABLE       = "$TABLE$"
+
+VOLUME_ID                       = "EBROCC_0001"
+PRODUCT_CREATION_TIME           = $TIME$
+
+INSTRUMENT_HOST_NAME            = "$INSTHOSTNAME$"
+INSTRUMENT_HOST_ID              = "$INSTHOSTID$"
+INSTRUMENT_NAME                 = "$INSTNAME$"
+INSTRUMENT_ID                   = "$INSTID$"
+
+OBJECT                          = SUPPLEMENTAL_INDEX_TABLE
+  INTERCHANGE_FORMAT            = ASCII
+  ROWS                          = $RECORDS$
+  ROW_BYTES                     = 176
+  COLUMNS                       = 8
+  INDEX_TYPE                    = SINGLE
+
+  DESCRIPTION                   = "This index supplements the file
+    INDEX/<inst>_INDEX.TAB found in each instrument subdirectory of the
+    volume EBROCC_0001. It contains a small set of useful parameter values that
+    are not found in the default index but exist in the PDS label files."
+
+  OBJECT                        = COLUMN
+    COLUMN_NUMBER               = 1
+    NAME                        = VOLUME_ID
+    DATA_TYPE                   = CHARACTER
+    START_BYTE                  = 2
+    BYTES                       = 11
+    FORMAT                      = "A11"
+    DESCRIPTION                 = "The volume ID provides a unique identifier
+        for a PDS data volume."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    COLUMN_NUMBER               = 2
+    NAME                        = FILE_SPECIFICATION_NAME
+    DATA_TYPE                   = CHARACTER
+    START_BYTE                  = 16
+    BYTES                       = 45
+    FORMAT                      = "A45"
+    DESCRIPTION                 = "Name and path of the PDS label file
+      describing the particular file."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    COLUMN_NUMBER               = 3
+    NAME                        = PLANETARY_OCCULTATION_FLAG
+    DATA_TYPE                   = CHARACTER
+    START_BYTE                  = 64
+    BYTES                       = 1
+    FORMAT                      = "A1"
+    DESCRIPTION                 = "A flag indicating whether a planet
+      was in the path of the occultation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    COLUMN_NUMBER               = 4
+    NAME                        = MINIMUM_RING_RADIUS
+    DATA_TYPE                   = ASCII_REAL
+    START_BYTE                  = 67
+    BYTES                       = 12
+    FORMAT                      = "F12.3"
+    UNIT                        = "KM"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Ring radius is the distance from the center
+      of the planet to the point where a line of sight intercepts the ring
+      plane. The field tabulates the minimum ring radius present in the
+      occultation profile."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    COLUMN_NUMBER               = 5
+    NAME                        = MAXIMUM_RING_RADIUS
+    DATA_TYPE                   = ASCII_REAL
+    START_BYTE                  = 80
+    BYTES                       = 12
+    FORMAT                      = "F12.3"
+    UNIT                        = "KM"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Ring radius is the distance from the center
+      of the planet to the point where a line of sight intercepts the ring
+      plane. The field tabulates the maximum ring radius present in the
+      occultation profile."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    COLUMN_NUMBER               = 6
+    NAME                        = RADIAL_RESOLUTION
+    DATA_TYPE                   = ASCII_REAL
+    START_BYTE                  = 93
+    BYTES                       = 10
+    FORMAT                      = "F10.5"
+    UNIT                        = "KM"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "The radial resolution of the occultation
+      profile."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    COLUMN_NUMBER               = 7
+    NAME                        = INCIDENCE_ANGLE
+    DATA_TYPE                   = ASCII_REAL
+    START_BYTE                  = 104
+    BYTES                       = 8
+    FORMAT                      = "F8.3"
+    UNIT                        = "KM"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "The incidence angle of the occultation
+      profile."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    COLUMN_NUMBER               = 8
+    NAME                        = INSTRUMENT_HOST_NAME
+    DATA_TYPE                   = CHARACTER
+    START_BYTE                  = 114
+    BYTES                       = 60
+    FORMAT                      = "A60"
+    DESCRIPTION                 = "A slightly modified version of the
+      profile label's INSTRUMENT_HOST_NAME field."
+  END_OBJECT                    = COLUMN
+
+END_OBJECT                      = SUPPLEMENTAL_INDEX_TABLE
+END

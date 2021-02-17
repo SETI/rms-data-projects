@@ -1,0 +1,17 @@
+================================================================================
+
+The SPACECRAFT_CLOCK_START_COUNT and SPACECRAFT_CLOCK_STOP_COUNT fields have
+numbers to the right of the decimal point that are illegal (out of the range
+0-255). In OPUS we replace this suffix with .000 and round down for START and
+round up for STOP.
+
+================================================================================
+
+Five occultation profiles have a bad SOURCE_PRODUCT_NAME (does not contain
+a legal list of VIMS raw products).
+
+DATA/VIMS_2017_007_VYCMA_E_TAU_01KM.LBL Bad SOURCE_PRODUCT_NAME, using time range instead
+DATA/VIMS_2017_007_VYCMA_I_TAU_01KM.LBL Bad SOURCE_PRODUCT_NAME, using time range instead
+DATA/VIMS_2017_050_VYCMA_E_TAU_01KM.LBL Bad SOURCE_PRODUCT_NAME, using time range instead
+DATA/VIMS_2017_050_VYCMA_I_TAU_01KM.LBL Bad SOURCE_PRODUCT_NAME, using time range instead
+DATA/VIMS_2017_100_VYCMA_I_TAU_01KM.LBL Bad SOURCE_PRODUCT_NAME, using time range instead

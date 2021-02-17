@@ -1,0 +1,529 @@
+PDS_VERSION_ID                  = PDS3
+RECORD_TYPE                     = FIXED_LENGTH
+RECORD_BYTES                    = 778
+FILE_RECORDS                    = %d
+^SUPPLEMENTAL_INDEX_TABLE       = "%s"
+
+OBJECT                          = SUPPLEMENTAL_INDEX_TABLE
+   INTERCHANGE_FORMAT           = ASCII
+   ROWS                         = %d
+   COLUMNS                      = 41
+   ROW_BYTES                    = 778
+   INDEX_TYPE                   = SINGLE
+   DESCRIPTION                  = "An expanded index table describing all the
+data files in this data set, one row per label file."
+
+   OBJECT                       = COLUMN
+     NAME                       = VOLUME_ID
+     DATA_TYPE                  = CHARACTER
+     COLUMN_NUMBER              = 1
+     START_BYTE                 = 2
+     BYTES                      = 11
+     FORMAT                     = "A11"
+     DESCRIPTION                = "The PDS identification for the volume
+containing the data product."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = FILE_SPECIFICATION_NAME
+     DATA_TYPE                  = CHARACTER
+     COLUMN_NUMBER              = 2
+     START_BYTE                 = 16
+     BYTES                      = 52
+     FORMAT                     = "A52"
+     DESCRIPTION                = "The name and directory path of the PDS
+label file describing this particular file or files."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = DATA_SET_ID
+     DATA_TYPE                  = CHARACTER
+     COLUMN_NUMBER              = 3
+     START_BYTE                 = 71
+     BYTES                      = 30
+     FORMAT                     = "A30"
+     DESCRIPTION                = "The unique identifier assigned to the data
+set."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = PRODUCT_ID
+     DATA_TYPE                  = CHARACTER
+     COLUMN_NUMBER              = 4
+     START_BYTE                 = 104
+     BYTES                      = 27
+     FORMAT                     = "A27"
+     DESCRIPTION                = "The unique identifier assigned to the data
+product. In this data set, it is equivalent to the file name (without the
+directory path or the filename extension)."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = SEQUENCE_ID
+     DATA_TYPE                  = CHARACTER
+     COLUMN_NUMBER              = 5
+     START_BYTE                 = 134
+     BYTES                      = 48
+     FORMAT                     = "A48"
+     DESCRIPTION                = "The spacecraft sequence associated with the
+observation. 'UNK' if unknown."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = TARGET_NAME
+     DATA_TYPE                  = CHARACTER
+     COLUMN_NUMBER              = 6
+     START_BYTE                 = 185
+     BYTES                      = 22
+     FORMAT                     = "A22"
+     DESCRIPTION                = "The nominal or primary target of the
+observation. However, note that many images contain multiple targets."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = MISSION_PHASE_NAME
+     DATA_TYPE                  = CHARACTER
+     COLUMN_NUMBER              = 7
+     START_BYTE                 = 210
+     BYTES                      = 24
+     FORMAT                     = "A24"
+     DESCRIPTION                = "Mission phase name."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = PRODUCT_CREATION_TIME
+     DATA_TYPE                  = CHARACTER
+     COLUMN_NUMBER              = 8
+     START_BYTE                 = 237
+     BYTES                      = 19
+     FORMAT                     = "A19"
+     DESCRIPTION                = "Time at which the current version of the
+data product was produced."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = START_TIME
+     DATA_TYPE                  = CHARACTER
+     COLUMN_NUMBER              = 9
+     START_BYTE                 = 259
+     BYTES                      = 23
+     FORMAT                     = "A23"
+     DESCRIPTION                = "Time at which shutter was opened, in the
+format yyyy-mm-ddThh:mm:ss.  The time system is Universal Time (UTC).  'yyyy'
+for year, 'mm' for month, 'dd' for day of month, 'hh' for hour, 'mm' for
+minute, 'ss' for second."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = STOP_TIME
+     DATA_TYPE                  = CHARACTER
+     COLUMN_NUMBER              = 10
+     START_BYTE                 = 285
+     BYTES                      = 23
+     FORMAT                     = "A23"
+     DESCRIPTION                = "Time at which shutter was closed, in the
+format yyyy-mm-ddThh:mm:ss.  The time system is Universal Time (UTC).  'yyyy'
+for year, 'mm' for month, 'dd' for day of month, 'hh' for hour, 'mm' for
+minute, 'ss' for second."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = SPACECRAFT_CLOCK_START_COUNT
+     DATA_TYPE                  = CHARACTER
+     COLUMN_NUMBER              = 11
+     START_BYTE                 = 311
+     BYTES                      = 16
+     FORMAT                     = "A16"
+     UNIT                       = "SECOND"
+     DESCRIPTION                = "Time at which the shutter was opened given
+in Mission Event Time (MET). MET is measure using a 32-bit counter on the New
+Horizons spacecraft that increments continuously from the beginning of the
+mission. It runs at a rate of about one increment per second starting from a
+value of zero at January 19, 2006 18:08:02 UTC, or JD2453755.256337."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = SPACECRAFT_CLOCK_STOP_COUNT
+     DATA_TYPE                  = CHARACTER
+     COLUMN_NUMBER              = 12
+     START_BYTE                 = 330
+     BYTES                      = 16
+     FORMAT                     = "A16"
+     UNIT                       = "SECOND"
+     DESCRIPTION                = "Time at which the shutter was closed given
+in Mission Event Time (MET). MET is measure using a 32-bit counter on the New
+Horizons spacecraft that increments continuously from the beginning of the
+mission. It runs at a rate of about one increment per second starting from a
+value of zero at January 19, 2006 18:08:02 UTC, or JD2453755.256337."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = TELEMETRY_APPLICATION_ID
+     DATA_TYPE                  = CHARACTER
+     COLUMN_NUMBER              = 13
+     START_BYTE                 = 349
+     BYTES                      = 5
+     FORMAT                     = "A5"
+     DESCRIPTION                = "Application ID (ApID) of the telemetry
+data packet which contained the data."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = EXPOSURE_DURATION
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 14
+     START_BYTE                 = 356
+     BYTES                      = 7
+     FORMAT                     = "F7.3"
+     UNIT                       = "SECOND"
+     DESCRIPTION                = "Exposure duration for the image, in
+seconds."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = INSTRUMENT_COMPRESSION_TYPE
+     DATA_TYPE                  = CHARACTER
+     COLUMN_NUMBER              = 15
+     START_BYTE                 = 365
+     BYTES                      = 10
+     FORMAT                     = "A10"
+     DESCRIPTION                = "Compression type. The options are
+LOSSLESS, LOSSY, or PACKETIZED. See the SOC_INST_ICD in the DOCUMENT
+subdirectory for more information."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = OBSERVATION_DESC
+     DATA_TYPE                  = CHARACTER
+     COLUMN_NUMBER              = 16
+     START_BYTE                 = 378
+     BYTES                      = 80
+     FORMAT                     = "A80"
+     DESCRIPTION                = "Description of the observation; NULL if
+unavailable."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = SC_TARGET_POSITION_VECTOR_X
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 17
+     START_BYTE                 = 460
+     BYTES                      = 13
+     FORMAT                     = "F13.0"
+     UNIT                       = "KM"
+     NOT_APPLICABLE_CONSTANT    = 0.
+     DESCRIPTION                = "The X component of the vector from the
+spacecraft to the center of the nominal target at the midpoint of the
+observation calculated in the EMEJ2000 reference frame."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = SC_TARGET_POSITION_VECTOR_Y
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 18
+     START_BYTE                 = 474
+     BYTES                      = 13
+     FORMAT                     = "F13.0"
+     UNIT                       = "KM"
+     NOT_APPLICABLE_CONSTANT    = 0.
+     DESCRIPTION                = "The Y component of the vector from the
+spacecraft to the center of the nominal target at the midpoint of the
+observation calculated in the EMEJ2000 reference frame."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = SC_TARGET_POSITION_VECTOR_Z
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 19
+     START_BYTE                 = 488
+     BYTES                      = 13
+     FORMAT                     = "F13.0"
+     UNIT                       = "KM"
+     NOT_APPLICABLE_CONSTANT    = 0.
+     DESCRIPTION                = "The Z component of the vector from the
+spacecraft to the center of the nominal target at the midpoint of the
+observation calculated in the EMEJ2000 reference frame."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = TARGET_CENTER_DISTANCE
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 20
+     START_BYTE                 = 502
+     BYTES                      = 13
+     FORMAT                     = "F13.0"
+     UNIT                       = "KM"
+     NOT_APPLICABLE_CONSTANT    = 0.
+     DESCRIPTION                = "Distance from the spacecraft to the center
+of the nominal target of the observation at the midpoint of the observation."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = TARGET_SUN_POSITION_VECTOR_X
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 21
+     START_BYTE                 = 516
+     BYTES                      = 13
+     FORMAT                     = "F13.0"
+     UNIT                       = "KM"
+     NOT_APPLICABLE_CONSTANT    = 0.
+     DESCRIPTION                = "The X component of the position vector
+from the target to the sun expressed in J2000 coordinates, and corrected for
+light time and stellar aberration, evaluated at the time corresponding to
+the midpoint of observation."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = TARGET_SUN_POSITION_VECTOR_Y
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 22
+     START_BYTE                 = 530
+     BYTES                      = 13
+     FORMAT                     = "F13.0"
+     UNIT                       = "KM"
+     NOT_APPLICABLE_CONSTANT    = 0.
+     DESCRIPTION                = "The Y component of the position vector
+from the target to the sun expressed in J2000 coordinates, and corrected for
+light time and stellar aberration, evaluated at the time corresponding to
+the midpoint of observation."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = TARGET_SUN_POSITION_VECTOR_Z
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 23
+     START_BYTE                 = 544
+     BYTES                      = 13
+     FORMAT                     = "F13.0"
+     UNIT                       = "KM"
+     NOT_APPLICABLE_CONSTANT    = 0.
+     DESCRIPTION                = "The Z component of the position vector
+from the target to the sun expressed in J2000 coordinates, and corrected for
+light time and stellar aberration, evaluated at the time corresponding to
+the midpoint of observation."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = SOLAR_DISTANCE
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 24
+     START_BYTE                 = 558
+     BYTES                      = 13
+     FORMAT                     = "F13.0"
+     UNIT                       = "KM"
+     NOT_APPLICABLE_CONSTANT    = 0.
+     DESCRIPTION                = "The distance from the center of the sun 
+to the center of the nominal target body"
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = SC_SUN_POSITION_VECTOR_X
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 25
+     START_BYTE                 = 572
+     BYTES                      = 13
+     FORMAT                     = "F13.0"
+     UNIT                       = "KM"
+     DESCRIPTION                = "The X component of the position vector from
+the spacecraft to the center of the sun, expressed in J2000 coordinates, and 
+corrected for light time and stellar aberration, evaluated at the time 
+corresponding to the midpoint of observation."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = SC_SUN_POSITION_VECTOR_Y
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 26
+     START_BYTE                 = 586
+     BYTES                      = 13
+     FORMAT                     = "F13.0"
+     UNIT                       = "KM"
+     DESCRIPTION                = "The Y component of the position vector from
+the spacecraft to the center of the sun, expressed in J2000 coordinates, and 
+corrected for light time and stellar aberration, evaluated at the time 
+corresponding to the midpoint of observation."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = SC_SUN_POSITION_VECTOR_Z
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 27
+     START_BYTE                 = 600
+     BYTES                      = 13
+     FORMAT                     = "F13.0"
+     UNIT                       = "KM"
+     DESCRIPTION                = "The Z component of the position vector from
+the spacecraft to the center of the sun, expressed in J2000 coordinates, and 
+corrected for light time and stellar aberration, evaluated at the time 
+corresponding to the midpoint of observation."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = SPACECRAFT_SOLAR_DISTANCE
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 28
+     START_BYTE                 = 614
+     BYTES                      = 13
+     FORMAT                     = "F13.0"
+     UNIT                       = "KM"
+     DESCRIPTION                = "The distance from the spacecraft to the 
+center of the sun."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = SC_EARTH_POSITION_VECTOR_X
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 29
+     START_BYTE                 = 628
+     BYTES                      = 13
+     FORMAT                     = "F13.0"
+     UNIT                       = "KM"
+     DESCRIPTION                = "The X component of the position vector from 
+the spacecraft to the earth, expressed in J2000 coordinates, and corrected for
+light time, evaluated at the time corresponding to the midpoint of 
+observation."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = SC_EARTH_POSITION_VECTOR_Y
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 30
+     START_BYTE                 = 642
+     BYTES                      = 13
+     FORMAT                     = "F13.0"
+     UNIT                       = "KM"
+     DESCRIPTION                = "The Y component of the position vector from 
+the spacecraft to the earth, expressed in J2000 coordinates, and corrected for
+light time, evaluated at the time corresponding to the midpoint of 
+observation."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = SC_EARTH_POSITION_VECTOR_Z
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 31
+     START_BYTE                 = 656
+     BYTES                      = 13
+     FORMAT                     = "F13.0"
+     UNIT                       = "KM"
+     DESCRIPTION                = "The Z component of the position vector from 
+the spacecraft to the earth, expressed in J2000 coordinates, and corrected for
+light time, evaluated at the time corresponding to the midpoint of 
+observation."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = SC_GEOCENTRIC_DISTANCE
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 32
+     START_BYTE                 = 670
+     BYTES                      = 13
+     FORMAT                     = "F13.0"
+     UNIT                       = "KM"
+     DESCRIPTION                = "The distance from the center of the earth
+to the spacecraft."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = PHASE_ANGLE
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 33
+     START_BYTE                 = 684
+     BYTES                      = 10
+     FORMAT                     = "F10.5"
+     UNIT                       = "DEGREE"
+     DESCRIPTION                = "The angle, measured at the nominal target,
+between a vector to the illumination source and a vector to the instrument."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = QUATERNIAN_1
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 34
+     START_BYTE                 = 695
+     BYTES                      = 13
+     FORMAT                     = "F13.10"
+     DESCRIPTION                = "Refer to the file: 
+QUAT_AXYZ_J2K_TO_INSTR.ASC in the DOCUMENT directory."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = QUATERNIAN_2
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 35
+     START_BYTE                 = 709
+     BYTES                      = 13
+     FORMAT                     = "F13.10"
+     DESCRIPTION                = "Refer to the file: 
+QUAT_AXYZ_J2K_TO_INSTR.ASC in the DOCUMENT directory."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = QUATERNIAN_3
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 36
+     START_BYTE                 = 723
+     BYTES                      = 13
+     FORMAT                     = "F13.10"
+     DESCRIPTION                = "Refer to the file: 
+QUAT_AXYZ_J2K_TO_INSTR.ASC in the DOCUMENT directory."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = QUATERNIAN_4
+     DATA_TYPE                  = ASCII_REAL
+     COLUMN_NUMBER              = 37
+     START_BYTE                 = 737
+     BYTES                      = 13
+     FORMAT                     = "F13.10"
+     DESCRIPTION                = "Refer to the file: 
+QUAT_AXYZ_J2K_TO_INSTR.ASC in the DOCUMENT directory."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = FILTER_NAME
+     DATA_TYPE                  = CHARACTER
+     COLUMN_NUMBER              = 38
+     START_BYTE                 = 752
+     BYTES                      = 5
+     FORMAT                     = "A5"
+     DESCRIPTION                = "Filter name, one of 'BLUE', 'RED', 'NIR',
+'CH4', or 'CLEAR'."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = DETECTOR_ID
+     DATA_TYPE                  = CHARACTER
+     COLUMN_NUMBER              = 39
+     START_BYTE                 = 760
+     BYTES                      = 5
+     FORMAT                     = "A5"
+     DESCRIPTION                = "Detector name, one of 'BLUE', 'RED', 'NIR',
+'CH4', 'PAN1', 'PAN2', or 'FRAME'."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = LINE_SAMPLES
+     DATA_TYPE                  = ASCII_INTEGER
+     COLUMN_NUMBER              = 40
+     START_BYTE                 = 767
+     BYTES                      = 4
+     FORMAT                     = "I4"
+     DESCRIPTION                = "Number of pixels along the image horizontal
+axis."
+   END_OBJECT                   = COLUMN
+
+   OBJECT                       = COLUMN
+     NAME                       = LINES
+     DATA_TYPE                  = ASCII_INTEGER
+     COLUMN_NUMBER              = 41
+     START_BYTE                 = 772
+     BYTES                      = 5
+     FORMAT                     = "I5"
+     DESCRIPTION                = "Number of pixels along the image vertical
+axis."
+   END_OBJECT                   = COLUMN
+
+END_OBJECT                      = SUPPLEMENTAL_INDEX_TABLE
+
+END
