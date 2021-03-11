@@ -1,8 +1,9 @@
 import os
 import sys
 import re
+import time
 
-ROOT = '/Volumes/Marks-Migration-HD/pds4-holdings/bundles/'
+ROOT = '/Volumes/pdsdata-admin/pds4-holdings/bundles/'
 
 PATTERN1 = re.compile('1[0-9]{9}')
 PATTERN2 = re.compile('1[0-9]{9}_0[0-9]{2}')
@@ -42,7 +43,9 @@ for inst in ('_iss', '_vims'):
                         os.mkdir(ROOT + dirpath)
 
             print(newpath)
-            if RENAME: os.rename(oldpath, ROOT + newpath)
+            if RENAME:
+                os.rename(oldpath, ROOT + newpath)
+#                 time.sleep(0.05)
 
 # Remove empty directories
 
