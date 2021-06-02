@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
+
+# NOTE: This will take some work to convert to Python 3 because
 
 import sys, os
 import numpy as np
@@ -238,8 +240,10 @@ def read_pds3(filename):
     # Scattered files are truncated in the BAND_BIN
     except pyparsing.ParseException as e:
         with open(filename, 'rb') as f:
-            header_buffer = f.read(25 * 512)
-        header_recs = header_buffer.split('\r\n')
+            bstr = f.read(25 * 512)
+            header_str = bstr.decode('latin-1')
+
+        header_recs = header_str.split('\r\n')
 
         found = False
         for k,rec in enumerate(header_recs):
@@ -254,12 +258,12 @@ def read_pds3(filename):
         header_recs += BAND_BIN_RECS
         header = pdsparser.PdsLabel.from_string('\n'.join(header_recs))
 
-        header_buffer = '\r\n'.join(header_recs)
+        header_str = '\r\n'.join(header_recs)
         record_bytes = int(header['RECORD_BYTES'])
         header_records = int(header['LABEL_RECORDS'])
-        header_buffer = header_buffer + ((header_records * record_bytes) -
-                                         len(header_buffer)) * ' '
-        if len(header_buffer) != header_records * record_bytes:
+        header_str = header_str + ((header_records * record_bytes) -
+                                         len(header_str)) * ' '
+        if len(header_str) != header_records * record_bytes:
             raise
 
         reconstructed = True
@@ -277,16 +281,20 @@ def read_pds3(filename):
         if reconstructed:
             _ = f.read(record_bytes * (history_record - 1))
         else:
-            header_buffer = f.read(record_bytes * (history_record - 1))
-        history = f.read(record_bytes * (qube_record - history_record))
-        remainder_buffer = f.read()
+            bstr = f.read(record_bytes * (history_record - 1))
+            header_str = bstr.decode('latin-1')
 
-    header_recs = header_buffer.split('\r\n')
+        bstr = f.read(record_bytes * (qube_record - history_record))
+        history = bstr.decode('latin-1')
 
-    if 'PDS4' in history or 'PDS4' in header_buffer:
+        remainder_bstr = f.read()
+
+    header_recs = header_str.split('\r\n')
+
+    if 'PDS4' in history or 'PDS4' in header_str:
         raise ValueError('File is not a PDS3 qube')
 
-    extra_bytes = len(remainder_buffer) % record_bytes
+    extra_bytes = len(remainder_bstr) % record_bytes
 
     # Check for un-printables in history object
     found = False
@@ -389,25 +397,25 @@ def read_pds3(filename):
         test = history.strip(' ')
         history = test + (len(history) - len(test)) * ' '
 
-    for spaces in range(len(remainder_buffer)):
-        if remainder_buffer[spaces] != ' ':
+    for spaces in range(len(remainder_bstr)):
+        if remainder_bstr[spaces] != b' ':
             break
 
     # Fix for incorrect record length
     if extra_bytes == 0:
         pass
-    elif extra_bytes == end_shift and remainder_buffer[0] == ' ':
+    elif extra_bytes == end_shift and remainder_bstr[0] == b' ':
         comments.append('Data shifted by %d byte(s)' % extra_bytes)
-        remainder_buffer = remainder_buffer[extra_bytes:]
+        remainder_bstr = remainder_bstr[extra_bytes:]
         data_buffer = data_buffer[extra_bytes:]
     elif extra_bytes == spaces:
         comments.append('Data shifted by %d byte(s)' % extra_bytes)
-        remainder_buffer = remainder_buffer[extra_bytes:]
+        remainder_bstr = remainder_bstr[extra_bytes:]
         data_buffer = data_buffer[extra_bytes:]
     elif spaces == 511 or (reconstructed and spaces):
         extra_bytes = spaces
         comments.append('Data shifted by %d byte(s)' % extra_bytes)
-        remainder_buffer = remainder_buffer[extra_bytes:]
+        remainder_bstr = remainder_bstr[extra_bytes:]
         data_buffer = data_buffer[extra_bytes:]
     elif unprintables == 512:
         comments.append('Data shifted by %d byte(s)' % -unprintables)
@@ -417,8 +425,9 @@ def read_pds3(filename):
         data_buffer = np.fromfile(filename, 'uint8')[offset:]
         with open(filename, 'rb') as f:
             _ = f.read(record_bytes * (history_record - 1))
-            history = f.read(record_bytes * (qube_record - history_record - 1))
-            remainder_buffer = f.read()
+            bstr = f.read(record_bytes * (qube_record - history_record - 1))
+            history = bstr.decode('latin-1')
+            remainder_bstr = f.read()
 
         history = history + unprintables * ' '
 
@@ -600,7 +609,7 @@ def read_pds3(filename):
         corner = corner_buffer.reshape(corner_shape)
 
     # Define the padding
-    padding = remainder_buffer[padding_offset:]
+    padding = remainder_bstr[padding_offset:]
 
     return (header, header_recs, history, core, splane, bplane, corner, padding,
             filename, comments)
@@ -625,15 +634,17 @@ def read_pds4(filename):
 
     # Read the file
     with open(filename, 'rb') as f:
-        header_buffer  = f.read(record_bytes * (history_record - 1))
-        history        = f.read(record_bytes * (qube_record - history_record))
-        core_buffer    = f.read(record_bytes * (splane_record - qube_record))
-        splane_buffer  = f.read(record_bytes * (bplane_record - splane_record))
-        bplane_buffer  = f.read(record_bytes * (corner_record - bplane_record))
-        corner_buffer  = f.read(record_bytes * (padding_record - corner_record))
-        padding_buffer = f.read(record_bytes * (file_records + 1 - padding_record))
+        header_bstr   = f.read(record_bytes * (history_record - 1))
+        history_bstr  = f.read(record_bytes * (qube_record - history_record))
+        core_buffer   = f.read(record_bytes * (splane_record - qube_record))
+        splane_buffer = f.read(record_bytes * (bplane_record - splane_record))
+        bplane_buffer = f.read(record_bytes * (corner_record - bplane_record))
+        corner_buffer = f.read(record_bytes * (padding_record - corner_record))
+        padding_bstr  = f.read(record_bytes * (file_records + 1 - padding_record))
 
-    header_recs = header_buffer.split('\r\n')
+    header_str  = header_bstr.decode('latin-1')
+    header_recs = header_str.split('\r\n')
+    history = history_bstr.decode('latin-1')
 
     # Determine the file structure
     qube = header['QUBE']
@@ -710,11 +721,11 @@ def read_pds4(filename):
     corner = corner.reshape((suffix_bands, core_lines, suffix_samples))
     corner = corner.swapaxes(0,1)
 
-    if padding_buffer:
+    if padding_bstr:
         padding_bytes = int(header['PADDING']['CORE_ITEMS'])
-        padding = padding_buffer[:padding_bytes]
+        padding = padding_bstr[:padding_bytes]
     else:
-        padding = ''
+        padding = b''
 
     return (header, header_recs, history, core, splane, bplane, corner, padding)
 
@@ -1026,8 +1037,8 @@ def write_pds4(filename, header, header_recs,
 
     # Write...
     f = open(filename, 'wb')
-    f.write('\r\n'.join(new_recs))
-    f.write(history)
+    f.write('\r\n'.join(new_recs).encode('latin-1'))
+    f.write(history.encode('latin-1'))
     f.write(core.ravel())
     f.write(np.zeros(core_padding, dtype='uint8'))
     f.write(splane.ravel())
@@ -1042,9 +1053,9 @@ def write_pds4(filename, header, header_recs,
 
     # Report comments
     if verbose and comments:
-        print 'COMMENTS for ' + filename
+        print('COMMENTS for ' + filename)
         for comment in comments:
-            print '    ' + comment
+            print('    ' + comment)
 
     return new_recs
 
@@ -1073,8 +1084,8 @@ def write_pds3(filename, header, header_recs,
 
     f = open(filename, 'wb')
 
-    f.write('\r\n'.join(isis2_header_recs))
-    f.write(isis2_history)
+    f.write('\r\n'.join(isis2_header_recs).encode('latin-1'))
+    f.write(isis2_history.encode('latin-1'))
 
     for l in range(core_lines):
       for b in range(core_bands):
@@ -1152,7 +1163,7 @@ def translate1(pds3_file, replace=True, validate=False, revalidate=False):
         out_dir = out_dir.replace('Marks-Migration-HD', 'Migration2')
 
         if in_dir == out_dir:
-            print 'Invalid input directory:', in_dir
+            print('Invalid input directory:', in_dir)
 
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
@@ -1181,18 +1192,18 @@ def translate1(pds3_file, replace=True, validate=False, revalidate=False):
             success = True
             if lpds3 > ltest:
                 success = False
-                print '*** validation failed; file too small: ' + pds4_file[:-4] + '_test.qub'
+                print('*** validation failed; file too small: ' + pds4_file[:-4] + '_test.qub')
             elif lpds3 == ltest:
               if pds3_bytes != test_bytes:
                 success = False
-                print '*** validation failed; mismatch: ' + pds4_file[:-4] + '_test.qub'
+                print('*** validation failed; mismatch: ' + pds4_file[:-4] + '_test.qub')
             else:
               if (lpds3 % 512 == 0 or
                   ltest - lpds3 > 511 or
                   pds3_bytes != test_bytes[:lpds3] or
                   test_bytes[lpds3:] != BLANKS[:(ltest-lpds3)]):
                 success = False
-                print '*** validation failed; new file too big: ' + pds4_file[:-4] + '_test.qub'
+                print('*** validation failed; new file too big: ' + pds4_file[:-4] + '_test.qub')
 
             if success:
                 os.remove(test_file)
@@ -1201,10 +1212,10 @@ def translate1(pds3_file, replace=True, validate=False, revalidate=False):
         sys.exit(1)
 
     except Exception as e:
-        print '*** error for: ', pds3_file
-        print e
+        print('*** error for: ', pds3_file)
+        print(e)
         (etype, value, tb) = sys.exc_info()
-        print ''.join(traceback.format_tb(tb))
+        print(''.join(traceback.format_tb(tb)))
 
 def main():
 
@@ -1240,7 +1251,7 @@ def main():
               if name.endswith('.QUB') or name.endswith('.qub'):
 
                 if root != prev_root:
-                    print root
+                    print(root)
                     prev_root = root
 
                 filename = os.path.join(root, name)
