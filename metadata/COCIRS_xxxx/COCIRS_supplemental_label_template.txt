@@ -1,0 +1,136 @@
+PDS_VERSION_ID                  = PDS3
+RECORD_TYPE                     = FIXED_LENGTH
+FILE_RECORDS                    = $RECORDS$
+RECORD_BYTES                    = 139
+^SUPPLEMENTAL_INDEX_TABLE       = "$TABLE$"
+
+VOLUME_ID                       = "$VOLUME_ID$"
+PRODUCT_CREATION_TIME           = $TIME$
+
+INSTRUMENT_HOST_NAME            = "$INSTHOSTNAME$"
+INSTRUMENT_HOST_ID              = "$INSTHOSTID$"
+INSTRUMENT_NAME                 = "$INSTNAME$"
+INSTRUMENT_ID                   = "$INSTID$"
+
+OBJECT                          = SUPPLEMENTAL_INDEX_TABLE
+  INTERCHANGE_FORMAT            = ASCII
+  ROWS                          = $RECORDS$
+  ROW_BYTES                     = 139
+  COLUMNS                       = 10
+  INDEX_TYPE                    = SINGLE
+
+  DESCRIPTION                   = "This index supplements the file
+    index/index.tab found in the COCIRS_0/1xxx volumes. It contains a small set
+    of useful parameter values that are not found in the default index
+    but exist in the PDS label files."
+
+    OBJECT                   = COLUMN
+      NAME                   = MISSION_PHASE_NAME
+      DATA_TYPE              = CHARACTER
+      COLUMN_NUMBER          = 1
+      START_BYTE             = 2
+      BYTES                  = 32
+      FORMAT                 = A32
+      DESCRIPTION            = "Mission phase of which this observation
+                               is a part."
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = MIN_WAVENUMBER
+      DATA_TYPE              = ASCII_REAL
+      COLUMN_NUMBER          = 2
+      START_BYTE             = 37
+      BYTES                  = 4
+      FORMAT                 = "D4"
+      DESCRIPTION            = "The minimum wavenumber at which the
+  observation was observed."
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = MAX_WAVENUMBER
+      DATA_TYPE              = ASCII_REAL
+      COLUMN_NUMBER          = 3
+      START_BYTE             = 42
+      BYTES                  = 4
+      FORMAT                 = "D4"
+      DESCRIPTION            = "The maximum wavenumber at which the
+                               observation was observed."
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = MIN_FOOTPRINT_LINE
+      DATA_TYPE              = ASCII_REAL
+      COLUMN_NUMBER          = 4
+      START_BYTE             = 47
+      BYTES                  = 10
+      FORMAT                 = "F10.8"
+      DESCRIPTION            = "The minimum footprint line at which the
+  observation was observed."
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = MAX_FOOTPRINT_LINE
+      DATA_TYPE              = ASCII_REAL
+      COLUMN_NUMBER          = 5
+      START_BYTE             = 58
+      BYTES                  = 10
+      FORMAT                 = "F10.8"
+      DESCRIPTION            = "The maximum footprint line at which the
+  observation was observed."
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = MIN_FOOTPRINT_SAMPLE
+      DATA_TYPE              = ASCII_REAL
+      COLUMN_NUMBER          = 6
+      START_BYTE             = 69
+      BYTES                  = 10
+      FORMAT                 = "F10.8"
+      DESCRIPTION            = "The minimum footprint sample at which the
+  observation was observed."
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = MAX_FOOTPRINT_SAMPLE
+      DATA_TYPE              = ASCII_REAL
+      COLUMN_NUMBER          = 7
+      START_BYTE             = 80
+      BYTES                  = 10
+      FORMAT                 = "F10.8"
+      DESCRIPTION            = "The maximum footprint sample at which the
+  observation was observed."
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = OBSERVATION_ID
+      DATA_TYPE              = CHARACTER
+      COLUMN_NUMBER          = 8
+      START_BYTE             = 91
+      BYTES                  = 32
+      FORMAT                 = A32
+      DESCRIPTION            = "Name of observation"
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = DETECTOR_ID
+      DATA_TYPE              = CHARACTER
+      COLUMN_NUMBER          = 9
+      START_BYTE             = 126
+      BYTES                  = 3
+      FORMAT                 = A3
+      DESCRIPTION            = "The CIRS focal plane used to obtain the data."
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = SPECTRUM_SIZE
+      DATA_TYPE              = ASCII_REAL
+      COLUMN_NUMBER          = 10
+      START_BYTE             = 132
+      BYTES                  = 5
+      FORMAT                 = "D5"
+      DESCRIPTION            = "The number of distinct wavelengths or wavelength
+                               bins that can be detected in an observation."
+    END_OBJECT               = COLUMN
+
+END_OBJECT                      = SUPPLEMENTAL_INDEX_TABLE
+END
