@@ -11,6 +11,7 @@ import sys
 from datetime import datetime
 
 import julian
+import numpy as np
 import pdstable
 import pdsparser
 import re
@@ -19,17 +20,68 @@ import re
 # space
 MOD_COL_LI = []
 VOLUME_ID = ''
+INDEX_TAB = ''
 OLD_DATA_TYPE = "CHARACTER"
-NEW_DATA_TYPE = "ASCII_REAL"
+NEW_DATA_TYPE = ("ASCII_REAL", "ASCII_INTEGER")
 EMPTY_SUPPLEMENTAL_INDEX = False
+
+CORRECT_EQUI_POINT_WIDTHS = {
+    18: 16,     # CSS:BODY_SUB_SOLAR_LATITUDE_BEGINNING
+    19: 16,     # CSS:BODY_SUB_SOLAR_LATITUDE_MIDDLE
+    20: 16,     # CSS:BODY_SUB_SOLAR_LATITUDE_END
+    21: 16,     # CSS:BODY_SUB_SOLAR_LATITUDE_PC_BEGINNING
+    22: 16,     # CSS:BODY_SUB_SOLAR_LATITUDE_PC_MIDDLE
+    23: 16,     # CSS:BODY_SUB_SOLAR_LATITUDE_PC_END
+    27: 14,     # CSS:BODY_SUB_SPACECRAFT_LATITUDE_BEGINNING
+    28: 14,     # CSS:BODY_SUB_SPACECRAFT_LATITUDE_MIDDLE
+    29: 14,     # CSS:BODY_SUB_SPACECRAFT_LATITUDE_END
+    30: 14,     # CSS:BODY_SUB_SPACECRAFT_LATITUDE_PC_BEGINNING
+    31: 14,     # CSS:BODY_SUB_SPACECRAFT_LATITUDE_PC_MIDDLE
+    32: 14,     # CSS:BODY_SUB_SPACECRAFT_LATITUDE_PC_END
+    37: 16,     # CSS:MEAN_BORESIGHT_LATITUDE_ZPD
+    38: 16,     # CSS:MEAN_BORESIGHT_LATITUDE_ZPD_PC
+}
+
+BODY_DIMENSIONS = {
+    "MIMAS"     : ( 207.4,  196.8,  190.6),
+    "ENCELADUS" : ( 256.6,  251.4,  248.3),
+    "TEHTYS"    : ( 540.4,  531.1,  527.5),
+    "DIONE"     : ( 563.8,  561. ,  560.3),
+    "RHEA"      : ( 767.2,  762.5,  763.1),
+    "TITAN"     : (2575. , 2575. , 2575. ),
+    "HYPERION"  : ( 164. ,  130. ,  107. ),
+    "IAPETUS"   : ( 747.4,  747.4,  712.4),
+    "PHOEBE"    : ( 115. ,  110. ,  105. ),
+    "JANUS"     : (  96.6,   86.6,   68.6),
+    "EPIMETHEUS": (  67.4,   54.2,   52.3),
+    "HELENE"    : (  16. ,   16. ,   16. ),
+    "TELESTO"   : (  14.6,   11.1,   10.2),
+    "CALYPSO"   : (  15.1,   11.4,    7. ),
+    "PANDORA"   : (  51.5,   39.8,   32. ),
+    "PALLENE"   : (  10. ,   10. ,   10. ),
+    "POLYDEUCES": (  10. ,   10. ,   10. ),
+    "SATURN"    : (60268., 60268., 54364.),
+}
+
+GRAPHIC_COLUMNS = { # maps graphic latitude column to centric latitude column
+    18: 22,
+    19: 23,
+    20: 24,
+    27: 30,
+    28: 31,
+    29: 32,
+    37: 38,
+}
+
+CENTRIC_COLUMNS = {v:k for k,v in GRAPHIC_COLUMNS.items()}
 
 ####################################################
 # help methods
 ####################################################
-def create_index_tab(original_index_tab, metadata_dir, new_index_tab_filename):
+def create_index_tab(original_index_tab, metadata_dir, new_index_tab_path):
     """Create new tab by changing all int/float string into int/float
     """
-    global MOD_COL_LI
+    global MOD_COL_LI, CORRECT_EQUI_POINT_WIDTHS
     # Get the list of rows in the original tab file
     index_tab_li = original_index_tab.readlines()
     # Modify the list of rows by replacing " with space
@@ -38,7 +90,46 @@ def create_index_tab(original_index_tab, metadata_dir, new_index_tab_filename):
         new_row = ''
         row = index_tab_li[i1]
         row_li = row.split(",")
+        target = row_li[10].strip('"').rstrip(' ')
+
+        if 'ring_index' not in new_index_tab_path:
+            # Remove the surrounding quotes, fixes the column width, and then puts
+            # the quotes back, this only applies to EQUI/POINT
+            for w in CORRECT_EQUI_POINT_WIDTHS:
+                width = CORRECT_EQUI_POINT_WIDTHS[w]
+                data = row_li[w].strip('"').rstrip(' ')
+                if len(data) < width:
+                    data = '"' + data + (width - len(data)) * ' ' + '"'
+                assert len(data) == width + 2, f'Value is too wide: {data}, {i1}, {w}'
+                row_li[w] = data
+
+            # If planetographic is N/A, we convert it from planetocentric
+            for idx in GRAPHIC_COLUMNS:
+                if 'N/A' in row_li[idx]:
+                    width = len(row_li[idx].strip('"'))
+                    centric_value = float(row_li[GRAPHIC_COLUMNS[idx]].strip('"'))
+                    graphic_value = graphic_from_centric(centric_value, target)
+                    row_li[idx] = '"' + ('%8.4f' % graphic_value).ljust(width) + '"'
+            # If planetocentric is N/A, we convert it from planetographic
+            for idx in CENTRIC_COLUMNS:
+                if 'N/A' in row_li[idx]:
+                    width = len(row_li[idx].strip('"'))
+                    graphic_value = float(row_li[CENTRIC_COLUMNS[idx]].strip('"'))
+                    centric_value = centric_from_graphic(graphic_value, target)
+                    row_li[idx] = '"' + ('%8.4f' % centric_value).ljust(width) + '"'
+
         for i2 in range(len(row_li)):
+            # In RING_INDEX, change target name "SATURN_RINGS" to "S_RINGS     "
+            if i2 == 10 and 'ring_index' in new_index_tab_path:
+                row_li[i2] = row_li[i2].replace("SATURN_RINGS", "S_RINGS     ")
+                continue
+
+            # Handling N/A in CSS:* columns
+            if 'N/A' in row_li[i2]:
+                new_val = row_li[i2].replace('"', '')
+                row_li[i2] = new_val.replace('N/A', '-200.')
+                continue
+
             isInt = True
             isFloat = True
             data = row_li[i2].replace('"', ' ')
@@ -64,25 +155,45 @@ def create_index_tab(original_index_tab, metadata_dir, new_index_tab_filename):
         if not MOD_COL_LI:
             MOD_COL_LI = col_li
     # create new index tab file
-    output_fp = open(new_index_tab_filename, 'w')
+    output_fp = open(new_index_tab_path, 'w')
     for row in index_tab_li:
+        row = row.replace('\n', '\r\n')
         output_fp.write(row)
     output_fp.close()
 
-def create_index_label(original_index_lbl, metadata_dir, new_index_label_filename):
+def create_index_label(
+    original_index_lbl, metadata_dir, new_index_label_path, new_index_tab_name
+):
     """Create new lbl for new tab with int/float data type changed to ASCII_REAL
     """
-    global MOD_COL_LI, OLD_DATA_TYPE, NEW_DATA_TYPE
+    global MOD_COL_LI, OLD_DATA_TYPE, NEW_DATA_TYPE, INDEX_TAB
     # Get the label files
     original_lbl_list = original_index_lbl.readlines()
-    # Replace "CHARACTER" with "ASCII_REAL" if COLUMN_NUMBER is in the mod_col_li
-    new_lbl = open(new_index_label_filename, 'w')
-    for i in range(len(original_lbl_list)):
+    # 1. Change data type to "ASCII_REAL" if COLUMN_NUMBER is in the mod_col_li
+    # 2. Change data type to "ASCII_INTERGER" for SCET_START/SCET_END/FOCAL_PLANE
+    # 3. If it's CSS: columns, change data type to "ASCII_REAL" & add a new line
+    # "NOT_APPLICABLE_CONSTANT= -200."
+    new_lbl = open(new_index_label_path, 'w')
+    i = 0
+    while i < len(original_lbl_list):
         line = original_lbl_list[i]
-        if 'COLUMN_NUMBER' in line and int(line[line.find('=')+1::]) in MOD_COL_LI:
-            original_lbl_list[i-1] = original_lbl_list[i-1].replace(OLD_DATA_TYPE, NEW_DATA_TYPE)
+        if INDEX_TAB in line:
+            original_lbl_list[i] = original_lbl_list[i].replace(INDEX_TAB, new_index_tab_name)
+        elif ('SCET_START' in line or
+              'SCET_END' in line or
+              'FOCAL_PLANE' in line):
+            original_lbl_list[i+1] = original_lbl_list[i+1].replace(OLD_DATA_TYPE, NEW_DATA_TYPE[1])
+        elif 'CSS:' in line:
+            original_lbl_list[i+1] = original_lbl_list[i+1].replace(OLD_DATA_TYPE, NEW_DATA_TYPE[0])
+            original_lbl_list.insert(i+2, '    NOT_APPLICABLE_CONSTANT= -200.\r\n')
+        elif ('COLUMN_NUMBER' in line and int(line[line.find('=')+1::]) in MOD_COL_LI):
+            original_lbl_list[i-1] = original_lbl_list[i-1].replace(OLD_DATA_TYPE, NEW_DATA_TYPE[0])
+        i += 1
+
     # create new index label file
     for line in original_lbl_list:
+        # Make sure each line in the label is separated by \r\n
+        line = line.replace('\n', '\r\n')
         new_lbl.write(line)
     new_lbl.close()
 
@@ -96,9 +207,7 @@ def get_cassini_tol_list():
             break
         fields = line.split('\t')
         obs_id = fields[0]
-        if (not obs_id.startswith('CIRS') or
-            not obs_id.endswith('PRIME') or
-            'OCC' in obs_id):
+        if not obs_id.startswith('CIRS'):
             continue
         start_time = julian.tai_from_iso(fields[3])
         end_time = julian.tai_from_iso(fields[6])
@@ -107,20 +216,65 @@ def get_cassini_tol_list():
     tol_fp.close()
     return tol_list
 
-def create_supplemental_index_tab(orig_rows, vol_root, supp_index_tab_filename):
+def get_cirs_obs_id(filespec, start_time, stop_time, tol_list):
+    """Return the observation id
+    """
+    parts = os.path.basename(filespec).split('_')
+    parts = [p for p in parts if p]     # omit empty entries due to repeated "_"
+    pattern = ('CIRS_' + parts[0] + '_' + parts[1] + '_' +
+               ('PRIME' if parts[2][:2] == 'CI' else parts[2][:2]))
+    # python 3.8
+    # pattern = ('CIRS_' + parts[0] + '_' + parts[1] + '_' +
+    #            ('PRIME' if (p := parts[2][:2]) == 'CI' else p))
+
+    obs_by_time = []
+    obs_by_name = []
+    for obs_id, time1, time2 in tol_list:
+        if time1 <= stop_time and time2 >= start_time:
+            obs_by_time.append(obs_id)
+        if obs_id.startswith(pattern):
+            obs_by_name.append(obs_id)
+
+    best_match = list(set(obs_by_time).intersection(set(obs_by_name)))
+    if len(best_match) == 1:
+        return best_match[0]
+
+    if len(best_match) > 1:
+        best_match.sort()
+        print('Ambiguous observation_id for', filespec, best_match)
+        return best_match[0]
+
+    if len(obs_by_name) == 1:
+        print('Timing mismatch in observation_id for', filespec, obs_by_name[0])
+        return obs_by_name[0]
+
+    if len(obs_by_name) > 1:
+        print('Timing mismatch with observation_ids for', filespec, obs_by_name)
+        return obs_by_name[0]
+
+    print('Filespec does not match a known observation_id', filespec, pattern)
+
+    if len(obs_by_time) == 1:
+        return obs_by_time[0]
+
+    if len(obs_by_time) > 1:
+        print('Multiple observations match time for', filespec, obs_by_time)
+        return obs_by_time[0]
+
+    print('Timing does not match a known observation_id', filespec)
+    return ''
+
+def create_supplemental_index_tab(orig_rows, vol_root, supp_index_tab_path):
     """Create supplemental index tab
     """
-    global VOLUME_ID, EMPTY_SUPPLEMENTAL_INDEX
+    global EMPTY_SUPPLEMENTAL_INDEX, VOLUME_ID
 
     tol_list = get_cassini_tol_list()
-    output_fp = open(supp_index_tab_filename, 'w')
+    output_fp = open(supp_index_tab_path, 'w')
 
     for row in orig_rows:
         filespec = row['FILE_SPECIFICATION_NAME']
         data_label_filename = vol_root + '/' + filespec
-
-        if not VOLUME_ID:
-            VOLUME_ID = row['VOLUME_ID'].strip()
 
         # Modify labels under DATA/CUBE before passing into PdsTable
         try:
@@ -152,73 +306,73 @@ def create_supplemental_index_tab(orig_rows, vol_root, supp_index_tab_filename):
         data_label = pdsparser.PdsLabel.from_string(lines).as_dict()
         # Get the data in supplemental index files
         mission_phase = data_label['MISSION_PHASE_NAME'].strip()
-        min_waveno = data_label['SPECTRAL_QUBE']['BAND_BIN']['BAND_BIN_CENTER'][0]
-        max_waveno = data_label['SPECTRAL_QUBE']['BAND_BIN']['BAND_BIN_CENTER'][-1]
+        focal_plane = data_label['FOCAL_PLANE']
+        core_items = data_label['SPECTRAL_QUBE']['CORE']['CORE_ITEMS']
+        band_bin_width = data_label['SPECTRAL_QUBE']['BAND_BIN']['BAND_BIN_WIDTH']
+        min_band_bin_center = data_label['SPECTRAL_QUBE']['BAND_BIN']['BAND_BIN_CENTER'][0]
+        max_band_bin_center = data_label['SPECTRAL_QUBE']['BAND_BIN']['BAND_BIN_CENTER'][-1]
+        min_waveno = (min_band_bin_center) - band_bin_width/2
+        max_waveno = (min_band_bin_center) + band_bin_width/2
+        data_count = data_label['SPECTRAL_QUBE']['IMAGE_MAP_PROJECTION']['DATA_COUNT']
         min_fp_line = data_label['SPECTRAL_QUBE']['IMAGE_MAP_PROJECTION']['MIN_FOOTPRINT_LINE']
         max_fp_line = data_label['SPECTRAL_QUBE']['IMAGE_MAP_PROJECTION']['MAX_FOOTPRINT_LINE']
         min_fp_sample = data_label['SPECTRAL_QUBE']['IMAGE_MAP_PROJECTION']['MIN_FOOTPRINT_SAMPLE']
         max_fp_sample = data_label['SPECTRAL_QUBE']['IMAGE_MAP_PROJECTION']['MAX_FOOTPRINT_SAMPLE']
         spectrum_size = data_label['SPECTRAL_QUBE']['BAND_BIN']['BANDS']
 
-        focal_plane = data_label['FOCAL_PLANE']
-        detector_id = 'FP' + str(focal_plane)
-
-
         start_time = julian.tai_from_iso(data_label['START_TIME'])
         stop_time = julian.tai_from_iso(data_label['STOP_TIME'])
+        observation_id = get_cirs_obs_id(filespec, start_time, stop_time, tol_list)
 
-        obs_list = []
-        for obs_id, time1, time2 in tol_list:
-            if time1 <= stop_time and time2 >= start_time:
-                obs_list.append(obs_id)
-                # print(julian.iso_from_tai(time1), julian.iso_from_tai(time2), obs_id)
-
-        if len(obs_list) != 1:
-            obs_list = [x for x in obs_list if 'SA' not in x]
-
-        if len(obs_list) != 1:
-            print('Bad observation_ids for', filespec, obs_list)
-            observation_id = ''
-        else:
-            observation_id = obs_list[0]
+        # For debugging purpose:
         # print('========================')
         # print(f'Running data_label_filename: {data_label_filename}')
-        # print(f'mission_phase: {mission_phase}')
+        # print(f'VOLUME_ID: {VOLUME_ID}')
+        # print(f'filespec.ljust(73): {filespec.ljust(73)}')
+        # print(f'mission_phase.ljust(25): {mission_phase.ljust(25)}')
+        # print(f'focal_plane: {focal_plane}')
+        # print(f'core_items[1]: {core_items[1]}')
+        # print(f'core_items[0]: {core_items[0]}')
         # print(f'min_waveno: {min_waveno}')
         # print(f'max_waveno: {max_waveno}')
+        # print(f'band_bin_width: {band_bin_width}')
+        # print(f'spectrum_size: {spectrum_size}')
+        # print(f'data_count: {data_count}')
         # print(f'min_fp_line: {min_fp_line}')
         # print(f'max_fp_line: {max_fp_line}')
         # print(f'min_fp_sample: {min_fp_sample}')
         # print(f'max_fp_sample: {max_fp_sample}')
-        # print(f'observation_id: {observation_id}')
-        # print(f'detector_id: {detector_id}')
-        # print(f'observation_name: {observation_name}')
-        # print(f'spectrum_size: {spectrum_size}')
 
         out_str = ''
         # Need to create label for these:
-        out_str += ('"%-32s",' % mission_phase)
-        out_str += ('%4d,'   % min_waveno)
-        out_str += ('%4d,'   % max_waveno)
-        out_str += ('%10.8f,'   % min_fp_line)
-        out_str += ('%10.8f,'   % max_fp_line)
-        out_str += ('%10.8f,'   % min_fp_sample)
-        out_str += ('%10.8f,'   % max_fp_sample)
-        out_str += ('"%-3s",'   % detector_id)
-        out_str += ('"%-32s",'   % observation_id)
-        out_str += ('%5d'      % spectrum_size)
+        # Use formats suggested by Mark:
+        out_str += ('"' + VOLUME_ID + '",')
+        out_str += ('"' + filespec.ljust(73) + '",')
+        out_str += ('"' + mission_phase.ljust(25) + '",')
+        out_str += ('"FP%d",' % focal_plane) # DETECTOR_ID
+        out_str += ('%4d,'     % core_items[1]) # LINES
+        out_str += ('%4d,'     % core_items[0]) # LINE_SAMPLES
+        out_str += ('%#5.0f,'  % min_waveno)
+        out_str += ('%#5.0f,'  % max_waveno)
+        out_str += ('%#3.0f,'  % band_bin_width)
+        out_str += ('%4d,'     % spectrum_size)
+        out_str += ('%6d,'     % data_count)
+        out_str += ('%10.5f,'  % min_fp_line)
+        out_str += ('%10.5f,'  % max_fp_line)
+        out_str += ('%10.5f,'  % min_fp_sample)
+        out_str += ('%10.5f'   % max_fp_sample)
         out_str += '\r\n'
 
         output_fp.write(out_str)
     output_fp.close()
 
-    if os.path.getsize(supp_index_tab_filename) == 0:
+    if os.path.getsize(supp_index_tab_path) == 0:
         EMPTY_SUPPLEMENTAL_INDEX = True
-        os.remove(supp_index_tab_filename)
+        os.remove(supp_index_tab_path)
 
 def create_supplemental_index_label(
-    orig_rows, supp_index_tab_filename, supp_index_label_filename
-    ):
+    orig_rows, supp_index_tab_path, supp_index_label_path
+):
     """Create supplemental index label
     """
     global VOLUME_ID, EMPTY_SUPPLEMENTAL_INDEX
@@ -237,7 +391,7 @@ def create_supplemental_index_label(
 
     label_template = label_template.replace('$RECORDS$', str(len(orig_rows)))
     label_template = label_template.replace(
-                            '$TABLE$', os.path.split(supp_index_tab_filename)[1])
+                            '$TABLE$', os.path.split(supp_index_tab_path)[1])
     now = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
     label_template = label_template.replace('$VOLUME_ID$', VOLUME_ID)
     label_template = label_template.replace('$TIME$', now)
@@ -246,9 +400,23 @@ def create_supplemental_index_label(
     label_template = label_template.replace('$INSTNAME$', instrument_name)
     label_template = label_template.replace('$INSTID$', instrument_id)
 
-    output_fp = open(supp_index_label_filename, 'w')
+    output_fp = open(supp_index_label_path, 'w')
     output_fp.write(label_template)
     output_fp.close()
+
+def graphic_from_centric(value, target):
+    # Convert from planetocentric to planetographic
+    (a,b,c) = BODY_DIMENSIONS[target]
+    flattening = 2.*c / (a + b)
+    tangent = np.tan(value * np.pi/180.)
+    return 180./np.pi * np.arctan(tangent / flattening**2)
+
+def centric_from_graphic(value, target):
+    # Convert from planetographic to planetocentric
+    (a,b,c) = BODY_DIMENSIONS[target]
+    flattening = 2.*c / (a + b)
+    tangent = np.tan(value * np.pi/180.)
+    return 180./np.pi * np.arctan(tangent * flattening**2)
 
 ####################################################
 # Steps to generate index lbl/tab under /metadata
@@ -257,19 +425,19 @@ if len(sys.argv) != 4:
     print('Usage: python generate_cocirs_index_files.py <original_index.lbl> <vol_root> <supp_index.lbl>')
     sys.exit(-1)
 
-orig_index_filename = sys.argv[1]
-orig_index_tab = orig_index_filename.replace('.LBL', '.TAB')
+orig_index_label_path = sys.argv[1]
+orig_index_tab_path = orig_index_label_path.replace('.LBL', '.TAB')
 vol_root = sys.argv[2]
-supp_index_label_filename = sys.argv[3]
+supp_index_label_name = sys.argv[3].replace('.LBL', '.lbl')
 metadata_dir = vol_root.replace('holdings/volumes', 'holdings/metadata')
 
 # reset the modification list & volume id
 MOD_COL_LI = []
-VOLUME_ID = ''
+VOLUME_ID = vol_root[vol_root.rindex('/')+1::]
 
 try:
-    original_index_lbl = open(orig_index_filename, 'r')
-    original_index_tab = open(orig_index_tab, 'r')
+    original_index_lbl = open(orig_index_label_path, 'r')
+    original_index_tab = open(orig_index_tab_path, 'r')
 except FileNotFoundError:
     exit()
 
@@ -278,24 +446,34 @@ if not os.path.exists(metadata_dir):
 
 if metadata_dir[-1] != '/':
     metadata_dir += '/'
-new_index_label_filename = metadata_dir + orig_index_filename[orig_index_filename.rindex('/')+1::]
-new_index_tab_filename = new_index_label_filename.replace('.LBL', '.TAB')
-supp_index_tab_filename = metadata_dir + supp_index_label_filename.replace('.LBL', '.TAB')
-supp_index_label_filename = metadata_dir + supp_index_label_filename
 
-create_index_tab(original_index_tab, metadata_dir, new_index_tab_filename)
-create_index_label(original_index_lbl, metadata_dir, new_index_label_filename)
+orig_index_label_name = orig_index_label_path[orig_index_label_path.rindex('/')+1::]
+INDEX_TAB = orig_index_label_name.replace('.LBL', '.TAB')
+new_index_label_name = VOLUME_ID + '_' +  orig_index_label_name.lower()
+new_index_tab_name = new_index_label_name.replace('lbl', 'tab')
+new_index_label_path = metadata_dir + new_index_label_name
+new_index_tab_path = metadata_dir + new_index_tab_name
+print('=============================')
+print(f'VOLUME_ID: {VOLUME_ID}')
+print(f'new_index_label_path: {new_index_label_path}')
+print(f'new_index_tab_path: {new_index_tab_path}')
+supp_index_tab_path = metadata_dir + supp_index_label_name.replace('.lbl', '.tab')
+supp_index_label_path = metadata_dir + supp_index_label_name
+
+create_index_tab(original_index_tab, metadata_dir, new_index_tab_path)
+create_index_label(original_index_lbl, metadata_dir,
+                   new_index_label_path, new_index_tab_name)
 
 # Modify CUBE_EQUI/POINT/RING_INDEX.LBL before passing into PdsTable
-lines = pdsparser.PdsLabel.load_file(orig_index_filename)
+lines = pdsparser.PdsLabel.load_file(orig_index_label_path)
 for i in range(len(lines)):
     if 'CSS:' in lines[i]:
         lines[i] = lines[i].replace('CSS:', '')
-orig_index_table = pdstable.PdsTable(orig_index_filename, label_contents=lines)
+orig_index_tab_pathle = pdstable.PdsTable(orig_index_label_path, label_contents=lines)
 
-# orig_index_table = pdstable.PdsTable(orig_index_filename)
-orig_rows = orig_index_table.dicts_by_row()
-orig_label = orig_index_table.info.label.as_dict()
+# orig_index_tab_pathle = pdstable.PdsTable(orig_index_label_path)
+orig_rows = orig_index_tab_pathle.dicts_by_row()
+orig_label = orig_index_tab_pathle.info.label.as_dict()
 
-create_supplemental_index_tab(orig_rows, vol_root, supp_index_tab_filename)
-create_supplemental_index_label(orig_rows, supp_index_tab_filename, supp_index_label_filename)
+create_supplemental_index_tab(orig_rows, vol_root, supp_index_tab_path)
+create_supplemental_index_label(orig_rows, supp_index_tab_path, supp_index_label_path)

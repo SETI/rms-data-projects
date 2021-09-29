@@ -16,7 +16,7 @@ OBJECT                          = SUPPLEMENTAL_INDEX_TABLE
   INTERCHANGE_FORMAT            = ASCII
   ROWS                          = $RECORDS$
   ROW_BYTES                     = 139
-  COLUMNS                       = 10
+  COLUMNS                       = 15
   INDEX_TYPE                    = SINGLE
 
   DESCRIPTION                   = "This index supplements the file
@@ -25,23 +25,72 @@ OBJECT                          = SUPPLEMENTAL_INDEX_TABLE
     but exist in the PDS label files."
 
     OBJECT                   = COLUMN
-      NAME                   = MISSION_PHASE_NAME
-      DATA_TYPE              = CHARACTER
+      NAME                   = VOLUME_ID
+      DATA_TYPE              = "CHARACTER"
       COLUMN_NUMBER          = 1
       START_BYTE             = 2
-      BYTES                  = 32
-      FORMAT                 = A32
+      BYTES                  = 11
+      DESCRIPTION            = "The volume containing this product."
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = FILE_SPECIFICATION_NAME
+      DATA_TYPE              = "CHARACTER"
+      COLUMN_NUMBER          = 2
+      START_BYTE             = 16
+      BYTES                  = 73
+      DESCRIPTION            = "Pathname to the detached label which identifies
+                               this data file."
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = MISSION_PHASE_NAME
+      DATA_TYPE              = CHARACTER
+      COLUMN_NUMBER          = 3
+      START_BYTE             = 2
+      BYTES                  = 25
+      FORMAT                 = A25
       DESCRIPTION            = "Mission phase of which this observation
                                is a part."
     END_OBJECT               = COLUMN
 
     OBJECT                   = COLUMN
-      NAME                   = MIN_WAVENUMBER
+      NAME                   = DETECTOR_ID
+      DATA_TYPE              = CHARACTER
+      COLUMN_NUMBER          = 4
+      START_BYTE             = 126
+      BYTES                  = 3
+      FORMAT                 = A3
+      DESCRIPTION            = "The CIRS focal plane used to obtain the data."
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = LINES
       DATA_TYPE              = ASCII_REAL
-      COLUMN_NUMBER          = 2
+      COLUMN_NUMBER          = 5
       START_BYTE             = 37
       BYTES                  = 4
       FORMAT                 = "D4"
+      DESCRIPTION            = "Description for LINES"
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = LINE_SAMPLES
+      DATA_TYPE              = ASCII_REAL
+      COLUMN_NUMBER          = 6
+      START_BYTE             = 37
+      BYTES                  = 4
+      FORMAT                 = "D4"
+      DESCRIPTION            = "Description for LINE_SAMPLES"
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = MIN_WAVENUMBER
+      DATA_TYPE              = ASCII_REAL
+      COLUMN_NUMBER          = 7
+      START_BYTE             = 37
+      BYTES                  = 4
+      FORMAT                 = "F5.0"
       DESCRIPTION            = "The minimum wavenumber at which the
   observation was observed."
     END_OBJECT               = COLUMN
@@ -49,76 +98,22 @@ OBJECT                          = SUPPLEMENTAL_INDEX_TABLE
     OBJECT                   = COLUMN
       NAME                   = MAX_WAVENUMBER
       DATA_TYPE              = ASCII_REAL
-      COLUMN_NUMBER          = 3
+      COLUMN_NUMBER          = 8
       START_BYTE             = 42
       BYTES                  = 4
-      FORMAT                 = "D4"
+      FORMAT                 = "F5.0"
       DESCRIPTION            = "The maximum wavenumber at which the
                                observation was observed."
     END_OBJECT               = COLUMN
 
     OBJECT                   = COLUMN
-      NAME                   = MIN_FOOTPRINT_LINE
+      NAME                   = BAND_BIN_WIDTH
       DATA_TYPE              = ASCII_REAL
-      COLUMN_NUMBER          = 4
-      START_BYTE             = 47
-      BYTES                  = 10
-      FORMAT                 = "F10.8"
-      DESCRIPTION            = "The minimum footprint line at which the
-  observation was observed."
-    END_OBJECT               = COLUMN
-
-    OBJECT                   = COLUMN
-      NAME                   = MAX_FOOTPRINT_LINE
-      DATA_TYPE              = ASCII_REAL
-      COLUMN_NUMBER          = 5
-      START_BYTE             = 58
-      BYTES                  = 10
-      FORMAT                 = "F10.8"
-      DESCRIPTION            = "The maximum footprint line at which the
-  observation was observed."
-    END_OBJECT               = COLUMN
-
-    OBJECT                   = COLUMN
-      NAME                   = MIN_FOOTPRINT_SAMPLE
-      DATA_TYPE              = ASCII_REAL
-      COLUMN_NUMBER          = 6
-      START_BYTE             = 69
-      BYTES                  = 10
-      FORMAT                 = "F10.8"
-      DESCRIPTION            = "The minimum footprint sample at which the
-  observation was observed."
-    END_OBJECT               = COLUMN
-
-    OBJECT                   = COLUMN
-      NAME                   = MAX_FOOTPRINT_SAMPLE
-      DATA_TYPE              = ASCII_REAL
-      COLUMN_NUMBER          = 7
-      START_BYTE             = 80
-      BYTES                  = 10
-      FORMAT                 = "F10.8"
-      DESCRIPTION            = "The maximum footprint sample at which the
-  observation was observed."
-    END_OBJECT               = COLUMN
-
-    OBJECT                   = COLUMN
-      NAME                   = OBSERVATION_ID
-      DATA_TYPE              = CHARACTER
-      COLUMN_NUMBER          = 8
-      START_BYTE             = 91
-      BYTES                  = 32
-      FORMAT                 = A32
-      DESCRIPTION            = "Name of observation"
-    END_OBJECT               = COLUMN
-
-    OBJECT                   = COLUMN
-      NAME                   = DETECTOR_ID
-      DATA_TYPE              = CHARACTER
       COLUMN_NUMBER          = 9
-      START_BYTE             = 126
-      BYTES                  = 3
-      FORMAT                 = A3
-      DESCRIPTION            = "The CIRS focal plane used to obtain the data."
+      START_BYTE             = 42
+      BYTES                  = 4
+      FORMAT                 = "F3.0"
+      DESCRIPTION            = "Description for BAND_BIN_WIDTH"
     END_OBJECT               = COLUMN
 
     OBJECT                   = COLUMN
@@ -127,9 +122,63 @@ OBJECT                          = SUPPLEMENTAL_INDEX_TABLE
       COLUMN_NUMBER          = 10
       START_BYTE             = 132
       BYTES                  = 5
-      FORMAT                 = "D5"
+      FORMAT                 = "D4"
       DESCRIPTION            = "The number of distinct wavelengths or wavelength
                                bins that can be detected in an observation."
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = DATA_COUNT
+      DATA_TYPE              = ASCII_REAL
+      COLUMN_NUMBER          = 11
+      START_BYTE             = 132
+      BYTES                  = 5
+      FORMAT                 = "D6"
+      DESCRIPTION            = "Description for DATA_COUNT"
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = MIN_FOOTPRINT_LINE
+      DATA_TYPE              = ASCII_REAL
+      COLUMN_NUMBER          = 12
+      START_BYTE             = 47
+      BYTES                  = 10
+      FORMAT                 = "F10.5"
+      DESCRIPTION            = "The minimum footprint line at which the
+  observation was observed."
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = MAX_FOOTPRINT_LINE
+      DATA_TYPE              = ASCII_REAL
+      COLUMN_NUMBER          = 13
+      START_BYTE             = 58
+      BYTES                  = 10
+      FORMAT                 = "F10.5"
+      DESCRIPTION            = "The maximum footprint line at which the
+  observation was observed."
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = MIN_FOOTPRINT_SAMPLE
+      DATA_TYPE              = ASCII_REAL
+      COLUMN_NUMBER          = 14
+      START_BYTE             = 69
+      BYTES                  = 10
+      FORMAT                 = "F10.5"
+      DESCRIPTION            = "The minimum footprint sample at which the
+  observation was observed."
+    END_OBJECT               = COLUMN
+
+    OBJECT                   = COLUMN
+      NAME                   = MAX_FOOTPRINT_SAMPLE
+      DATA_TYPE              = ASCII_REAL
+      COLUMN_NUMBER          = 15
+      START_BYTE             = 80
+      BYTES                  = 10
+      FORMAT                 = "F10.5"
+      DESCRIPTION            = "The maximum footprint sample at which the
+  observation was observed."
     END_OBJECT               = COLUMN
 
 END_OBJECT                      = SUPPLEMENTAL_INDEX_TABLE
