@@ -1,5 +1,6 @@
 #!/bin/bash
-PDS_HOLDINGS_DIR=/Volumes/pdsdata/COCIRS/Volumes/pdsdata-raid45/holdings
+# PDS_HOLDINGS_DIR=/Volumes/pdsdata/COCIRS/Volumes/pdsdata-raid45/holdings
+PDS_HOLDINGS_DIR=$1
 METADIR=$PDS_HOLDINGS_DIR/metadata
 VOLROOT=$PDS_HOLDINGS_DIR/volumes
 

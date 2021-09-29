@@ -401,7 +401,7 @@ def create_supplemental_index_label(
     label_template = label_template.replace('$INSTID$', instrument_id)
 
     output_fp = open(supp_index_label_path, 'w')
-    output_fp.write(label_template)
+    output_fp.write(label_template.replace('\n', '\r\n'))
     output_fp.close()
 
 def graphic_from_centric(value, target):
@@ -453,10 +453,6 @@ new_index_label_name = VOLUME_ID + '_' +  orig_index_label_name.lower()
 new_index_tab_name = new_index_label_name.replace('lbl', 'tab')
 new_index_label_path = metadata_dir + new_index_label_name
 new_index_tab_path = metadata_dir + new_index_tab_name
-print('=============================')
-print(f'VOLUME_ID: {VOLUME_ID}')
-print(f'new_index_label_path: {new_index_label_path}')
-print(f'new_index_tab_path: {new_index_tab_path}')
 supp_index_tab_path = metadata_dir + supp_index_label_name.replace('.lbl', '.tab')
 supp_index_label_path = metadata_dir + supp_index_label_name
 
