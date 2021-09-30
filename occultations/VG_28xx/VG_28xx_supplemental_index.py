@@ -1,9 +1,9 @@
 ################################################################################
-# vg_28xx_profile.py: Generates all profileal indices for Voyager ring
+# vg_28xx_supplement.py: Generates all supplemental indices for Voyager ring
 # profiles.
 #
 # Usage:
-#   python vg_28xx_profile.py .../holdings/volumes/VG_28xx*/VG_2801 ...
+#   python vg_28xx_supplemental_index.py .../holdings/volumes/VG_28xx*/VG_2801 ...
 ################################################################################
 
 import numpy as np
@@ -89,7 +89,7 @@ EARTH_RECEIVED_TIMES = {
     'C4399506.IMQ': '1981-08-25T20:25:42',
 }
 
-def index_one_file(root, name, profile):
+def index_one_file(root, name, supplement):
 
     COLUMNS = [
         ("DATA_SET_ID"                  , 1, 35, '"%-33s"', None,    'N/A'),
@@ -112,18 +112,11 @@ def index_one_file(root, name, profile):
         ("PHASE_ANGLE"                  ,-2,  6, '%6.2f'  , None,    -99. ),
         ("RECEIVER_HOST_NAME"           , 1, 11, '"%-9s"' , None,    'N/A'),
         ("SIGNAL_SOURCE_NAME"           , 2, 11, '"%-9s"' , None,    'N/A'),
-        ("TEMPORAL_SAMPLING_INTERVAL"   , 1,  6, '%6.2f'  , None,      0. ),
-        ("TARGET_NAME"                  , 1,  9, '"%-7s"' , None,    'N/A'),
-        ("RING_OCCULTATION_DIRECTION"   , 1,  9, '"%-7s"' , None,    'N/A'),
-        ("START_TIME"                   , 1, 25, '"%-23s"', None,    'N/A'),
-        ("STOP_TIME"                    , 1, 25, '"%-23s"', None,    'N/A'),
-        ("SPACECRAFT_CLOCK_START_COUNT" , 1, 14, '"%-12s"', None,    'N/A'),
-        ("SPACECRAFT_CLOCK_STOP_COUNT"  , 1, 14, '"%-12s"', None,    'N/A'),
+        ("TEMPORAL_SAMPLING_INTERVAL"   , 1,  6, '%6.2f'  , None,    -99. ),
 ]
 
-
     (volume_id, file_spec) = volume_and_filespec(root, name)
-    profile.write('"%s","%s"' % (volume_id, file_spec))
+    supplement.write('"%s","%s"' % (volume_id, file_spec))
 
     if name.endswith('.LBL'):
         label = pdsparser.PdsLabel.from_file(os.path.join(root, name)).as_dict()
@@ -148,33 +141,6 @@ def index_one_file(root, name, profile):
             'EARTH_RECEIVED_START_TIME': start_ert,
             'EARTH_RECEIVED_STOP_TIME': stop_ert,
         }
-
-    if volume_id == 'VG_2810':
-        label['SCAN_MODE'] = '3:1'
-        label['GAIN_MODE'] = 'LOW'
-        label['EDIT_MODE'] = '1:1'
-        label['FILTER_NUMBER'] = 0
-        label['FILTER_NAME'] = 'CLEAR'
-        # multiple values, we put null
-        label['SHUTTER_MODE_ID'] = 'N/A'
-        label['IMAGE_ID '] = 'N/A'
-
-        extra = [
-            ("PRODUCT_ID"                 , 1, 25, '"%-23s"', None,    'N/A'),
-            ("SCAN_MODE"                  , 1,  6, '"%-4s"',  None,    'N/A'),
-            ("GAIN_MODE"                  , 1,  6, '"%-4s"',  None,    'N/A'),
-            ("EDIT_MODE"                  , 1,  6, '"%-4s"',  None,    'N/A'),
-            ("FILTER_NUMBER"              , 1,  1,    '%1d',  None,    'N/A'),
-            ("FILTER_NAME"                , 1,  8, '"%-6s"',  None,    'N/A'),
-            ("SHUTTER_MODE"               , 1,  8, '"%-6s"',  None,    'N/A'),
-            ("IMAGE_ID"                   , 1, 12, '"%-10s"', None,    'N/A'),
-        ]
-        COLUMNS += extra
-    else:
-        extra = [
-            ("PRODUCT_ID"                 , 1, 23, '"%-21s"', None,    'N/A'),
-        ]
-        COLUMNS += extra
 
     if 'SPICE' not in root:
         label['WAVELENGTH_BAND']  = WAVELENGTH_BANDS[volume_id]
@@ -265,9 +231,9 @@ def index_one_file(root, name, profile):
         else:
             value = info[-1]
 
-        profile.write("," + format_col(value, *info))
+        supplement.write("," + format_col(value, *info))
 
-    profile.write('\r\n')
+    supplement.write('\r\n')
 
 def format_col(value, name, count, width, fmt0, fmt1, nullval):
 
@@ -310,11 +276,6 @@ def format_col(value, name, count, width, fmt0, fmt1, nullval):
 
     if len(result) > width:
         if fmt1 is None:
-            print "fmt0:", fmt0
-            print "value:", value
-            print "result:", result
-            print "len(result):", len(result)
-            print "width:", width
             print "**** WARNING: No second format: ", name, value, fmt0, result
         else:
             result = fmt1 % value
@@ -344,125 +305,28 @@ output_dir = sys.argv[2]
 
 ivol = input_dir.rfind('VG_28')
 volname = input_dir[ivol:ivol+7]
-vid = input_dir[ivol::]
 
 prefix = os.path.join(output_dir, volname)
 
-print prefix + "_profile_index.tab"
-profile = open(prefix + "_profile_index.tab", "w")
+print prefix + "_supplemental_index.tab"
+supplement = open(prefix + "_supplemental_index.tab", "w")
 
-vistied_profiles = []
-visited_2801 = []
-visited_2802 = []
-visited_2803 = []
 # Walk the directory tree...
 for (root, dirs, files) in os.walk(input_dir):
-  # if 'CATALOG' in root: continue
-  # if 'DOCUMENT' in root: continue
-  # if 'INDEX' in root: continue
-  # if 'SOFTWARE' in root: continue
 
-  if ((not vid == 'VG_2810' and not vid == 'VG_2801' and not 'EASYDATA' in root) or
-      (vid == 'VG_2801' and not 'EASYDATA' in root and not 'CALIB' in root)):
-      continue
-  if vid == 'VG_2810' and not 'DATA' in root: continue
-  dirs.sort()
+  if 'CATALOG' in root: continue
+  if 'DOCUMENT' in root: continue
+  if 'INDEX' in root: continue
+  if 'SOFTWARE' in root: continue
 
   for name in files:
 
-    (volume_id, file_spec) = volume_and_filespec(root, name)
-
-    # VG_2801
-    # S RINGS, 1 OPUS id, all egress, we use: PS1P0107 (lowest resolution)
-    # U RINGS, combinations of ring names, and ingree/egress, will have different OPUS ids.
-    # N RINGS, 1 OPUS id, we use: UN1F01 (loweest resolution)
-    if vid == 'VG_2801':
-        basename = file_spec[file_spec.rindex('/')::].strip()
-        if 'CALIB' in root and 'PS2C01' not in basename: continue
-        if (basename.startswith('/PS')
-            and (('EASYDATA' in root and 'PS1P0107' not in basename)
-            or ('CALIB' in root and 'PS2C01' not in basename))):
-            continue
-        elif basename.startswith('/PU'):
-            # planet, ring names, ingree/egress
-            basename_info = basename[3] + basename[7:9]
-            # basename_info = basename[7:9]
-            ext = basename[-3::].upper()
-            if basename_info in visited_2801:
-                continue
-            if ext == 'LBL':
-                visited_2801.append(basename_info)
-        elif (basename.startswith('/PN')
-            and 'PN1P0104' not in basename):
-            continue
-
-    # VG_2802
-    # S RINGS, 3 OPUS ids, US1 (egress), US2 (ingress), US3 (different star)
-    # U RINGS, combinations of ring names, and ingree/egress, will have different OPUS ids.
-    # N RINGS, 1 OPUS id, we use: PN1P0104 (loweest resolution)
-    elif vid == 'VG_2802':
-        basename = file_spec[file_spec.rindex('/')::].strip()
-        if basename.startswith('/US'):
-            s_basename_info = basename[1:4]
-            ext = basename[-3::].upper()
-            if s_basename_info in visited_2802:
-                continue
-            if ext == 'LBL':
-                visited_2802.append(s_basename_info)
-        elif basename.startswith('/UU'):
-            # ring names, ingree/egress
-            basename_info = basename[7:9]
-            version = basename[5]
-            ext = basename[-3::].upper()
-            if version == '1' or basename_info in visited_2802:
-                continue
-            if ext == 'LBL':
-                visited_2802.append(basename_info)
-        elif (basename.startswith('/UN')
-              and 'UN1F01' not in basename):
-            continue
-
-    # VG_2803
-    # We only care about P2 (version 2)
-    # S RINGS, 2 OPUS ids, one for X band one for S band, so we use: RS1P2S07 & RS1P2X07 (loweest resolution)
-    # U RINGS, combinations of X/S band, ring names, and ingree/egress, will have different OPUS ids.
-    elif vid == 'VG_2803':
-        basename = file_spec[file_spec.rindex('/')::].strip()
-        if (basename.startswith('/RS')
-            and 'RS1P2S07' not in basename
-            and 'RS1P2X07' not in basename):
-            continue
-        elif basename.startswith('/RU'):
-            # X/S band, ring names, ingree/egress
-            basename_info = basename[6:9]
-            version = basename[5]
-            ext = basename[-3::].upper()
-            if version == '1' or basename_info in visited_2803:
-                continue
-            if ext == 'LBL':
-                visited_2803.append(basename_info)
-
-    elif vid == 'VG_2810':
-        basename = file_spec[file_spec.rindex('/')::].strip()
-        if 'KM002' not in basename:
-            continue
-
-    else:
-        basename = file_spec[file_spec.rindex('/')::].strip()
-
-    # print(visited_2802)
-    # print(len(visited_2802))
     # Ignore any file that is not a label
     if name.endswith(".LBL") or name.endswith(".IMQ"):
-        if basename in vistied_profiles:
-            continue
-        else:
-            vistied_profiles.append(basename)
-
         print '    ', root, name
-        index_one_file(root, name, profile)
+        index_one_file(root, name, supplement)
 
 # Close all files
-profile.close()
+supplement.close()
 
 ################################################################################
