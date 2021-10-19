@@ -157,9 +157,9 @@ $IF(len(target_naif_ids) > 3 and target_naif_ids[3] != 'N/A')
                 LID of central body: $primary_lids[3]$;
                 NAIF ID of central body: $primary_naif_ids[3]$.
             </description>
-$IF(len(target_naif_ids) > 3)
+$IF(len(target_naif_ids) > 4)
             <Internal_Reference>
-                <lid_reference>$target_lids[3]$</lid_reference>
+                <lid_reference>$target_lids[4]$</lid_reference>
                 <reference_type>data_to_target</reference_type>
             </Internal_Reference>
         </Target_Identification>

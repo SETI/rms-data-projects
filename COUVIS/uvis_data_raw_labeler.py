@@ -460,7 +460,9 @@ def uvis_purpose(purpose_str, target_name):
 def write_uvis_pds4_label(datafile, pds3_label):
 
     # Read the PDS3 label and the VICAR header, fixing known syntax errors
-    label_text = open(pds3_label).read()
+    with open(pds3_label as f:
+        label_text = f.read()
+
     label_text = label_text.replace('\r','') # pyparsing is not set up for <CR>
     label = pdsparser.PdsLabel.from_string(label_text).as_dict()
 
