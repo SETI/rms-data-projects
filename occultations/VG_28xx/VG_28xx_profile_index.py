@@ -150,13 +150,13 @@ def index_one_file(root, name, profile):
         }
 
     if volume_id == 'VG_2810':
-        label['SCAN_MODE'] = '3:1'
+        label['SCAN_MODE'] = '1:1'
         label['GAIN_MODE'] = 'LOW'
         label['EDIT_MODE'] = '1:1'
         label['FILTER_NUMBER'] = 0
         label['FILTER_NAME'] = 'CLEAR'
         # multiple values, we put null
-        label['SHUTTER_MODE_ID'] = 'N/A'
+        label['SHUTTER_MODE'] = 'NAONLY'
         label['IMAGE_ID '] = 'N/A'
 
         extra = [
