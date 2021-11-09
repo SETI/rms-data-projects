@@ -26,26 +26,26 @@ NEW_DATA_TYPE = ("ASCII_REAL", "ASCII_INTEGER")
 EMPTY_SUPPLEMENTAL_INDEX = False
 
 CORRECT_EQUI_POINT_WIDTHS = {
-    18: 14,     # CSS:BODY_SUB_SOLAR_LATITUDE_BEGINNING
-    19: 14,     # CSS:BODY_SUB_SOLAR_LATITUDE_MIDDLE
-    20: 14,     # CSS:BODY_SUB_SOLAR_LATITUDE_END
+    18: 16,     # CSS:BODY_SUB_SOLAR_LATITUDE_BEGINNING
+    19: 16,     # CSS:BODY_SUB_SOLAR_LATITUDE_MIDDLE
+    20: 16,     # CSS:BODY_SUB_SOLAR_LATITUDE_END
     21: 16,     # CSS:BODY_SUB_SOLAR_LATITUDE_PC_BEGINNING
     22: 16,     # CSS:BODY_SUB_SOLAR_LATITUDE_PC_MIDDLE
     23: 16,     # CSS:BODY_SUB_SOLAR_LATITUDE_PC_END
     27: 14,     # CSS:BODY_SUB_SPACECRAFT_LATITUDE_BEGINNING
     28: 14,     # CSS:BODY_SUB_SPACECRAFT_LATITUDE_MIDDLE
     29: 14,     # CSS:BODY_SUB_SPACECRAFT_LATITUDE_END
-    30: 16,     # CSS:BODY_SUB_SPACECRAFT_LATITUDE_PC_BEGINNING
-    31: 16,     # CSS:BODY_SUB_SPACECRAFT_LATITUDE_PC_MIDDLE
-    32: 16,     # CSS:BODY_SUB_SPACECRAFT_LATITUDE_PC_END
-    37: 14,     # CSS:MEAN_BORESIGHT_LATITUDE_ZPD
+    30: 14,     # CSS:BODY_SUB_SPACECRAFT_LATITUDE_PC_BEGINNING
+    31: 14,     # CSS:BODY_SUB_SPACECRAFT_LATITUDE_PC_MIDDLE
+    32: 14,     # CSS:BODY_SUB_SPACECRAFT_LATITUDE_PC_END
+    37: 16,     # CSS:MEAN_BORESIGHT_LATITUDE_ZPD
     38: 16,     # CSS:MEAN_BORESIGHT_LATITUDE_ZPD_PC
 }
 
 BODY_DIMENSIONS = {
     "MIMAS"     : ( 207.4,  196.8,  190.6),
     "ENCELADUS" : ( 256.6,  251.4,  248.3),
-    "TETHYS"    : ( 540.4,  531.1,  527.5),
+    "TEHTYS"    : ( 540.4,  531.1,  527.5),
     "DIONE"     : ( 563.8,  561. ,  560.3),
     "RHEA"      : ( 767.2,  762.5,  763.1),
     "TITAN"     : (2575. , 2575. , 2575. ),
@@ -126,8 +126,8 @@ def create_index_tab(original_index_tab, metadata_dir, new_index_tab_path):
 
             # Handling N/A in CSS:* columns
             if 'N/A' in row_li[i2]:
-                new_val = row_li[i2].replace('"', ' ')
-                row_li[i2] = new_val.replace('N/A  ', '-200.')
+                new_val = row_li[i2].replace('"', '')
+                row_li[i2] = new_val.replace('N/A', '-200.')
                 continue
 
             isInt = True
@@ -172,7 +172,7 @@ def create_index_label(
     # 1. Change data type to "ASCII_REAL" if COLUMN_NUMBER is in the mod_col_li
     # 2. Change data type to "ASCII_INTERGER" for SCET_START/SCET_END/FOCAL_PLANE
     # 3. If it's CSS: columns, change data type to "ASCII_REAL" & add a new line
-    # "NOT_APPLICABLE_CONSTANT= -200." Also put quotes around the NAME value.
+    # "NOT_APPLICABLE_CONSTANT= -200."
     new_lbl = open(new_index_label_path, 'w')
     i = 0
     while i < len(original_lbl_list):
@@ -184,10 +184,10 @@ def create_index_label(
               'FOCAL_PLANE' in line):
             original_lbl_list[i+1] = original_lbl_list[i+1].replace(OLD_DATA_TYPE, NEW_DATA_TYPE[1])
         elif 'CSS:' in line:
-            line = line.replace('CSS:','"CSS:').rstrip() + '"\n'    # put quotes around NAME
-            original_lbl_list[i] = line
-            original_lbl_list[i+1] = (original_lbl_list[i+1].replace(OLD_DATA_TYPE, NEW_DATA_TYPE[0])
-                        + '    NOT_APPLICABLE_CONSTANT= -200.\n')   # \n converted to \r\n below!
+            original_lbl_list[i+1] = original_lbl_list[i+1].replace(OLD_DATA_TYPE, NEW_DATA_TYPE[0])
+            original_lbl_list.insert(i+2, '    NOT_APPLICABLE_CONSTANT= -200.\r\n')
+        elif ('COLUMN_NUMBER' in line and int(line[line.find('=')+1::]) in MOD_COL_LI):
+            original_lbl_list[i-1] = original_lbl_list[i-1].replace(OLD_DATA_TYPE, NEW_DATA_TYPE[0])
         i += 1
 
     # create new index label file
@@ -207,7 +207,7 @@ def get_cassini_tol_list():
             break
         fields = line.split('\t')
         obs_id = fields[0]
-        if not obs_id.startswith('CIRS') or obs_id.endswith('_SI'):
+        if not obs_id.startswith('CIRS'):
             continue
         start_time = julian.tai_from_iso(fields[3])
         end_time = julian.tai_from_iso(fields[6])
@@ -219,22 +219,13 @@ def get_cassini_tol_list():
 def get_cirs_obs_id(filespec, start_time, stop_time, tol_list):
     """Return the observation id
     """
-    basename = os.path.basename(filespec)
-    parts = basename.split('_')
+    parts = os.path.basename(filespec).split('_')
     parts = [p for p in parts if p]     # omit empty entries due to repeated "_"
     pattern = ('CIRS_' + parts[0] + '_' + parts[1] + '_' +
                ('PRIME' if parts[2][:2] == 'CI' else parts[2][:2]))
     # python 3.8
     # pattern = ('CIRS_' + parts[0] + '_' + parts[1] + '_' +
     #            ('PRIME' if (p := parts[2][:2]) == 'CI' else p))
-
-    # TOL does not include events before mid-May 2004. They all have a simple
-    # form, "CIRS_C4xSA_something_ISS". This is consistent with the pattern,
-    # except that the pattern ends with "_IS" instead of "_ISS".
-    if basename.startswith('C4'):
-        obs_id = pattern + 'S'
-        print('Early activity name', obs_id)
-        return obs_id
 
     obs_by_time = []
     obs_by_name = []
@@ -250,55 +241,28 @@ def get_cirs_obs_id(filespec, start_time, stop_time, tol_list):
 
     if len(best_match) > 1:
         best_match.sort()
-        print('Ambiguous observation_id', filespec,
-              'ID used:', best_match[0], 'ignored:', best_match[1:])
+        print('Ambiguous observation_id for', filespec, best_match)
         return best_match[0]
 
-    if len(obs_by_time) == 1:
-        if len(obs_by_name) == 1:
-            print('Time falls within observation with a different ID:',
-                  filespec, 'ID used:', obs_by_name[0], 'ignored:', obs_by_time[0])
-            return obs_by_name[0]
-
-        if len(obs_by_name) == 0:
-            print('Name does not match a known ID; timing used for match:',
-                  filespec, 'ID used:', obs_by_time[0])
-            return obs_by_time[0]
-
-        print('Name is ambiguous; timing used for match:',
-              filespec, 'ID used:', obs_by_time[0], 'ignored:', obs_by_name)
-        return obs_by_time[0]
-
-    if len(obs_by_time) == 0:
-        if len(obs_by_name) == 1:
-            print('No timing match; name used for ID:',
-                  filespec, 'ID used:', obs_by_name[0])
-            return obs_by_name[0]
-
-        if len(obs_by_name) == 0:
-            print('No timing or name match:', filespec)
-            return ''
-
-        print('No timing match; multiple IDs match name',
-              filespec, 'ID used:', obs_by_name[0], 'ignored:', obs_by_name[1:])
-        return obs_by_name[0]
-
-    # ... at this point, multiple IDs match the observation time ...
-
     if len(obs_by_name) == 1:
-        print('Timing is ambiguous; name used to match ID:',
-              filespec, 'ID used:', obs_by_name[0], 'ignored:', obs_by_time)
+        print('Timing mismatch in observation_id for', filespec, obs_by_name[0])
         return obs_by_name[0]
 
-    if len(obs_by_name) == 0:
-        print('Timing is ambiguous; no name matches ID:',
-              filespec, 'ID used:', obs_by_time[0], 'ignored:', obs_by_time[1:])
+    if len(obs_by_name) > 1:
+        print('Timing mismatch with observation_ids for', filespec, obs_by_name)
+        return obs_by_name[0]
+
+    print('Filespec does not match a known observation_id', filespec, pattern)
+
+    if len(obs_by_time) == 1:
         return obs_by_time[0]
 
-    print('Name and timing are both ambigous and disjoint',
-          filespec, 'ID used:', obs_by_time[0], 'ignored:', obs_by_time[1:],
-          obs_by_name)
-    return obs_by_time[0]
+    if len(obs_by_time) > 1:
+        print('Multiple observations match time for', filespec, obs_by_time)
+        return obs_by_time[0]
+
+    print('Timing does not match a known observation_id', filespec)
+    return ''
 
 def create_supplemental_index_tab(orig_rows, vol_root, supp_index_tab_path):
     """Create supplemental index tab
@@ -355,7 +319,6 @@ def create_supplemental_index_tab(orig_rows, vol_root, supp_index_tab_path):
         min_fp_sample = data_label['SPECTRAL_QUBE']['IMAGE_MAP_PROJECTION']['MIN_FOOTPRINT_SAMPLE']
         max_fp_sample = data_label['SPECTRAL_QUBE']['IMAGE_MAP_PROJECTION']['MAX_FOOTPRINT_SAMPLE']
         spectrum_size = data_label['SPECTRAL_QUBE']['BAND_BIN']['BANDS']
-        backplanes = data_label['SPECTRAL_QUBE']['SUFFIX']['SUFFIX_ITEMS'][-1]
 
         start_time = julian.tai_from_iso(data_label['START_TIME'])
         stop_time = julian.tai_from_iso(data_label['STOP_TIME'])
@@ -385,21 +348,19 @@ def create_supplemental_index_tab(orig_rows, vol_root, supp_index_tab_path):
         # Use formats suggested by Mark:
         out_str += ('"' + VOLUME_ID + '",')
         out_str += ('"' + filespec.ljust(73) + '",')
-        out_str += ('"' + observation_id.ljust(29) + '",')
         out_str += ('"' + mission_phase.ljust(25) + '",')
         out_str += ('"FP%d",' % focal_plane) # DETECTOR_ID
-        out_str += ('%5d,'     % core_items[1]) # LINES
-        out_str += ('%5d,'     % core_items[0]) # LINE_SAMPLES
-        out_str += ('%5d,'     % spectrum_size)
-        out_str += ('%2d,'     % backplanes)
-        out_str += ('%8.3f,'   % min_waveno)
-        out_str += ('%8.3f,'   % max_waveno)
-        out_str += ('%6.3f,'   % band_bin_width)
+        out_str += ('%4d,'     % core_items[1]) # LINES
+        out_str += ('%4d,'     % core_items[0]) # LINE_SAMPLES
+        out_str += ('%#5.0f,'  % min_waveno)
+        out_str += ('%#5.0f,'  % max_waveno)
+        out_str += ('%#3.0f,'  % band_bin_width)
+        out_str += ('%4d,'     % spectrum_size)
         out_str += ('%6d,'     % data_count)
-        out_str += ('%12.5f,'  % min_fp_line)
-        out_str += ('%12.5f,'  % max_fp_line)
-        out_str += ('%12.5f,'  % min_fp_sample)
-        out_str += ('%12.5f'   % max_fp_sample)
+        out_str += ('%10.5f,'  % min_fp_line)
+        out_str += ('%10.5f,'  % max_fp_line)
+        out_str += ('%10.5f,'  % min_fp_sample)
+        out_str += ('%10.5f'   % max_fp_sample)
         out_str += '\r\n'
 
         output_fp.write(out_str)
@@ -460,9 +421,6 @@ def centric_from_graphic(value, target):
 ####################################################
 # Steps to generate index lbl/tab under /metadata
 ####################################################
-
-SKIP_SUPPLEMENTAL = False
-
 if len(sys.argv) != 4:
     print('Usage: python generate_cocirs_index_files.py <original_index.lbl> <vol_root> <supp_index.lbl>')
     sys.exit(-1)
@@ -502,17 +460,16 @@ create_index_tab(original_index_tab, metadata_dir, new_index_tab_path)
 create_index_label(original_index_lbl, metadata_dir,
                    new_index_label_path, new_index_tab_name)
 
-if not SKIP_SUPPLEMENTAL:
-    # Modify CUBE_EQUI/POINT/RING_INDEX.LBL before passing into PdsTable
-    lines = pdsparser.PdsLabel.load_file(orig_index_label_path)
-    for i in range(len(lines)):
-        if 'CSS:' in lines[i]:
-            lines[i] = lines[i].replace('CSS:', '')
-    orig_index_tab_pathle = pdstable.PdsTable(orig_index_label_path, label_contents=lines)
+# Modify CUBE_EQUI/POINT/RING_INDEX.LBL before passing into PdsTable
+lines = pdsparser.PdsLabel.load_file(orig_index_label_path)
+for i in range(len(lines)):
+    if 'CSS:' in lines[i]:
+        lines[i] = lines[i].replace('CSS:', '')
+orig_index_tab_pathle = pdstable.PdsTable(orig_index_label_path, label_contents=lines)
 
-    # orig_index_tab_pathle = pdstable.PdsTable(orig_index_label_path)
-    orig_rows = orig_index_tab_pathle.dicts_by_row()
-    orig_label = orig_index_tab_pathle.info.label.as_dict()
+# orig_index_tab_pathle = pdstable.PdsTable(orig_index_label_path)
+orig_rows = orig_index_tab_pathle.dicts_by_row()
+orig_label = orig_index_tab_pathle.info.label.as_dict()
 
-    create_supplemental_index_tab(orig_rows, vol_root, supp_index_tab_path)
-    create_supplemental_index_label(orig_rows, supp_index_tab_path, supp_index_label_path)
+create_supplemental_index_tab(orig_rows, vol_root, supp_index_tab_path)
+create_supplemental_index_label(orig_rows, supp_index_tab_path, supp_index_label_path)

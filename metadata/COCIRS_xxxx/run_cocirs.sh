@@ -24,7 +24,7 @@ COCIRS=(0401 0402 0403 0404 0405 0406 0407 0408 0409 0410 0411 0412
 
 for vol in "${COCIRS[@]}"; do \
     echo '******' COCIRS_${vol} '******';\
-    python generate_cocirs_index_files.py $VOLROOT/COCIRS_${vol:0:1}xxx/COCIRS_${vol}/INDEX/CUBE_EQUI_INDEX.LBL $VOLROOT/COCIRS_${vol:0:1}xxx/COCIRS_${vol}  COCIRS_${vol}_cube_equi_supplemental_index.lbl; \
-    python generate_cocirs_index_files.py $VOLROOT/COCIRS_${vol:0:1}xxx/COCIRS_${vol}/INDEX/CUBE_POINT_INDEX.LBL $VOLROOT/COCIRS_${vol:0:1}xxx/COCIRS_${vol}  COCIRS_${vol}_cube_point_supplemental_index.lbl; \
-    python generate_cocirs_index_files.py $VOLROOT/COCIRS_${vol:0:1}xxx/COCIRS_${vol}/INDEX/CUBE_RING_INDEX.LBL $VOLROOT/COCIRS_${vol:0:1}xxx/COCIRS_${vol}  COCIRS_${vol}_cube_ring_supplemental_index.lbl; \
+    python generate_cocirs_index_files.py $VOLROOT/COCIRS_${vol:0:1}xxx/COCIRS_${vol}/INDEX/CUBE_EQUI_INDEX.LBL $VOLROOT/COCIRS_${vol:0:1}xxx/COCIRS_${vol} COCIRS_${vol}_cube_equi_supplemental_index.lbl; \
+    python generate_cocirs_index_files.py $VOLROOT/COCIRS_${vol:0:1}xxx/COCIRS_${vol}/INDEX/CUBE_POINT_INDEX.LBL $VOLROOT/COCIRS_${vol:0:1}xxx/COCIRS_${vol} COCIRS_${vol}_cube_point_supplemental_index.lbl; \
+    python generate_cocirs_index_files.py $VOLROOT/COCIRS_${vol:0:1}xxx/COCIRS_${vol}/INDEX/CUBE_RING_INDEX.LBL $VOLROOT/COCIRS_${vol:0:1}xxx/COCIRS_${vol} COCIRS_${vol}_cube_ring_supplemental_index.lbl; \
 done;
