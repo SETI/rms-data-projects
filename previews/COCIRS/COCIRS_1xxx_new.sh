@@ -14,7 +14,7 @@ do
     prefix=$(dirname "${outpath}")
 
     picmaker $jpgpath --directory $prefix \
-        --verbose --noclobber --proceed --versions COCIRS_1xxx_previews.txt
+        --verbose=2 --noclobber --proceed --versions COCIRS_1xxx_previews.txt
 
     if [ "$?" = "2" ]; then
         exit 2

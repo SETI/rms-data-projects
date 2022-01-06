@@ -24,7 +24,7 @@ do
 
     python ../picmaker.py $volpath/DATA \
         --directory=$outpath/DATA --pattern=\*_RAW.IMG --strip _RAW \
-        --recursive --down --verbose --proceed --extension=jpg \
+        --recursive --down --verbose=2 --proceed --extension=jpg \
         --percentiles 0.1 99.9 --trim=5 --suffix=_full
 
     if [ "$?" = "2" ]; then

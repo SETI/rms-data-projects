@@ -39,7 +39,7 @@ do
 
     picmaker $volpath/DATA \
         --directory $outpath/DATA --pattern \*.LBL \
-        --recursive --verbose --proceed --versions HSTI_previews.txt
+        --recursive --verbose=2 --proceed --versions HSTI_previews.txt
 
     if [ "$?" = "2" ]; then
         exit 2

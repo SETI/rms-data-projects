@@ -39,7 +39,7 @@ do
 
     picmaker $volpath/EXTRAS/CUBE_OVERVIEW \
         --directory $outpath/DATA/CUBE --pattern \*.JPG \
-        --recursive --verbose --proceed --versions COCIRS_1xxx_previews.txt
+        --recursive --verbose=2 --proceed --versions COCIRS_1xxx_previews.txt
 
     if [ "$?" = "2" ]; then
         exit 2

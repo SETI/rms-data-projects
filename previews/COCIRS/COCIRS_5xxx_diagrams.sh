@@ -15,7 +15,7 @@ do
 
     picmaker $volpath/BROWSE \
         --directory $outpath/BROWSE --pattern \*.PNG \
-        --recursive --verbose --proceed --versions COCIRS_5xxx_diagrams.txt
+        --recursive --verbose=2 --proceed --versions COCIRS_5xxx_diagrams.txt
 
     if [ "$?" = "2" ]; then
         exit 2

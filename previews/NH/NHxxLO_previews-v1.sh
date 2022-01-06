@@ -1,9 +1,8 @@
-#!/bin/bash
 ################################################################################
-# Create preview images for HST/WFPC2 images
+# Create preview images for NH LORRI images
 #
 # Sample usage:
-#   HSTU_previews.sh <volumes path>/HSTU0_8634 ...
+#   NHxxLO_previews.sh [.../pdsdata/holdings/volumes/NHxxLO_2xxx/NHPELO_2001] ...
 ################################################################################
 
 HOME=`pwd`
@@ -35,15 +34,13 @@ do
     fi
 
     outpath=${volpath/volumes/previews}
-    mkdir -p $outpath/DATA
+    mkdir -p $outpath/data
 
-    picmaker $volpath/DATA \
-        --directory $outpath/DATA --pattern \*.LBL \
-        --recursive --verbose=2 --proceed \
-        --hst --pointer D0M_TIFF_DOCUMENT --alt_pointer D0M_JPEG_DOCUMENT \
-        --strip _RAW --alt_strip _DRZ \
-        --percentile 0.02 99.95 -x jpg --trim 100 --gamma 1.2 \
-        --versions HSTU_previews.txt
+    picmaker $volpath/data \
+        --directory $outpath/data --pattern \*.fit \
+        --up --verbose --proceed --extension=jpg \
+        --percentiles 0.01 99.9 \
+        --recursive --verbose --proceed --versions=NHxxLO_previews-v1.txt
 
     if [ "$?" = "2" ]; then
         exit 2

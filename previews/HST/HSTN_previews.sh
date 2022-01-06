@@ -40,7 +40,7 @@ do
     picmaker $volpath/DATA \
         --directory $outpath/DATA --pattern \*.LBL \
         --percentile 0.02 99.98 -x jpg --gamma 2 \
-        --recursive --verbose --proceed --versions HSTN_previews.txt
+        --recursive --verbose=2 --proceed --versions HSTN_previews.txt
 
     if [ "$?" = "2" ]; then
         exit 2
