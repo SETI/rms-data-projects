@@ -43,7 +43,7 @@ do
 
     picmaker $volpath/data \
         --directory $outpath/data --pattern \*.IMG \
-        --recursive --verbose --proceed --versions=COISS_previews.txt
+        --recursive --verbose=2 --proceed --versions=COISS_previews.txt
 
     if [ "$?" = "2" ]; then
         exit 2

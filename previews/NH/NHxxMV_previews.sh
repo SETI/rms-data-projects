@@ -38,9 +38,9 @@ do
 
     picmaker $volpath/data \
         --directory $outpath/data --pattern \*.fit \
-        --up --verbose --proceed --extension=jpg \
-        --percentiles 1. 99.8 --gamma 2 \
-        --recursive --verbose --proceed --versions=NHxxMV_previews.txt
+        --up --verbose=2 --proceed --extension=jpg \
+        --valid 0 32767 --percentiles 0.1 99.9 --footprint=5 --gamma 2 \
+        --recursive --versions=NHxxMV_previews.txt
 
     if [ "$?" = "2" ]; then
         exit 2
