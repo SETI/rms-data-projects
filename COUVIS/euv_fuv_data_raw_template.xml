@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1B00.sch"
+<?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1H00.sch"
     schematypens="http://purl.oclc.org/dsdl/schematron"?>
-<?xml-model href="https://pds.nasa.gov/pds4/disp/v1/PDS4_DISP_1B00.sch"
+<?xml-model href="https://pds.nasa.gov/pds4/disp/v1/PDS4_DISP_1H00.sch"
     schematypens="http://purl.oclc.org/dsdl/schematron"?>
-<?xml-model href="https://pds.nasa.gov/pds4/sp/v1/PDS4_SP_1B00_1100.sch"
+<?xml-model href="https://pds.nasa.gov/pds4/sp/v1/PDS4_SP_1H00_1100.sch"
     schematypens="http://purl.oclc.org/dsdl/schematron"?>
-<?xml-model href="https://pds.nasa.gov/pds4/mission/cassini/v1/PDS4_CASSINI_1B00_1300.sch"
+<?xml-model href="https://pds.nasa.gov/pds4/mission/cassini/v1/PDS4_CASSINI_1H00_1300.sch"
     schematypens="http://purl.oclc.org/dsdl/schematron"?>
 
 <Product_Observational
@@ -16,15 +16,15 @@
     xmlns:cassini="http://pds.nasa.gov/pds4/mission/cassini/v1"
 
     xsi:schemaLocation="
-    http://pds.nasa.gov/pds4/pds/v1 https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1B00.xsd
-    http://pds.nasa.gov/pds4/disp/v1 https://pds.nasa.gov/pds4/disp/v1/PDS4_DISP_1B00.xsd
-    http://pds.nasa.gov/pds4/sp/v1 https://pds.nasa.gov/pds4/sp/v1/PDS4_SP_1B00_1100.xsd
-    http://pds.nasa.gov/pds4/mission/cassini/v1 https://pds.nasa.gov/pds4/mission/cassini/v1/PDS4_CASSINI_1B00_1300.xsd">
+    http://pds.nasa.gov/pds4/pds/v1 https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1H00.xsd
+    http://pds.nasa.gov/pds4/disp/v1 https://pds.nasa.gov/pds4/disp/v1/PDS4_DISP_1H00.xsd
+    http://pds.nasa.gov/pds4/sp/v1 https://pds.nasa.gov/pds4/sp/v1/PDS4_SP_1H00_1100.xsd
+    http://pds.nasa.gov/pds4/mission/cassini/v1 https://pds.nasa.gov/pds4/mission/cassini/v1/PDS4_CASSINI_1H00_1300.xsd">
 
     <Identification_Area>
-        <logical_identifier>urn:nasa:pds:cassini_uvis_$cruise_or_saturn=('cruise' if basename < '2004' else 'saturn')$:data_raw_$inst=basename.split('_')[-1][:-4]$:$basename[:-4]$</logical_identifier>
+        <logical_identifier>urn:nasa:pds:cassini_uvis_euvfuv_$cruise_or_saturn=('cruise' if basename.split('_')[0][-4:] < '2004' else 'saturn')$:data_raw:$basename[:-4]$</logical_identifier>
         <version_id>1.0</version_id>
-        <title>Cassini UVIS $inst.upper()$ $('3D Array' if is_qube else 'Spectrum')$ $basename$</title>
+        <title>Cassini UVIS $inst=basename.split('_')[0][:-4].upper()$ $('3D Array' if is_qube else 'Spectrum')$ $basename$</title>
         <information_model_version>1.11.0.0</information_model_version>
         <product_class>Product_Observational</product_class>
         <Citation_Information>
@@ -44,7 +44,10 @@
         <comment>
             This product was migrated from the original PDS3 product.
             Values for attributes in this label are based on the corresponding
-            values in the PDS3 label.
+	    values in the PDS3 label.
+$IF(len(calibration_files)==0)
+	    Note there are no calibration files associated with this product.
+$ONCE
         </comment>
         <Time_Coordinates>
             <start_date_time>$DATETIME(START_TIME)$</start_date_time>
@@ -160,9 +163,9 @@ $IF(len(target_naif_ids) > 3 and target_naif_ids[3] != 'N/A')
                 LID of central body: $primary_lids[3]$;
                 NAIF ID of central body: $primary_naif_ids[3]$.
             </description>
-$IF(len(target_naif_ids) > 4)
+$IF(len(target_naif_ids) > 3)
             <Internal_Reference>
-                <lid_reference>$target_lids[4]$</lid_reference>
+                <lid_reference>$target_lids[3]$</lid_reference>
                 <reference_type>data_to_target</reference_type>
             </Internal_Reference>
         </Target_Identification>
@@ -253,19 +256,19 @@ $ONCE
                         on the detector can be computed from these numbers and the location of the center of the
                         detector.
                     </sp:description>
-$IF(inst == 'euv')
+$IF(inst.lower() == 'euv')
                     <sp:Rectangular_FOV>
                         <sp:width_angle unit="mrad">60.</sp:width_angle>
                         <sp:length_angle unit="mrad">$'1.' if SLIT_STATE == 'HIGH_RESOLUTION' else '2.' if SLIT_STATE == 'LOW_RESOLUTION' else '8.'$</sp:length_angle>
                     </sp:Rectangular_FOV>
-$IF(inst == 'fuv')
+$IF(inst.lower() == 'fuv')
                     <sp:Rectangular_FOV>
                         <sp:width_angle unit="mrad">60.</sp:width_angle>
                         <sp:length_angle unit="mrad">$'0.75' if SLIT_STATE == 'HIGH_RESOLUTION' else '1.5' if SLIT_STATE == 'LOW_RESOLUTION' else '8.'$</sp:length_angle>
                     </sp:Rectangular_FOV>
 $ONCE
                     <Internal_Reference>
-                        <lid_reference>urn:nasa:pds:cassini_uvis_saturn:document:uvis_instrument_description</lid_reference>
+                        <lid_reference>urn:nasa:pds:cassini_uvis_euvfuv_$cruise_or_saturn$:document:uvis_instrument_description</lid_reference>
                         <reference_type>spectral_characteristics_to_document</reference_type>
                     </Internal_Reference>
                 </sp:Field_of_View>
@@ -282,7 +285,7 @@ $ONCE
                     <sp:Spectral_Lookup>
                         <sp:Bin_Center_Lookup>
                             <Internal_Reference>
-                                <lid_reference>urn:nasa:pds:cassini_uvis_saturn:document:$inst$-wavelength-bins</lid_reference>
+                                <lid_reference>urn:nasa:pds:cassini_uvis_euvfuv_$cruise_or_saturn$:document:$inst.lower()$-wavelength-bins</lid_reference>
                                 <reference_type>spectral_characteristics_to_bin_center_values</reference_type>
                                 <comment>
                                     These wavelength bin values were extracted from the PDS3 labels of the calibration files. The
@@ -292,7 +295,7 @@ $ONCE
                         </sp:Bin_Center_Lookup>
                         <sp:Bin_Width_Lookup>
                             <Internal_Reference>
-                                <lid_reference>urn:nasa:pds:cassini_uvis_saturn:document:$inst$-wavelength-bins</lid_reference>
+                                <lid_reference>urn:nasa:pds:cassini_uvis_euvfuv_$cruise_or_saturn$:document:$inst.lower()$-wavelength-bins</lid_reference>
                                 <reference_type>spectral_characteristics_to_bin_width_values</reference_type>
                                 <comment>
                                     Wavelength bin widths were not provided with the original PDS3 data set. If this information
@@ -308,14 +311,14 @@ $ONCE
 
     <Reference_List>
         <Internal_Reference>
-            <lid_reference>urn:nasa:pds:cassini_uvis_saturn:document:uvis-data-user-guide</lid_reference>
+            <lid_reference>urn:nasa:pds:cassini_uvis_euvfuv_saturn:document:uvis-data-user-guide</lid_reference>
             <reference_type>data_to_document</reference_type>
             <comment>
                 The UVIS Data User's Guide
             </comment>
         </Internal_Reference>
         <Internal_Reference>
-            <lid_reference>urn:nasa:pds:cassini_uvis_saturn:data_raw_$inst$:supplemental-index</lid_reference>
+            <lid_reference>urn:nasa:pds:cassini_uvis_euvfuv_$cruise_or_saturn$:data_raw:supplemental-index</lid_reference>
             <reference_type>data_to_resource</reference_type>
             <comment>
                 The cumulative supplemental index table of basic parameters associated with each
@@ -324,23 +327,31 @@ $ONCE
         </Internal_Reference>
 $FOR_EACH(calibration_files)
         <Internal_Reference>
-            <lid_reference>urn:nasa:pds:cassini_uvis_$cruise_or_saturn$:calibration_data_$inst$:$VALUE[:-4]$</lid_reference>
+            <lid_reference>urn:nasa:pds:cassini_uvis_euvfuv_$cruise_or_saturn$:calibration:$VALUE[:-4]$</lid_reference>
             <reference_type>data_to_calibration_product</reference_type>
             <comment>
                 A calibration file associated with this observation. The version number from
-                PDS3 is embedded in the file name as "cal_3", "cal_4", or "cal_5".
+                PDS3 is embedded in the file name as "cal_2", "cal_3", "cal_4", or "cal_5".
             </comment>
         </Internal_Reference>
 $ONCE
         <Internal_Reference>
-            <lid_reference>urn:nasa:pds:cassini_uvis_saturn:document:uvis-description</lid_reference>
+            <lid_reference>urn:nasa:pds:cassini_uvis_euvfuv_$cruise_or_saturn$:document:uvis-description</lid_reference>
             <reference_type>data_to_document</reference_type>
             <comment>
                 A document providing an overview of the instrument and its components.
                 The information was extracted from the PDS3 instrument catalog file.
             </comment>
         </Internal_Reference>
-        <External_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_uvis_euvfuv_$cruise_or_saturn$:browse_raw:$basename[:-4]$_full.png</lid_reference>
+            <reference_type>data_to_browse</reference_type>
+            <comment>
+		The browse image in JPEG format that illustrates the scientific content
+	        of this data.
+            </comment>
+        </Internal_Reference>
+       	<External_Reference>
             <doi>10.1007/s11214-004-1455-8</doi>
             <reference_text>
                 Esposito, L. W. et al., The Cassini Ultraviolet Imaging Spectrograph Investigation,
