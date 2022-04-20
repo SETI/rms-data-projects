@@ -25,7 +25,7 @@
         <logical_identifier>urn:nasa:pds:cassini_uvis_euvfuv_$cruise_or_saturn=('cruise' if basename.split('_')[0][-4:] < '2004' else 'saturn')$:data_raw:$basename[:-4]$</logical_identifier>
         <version_id>1.0</version_id>
         <title>Cassini UVIS $inst=basename.split('_')[0][:-4].upper()$ $('3D Array' if is_qube else 'Spectrum')$ $basename$</title>
-        <information_model_version>1.11.0.0</information_model_version>
+        <information_model_version>1.17.0.0</information_model_version>
         <product_class>Product_Observational</product_class>
         <Citation_Information>
             <publication_year>2019</publication_year>
