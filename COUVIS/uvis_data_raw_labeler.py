@@ -30,29 +30,34 @@ EUV_FUV_TEMPLATE = XmlTemplate('euv_fuv_data_raw_template.xml')
 HDAC_TEMPLATE = XmlTemplate('hdac_data_raw_template.xml')
 HSP_TEMPLATE = XmlTemplate('hsp_data_raw_template.xml')
 
-with open('observation_ids.tab') as f:
+# Read the observation id table (2-column: date, Cassini observation ID) as list of character strings:
+with open('observation_ids_mjtm_dropduplicates.tab') as f:
     recs = f.readlines()
 
+# Create a dictionary of observation ids that when given a date, returns an observation id
 OBSERVATION_IDS = {}
 for rec in recs:
-    (date, obs_id) = rec.rstrip().replace('"','').split(',')
+    #(date, obs_id) = rec.rstrip().replace('"','').split(',')
+    (date, obs_id) = rec.rstrip().split(',') #strip off newline char, and split each line into its own list
     OBSERVATION_IDS[date] = obs_id
 
-EOM = '2017-09-16T00:00:00'
+EOM = '2017-09-16T00:00:00' #End Of Mission
 
+# Define global variables for time conversions
+# Spacecraft CLocK, Temps Atomique International 
 NEW_SCLK_FROM_TAI = None
 NEW_TAI_FROM_SCLK = None
 OLD_SCLK_FROM_TAI = None
 OLD_TAI_FROM_SCLK = None
 
 def INIT_SCLKS():
-
+    # HSP had various timing issues to deal with (not relevant for EUV/FUV)
     global NEW_SCLK_FROM_TAI, NEW_TAI_FROM_SCLK
     global OLD_SCLK_FROM_TAI, OLD_TAI_FROM_SCLK
 
     if NEW_SCLK_FROM_TAI is not None: return
 
-    tk = textkernel.from_file('cas00172.tsc')
+    tk = textkernel.from_file('cas00172.tsc') # SPICE file
     coeffts = np.array(tk['SCLK'][1]['COEFFICIENTS_82']).reshape(-1,3)
     sclk = (coeffts[:,0] + tk['SCLK_PARTITION_START_82']) / 256.
     tai = julian.tai_from_tdt(coeffts[:,1])
@@ -84,23 +89,37 @@ def INIT_SCLKS():
 
 ################################################################################
 
-# Create a dictionary keyed by the body name in upper case
+# Create a dictionary keyed by the body name in upper case,
+# that returns a tuple of necessary information for creating an XML description of a target
+# The imported SOLAR_SYSTEM_TARGETS is a list of tuples
 # TARGET_DICT[NAME] = (name, lid_name, alt_names, target_type, primary, lid)
 
-TARGET_DICT = {rec[0].upper():rec for rec in SOLAR_SYSTEM_TARGETS}
+TARGET_DICT = {rec[0].upper():rec for rec in SOLAR_SYSTEM_TARGETS} # Dictionary comprehension - {key: value for record in list_of_solar_sys_targs}
 
+# Sort out some random moons that were observed by Cassini and subsequently renamed
+# e.g. assign the same tuple under HATI to S14_2004
 TARGET_DICT['S12_2004'] = TARGET_DICT['S/2004 S 12']
 TARGET_DICT['S13_2004'] = TARGET_DICT['S/2004 S 13']
 TARGET_DICT['S14_2004'] = TARGET_DICT['HATI'   ]
 TARGET_DICT['S18_2004'] = TARGET_DICT['BESTLA' ]
 TARGET_DICT['S8_2004' ] = TARGET_DICT['FORNJOT']
 
+# Put more records into TARGET_DICT: sort out alternative names (e.g. TARGET_DICT['SUN'] and TARGET_DICT['NAIF ID 10'] return same tuple) 
+# Recall SOLAR_SYSTEM_TARGETS (which builds TARGET_DICT) takes the form (target_name, alt_names, target_type, primary, lid)
 # Every alt name translates to the name
-for rec in TARGET_DICT.values():
-    alt_names = rec[1]
+#for rec in TARGET_DICT.values():
+# Fix for Python 3.x
+for rec in list(TARGET_DICT.values()): # Force a list, so that dictionary doesn't change size while iterating
+    alt_names = rec[1] # rec[1] is tuple of alternative names (SPICE, NAIF IDs)
     for alt_name in alt_names:
-        TARGET_DICT[alt_name.upper()] = rec
+        TARGET_DICT[alt_name.upper()] = rec # Populate new dictionary elements with the same values (rec) corresponding to the new alt_name key
 
+# CIMS IDs are how Cassini Observations were planned: each part of the mission was assigned to a particular instrument team 
+# who would be observing a particular target (e.g. Saturn, the rings, Enceladus...)
+# The ID has several parts: 3 digit number refers to orbit of Cassini, 2 char code refers to primary intended target, (up to) 9 character codename 
+
+# Create a dictionary of 2-letter abbrevs referring to targets that will be used later to fix 
+# any messes that creep into the label - e.g. target name = sky means that you'll have to go searching for what the intended science target actually was!
 CIMS_TARGET_ABBREVIATIONS = {
     'AG': 'AEGAEON'   ,
     'AN': 'ANTHE'     ,
@@ -108,7 +127,7 @@ CIMS_TARGET_ABBREVIATIONS = {
     'CP': 'CALYPSO'   ,
     'DA': 'DAPHNIS'   ,
     'DI': 'DIONE'     ,
-    'EN': 'ENCELADUS' ,
+    'EN': 'ENCELADUS' , 
     'EP': 'EPIMETHEUS',
     'HE': 'HELENE'    ,
     'HY': 'HYPERION'  ,
@@ -148,6 +167,8 @@ CIMS_TARGET_ABBREVIATIONS = {
 
 # Checked by MRS on May 6, 2020
 # Updated by MRS on May 16-17, 2020
+# HSP did a lot of targeting at stars (through occultation experiments)
+# Create a dictionary of scraped information from CIMS IDs of alternate names of stars (aliases)
 STAR_ABBREVS = {
     '126TAU'   : ('126 Tauri'           , ['126 Tau'],                      '126_tau'),
     '28SGR'    : ('28 Sagittarii'       , ['28 Sgr'],                       '28_sgr'),
@@ -330,11 +351,11 @@ STAR_ABBREVS['WHYDRAE'  ] = STAR_ABBREVS['WHYA'    ]
 STAR_ABBREVS['XI2CET'   ] = STAR_ABBREVS['XICET'   ]
 STAR_ABBREVS['ZETAORI'  ] = STAR_ABBREVS['ZETORI'  ]
 
-# Add stars to the target list
-for (name, alts, lid) in STAR_ABBREVS.values():
+# Add stars to the target dictionary
+for (name, alts, lid) in STAR_ABBREVS.values(): # Create new star entries to the TARGET_DICT with uppercase name key, and the familiar tuple of (target_name, alt_names, target_type, primary, lid)
     TARGET_DICT[name.upper()] = (name, alts, 'Star', 'N/A',
                                  'urn:nasa:pds:context:target:star.%s' % lid)
-
+# Add miscellaneous things to the target list
 TARGET_DICT['SOLAR WIND'] = ('Solar Wind', [], 'Plasma Stream', 'N/A',
                              'urn:nasa:pds:context:target:plasma_stream.solar_wind')
 
@@ -348,73 +369,100 @@ TARGET_DICT['UNK'] = ('Unknown', [], 'Calibrator', 'N/A',
                         'urn:nasa:pds:context:target:calibrator.unk')
 
 def uvis_target_info(target_name, observation_id, purpose_str, filename):
+    """
+    Identify the targets that may be mis-identified, or duplicate-identified, inside PDS3 labels
+    
+    Parameters
+    ----------
+    target_name : string
+        Name of target, e.g. Mimas, S14_2014
+    observation_id : string
+        CIMS ID
+    purpose_str : string
+        The science goal, obtained from PDS3 label
+    filename : string
+        DESCRIPTION.
 
-    target_keys = set()
+    Returns
+    -------
+    list
+        Returns targets for each of the keys that are present in the PDS3 label
 
+    """
+    target_keys = set() # a set is initiated as it will contain only unique elements)
+
+    # Perform some error repairs
     if target_name == 'S RINGS':
         target_name = 'SATURN RINGS'
 
-    if target_name == 'ATLAS:':
+    if target_name == 'ATLAS:': # fix erroneous colon
         target_name = 'ATLAS'
 
-    if target_name == 'IPH':
+    if target_name == 'IPH': # interplanetary?
         target_name = 'SOLAR WIND'
 
-    # Handle ME, PO, DA, etc.
+    # If there's a 2-letter target abbreviation present, then expand it into full name
+    # Handle ME, PO, DA, etc. for Methone, Polydeuces, Daphnis, etc
     if target_name in CIMS_TARGET_ABBREVIATIONS:
         target_name = CIMS_TARGET_ABBREVIATIONS[target_name]
 
+    # If the target name is NOT non-applicable, then insert target_name into target_keys
     if target_name != 'N/A':
-        target_keys.add(target_name)
+        target_keys.add(target_name) # adds a (unique) element to the set. If an element already exists in the set, then it does not get added
 
     # Read the target name from the OBSERVATION_ID
     abbrev = ''
     obsname = ''
     if len(observation_id) > 3:
         try:
+            # Perform string manipulation to pick out 2-letter CIMS ID abbreviation from obs id
             parts = observation_id.split('_')
             abbrev = parts[1][-2:]
-            obsname = CIMS_TARGET_ABBREVIATIONS[abbrev]
+            obsname = CIMS_TARGET_ABBREVIATIONS[abbrev] # Look up that 2-letter CIMS ID abbreviation in the CIMS dictionary
+            # Don''t repeat a target if  there's more than one
             target_keys.add(obsname)
         except (KeyError, IndexError, ValueError):
             pass
 
+    # Handle Cassini UVIS quirks
     # Include the rings if it appears in the purpose
     if ' rings' in purpose_str:
-        target_keys.add('SATURN RINGS')
+        target_keys.add('SATURN RINGS')# Because target_keys is a set, if 'SATURN RINGS' already present then it won't duplicate
 
     # Star IDs are encoded in the OBSERVATION_ID
-    named_star_found = False
+    named_star_found = False # Initiate flag as off
+    # Loop through the dictionary of star abbreviations 
+    # If the key is found in the observation ID, then insert the name of that star to the target_keys set.
     for (key,value) in STAR_ABBREVS.items():
         if key in observation_id:
             target_keys.add(value[0])
-            named_star_found = True
+            named_star_found = True # switch flag on
 
-    # Handle 'STAR'
+    # Handle 'STAR' - if a star's target name has been found, then we don't need a generic 'star'
     if 'STAR' in target_keys and named_star_found:
         target_keys.remove('STAR')
 
-    if 'STAR' in target_keys:
-        print 'unknown star: %s %s %s' % (target_name, observation_id, filename)
+    if 'STAR' in target_keys: # print warning message if unknown star is in target_keys
+        print('unknown star: %s %s %s' % (target_name, observation_id, filename))
 
-    # Handle 'UNK'
+    # Handle 'UNK' - if there are multiple entries in the target_keys set, then 'UNK' isn't adding any info, so remove it 
     if 'UNK' in target_keys:
         if len(target_keys) > 1:
             target_keys.remove('UNK')
-        else:
-            print 'unknown target: %s %s %s' % (target_name, observation_id,
-                                                filename)
+        else: # If the only target found is "UNK", then print a warning message
+            print('unknown target: %s %s %s' % (target_name, observation_id,
+                                                filename))
 
     # If our set is not empty, we're done:
-    if len(target_keys):
-        keys = list(target_keys)
+    if len(target_keys): 
+        keys = list(target_keys) # convert set to list
         keys.sort()
         return [TARGET_DICT[k.upper()] for k in keys]
 
-    print 'unknown target: %s %s %s' % (target_name, observation_id, filename)
+    print('unknown target: %s %s %s' % (target_name, observation_id, filename))
 
     return [('Unknown', [], 'Calibrator', 'N/A',
-             'urn:nasa:pds:context:target:calibrator.unk')]
+             'urn:nasa:pds:context:target:calibrator.unk')] # If reach the end and cannot find target, then return Unknown
 
 def get_naif_id(alts):
     """Find the NAIF ID among the alt names for a target."""
@@ -460,7 +508,7 @@ def uvis_purpose(purpose_str, target_name):
 def write_uvis_pds4_label(datafile, pds3_label):
 
     # Read the PDS3 label and the VICAR header, fixing known syntax errors
-    with open(pds3_label as f:
+    with open(pds3_label) as f:
         label_text = f.read()
 
     label_text = label_text.replace('\r','') # pyparsing is not set up for <CR>
@@ -468,8 +516,8 @@ def write_uvis_pds4_label(datafile, pds3_label):
 
     # Define the lookup dictionary
     lookup = label.copy()
-    is_qube = ('QUBE' in label)
-    lookup['is_qube'] = is_qube
+    is_qube = ('QUBE' in label) # If 'QUBE' in label then is_qube is True, otherwise False
+    lookup['is_qube'] = is_qube # Add this Boolean key to the lookup dictionary
     if is_qube:
         lookup.update(label['QUBE'])
         pds3_filename = label['^QUBE']
@@ -484,7 +532,8 @@ def write_uvis_pds4_label(datafile, pds3_label):
     lookup['datafile'] = datafile
     basename = os.path.basename(datafile)
     lookup['basename'] = basename
-    inst = basename.split('_')[-1][:-4]
+    #inst = basename.split('_')[-1][:-4]
+    inst = basename.split('_')[0][:-4] # Use modified filepath
     lookup['inst'] = inst
 
     desc = lookup['DESCRIPTION']
@@ -496,7 +545,8 @@ def write_uvis_pds4_label(datafile, pds3_label):
     lookup['purpose_str'] = purpose_str
     lookup['purpose'] = uvis_purpose(purpose_str, lookup['TARGET_NAME'])
 
-    observation_id = OBSERVATION_IDS[basename[:14]]
+    #observation_id = OBSERVATION_IDS[basename[:14]]
+    observation_id = OBSERVATION_IDS[basename[3:-4]] # fix bug with basenames that include seconds ( _ss.dat)
     lookup['OBSERVATION_ID'] = observation_id
 
     # For EUV/FUV...
@@ -521,11 +571,19 @@ def write_uvis_pds4_label(datafile, pds3_label):
 
       # Locate the calibration file(s)
       lookup['calibration_files'] = []
-      for version in ('3','4','5'):
-        calpath = (datafile.replace('data_raw_','calibration_data_')[:-8] +
-                   '_cal_' + version + datafile[-8:])
-        if os.path.exists(calpath):
-            lookup['calibration_files'].append(os.path.basename(calpath))
+      cal_flag = 0 # initialise switch to off
+      for version in ('2','3','4','5'): # There are no v1 calibrations
+        #calpath = (datafile.replace('data_raw_','calibration_data_')[:-8] +
+        #           '_cal_' + version + datafile[-8:])
+          calpath = (datafile.replace('data_raw','calibration')[:-4] + # [:-4] slices off '.dat'
+                   '_cal_' + version + datafile[-4:]) # use modified filepath 
+
+          if os.path.exists(calpath):
+              lookup['calibration_files'].append(os.path.basename(calpath))
+              cal_flag+=1
+      if not cal_flag:
+          print("No calibration files found for datafile:", datafile)
+
 
     # For HDAC, determine mode
     if inst == 'hdac':
@@ -544,7 +602,7 @@ def write_uvis_pds4_label(datafile, pds3_label):
 
         zeros = len(data) - nonzeros
         if zeros:
-            print '%d trailing HDAC zeros found:' % zeros, datafile
+            print('%d trailing HDAC zeros found:' % zeros, datafile)
 
         lookup['zeros'] = zeros
         lookup['nonzeros'] = nonzeros
@@ -632,15 +690,17 @@ def label1(pds4_file, replace=False):
     """
 
     try:
-        pds4_file = os.path.abspath(pds4_file)
+        pds4_file = os.path.abspath(pds4_file) # expands filename to be the whole path
         if not replace and os.path.exists(pds4_file[:-4] + '.xml'):
-            return
+           print("Replace==False and file already exists: ", pds4_file[:-4] + '.xml')
+           return
 
-        parts = pds4_file.split('/data_raw')
-        print('data_raw' + parts[1])
+        parts = pds4_file.split('/data_raw') # split at bundle level
+        print('data_raw' + parts[1]) #print everything after 'data_raw/'
 
-        pds3_label = pds4_file.replace( 'cassini_uvis_saturn', 'pds3-labels')
-        pds3_label = pds3_label.replace('cassini_uvis_cruise', 'pds3-labels')
+        #pds3_label = pds4_file.replace( 'cassini_uvis_saturn', 'pds3-labels')
+        pds3_label = pds4_file.replace( 'data_raw', 'raw_labels') # The PDS3 labels are in a parallel directory tree ('/raw_labels/') to the PDS4 data files ('/data_raw/')
+        #pds3_label = pds3_label.replace('cassini_uvis_cruise', 'pds3-labels')
         pds3_label = pds3_label[:-4] + '.lbl'
 
         write_uvis_pds4_label(pds4_file, pds3_label)
@@ -649,7 +709,8 @@ def label1(pds4_file, replace=False):
     except KeyboardInterrupt:
         sys.exit(1)
 
-    # For any other exception, print an error message and keep going
+    # For any other exception, print an error message and keep going (produces a useful error log that helps with debugging)
+
     except Exception as e:
         print('*** error for: ', pds4_file)
         print(e)
@@ -660,8 +721,8 @@ def label1(pds4_file, replace=False):
 
 def main():
 
-    # Get the command line args
-    args = sys.argv[1:]
+    # Get the command line args as a list
+    args = sys.argv[1:] # The 0th element is the name of the script itself
 
     # Set the replace flag if it's in the argument list
     if '--replace' in args:
@@ -673,16 +734,16 @@ def main():
     # Step through the args
     for arg in args:
 
-        # Case 1: Label a single image
+        # Case 1: Label a single image (single filename rather than directory)
         if os.path.isfile(arg):
           if arg.endswith('.dat'):
-            label1(arg, replace)
+            label1(arg, replace) 
 
         # Case 2: Label all the images in a directory tree, recursively
         elif os.path.isdir(arg):
           for root, dirs, files in os.walk(os.path.join(arg)):
-            for name in files:
-              if name.endswith('.dat'):
+            for name in files: # Loop over each file in directory
+              if name.endswith('.dat'): # skips over anything that isn't .dat
 
                 filename = os.path.join(root, name)
                 label1(filename, replace)

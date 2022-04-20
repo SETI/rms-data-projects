@@ -7,6 +7,7 @@ import time, datetime, pytz
 import julian
 import hashlib
 from xml.sax.saxutils import escape
+import string
 
 class XmlTemplate(object):
     """Class to generate PDS4 labels based on XML templates.
@@ -16,7 +17,7 @@ class XmlTemplate(object):
     example, if INSTRUMENT_ID = 'ISSWA', then
         description>$INSTRUMENT_ID$</description>
     in the template will become
-        description>ISSNA</description>
+        description>ISSWA</description>
     in the label. The expression between "$" can include indexes, function
     calls, or anything else that is defined inside the Python program that
     imports this module.
@@ -117,8 +118,8 @@ class XmlTemplate(object):
         # Remove Mitch's comments; strip trailing whitespace
         for k,rec in enumerate(recs):
             parts = rec.split('<!-- [mkg]')
-            assert len(parts) <= 2
-            recs[k] = parts[0].rstrip() + '\r\n'
+            assert len(parts) <= 2 # raise an AssertionError if there is more than one '<!-- [mkg]' comment per line
+            recs[k] = parts[0].rstrip() + '\r\n' # Throw away Mitch's comment and add a carriage return linefeed
 
         # Break up into sections, header_types, header_expressions
         sections = [[]]
@@ -154,7 +155,7 @@ class XmlTemplate(object):
             for rec in section:
                 parts = rec.split('$')
                 if len(parts) % 2 != 1:
-                    print rec
+                    print(rec)
                     raise ValueError('Unmatched "$"')
 
                 # List the index of every part that needs to be evaluated
@@ -232,7 +233,7 @@ class XmlTemplate(object):
                 try:
                     result = eval(rec, lookup, more)
                 except Exception:
-                    print 'Eval failure: ' + rec
+                    print('Eval failure: ' + rec)
                     raise
 
                 # Apply assignment if necessary
@@ -424,9 +425,9 @@ class XmlTemplate(object):
             count = 0
             asciis = 0
             non_asciis = 0
-            for line in f:
-                for c in line:
-                    if c in string.printable:
+            for line in f: # iterate over lines in file
+                for c in line: # iterate over characters in each line
+                    if c in string.printable: # if character is in the set of printable characters then it counts as an ascii
                         asciis += 1
                     else:
                         non_asciis += 1
@@ -434,6 +435,7 @@ class XmlTemplate(object):
                 count += 1
 
         if non_asciis > 0.05 * asciis:
+            # If the file is binary (guesstimate based on number of non-asciis being more than 5% of no. ascii chars), then return 0 instead of count  
             return 0
 
         return count
@@ -444,17 +446,17 @@ class XmlTemplate(object):
         """Return the MD5 checksum of the file at the specified path."""
 
         f = open(filename, 'rb')
-        hasher = hashlib.md5()
+        hasher = hashlib.md5() # Use the imported md5() method to return a hasher object
         buf = f.read(blocksize)
         while len(buf) > 0:
-            hasher.update(buf)
+            hasher.update(buf) 
             buf = f.read(blocksize)
 
         return hasher.hexdigest()
 
 ################################################################################
 
-PREDEFINED_FUNCTIONS = {}
+PREDEFINED_FUNCTIONS = {} 
 PREDEFINED_FUNCTIONS['REPLACE_NA'  ] = XmlTemplate.REPLACE_NA
 PREDEFINED_FUNCTIONS['REPLACE_UNK' ] = XmlTemplate.REPLACE_UNK
 PREDEFINED_FUNCTIONS['CURRENT_ZULU'] = XmlTemplate.CURRENT_ZULU
