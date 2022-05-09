@@ -355,7 +355,7 @@ STAR_ABBREVS['ZETAORI'  ] = STAR_ABBREVS['ZETORI'  ]
 for (name, alts, lid) in STAR_ABBREVS.values(): # Create new star entries to the TARGET_DICT with uppercase name key, and the familiar tuple of (target_name, alt_names, target_type, primary, lid)
     TARGET_DICT[name.upper()] = (name, alts, 'Star', 'N/A',
                                  'urn:nasa:pds:context:target:star.%s' % lid)
-# Add miscellaneous things to the target list
+# Add miscellaneous things to the target dict
 TARGET_DICT['SOLAR WIND'] = ('Solar Wind', [], 'Plasma Stream', 'N/A',
                              'urn:nasa:pds:context:target:plasma_stream.solar_wind')
 
