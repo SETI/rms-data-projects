@@ -24,7 +24,7 @@ rename_uvis_files_mjtm.py
     - 2) Calibration files are renamed/copied
          from (on external disk shipped to MJTM): /Volumes/COUVIS_0xxx/volumes/COUVIS_00vv/CALIB/VERSION_x/Dyyyy_ddd/INSTyyyy_ddd_hh_mm[_ss]_CAL_x.EXT
          [previously (MRS): /Volumes/Migration2/UVIS/holdings/volumes/COUVIS_00vv/CALIB/VERSION_x/Dyyyy_ddd/INSTyyyy_ddd_hh_mm[_ss]_CAL_x.EXT]
-         to: /Volumes/COUVIS_0xxx/cassini_uvis_euvfuv_[cruise|saturn]/[data_calibration|calib_labels]/yyyy/yyyy_ddd/instyyyy_ddd_hh_mm[_ss]_cal_x.ext
+         to: /Volumes/COUVIS_0xxx/cassini_uvis_euvfuv_[cruise|saturn]/[calibration|calib_labels]/yyyy/yyyy_ddd/instyyyy_ddd_hh_mm[_ss]_cal_x.ext
          [previously (MRS):/Volumes/Migration2/UVIS/cassini_uvis_saturn/calibration_data_inst/yyyy_ddx/yyyy_ddd_hh_mm_cal_x_inst.dat]
                  
     - 3) Browse files are renamed/copied
@@ -38,7 +38,7 @@ rename_uvis_files_mjtm.py
         /Volumes/COUVIS_0xxx/cassini_uvis_euvfuv_cruise/data_raw/2003/2003_224/euv2003_224_03_54.dat
         /Volumes/COUVIS_0xxx/cassini_uvis_euvfuv_saturn/raw_labels/2004/2004_001/fuv2004_001_05_20.lbl
       - Calibration:
-        /Volumes/COUVIS_0xxx/cassini_uvis_euvfuv_saturn/data_calibration/2013/2013_004/euv2013_004_06_02_cal_3.dat
+        /Volumes/COUVIS_0xxx/cassini_uvis_euvfuv_saturn/calibration/2013/2013_004/euv2013_004_06_02_cal_3.dat
         /Volumes/COUVIS_0xxx/cassini_uvis_euvfuv_cruise/calib_labels/1999/1999_016/fuv1999_016_22_08_cal_3.lbl
       - Preview:
         /Volumes/COUVIS_0xxx/cassini_uvis_euvfuv_cruise/browse_raw/2001/2001_177/euv_2001_177_00_52_full.png
@@ -142,7 +142,7 @@ for v in range(1,61):
                 if not file[-4:] in ('.LBL', '.DAT'): continue 
                 # To only migrate EUV and FUV, uncomment the following line:
                 if not file[:3] in ('EUV', 'FUV'): continue
-                # Seek to rename calibration filepath as /Volumes/COUVIS_0xxx/cassini_uvis_euvfuv_[cruise|saturn]/[data_calibration|calib_labels]/yyyy/yyyy_ddd/inst_yyyy_ddd_hh_mm_[_ss]_cal_x.ext
+                # Seek to rename calibration filepath as /Volumes/COUVIS_0xxx/cassini_uvis_euvfuv_[cruise|saturn]/[calibration|calib_labels]/yyyy/yyyy_ddd/inst_yyyy_ddd_hh_mm_[_ss]_cal_x.ext
                 parts = file.split('_') 
         
                 # Remove the instrument (channel) and file-extension info:
@@ -155,10 +155,10 @@ for v in range(1,61):
                 dd = parts[1]
         
                 if int(yyyy) < 2004: # Before SOI
-                    DAT_DEST = '/Volumes/COUVIS_0xxx/cassini_uvis_euvfuv_cruise/data_calibration/'
+                    DAT_DEST = '/Volumes/COUVIS_0xxx/cassini_uvis_euvfuv_cruise/calibration/'
                     LBL_DEST = '/Volumes/COUVIS_0xxx/cassini_uvis_euvfuv_cruise/calib_labels/'
                 else: # After SOI
-                    DAT_DEST = '/Volumes/COUVIS_0xxx/cassini_uvis_euvfuv_saturn/data_calibration/'  
+                    DAT_DEST = '/Volumes/COUVIS_0xxx/cassini_uvis_euvfuv_saturn/calibration/'  
                     LBL_DEST = '/Volumes/COUVIS_0xxx/cassini_uvis_euvfuv_saturn/calib_labels/'
 
                 # Generate new filenames and subdirs
