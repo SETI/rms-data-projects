@@ -268,7 +268,7 @@ $IF(inst.lower() == 'fuv')
                     </sp:Rectangular_FOV>
 $ONCE
                     <Internal_Reference>
-                        <lid_reference>urn:nasa:pds:cassini_uvis_euvfuv_$cruise_or_saturn$:document:uvis_instrument_description</lid_reference>
+                        <lid_reference>urn:nasa:pds:cassini_uvis_euvfuv_saturn:document:uvis_instrument_description</lid_reference>
                         <reference_type>spectral_characteristics_to_document</reference_type>
                     </Internal_Reference>
                 </sp:Field_of_View>
@@ -285,7 +285,7 @@ $ONCE
                     <sp:Spectral_Lookup>
                         <sp:Bin_Center_Lookup>
                             <Internal_Reference>
-                                <lid_reference>urn:nasa:pds:cassini_uvis_euvfuv_$cruise_or_saturn$:document:$inst.lower()$-wavelength-bins</lid_reference>
+                                <lid_reference>urn:nasa:pds:cassini_uvis_euvfuv_saturn:document:$inst.lower()$-wavelength-bins</lid_reference>
                                 <reference_type>spectral_characteristics_to_bin_center_values</reference_type>
                                 <comment>
                                     These wavelength bin values were extracted from the PDS3 labels of the calibration files. The
@@ -295,7 +295,7 @@ $ONCE
                         </sp:Bin_Center_Lookup>
                         <sp:Bin_Width_Lookup>
                             <Internal_Reference>
-                                <lid_reference>urn:nasa:pds:cassini_uvis_euvfuv_$cruise_or_saturn$:document:$inst.lower()$-wavelength-bins</lid_reference>
+                                <lid_reference>urn:nasa:pds:cassini_uvis_euvfuv_saturn:document:$inst.lower()$-wavelength-bins</lid_reference>
                                 <reference_type>spectral_characteristics_to_bin_width_values</reference_type>
                                 <comment>
                                     Wavelength bin widths were not provided with the original PDS3 data set. If this information
@@ -336,7 +336,7 @@ $FOR_EACH(calibration_files)
         </Internal_Reference>
 $ONCE
         <Internal_Reference>
-            <lid_reference>urn:nasa:pds:cassini_uvis_euvfuv_$cruise_or_saturn$:document:uvis-description</lid_reference>
+            <lid_reference>urn:nasa:pds:cassini_uvis_euvfuv_saturn:document:uvis-description</lid_reference>
             <reference_type>data_to_document</reference_type>
             <comment>
                 A document providing an overview of the instrument and its components.
