@@ -6,8 +6,7 @@ Created on Mon Dec 19 15:21:01 2022
 @author: emiliesimpson
 
 This module creates a index of all .xml and .lblx files within a bundle, sorted
-by data collection term. The current version of this code limits the sorted files
-to the first 50 within the bundle, to prevent extensive runtime. 
+by data collection term. 
 
 """
 
