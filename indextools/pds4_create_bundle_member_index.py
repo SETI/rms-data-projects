@@ -88,16 +88,24 @@ def create_bundle_member_index(directory_path, bundle_structure):
             lid = str(root.Identification_Area.logical_identifier)
             for term in collection_terms:
                 if lid.endswith(term):
-                    fullpath = fullpath.replace(directory_path, 
-                                                bundle_name + '/')
-                    bundle_member_index[lid] = (
-                        {'LID' : lid,
-                         'Reference Type' : collections[term]['Reference Type'],
-                         'Member Status' : collections[term]['Member Status'],
-                         'Path' : fullpath})
-                
-                elif not[term in lid for term in collection_terms]: 
-                    raise BadLID
+                    lid_term = lid.split(':')[-1]
+                    if lid_term not in fullpath:
+                        print(f'File located at {fullpath} contains the term '
+                              f'{lid_term}. Check for incorrect file location.')
+                    
+                    elif not[term in lid for term in collection_terms]:
+                        raise BadLID
+                        
+                    else:    
+                        fullpath = fullpath.replace(directory_path, 
+                                                    bundle_name + '/')
+                        bundle_member_index[lid] = (
+                            {'LID' : lid,
+                             'Reference Type' : collections[term]['Reference Type'],
+                             'Member Status' : collections[term]['Member Status'],
+                             'Path' : fullpath})
+                    
+
         return bundle_member_index
     
     
