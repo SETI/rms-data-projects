@@ -59,11 +59,6 @@ def create_bundle_member_index(directory_path):
         bundle_member_entries = bundle_root.findall('pds:Bundle_Member_Entry', 
                                                      namespaces=ns)
         
-        # Some files may belong to a subset of collections while existing in a 
-        # larger subdirectory. To ensure they get sorted into the proper entry
-        # within the dictionary, we search for all available collection terms
-        # within all files named bundle.xml. This ensures that files not
-        # present in all subdirectories get sorted regardless of location.
         for bundle_member in bundle_member_entries: 
             lid_whole = (bundle_member.lid_reference
                                       .text
