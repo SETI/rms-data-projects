@@ -1,7 +1,8 @@
 """ 
-This module creates an index of all .xml and .lblx files within a bundle, 
-sorted alphabetically by LID and then stores it in the bundle directory. 
-There is a single command-line argument, the path to the bundle directory.
+This module creates an index of all .xml and .lblx files within a bundle set, 
+sorted alphabetically by LID and then stores it in the attributed bundle 
+directory for each bundle within the bundle set. There is a single command-line 
+argument, the path to the bundle directory.
 """
 
 import argparse
@@ -12,7 +13,7 @@ import os
 
 class BadLID(Exception):
     """ This exception is raised if a LID does not contain a collection term.
-    
+ 
     In the event BadLID gets raised, it means that the file the LID was 
     derived from is not represented within the bundle, and therefore may 
     be misplaced from another bundle. 
@@ -20,38 +21,37 @@ class BadLID(Exception):
     
     pass
 
-                    
+
 def create_bundle_member_index(directory_path):
     """ Generates a .csv file containing information about the bundle directory.
     
     Generates the paths to the correct files, places them in the correct 
     places within the dictionary, and exports the final product as a .csv file 
-    to the correct spot in the directory. The directory_path is the path to 
-    the bundle.
+    to the correct spot in the directory. The directory_path is the path to
+    the bundle set.
     """  
-    
-    fullpaths = []
-    bundle_member_index = {}
+
     collection_terms = []
     bundle_member_lid = {}
     
-    def create_bundle_members(directory_path):
+    def bundle_file_paths(bundle_path):
+        bundlepaths = []
+        
+        for path, subdirs, files in os.walk(directory_path):
+            for file in files:
+                if file == 'bundle.xml':
+                    bundlepaths.append(os.path.join(path, file))
+        
+        return bundlepaths
+    
+    def create_bundle_members(bundle_path):
         """ Creates a dictionary of collection terms, member status and 
         reference type.
         
         The input directory_path is the path to the bundle. 
         """
-        
-        bundle_file_path = []
-        bundle_member_lid = {}
-        
-        for path, subdirs, files in os.walk(directory_path): 
-            for file in files: 
-                if file == 'bundle.xml': 
-                    bundle_file_path = os.path.join(path, file)
-                    
 
-        bundle_root = (objectify.parse(bundle_file_path, 
+        bundle_root = (objectify.parse(bundle_path, 
                                        objectify.makeparser(
                                        remove_blank_text=True))
                                 .getroot())
@@ -59,6 +59,11 @@ def create_bundle_member_index(directory_path):
         bundle_member_entries = bundle_root.findall('pds:Bundle_Member_Entry', 
                                                      namespaces=ns)
         
+        # Some files may belong to a subset of collections while existing in a 
+        # larger subdirectory. To ensure they get sorted into the proper entry
+        # within the dictionary, we search for all available collection terms
+        # within all files named bundle.xml. This ensures that files not
+        # present in all subdirectories get sorted regardless of location.
         for bundle_member in bundle_member_entries: 
             lid_whole = (bundle_member.lid_reference
                                       .text
@@ -68,8 +73,7 @@ def create_bundle_member_index(directory_path):
             bundle_member_lid[collection_term] = ({
                         'Reference Type':bundle_member.reference_type, 
                         'Member Status':bundle_member.member_status})
-                        #FIXIT: Consider different ref type, etc.
-
+        
         return bundle_member_lid
     
     def fullpaths_populate(subdirectory):
@@ -107,7 +111,7 @@ def create_bundle_member_index(directory_path):
                                     objectify.makeparser(remove_blank_text=True))
                              .getroot())
             lid = root.Identification_Area.logical_identifier.text
-            for term in collection_terms: 
+            for term in collection_terms:
                 if term in lid:
                     if term not in fullpath:
                         print(f'PDS4 label found but not a member of this '
@@ -117,7 +121,7 @@ def create_bundle_member_index(directory_path):
                         raise BadLID('The LID does not contain an accepted '
                                      'collection term')
                     fullpath = fullpath.replace(directory_path, 
-                                                bundle_name)
+                                                bundle_name + '/')
                     bundle_member_index[lid] = (
                         {'LID':lid,
                          'Reference Type':bundle_member_lid[term]['Reference Type'],
@@ -130,7 +134,7 @@ def create_bundle_member_index(directory_path):
         """ Creates a .csv file in the bundle directory from the contents 
         of the dictionary.
         
-        The input 'bundle_location' is the path leading to the bundle.
+        Input value is the path leading to the bundle. 
         """
         
         with open(bundle_location + '/bundle_member_index.csv',
@@ -144,17 +148,25 @@ def create_bundle_member_index(directory_path):
             for index in sorted(bundle_member_index): 
                 bundle_member_index_writer.writerow(bundle_member_index[index])
     
-    # The 'first_level_subdirectories' allows for the scraping code to only 
-    # go down one subdirectory down. This ensures the code for fullpath 
-    # generation remains simple.
-    bundle_member_lid = create_bundle_members(directory_path)
-    first_level_subdirectories = next(os.walk(directory_path))[1]
-    for first_level_subdirectory in first_level_subdirectories: 
-        file_location = os.path.join(directory_path, first_level_subdirectory)
-        file_paths = fullpaths_populate(file_location)
+    # Due to the nature of bundle sets, extra steps are necessary to ensure that
+    # the attributed files for the bundle are not stacked on top of a previous
+    # bundle's results. The list of bundle.xml paths ensures that each iteration
+    # contains information specific to that bundle, rather than relying on all
+    # bundles within a bundle set to contain the same reference types and 
+    # member status. 
+    bundlepaths = bundle_file_paths(directory_path)
+    for bundlepath in bundlepaths:
+        fullpaths = []
+        bundle_member_index = {}
+        create_bundle_members(bundlepath)
+        path_to_bundle = bundlepath.replace('/bundle.xml', '')
+        bundle_terms = next(os.walk(path_to_bundle))[1]
+        for bundle_term in bundle_terms:
+            bundledir = os.path.join(path_to_bundle, bundle_term)
+            file_paths = fullpaths_populate(bundledir)
         index_bundle(sorted(file_paths))
-    file_creator(directory_path)
-    
+        file_creator(path_to_bundle)
+
 
 ns = {'pds':'http://pds.nasa.gov/pds4/pds/v1',
       'cassini': 'http://pds.nasa.gov/pds4/mission/cassini/v1'}
@@ -166,7 +178,7 @@ parser.add_argument('directorypath', type=str, nargs=1,
 
 args = parser.parse_args()
 
-bundle_name = args.directorypath[0].split('/')[-1]
+bundle_name = args.directorypath[0].split('/')[-2]
 create_bundle_member_index(args.directorypath[0])
 
 print(end='\r')
