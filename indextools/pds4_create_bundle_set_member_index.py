@@ -111,17 +111,18 @@ def create_bundle_member_index(directory_path):
                                     objectify.makeparser(remove_blank_text=True))
                              .getroot())
             lid = root.Identification_Area.logical_identifier.text
-            for term in collection_terms:
+            if any(term in lid for term in collection_terms):
+                pass
+            else:
+                raise BadLID
+            for term in collection_terms: 
                 if term in lid:
                     if term not in fullpath:
                         print(f'PDS4 label found but not a member of this '
                               f'bundle: {fullpath}, {lid}.')
                         continue
-                    elif not[term in lid for term in collection_terms]: 
-                        raise BadLID('The LID does not contain an accepted '
-                                     'collection term')
                     fullpath = fullpath.replace(directory_path, 
-                                                bundle_name + '/')
+                                                bundle_name)
                     bundle_member_index[lid] = (
                         {'LID':lid,
                          'Reference Type':bundle_member_lid[term]['Reference Type'],
@@ -178,7 +179,7 @@ parser.add_argument('directorypath', type=str, nargs=1,
 
 args = parser.parse_args()
 
-bundle_name = args.directorypath[0].split('/')[-2]
+bundle_name = args.directorypath[0].split('/')[-1]
 create_bundle_member_index(args.directorypath[0])
 
 print(end='\r')

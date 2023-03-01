@@ -107,15 +107,16 @@ def create_bundle_member_index(directory_path):
                                     objectify.makeparser(remove_blank_text=True))
                              .getroot())
             lid = root.Identification_Area.logical_identifier.text
+            if any(term in lid for term in collection_terms):
+                pass
+            else:
+                raise BadLID
             for term in collection_terms: 
                 if term in lid:
                     if term not in fullpath:
                         print(f'PDS4 label found but not a member of this '
                               f'bundle: {fullpath}, {lid}.')
                         continue
-                    elif not[term in lid for term in collection_terms]: 
-                        raise BadLID('The LID does not contain an accepted '
-                                     'collection term')
                     fullpath = fullpath.replace(directory_path, 
                                                 bundle_name)
                     bundle_member_index[lid] = (
@@ -146,7 +147,8 @@ def create_bundle_member_index(directory_path):
     
     # The 'first_level_subdirectories' allows for the scraping code to only 
     # go down one subdirectory down. This ensures the code for fullpath 
-    # generation remains simple.
+    # generation remains 
+    # simple.
     bundle_member_lid = create_bundle_members(directory_path)
     first_level_subdirectories = next(os.walk(directory_path))[1]
     for first_level_subdirectory in first_level_subdirectories: 
