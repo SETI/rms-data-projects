@@ -7,8 +7,8 @@ argument, the path to the bundle directory.
 """
 import argparse
 import csv
-import os
 from lxml import objectify
+import os
 
 
 class BadLID(Exception):

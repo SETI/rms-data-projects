@@ -1,15 +1,14 @@
 """Create a csv file of a bundle's bundle members and their information.
 
-This module creates an index of all .xml and .lblx files within a bundle set,
+This module creates an index of all .xml and .lblx files within a bundle,
 sorted alphabetically by LID and then stores it in the attributed bundle
-directory for each bundle within the bundle set. There is a single command-line
+directory. There is a single command-line
 argument, the path to the bundle directory.
 """
 import argparse
 import csv
-import os
-
 from lxml import objectify
+import os
 
 
 class BadLID(Exception):
