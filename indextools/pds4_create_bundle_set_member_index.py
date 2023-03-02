@@ -95,7 +95,7 @@ def create_bundle_member_index(directory_path):
 
         return bundle_member_lid
 
-    def fullpaths_populate(subdirectory):
+    def fullpaths_populate(directory):
         """Generate the filepaths to .xml and .lblx files within a subdirectory.
 
         The input 'subdirectory' will be the path to the bundle directory_path.
@@ -105,7 +105,7 @@ def create_bundle_member_index(directory_path):
         The break in the loop ensures that os.walk does not go into
         subdirectories deeper than the first level.
         """
-        for root, dirs, files in os.walk(subdirectory):
+        for root, dirs, files in os.walk(directory):
             for file in files:
                 if file.endswith(('.xml', '.lblx')):
                     fullpaths.append(os.path.join(root, file))

@@ -49,7 +49,7 @@ def create_bundle_member_index(directory_path):
     collection_terms = []
     bundle_member_lid = {}
 
-    def create_bundle_members(bundlepath):
+    def create_bundle_members(bundle_path):
         """Create a dictionary of LIDs, member status and reference type.
 
         The path to the bundle.xml file is parsed with lxml.objectify. The
@@ -63,7 +63,7 @@ def create_bundle_member_index(directory_path):
         bundle_file_path = []
         bundle_member_lid = {}
 
-        for path, subdirs, files in os.walk(bundlepath):
+        for path, subdirs, files in os.walk(bundle_path):
             for file in files:
                 if file == 'bundle.xml':
                     bundle_file_path = os.path.join(path, file)
