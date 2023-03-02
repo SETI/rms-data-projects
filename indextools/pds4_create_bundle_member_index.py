@@ -24,10 +24,9 @@ def create_bundle_member_index(directory_path):
     """Generate a .csv file containing information about the bundle directory.
 
     This function derives the bundle member information by creating file paths
-    to all known bundle.xml files. For each bundle.xml file, the bundle member
-    entries are scraped for their LIDs, their reference types, and their member
-    statuses. These values are put into the bundle_member_lid dictionary for
-    crossmatching.
+    to all known bundle.xml files. The bundle member entries are scraped for
+    their LIDs, their reference types, and their member statuses. These values
+    are put into the bundle_member_lid dictionary for crossmatching.
 
     For the bundle, all .xml and .lbxl files within the first level of
     subdirectories are found and scraped for their LIDs. Any LIDs that match the
@@ -50,7 +49,7 @@ def create_bundle_member_index(directory_path):
     collection_terms = []
     bundle_member_lid = {}
 
-    def create_bundle_members(directory_path):
+    def create_bundle_members(bundlepath):
         """Create a dictionary of LIDs, member status and reference type.
 
         The path to the bundle.xml file is parsed with lxml.objectify. The
@@ -58,13 +57,13 @@ def create_bundle_member_index(directory_path):
         put into the bundle_member_lid dictionary as a key with the reference
         type and the member status scraped and entered as values. This
         dictionary is then returned to be referenced in the index_bundle
-        function for crossmatching. The input directory_path is the path to
-        the bundle.
+        function for crossmatching. The input bundlepath is the path to
+        the bundle, directory_path.
         """
         bundle_file_path = []
         bundle_member_lid = {}
 
-        for path, subdirs, files in os.walk(directory_path):
+        for path, subdirs, files in os.walk(bundlepath):
             for file in files:
                 if file == 'bundle.xml':
                     bundle_file_path = os.path.join(path, file)
@@ -89,7 +88,7 @@ def create_bundle_member_index(directory_path):
 
         return bundle_member_lid
 
-    def fullpaths_populate(subdirectory):
+    def fullpaths_populate(directory):
         """Generate the filepaths to .xml and .lblx files within a subdirectory.
 
         The input 'subdirectory' will be the path to the bundle directory_path.
@@ -99,7 +98,7 @@ def create_bundle_member_index(directory_path):
         The break in the loop ensures that os.walk does not go into
         subdirectories deeper than the first level.
         """
-        for root, dirs, files in os.walk(subdirectory):
+        for root, dirs, files in os.walk(directory):
             for file in files:
                 if file.endswith(('.xml', '.lblx')):
                     fullpaths.append(os.path.join(root, file))
