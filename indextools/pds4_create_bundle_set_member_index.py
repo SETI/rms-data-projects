@@ -1,7 +1,7 @@
-"""Create a csv file of a bundle's bundle members and their information.
+"""Create a csv file of a bundle set's members and their information.
 
 This module creates an index of all .xml and .lblx files within a bundle set,
-sorted alphabetically by LID and then stores it in the attributed bundle
+sorted alphabetically by LID, and then stores it in the attributed bundle
 directory for each bundle within the bundle set. There is a single command-line
 argument, the path to the bundle directory.
 """
@@ -34,10 +34,10 @@ def create_bundle_member_index(directory_path):
     keys of the bundle member dictionary are recorded in a new dictionary
     bundle_member_index with the LID as the key and the member status, reference
     type, and path to the file as values. If a LID does not match any key
-    within the bundle_member_lid dictionary, an error is raised. If a LID
+    within the bundle_member_lid dictionary, an exception is raised. If a LID
     contains a collection term that does not match the filepath but is otherwise
-    represented within the bundle, a warning is raised but the file will
-    remain within the bundle_member_index dictionary.
+    represented within the bundle, an warning message is printed but the file
+    will remain within the bundle_member_index dictionary.
 
     The resulting dictionary bundle_member_index will contain the LIDs of all
     .xml or .lblx files within the first level of subdirectories as keys, with
@@ -139,12 +139,12 @@ def create_bundle_member_index(directory_path):
                     fullpath = fullpath.replace(directory_path,
                                                 bundle_name)
                     bundle_member_index[lid] = (
-                        ({'LID': lid,
-                          'Reference Type':
-                              bundle_member_lid[term]['Reference Type'],
-                          'Member Status':
-                              bundle_member_lid[term]['Member Status'],
-                         'Path': fullpath}))
+                        {'LID': lid,
+                         'Reference Type':
+                             bundle_member_lid[term]['Reference Type'],
+                         'Member Status':
+                             bundle_member_lid[term]['Member Status'],
+                         'Path': fullpath})
 
         return bundle_member_index
 

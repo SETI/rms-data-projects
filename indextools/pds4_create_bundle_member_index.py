@@ -1,9 +1,9 @@
-"""Create a csv file of a bundle's bundle members and their information.
+"""Create a csv file of a bundle's members and their information.
 
 This module creates an index of all .xml and .lblx files within a bundle,
-sorted alphabetically by LID and then stores it in the attributed bundle
-directory. There is a single command-line
-argument, the path to the bundle directory.
+sorted alphabetically by LID, and then stores it in the attributed bundle
+directory. There is a single command-line argument, the path to the bundle
+directory.
 """
 import argparse
 import csv
@@ -33,10 +33,10 @@ def create_bundle_member_index(directory_path):
     keys of the bundle member dictionary are recorded in a new dictionary
     bundle_member_index with the LID as the key and the member status, reference
     type, and path to the file as values. If a LID does not match any key
-    within the bundle_member_lid dictionary, an error is raised. If a LID
+    within the bundle_member_lid dictionary, an exception is raised. If a LID
     contains a collection term that does not match the filepath but is otherwise
-    represented within the bundle, a warning is raised but the file will
-    remain within the bundle_member_index dictionary.
+    represented within the bundle, a warning message is printed but the file
+    will remain within the bundle_member_index dictionary.
 
     The resulting dictionary bundle_member_index will contain the LIDs of all
     .xml or .lblx files within the first level of subdirectories as keys, with
@@ -47,7 +47,6 @@ def create_bundle_member_index(directory_path):
     fullpaths = []
     bundle_member_index = {}
     collection_terms = []
-    bundle_member_lid = {}
 
     def create_bundle_members(bundle_path):
         """Create a dictionary of LIDs, member status and reference type.
@@ -57,8 +56,8 @@ def create_bundle_member_index(directory_path):
         put into the bundle_member_lid dictionary as a key with the reference
         type and the member status scraped and entered as values. This
         dictionary is then returned to be referenced in the index_bundle
-        function for crossmatching. The input bundlepath is the path to
-        the bundle, directory_path.
+        function for crossmatching. The input 'bundle_path' is the path to
+        the bundle.
         """
         bundle_file_path = []
         bundle_member_lid = {}
@@ -91,9 +90,8 @@ def create_bundle_member_index(directory_path):
     def fullpaths_populate(directory):
         """Generate the filepaths to .xml and .lblx files within a subdirectory.
 
-        The input 'subdirectory' will be the path to the bundle directory_path.
-        Any instance of We only look at subdirectories one level down
-        from directory_path..xml and .lblx files within the first level of
+        The input 'directory' will be the path to the bundle directory_path.
+        Any instance of .xml and .lblx files within the first level of
         subdirectories will be collected and appended to the list of fullpaths.
         The break in the loop ensures that os.walk does not go into
         subdirectories deeper than the first level.
@@ -119,7 +117,7 @@ def create_bundle_member_index(directory_path):
             root = (objectify.parse(fullpath,
                                     objectify.makeparser(
                                         remove_blank_text=True))
-                             .getroot())
+                    .getroot())
             lid = root.Identification_Area.logical_identifier.text
             if not any(term in lid for term in collection_terms):
                 raise BadLID
@@ -133,10 +131,10 @@ def create_bundle_member_index(directory_path):
                                                 bundle_name)
                     bundle_member_index[lid] = (
                         {'LID': lid,
-                         'Reference Type': bundle_member_lid[term]
-                         ['Reference Type'],
-                         'Member Status': bundle_member_lid[term]
-                         ['Member Status'],
+                         'Reference Type':
+                             bundle_member_lid[term]['Reference Type'],
+                         'Member Status':
+                             bundle_member_lid[term]['Member Status'],
                          'Path': fullpath})
 
         return bundle_member_index
@@ -147,7 +145,7 @@ def create_bundle_member_index(directory_path):
         This takes the bundle_member_index dictionary created by index_bundle
         and creates a csv file containing the dictionary's contents. This csv
         file is then placed in the same directory as the bundle.xml file for
-        that bundle. Input value is the path leading to the bundle.
+        that bundle. The bundle_location is the path leading to the bundle.
         """
         with open(bundle_location + '/bundle_member_index.csv',
                   mode='w', encoding='utf8') as index_csv:
@@ -161,9 +159,10 @@ def create_bundle_member_index(directory_path):
             for index in sorted(bundle_member_index):
                 bundle_member_index_writer.writerow(bundle_member_index[index])
 
-    # The 'first_level_subdirectories' allows for the scraping code to only
-    # go down one subdirectory down. This ensures the code for fullpath
-    # generation remains simple.
+    # 'first_level_subdirectories' contains all of the subdirectories of the
+    # top-level directory 'directory_path'. This are found by calling the
+    # os.walk iterator once and extracting the list of directories returned,
+    # which will always be at the top level.
     bundle_member_lid = create_bundle_members(directory_path)
     first_level_subdirectories = next(os.walk(directory_path))[1]
     for first_level_subdirectory in first_level_subdirectories:
@@ -171,6 +170,7 @@ def create_bundle_member_index(directory_path):
         file_paths = fullpaths_populate(file_location)
         index_bundle(sorted(file_paths))
     file_creator(directory_path)
+################################################################################
 
 
 ns = {'pds': 'http://pds.nasa.gov/pds4/pds/v1',
