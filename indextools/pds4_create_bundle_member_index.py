@@ -9,15 +9,7 @@ import argparse
 import csv
 from lxml import objectify
 import os
-
-
-class BadLID(Exception):
-    """This exception is raised if a LID does not contain a collection term.
-
-    In the event BadLID gets raised, it means that the file the LID was
-    derived from is not represented within the bundle, and therefore may
-    be misplaced from another bundle.
-    """
+import sys
 
 
 def create_bundle_member_index(directory_path):
@@ -46,7 +38,6 @@ def create_bundle_member_index(directory_path):
     """
     fullpaths = []
     bundle_member_index = {}
-    collection_terms = []
 
     def create_bundle_members(bundle_path):
         """Create a dictionary of LIDs, member status and reference type.
@@ -60,7 +51,6 @@ def create_bundle_member_index(directory_path):
         the bundle.
         """
         bundle_file_path = []
-        bundle_member_lid = {}
 
         for path, subdirs, files in os.walk(bundle_path):
             for file in files:
@@ -75,17 +65,15 @@ def create_bundle_member_index(directory_path):
         bundle_member_entries = bundle_root.findall('pds:Bundle_Member_Entry',
                                                     namespaces=ns)
 
-        for bundle_member in bundle_member_entries:
-            lid_whole = (bundle_member.lid_reference
-                                      .text
-                                      .split(':'))
-            collection_term = lid_whole[-1]
-            collection_terms.append(collection_term)
-            bundle_member_lid[collection_term] = ({
-                        'Reference Type': bundle_member.reference_type,
-                        'Member Status': bundle_member.member_status})
+        for bundle_member_entry in bundle_member_entries:
+            bundle_member_lid = bundle_member_entry.lid_reference
+            bundle_member_index[bundle_member_lid] = {
+                'LID': bundle_member_lid,
+                'Reference Type': bundle_member_entry.reference_type,
+                'Member Status': bundle_member_entry.member_status,
+                'Path': ''}
 
-        return bundle_member_lid
+        return bundle_member_index
 
     def fullpaths_populate(directory):
         """Generate the filepaths to .xml and .lblx files within a subdirectory.
@@ -119,23 +107,13 @@ def create_bundle_member_index(directory_path):
                                         remove_blank_text=True))
                     .getroot())
             lid = root.Identification_Area.logical_identifier.text
-            if not any(term in lid for term in collection_terms):
-                raise BadLID
-            for term in collection_terms:
-                if term in lid:
-                    if term not in fullpath:
-                        print(f'PDS4 label found but not a member of this '
-                              f'bundle: {fullpath}, {lid}.')
-                        continue
-                    fullpath = fullpath.replace(directory_path,
-                                                bundle_name)
-                    bundle_member_index[lid] = (
-                        {'LID': lid,
-                         'Reference Type':
-                             bundle_member_lid[term]['Reference Type'],
-                         'Member Status':
-                             bundle_member_lid[term]['Member Status'],
-                         'Path': fullpath})
+            if lid not in bundle_member_entry_lids.keys():
+                print(f'LID {lid} found in file structure but is not a'
+                      ' bundle member.')
+            if lid in bundle_member_index.keys():
+                fullpath = fullpath.replace(directory_path,
+                                            bundle_name)
+                bundle_member_index[lid]['Path'] = fullpath
 
         return bundle_member_index
 
@@ -163,12 +141,22 @@ def create_bundle_member_index(directory_path):
     # top-level directory 'directory_path'. This are found by calling the
     # os.walk iterator once and extracting the list of directories returned,
     # which will always be at the top level.
-    bundle_member_lid = create_bundle_members(directory_path)
+    bundle_member_entry_lids = create_bundle_members(directory_path)
     first_level_subdirectories = next(os.walk(directory_path))[1]
     for first_level_subdirectory in first_level_subdirectories:
         file_location = os.path.join(directory_path, first_level_subdirectory)
         file_paths = fullpaths_populate(file_location)
         index_bundle(sorted(file_paths))
+
+    for key in bundle_member_index.keys():
+        if bundle_member_index[key]['Path'] == '':
+            if bundle_member_index[key]["Reference Type"] == 'Secondary':
+                print(f'Secondary bundle member {bundle_member_index[key]} '
+                      ' does not contain a file path.')
+            if bundle_member_index[key]["Reference Type"] == 'Primary':
+                print(f'Primary bundle member {bundle_member_index[key]} '
+                      ' does not have a file path.')
+                sys.exit()
     file_creator(directory_path)
 ################################################################################
 
