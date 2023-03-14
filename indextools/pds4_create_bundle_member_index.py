@@ -107,13 +107,12 @@ def create_bundle_member_index(directory_path):
                                         remove_blank_text=True))
                     .getroot())
             lid = root.Identification_Area.logical_identifier.text
-            if lid not in bundle_member_entry_lids.keys():
-                print(f'LID {lid} found in file structure but is not a'
-                      ' bundle member.')
-            if lid in bundle_member_index.keys():
-                fullpath = fullpath.replace(directory_path,
-                                            bundle_name)
-                bundle_member_index[lid]['Path'] = fullpath
+            if lid not in bundle_member_lids:
+                print(f'LID {lid} found in file structure at {fullpath} but '
+                      'is not a bundle member.')
+            if lid in bundle_member_lids:
+                shortpath = fullpath.replace(directory_path, bundle_name)
+                bundle_member_index[lid]['Path'] = shortpath
 
         return bundle_member_index
 
@@ -141,21 +140,22 @@ def create_bundle_member_index(directory_path):
     # top-level directory 'directory_path'. This are found by calling the
     # os.walk iterator once and extracting the list of directories returned,
     # which will always be at the top level.
-    bundle_member_entry_lids = create_bundle_members(directory_path)
+    bundle_member_index = create_bundle_members(directory_path)
+    bundle_member_lids = ([bundle_member_index[x]['LID'] for x
+                           in bundle_member_index])
     first_level_subdirectories = next(os.walk(directory_path))[1]
     for first_level_subdirectory in first_level_subdirectories:
         file_location = os.path.join(directory_path, first_level_subdirectory)
-        file_paths = fullpaths_populate(file_location)
-        index_bundle(sorted(file_paths))
-
-    for key in bundle_member_index.keys():
-        if bundle_member_index[key]['Path'] == '':
-            if bundle_member_index[key]["Reference Type"] == 'Secondary':
-                print(f'Secondary bundle member {bundle_member_index[key]} '
-                      ' does not contain a file path.')
-            if bundle_member_index[key]["Reference Type"] == 'Primary':
-                print(f'Primary bundle member {bundle_member_index[key]} '
-                      ' does not have a file path.')
+        fullpaths_populate(file_location)
+        index_bundle(sorted(fullpaths))
+    for lid in bundle_member_lids:
+        if bundle_member_index[lid]['Path'] == '':
+            if bundle_member_index[lid]["Reference Type"] == 'Secondary':
+                print(f'Secondary bundle member {lid} has not been matched '
+                      'with a file path.')
+            if bundle_member_index[lid]["Reference Type"] == 'Primary':
+                print(f'Primary bundle member {lid} has not been matched '
+                      'with a file path.')
                 sys.exit()
     file_creator(directory_path)
 ################################################################################
