@@ -90,8 +90,6 @@ def create_bundle_member_index(directory_path):
                     fullpaths.append(os.path.join(root, file))
             break
 
-        return fullpaths
-
     def index_bundle(list_of_paths):
         """Fill the bundle_member_index dictionary with bundle member data.
 
@@ -106,15 +104,13 @@ def create_bundle_member_index(directory_path):
                                     objectify.makeparser(
                                         remove_blank_text=True))
                     .getroot())
+            shortpath = fullpath.replace(directory_path, bundle_name)
             lid = root.Identification_Area.logical_identifier.text
             if lid not in bundle_member_lids:
-                print(f'LID {lid} found in file structure at {fullpath} but '
+                print(f'LID {lid} found in file structure at {shortpath} but '
                       'is not a bundle member.')
             if lid in bundle_member_lids:
-                shortpath = fullpath.replace(directory_path, bundle_name)
                 bundle_member_index[lid]['Path'] = shortpath
-
-        return bundle_member_index
 
     def file_creator(bundle_location):
         """Create a .csv file in the bundle directory from the dictionary.
@@ -140,7 +136,7 @@ def create_bundle_member_index(directory_path):
     # top-level directory 'directory_path'. This are found by calling the
     # os.walk iterator once and extracting the list of directories returned,
     # which will always be at the top level.
-    bundle_member_index = create_bundle_members(directory_path)
+    create_bundle_members(directory_path)
     bundle_member_lids = ([bundle_member_index[x]['LID'] for x
                            in bundle_member_index])
     first_level_subdirectories = next(os.walk(directory_path))[1]
@@ -148,15 +144,19 @@ def create_bundle_member_index(directory_path):
         file_location = os.path.join(directory_path, first_level_subdirectory)
         fullpaths_populate(file_location)
         index_bundle(sorted(fullpaths))
-    for lid in bundle_member_lids:
-        if bundle_member_index[lid]['Path'] == '':
-            if bundle_member_index[lid]["Reference Type"] == 'Secondary':
-                print(f'Secondary bundle member {lid} has not been matched '
-                      'with a file path.')
-            if bundle_member_index[lid]["Reference Type"] == 'Primary':
-                print(f'Primary bundle member {lid} has not been matched '
-                      'with a file path.')
-                sys.exit()
+
+    for key in bundle_member_index:
+        if bundle_member_index[key]['Path'] == '':
+            if bundle_member_index[key]['Member Status'] == 'Primary':
+                print(' Primary bundle member '
+                      f'{bundle_member_index[key]["LID"]} '
+                      ' has not been matched with a file path.')
+                sys.exit(1)
+            else:
+                assert bundle_member_index[key]['Member Status'] == 'Secondary'
+                print(' Secondary bundle member '
+                      f'{bundle_member_index[key]["LID"]} '
+                      ' has not been matched with a file path.')
     file_creator(directory_path)
 ################################################################################
 
