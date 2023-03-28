@@ -73,8 +73,6 @@ def create_bundle_member_index(directory_path):
                 'Member Status': bundle_member_entry.member_status,
                 'Path': ''}
 
-        return bundle_member_index
-
     def fullpaths_populate(directory):
         """Generate the filepaths to .xml and .lblx files within a subdirectory.
 
@@ -108,7 +106,7 @@ def create_bundle_member_index(directory_path):
             lid = root.Identification_Area.logical_identifier.text
             if lid not in bundle_member_lids:
                 print(f'LID {lid} found in file structure at {shortpath} but '
-                      'is not a bundle member.')
+                       'is not a bundle member.')
             if lid in bundle_member_lids:
                 bundle_member_index[lid]['Path'] = shortpath
 
@@ -148,15 +146,15 @@ def create_bundle_member_index(directory_path):
     for key in bundle_member_index:
         if bundle_member_index[key]['Path'] == '':
             if bundle_member_index[key]['Member Status'] == 'Primary':
-                print(' Primary bundle member '
+                print( 'Primary bundle member '
                       f'{bundle_member_index[key]["LID"]} '
-                      ' has not been matched with a file path.')
+                       'has not been matched with a file path.')
                 sys.exit(1)
             else:
                 assert bundle_member_index[key]['Member Status'] == 'Secondary'
-                print(' Secondary bundle member '
+                print( 'Secondary bundle member '
                       f'{bundle_member_index[key]["LID"]} '
-                      ' has not been matched with a file path.')
+                       'has not been matched with a file path.')
     file_creator(directory_path)
 ################################################################################
 
