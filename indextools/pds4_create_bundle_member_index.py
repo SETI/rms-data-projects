@@ -57,7 +57,7 @@ def create_bundle_member_index(directory_path):
 
         if bundle_file_path is None:
             print('No bundle.xml file exists within this bundle')
-            exit(1)
+            sys.exit(1)
 
         bundle_root = (objectify.parse(bundle_file_path,
                                        objectify.makeparser(
