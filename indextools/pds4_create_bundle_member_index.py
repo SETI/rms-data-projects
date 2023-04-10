@@ -85,7 +85,7 @@ def create_bundle_member_index(directory_path):
         for root, dirs, files in os.walk(bundle_path):
             for file in files:
                 if file.endswith(('.xml', '.lblx')):
-                    fullpaths.append(os.path.join(root, file))
+                    fullpaths.append(root + '/' + file)
             break
 
     def index_bundle(list_of_paths):
