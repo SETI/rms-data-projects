@@ -139,8 +139,7 @@ def create_bundle_member_index(directory_path):
     # os.walk iterator once and extracting the list of directories returned,
     # which will always be at the top level.
     for first_level_subdirectory in first_level_subdirectories:
-        file_location = os.path.join(directory_path + '/' + 
-                                     first_level_subdirectory)
+        file_location = directory_path + '/' + first_level_subdirectory
         fullpaths_populate(file_location)
         index_bundle(sorted(fullpaths))
 
