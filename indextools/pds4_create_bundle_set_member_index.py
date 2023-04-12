@@ -186,4 +186,4 @@ parser.add_argument('directorypath', type=str,
 args = parser.parse_args()
 
 bundle_name = args.directorypath.split('/')[-1]
-create_bundle_member_index(args.directorypath[0])
+create_bundle_member_index(args.directorypath)
