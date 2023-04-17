@@ -95,11 +95,11 @@ def index_bundle(list_of_paths, directory_path, bundle_member_lids,
 def file_creator(bundle_location, bundle_member_index):
     """Create a .csv file in the bundle directory from the dictionary.
 
-    This takes the bbundle_member_index dictionary created by index_bundle
+    This takes the bundle_member_index dictionary created by index_bundle
     and creates a csv file containing the dictionary's contents. This csv
     file is then placed in bundle_location, the location of the bundle.
     """
-    with open(bundle_location + '/bundle_member_index.csv',
+    with open(os.path.join(bundle_location, 'bundle_member_index.csv'),
               mode='w', encoding='utf8') as index_csv:
         bundle_member_index_writer = csv.DictWriter(
             index_csv,
