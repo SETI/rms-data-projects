@@ -1,9 +1,9 @@
 """Create a csv file of a bundle's members and their information.
 
 This module creates an index of all bundle member LIDs, reference types, and 
-member status. The filepath to any .xml/.lblx files within the first level of
-subdirectories is also included in the index. The final product is then put
-into a csv file and placed inside the bundle directory. 
+member status. The filepaths to any bundle member .xml/.lblx files within the 
+first level of subdirectories is also included in the index. The final product 
+is then put into a csv file and placed inside the bundle directory. 
 """
 import argparse
 import csv
