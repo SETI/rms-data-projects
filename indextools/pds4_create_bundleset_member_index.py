@@ -1,9 +1,8 @@
 """Create a csv file of a bundleset's members and their information.
 
-This module creates an index of all .xml and .lblx files within a bundleset,
-sorted alphabetically by LID, and then stores it in the attributed bundle
-directory for each bundle within the bundleset. There is a single command-line
-argument, the path to the bundleset.
+This module creates an index file containing the LIDs and filepaths of each 
+bundle.xml file. There is a single command-line argument, the path to the 
+bundleset.
 """
 import argparse
 import csv
@@ -27,15 +26,7 @@ def get_bundle_filepaths(bundleset_path):
 
 
 def get_member_lid(bundle_path):
-    """Populate the bundleset_member_index dictionary with bundle information.
-
-    The path to the bundle.xml file is parsed with lxml.objectify. The
-    bundle member entries are found and scraped for their LID. This LID is
-    put into the bundleset_member_index dictionary as a key with the same LID
-    and the filepath to the bundle.xml file as values. The input bundle_path 
-    is the path to the bundle, bundleset_member_index is the dictionary to be
-    populated, and bundleset_name is the name of the bundleset.
-    """
+    """Scrape the LID from the bundle.xml file."""
     bundle_root = (objectify.parse(bundle_path,
                                    objectify.makeparser(
                                        remove_blank_text=True))
@@ -78,7 +69,6 @@ def file_creator(bundle_location, bundle_member_index):
 
 
 def main():
-    """Create the bundleset_member_index.csv file for the bundleset."""
     bundleset_member_index = {}
     bundleset_name = args.directorypath.split('/')[-1]
     bundlepaths = get_bundle_filepaths(args.directorypath)
@@ -87,10 +77,7 @@ def main():
         shortpath = get_shortpath(bundleset_name, bundlepath)
         add_to_index(bundle_lid, bundleset_member_index, shortpath)
     file_creator(args.directorypath, bundleset_member_index)
-        
-    
-ns = {'pds': 'http://pds.nasa.gov/pds4/pds/v1',
-      'cassini': 'http://pds.nasa.gov/pds4/mission/cassini/v1'}
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('directorypath', type=str,
