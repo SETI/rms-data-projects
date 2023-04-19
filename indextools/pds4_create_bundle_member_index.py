@@ -12,51 +12,101 @@ import os
 import sys
 
 
-def create_bundle_members(bundle_path, bundle_member_index):
-    """Create a dictionary of LIDs, member status and reference type.
-
-    The path to a directory that contains the bundle.xml file is parsed
-    with lxml.objectify. The bundle member entries are found and scraped
-    for their LID. This LID is put into the bundle_member_lid dictionary
-    as a key with the reference type and the member status scraped and
-    entered as values. The input 'bundle_path' is the path to the bundle.
-    The input bundle_member_index is the dictionary that is populated with
-    the bundle member information.
+def get_bundle_filepaths(bundle_path):
+    """Find and store path to the bundle.xml file in the bundle.
+    
+    In the event a path to the bundle.xml file is not found, a terminal
+    message will print.
+    
+    Inputs:
+        bundle_path    The path to the bundle directory.
+        
+    Returns:
+        bundlepath     The path to the bundle.xml file within the bundle.
+        
     """
-    bundle_file_path = None
-
+    bundlepath = None
     for path, subdirs, files in os.walk(bundle_path):
         for file in files:
             if file == 'bundle.xml':
-                bundle_file_path = os.path.join(path, file)
+                bundlepath = os.path.join(path, file)
 
-    if bundle_file_path is None:
+    if bundlepath is None:
         print('No bundle.xml file exists within this bundle')
         sys.exit(1)
+        
+    return bundlepath
+    
+    
+def get_bundle_members(bundlepath):
+    """Get all Bundle_Member_Entry sections from a bundle.xml file.
+    
+    Input:
+        bundlepath               Path to the bundle.xml file
+        
+    Returns:
+        bundle_member_entries    All elements within the bundle.xml file that
+                                 are tagged "Bundle_Member_Entry"
+        
+    """
+    ns = {'pds': 'http://pds.nasa.gov/pds4/pds/v1',
+          'cassini': 'http://pds.nasa.gov/pds4/mission/cassini/v1'}
 
-    bundle_root = (objectify.parse(bundle_file_path,
+    bundle_root = (objectify.parse(bundlepath,
                                    objectify.makeparser(
                                        remove_blank_text=True))
                             .getroot())
 
     bundle_member_entries = bundle_root.findall('pds:Bundle_Member_Entry',
                                                 namespaces=ns)
+    
+    return bundle_member_entries
 
-    for bundle_member_entry in bundle_member_entries:
-        bundle_member_lid = bundle_member_entry.lid_reference
-        bundle_member_index[bundle_member_lid] = {
-            'LID': bundle_member_lid,
-            'Reference Type': bundle_member_entry.reference_type,
-            'Member Status': bundle_member_entry.member_status,
-            'Path': ''}
+
+def add_to_index(bundle_member_entry, bundle_member_index):
+    """Scrape the LID from the bundle.xml file.
+    
+    The "Path" section is intentionally left blank. This will be filled in
+    later in the index_bundle function.
+    
+    Inputs:
+        bundle_member_entry    The element within the bundle.xml file 
+                               containing the necessary information about the
+                               bundle member.
+                             
+        bundle_member_index    The dictionary of bundle member information that
+                               will contain the following:
+                                   
+            "LID"                  The LID of the bundle member
+            
+            "Reference Type"       The reference type of the bundle member
+            
+            "Member Status"        The member status of the bundle member
+                                   ('Primary' or 'Secondary')
+                                   
+            "Path"                 The path to the .xml/.lblx file for the
+                                   bundle member.
+    
+    """
+    bundle_member_lid = bundle_member_entry.lid_reference
+    bundle_member_index[bundle_member_lid] = {
+        'LID': bundle_member_lid,
+        'Reference Type': bundle_member_entry.reference_type,
+        'Member Status': bundle_member_entry.member_status,
+        'Path': ''}
 
 
 def fullpaths_populate(bundle_path, fullpaths):
     """Generate the filepaths to .xml and .lblx files within a subdirectory.
-
-    The input 'directory' will be the path to the bundle directory_path.
+    
     Any instance of .xml and .lblx files within the first level of
     subdirectories will be collected and appended to the list of fullpaths.
+    
+    Inputs:
+        bundle_path    The path to the bundle directory
+        
+        fullpaths      The list to be populated with filepaths
+        
     """
     for root, dirs, files in os.walk(bundle_path):
         for file in files:
@@ -65,39 +115,76 @@ def fullpaths_populate(bundle_path, fullpaths):
         break
 
 
-def index_bundle(list_of_paths, directory_path, bundle_member_lids,
+def index_bundle(fullpaths, directory_path, bundle_member_lids,
                  bundle_member_index, bundle_name):
     """Add the filepaths to the bundle_member_index.
-
-    The input 'list_of_paths' is the previously generated 'fullpaths' from
-    the fullpaths_populate function. The input bundle_member_lids is the 
-    collection of LIDs that belong to the bundle. The input bundle_member_index
-    is the dictionary containing the bundle member information. The input
-    bundle_name is the name of the bundle. If this function finds a LID whose 
+    
+    If this function finds a LID whose 
     collection term is not shared with the path, it will print a terminal 
     message.
+    
+    Inputs:
+        fullpaths              The list of filepaths to all .xml/.lblx files 
+                               within the bundle that exist inside the first 
+                               level of subdirectories.
+                     
+        directory_path         The path to the bundle directory
+        
+        bundle_member_lids     The LIDs of all the bundle members that belong in
+                               the bundle.
+                              
+        bundle_member_index    The dictionary containing the information of all
+                               bundle members within a bundle.
+                               
+        bundle_name            The name of the bundle.
+        
     """
-    fullpaths_sorted = sorted(list_of_paths)
+    fullpaths_sorted = sorted(fullpaths)
     for fullpath in fullpaths_sorted:
         root = (objectify.parse(fullpath,
                                 objectify.makeparser(
                                     remove_blank_text=True))
                 .getroot())
-        shortpath = fullpath.replace(directory_path, bundle_name)
         lid = root.Identification_Area.logical_identifier.text
         if lid not in bundle_member_lids:
-            print(f'LID {lid} found in file structure at {shortpath} but '
-                   'is not a bundle member.')
+            print(f'LID {lid} found in file structure at '
+                  f'{fullpath.replace(directory_path, bundle_name)} but is not '
+                  'a bundle member.')
         else:
-            bundle_member_index[lid]['Path'] = shortpath
+            bundle_member_index[lid]['Path'] = fullpath
+            
+            
+def get_shortpath(bundle_member_index, directory_path, bundle_name):
+    """Replace the filepath for a bundle member with a shortened version.
+    
+    Inputs:
+        bundle_member_index    The dictionary containing the information of all
+                               bundle members within a bundle.
+                               
+        directory_path        Path to the bundle directory.
+        
+        bundle_name           Name of the bundle.
+    """
+    
+    for key in bundle_member_index:
+        fullpath = bundle_member_index[key]['Path']
+        shortpath = fullpath.replace(directory_path, bundle_name)
+        bundle_member_index[key]['Path'] = shortpath
             
 
 def file_creator(bundle_location, bundle_member_index):
     """Create a .csv file in the bundle directory from the dictionary.
 
-    This takes the bundle_member_index dictionary created by index_bundle
-    and creates a csv file containing the dictionary's contents. This csv
-    file is then placed in bundle_location, the location of the bundle.
+    This takes the bundle_member_index dictionary and creates a csv file 
+    containing the dictionary's contents. This csv file is then placed in the 
+    top level of the  bundle.
+    
+    Inputs:
+        bundle_location        The path to the bundle
+        
+        bundle_member_index    The dictionary containing the information of all
+                               bundle members within a bundle.
+
     """
     with open(os.path.join(bundle_location, 'bundle_member_index.csv'),
               mode='w', encoding='utf8') as index_csv:
@@ -111,33 +198,16 @@ def file_creator(bundle_location, bundle_member_index):
         for index in sorted(bundle_member_index):
             bundle_member_index_writer.writerow(bundle_member_index[index])
                 
-def create_bundle_member_index(directory_path):
-    """Generate a .csv file containing information about the bundle directory.
-
-    This function derives the bundle member information by creating file paths
-    to all known bundle.xml files. The bundle member entries are scraped for
-    their LIDs, their reference types, and their member statuses. These values
-    are put into the bundle_member_lid dictionary for crossmatching.
-
-    For the bundle, all .xml and .lbxl files within the first level of
-    subdirectories are found and scraped for their LIDs. Any LIDs that match the
-    keys of the bundle member dictionary are recorded in a new dictionary
-    bundle_member_index with the LID as the key and the member status, reference
-    type, and path to the file as values. If a LID does not match any key
-    within the bundle_member_lid dictionary, a statement will print. If a LID
-    contains a collection term that does not match the filepath but is otherwise
-    represented within the bundle, a warning message is printed.
-
-    The resulting dictionary bundle_member_index will contain the LIDs of all
-    .xml or .lblx files within the first level of subdirectories as keys, with
-    the member status, reference types, and file paths as values for each entry.
-    This dictionary will then become exported as a .csv file and placed into
-    the same location as the bundle.xml file for that bundle.
-    """
+def main():
     bundle_member_index = {}
     fullpaths = []
-    bundle_name = directory_path.split('/')[-1]
-    create_bundle_members(directory_path, bundle_member_index)
+    bundle_name = args.directorypath.split('/')[-1]
+    directory_path = args.directorypath
+    bundlepath = get_bundle_filepaths(directory_path)
+    print(bundlepath)
+    bundle_member_entries = get_bundle_members(bundlepath)
+    for bundle_member_entry in bundle_member_entries:
+        add_to_index(bundle_member_entry, bundle_member_index)
     bundle_member_lids = ([bundle_member_index[x]['LID'] for x
                            in bundle_member_index])
     first_level_subdirectories = next(os.walk(directory_path))[1]
@@ -163,12 +233,10 @@ def create_bundle_member_index(directory_path):
                 print( 'Secondary bundle member '
                       f'{bundle_member_index[key]["LID"]} '
                        'has not been matched with a file path.')
+    get_shortpath(bundle_member_index, directory_path, bundle_name)
     file_creator(directory_path, bundle_member_index)
+    
 ################################################################################
-
-
-ns = {'pds': 'http://pds.nasa.gov/pds4/pds/v1',
-      'cassini': 'http://pds.nasa.gov/pds4/mission/cassini/v1'}
 
 parser = argparse.ArgumentParser()
 parser.add_argument('directorypath', type=str,
@@ -177,4 +245,5 @@ parser.add_argument('directorypath', type=str,
 
 args = parser.parse_args()
 
-create_bundle_member_index(args.directorypath)
+if __name__ == '__main__':
+    main()
