@@ -12,47 +12,43 @@ import os
 import sys
 
 
-def get_bundle_filepaths(bundle_path):
-    """Find and store path to the bundle.xml file in the bundle.
+def get_bundle_filepaths(bundle_directory):
+    """Find and return the filepath of the bundle's bundle.xml file.
     
     In the event a path to the bundle.xml file is not found, a terminal
     message will print.
     
     Inputs:
-        bundle_path    The path to the bundle directory.
+        bundle_directory    The path to the bundle directory.
         
     Returns:
-        bundlepath     The path to the bundle.xml file within the bundle.
-        
+        bundlexml_path     The path to the bundle.xml file within the bundle.
     """
-    bundlepath = None
-    for path, subdirs, files in os.walk(bundle_path):
+    bundlexml_path = None
+    for path, subdirs, files in os.walk(bundle_directory):
         for file in files:
             if file == 'bundle.xml':
-                bundlepath = os.path.join(path, file)
+                bundlexml_path = os.path.join(path, file)
+                break
 
-    if bundlepath is None:
+    if bundlexml_path is None:
         print('No bundle.xml file exists within this bundle')
         sys.exit(1)
         
-    return bundlepath
+    return bundlexml_path
     
     
-def get_bundle_members(bundlepath):
+def get_bundle_members(bundlexml_path, ns):
     """Get all Bundle_Member_Entry sections from a bundle.xml file.
     
     Input:
-        bundlepath               Path to the bundle.xml file
+        bundlexml_path               Path to the bundle.xml file
         
     Returns:
         bundle_member_entries    All elements within the bundle.xml file that
                                  are tagged "Bundle_Member_Entry"
-        
     """
-    ns = {'pds': 'http://pds.nasa.gov/pds4/pds/v1',
-          'cassini': 'http://pds.nasa.gov/pds4/mission/cassini/v1'}
-
-    bundle_root = (objectify.parse(bundlepath,
+    bundle_root = (objectify.parse(bundlexml_path,
                                    objectify.makeparser(
                                        remove_blank_text=True))
                             .getroot())
@@ -66,16 +62,13 @@ def get_bundle_members(bundlepath):
 def add_to_index(bundle_member_entry, bundle_member_index):
     """Scrape the LID from the bundle.xml file.
     
-    The "Path" section is intentionally left blank. This will be filled in
-    later in the index_bundle function.
-    
     Inputs:
         bundle_member_entry    The element within the bundle.xml file 
                                containing the necessary information about the
                                bundle member.
                              
         bundle_member_index    The dictionary of bundle member information that
-                               will contain the following:
+                               will have the following added to it:
                                    
             "LID"                  The LID of the bundle member
             
@@ -85,8 +78,9 @@ def add_to_index(bundle_member_entry, bundle_member_index):
                                    ('Primary' or 'Secondary')
                                    
             "Path"                 The path to the .xml/.lblx file for the
-                                   bundle member.
-    
+                                   bundle member. The "Path" section is 
+                                   intentionally left blank. This will be 
+                                   filled in later in the index_bundle function.
     """
     bundle_member_lid = bundle_member_entry.lid_reference
     bundle_member_index[bundle_member_lid] = {
@@ -96,26 +90,25 @@ def add_to_index(bundle_member_entry, bundle_member_index):
         'Path': ''}
 
 
-def fullpaths_populate(bundle_path, fullpaths):
+def fullpaths_populate(bundle_directory, fullpaths):
     """Generate the filepaths to .xml and .lblx files within a subdirectory.
     
     Any instance of .xml and .lblx files within the first level of
     subdirectories will be collected and appended to the list of fullpaths.
     
     Inputs:
-        bundle_path    The path to the bundle directory
+        bundle_directory    The path to the bundle directory
         
         fullpaths      The list to be populated with filepaths
-        
     """
-    for root, dirs, files in os.walk(bundle_path):
+    for root, dirs, files in os.walk(bundle_directory):
         for file in files:
             if file.endswith(('.xml', '.lblx')):
                 fullpaths.append(root + '/' + file)
         break
 
 
-def index_bundle(fullpaths, directory_path, bundle_member_lids,
+def index_bundle(fullpaths, bundle_directory, bundle_member_lids,
                  bundle_member_index, bundle_name):
     """Add the filepaths to the bundle_member_index.
     
@@ -128,7 +121,7 @@ def index_bundle(fullpaths, directory_path, bundle_member_lids,
                                within the bundle that exist inside the first 
                                level of subdirectories.
                      
-        directory_path         The path to the bundle directory
+        bundle_directory         The path to the bundle directory
         
         bundle_member_lids     The LIDs of all the bundle members that belong in
                                the bundle.
@@ -137,7 +130,6 @@ def index_bundle(fullpaths, directory_path, bundle_member_lids,
                                bundle members within a bundle.
                                
         bundle_name            The name of the bundle.
-        
     """
     fullpaths_sorted = sorted(fullpaths)
     for fullpath in fullpaths_sorted:
@@ -148,27 +140,26 @@ def index_bundle(fullpaths, directory_path, bundle_member_lids,
         lid = root.Identification_Area.logical_identifier.text
         if lid not in bundle_member_lids:
             print(f'LID {lid} found in file structure at '
-                  f'{fullpath.replace(directory_path, bundle_name)} but is not '
+                  f'{fullpath.replace(bundle_directory, bundle_name)} but is not '
                   'a bundle member.')
         else:
             bundle_member_index[lid]['Path'] = fullpath
             
             
-def get_shortpath(bundle_member_index, directory_path, bundle_name):
+def get_shortpath(bundle_member_index, bundle_directory, bundle_name):
     """Replace the filepath for a bundle member with a shortened version.
-    
+
     Inputs:
         bundle_member_index    The dictionary containing the information of all
                                bundle members within a bundle.
                                
-        directory_path        Path to the bundle directory.
+        bundle_directory        Path to the bundle directory.
         
         bundle_name           Name of the bundle.
     """
-    
     for key in bundle_member_index:
         fullpath = bundle_member_index[key]['Path']
-        shortpath = fullpath.replace(directory_path, bundle_name)
+        shortpath = fullpath.replace(bundle_directory, bundle_name)
         bundle_member_index[key]['Path'] = shortpath
             
 
@@ -184,7 +175,6 @@ def file_creator(bundle_location, bundle_member_index):
         
         bundle_member_index    The dictionary containing the information of all
                                bundle members within a bundle.
-
     """
     with open(os.path.join(bundle_location, 'bundle_member_index.csv'),
               mode='w', encoding='utf8') as index_csv:
@@ -199,26 +189,27 @@ def file_creator(bundle_location, bundle_member_index):
             bundle_member_index_writer.writerow(bundle_member_index[index])
                 
 def main():
+    ns = {'pds': 'http://pds.nasa.gov/pds4/pds/v1',
+          'cassini': 'http://pds.nasa.gov/pds4/mission/cassini/v1'}
     bundle_member_index = {}
     fullpaths = []
     bundle_name = args.directorypath.split('/')[-1]
-    directory_path = args.directorypath
-    bundlepath = get_bundle_filepaths(directory_path)
-    print(bundlepath)
-    bundle_member_entries = get_bundle_members(bundlepath)
+    bundle_directory = args.directorypath
+    bundlexml_path = get_bundle_filepaths(bundle_directory)
+    bundle_member_entries = get_bundle_members(bundlexml_path, ns)
     for bundle_member_entry in bundle_member_entries:
         add_to_index(bundle_member_entry, bundle_member_index)
     bundle_member_lids = ([bundle_member_index[x]['LID'] for x
                            in bundle_member_index])
-    first_level_subdirectories = next(os.walk(directory_path))[1]
+    first_level_subdirectories = next(os.walk(bundle_directory))[1]
     # 'first_level_subdirectories' contains all of the subdirectories of the
-    # top-level directory 'directory_path'. These are found by calling the
+    # top-level directory 'bundle_directory'. These are found by calling the
     # os.walk iterator once and extracting the list of directories returned,
     # which will always be at the top level.
     for first_level_subdirectory in first_level_subdirectories:
-        file_location = directory_path + '/' + first_level_subdirectory
+        file_location = bundle_directory + '/' + first_level_subdirectory
         fullpaths_populate(file_location, fullpaths)
-        index_bundle(sorted(fullpaths), directory_path, bundle_member_lids,
+        index_bundle(sorted(fullpaths), bundle_directory, bundle_member_lids,
                      bundle_member_index, bundle_name)
 
     for key in bundle_member_index:
@@ -233,8 +224,8 @@ def main():
                 print( 'Secondary bundle member '
                       f'{bundle_member_index[key]["LID"]} '
                        'has not been matched with a file path.')
-    get_shortpath(bundle_member_index, directory_path, bundle_name)
-    file_creator(directory_path, bundle_member_index)
+    get_shortpath(bundle_member_index, bundle_directory, bundle_name)
+    file_creator(bundle_directory, bundle_member_index)
     
 ################################################################################
 
