@@ -140,8 +140,8 @@ def index_bundle(fullpaths, bundle_directory, bundle_member_lids,
         lid = root.Identification_Area.logical_identifier.text
         if lid not in bundle_member_lids:
             print(f'LID {lid} found in file structure at '
-                  f'{fullpath.replace(bundle_directory, bundle_name)} but is not '
-                  'a bundle member.')
+                  f'{fullpath.replace(bundle_directory, bundle_name)} but is '
+                   'not a bundle member.')
         else:
             bundle_member_index[lid]['Path'] = fullpath
             
