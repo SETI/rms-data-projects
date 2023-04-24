@@ -71,13 +71,15 @@ def add_to_index(collection_csv_path, collection_members):
         csv_lines = csv_file.readlines()
         for line in csv_lines:
             parts = line.split(',')
-            lidvid = parts[-1]
+            lidvid = parts[-1].strip()
+            if not lidvid.endswith('0'):
+                lidvid += '0'
             lid = lidvid.split('::')[0]
             vid = lidvid.split('::')[-1]
             if lid == vid:
                 vid = ''
-            collection_members[str(lid)] = {
-                'LID': str(lid),
+            collection_members[str(lidvid)] = {
+                'LID': lid,
                 'Member Status': parts[0],
                 'VID': vid,
                 'Path': '__'}
@@ -114,9 +116,13 @@ def index_collections(fullpaths, collection_members, collection_directory):
                                 objectify.makeparser(
                                     remove_blank_text=True)).getroot())
         lid = str(root.Identification_Area.logical_identifier)
+        vid = str(root.Identification_Area.version_id)
+        lidvid = lid + '::' + vid
+        if not lidvid.endswith('0'):
+            lidvid += '0'
         shortpath = fullpath.replace(collection_directory, collection)
-        if lid in collection_members:
-            collection_members[lid]['Path'] = shortpath
+        if lidvid in collection_members:
+            collection_members[lidvid]['Path'] = shortpath
         else:
             print(f'File {lid} located at {shortpath} in collection but is not '
                   f'in collection_{collection}.csv file.')
