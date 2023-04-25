@@ -9,25 +9,35 @@ import csv
 from lxml import objectify
 import os
 
-def get_bundle_filepaths(bundleset_path):
+def get_bundle_filepaths(bundleset_directory):
     """Find and store paths to all bundle.xml files in bundleset.
-
-    Generates the paths to bundle.xml files for each bundle within the
-    bundleset, then appends them to a list to be iterated through. The
-    bundle_path is the path to the bundleset.
+    
+    Inputs:
+        bundleset_directory    The path to the bundleset directory.
+        
+    Returns:
+        bundlexml_paths         The list of paths to all bundle.xml files within 
+                               the bundle.
     """
-    bundlepaths = []
-    for path, subdirs, files in os.walk(bundleset_path):
+    bundlexml_paths = []
+    for path, subdirs, files in os.walk(bundleset_directory):
         for file in files:
             if file == 'bundle.xml':
-                bundlepaths.append(os.path.join(path, file))
+                bundlexml_paths.append(os.path.join(path, file))
 
-    return bundlepaths
+    return bundlexml_paths
 
 
-def get_member_lid(bundle_path):
-    """Scrape the LID from the bundle.xml file."""
-    bundle_root = (objectify.parse(bundle_path,
+def get_member_lid(bundlexml_path):
+    """Scrape the LID from the bundle.xml file.
+    
+    Inputs:
+        bundlexml_path    The path to the bundle.xml file of a bundle.
+        
+    Returns:
+        bundle_lid        The LID of the bundle.xml file.
+    """
+    bundle_root = (objectify.parse(bundlexml_path,
                                    objectify.makeparser(
                                        remove_blank_text=True))
                             .getroot())
@@ -37,44 +47,70 @@ def get_member_lid(bundle_path):
     return bundle_lid
     
     
-def get_shortpath(bundleset_name, bundle_path): 
-    """Create shortened path from full filepath."""
-    shortpath = bundleset_name + bundle_path.split(bundleset_name)[-1]
+def get_shortpath(bundleset_name, bundle_directory): 
+    """Create shortened path from the full filepath.
+    
+    Inputs:
+        bundleset_name      The name of the bundleset.
+        
+        bundle_directory    The path to a bundle within the bundleset.
+        
+    Returns:
+        shortpath           A shortened version of the filepath. First part now
+                            begins with the bundleset directory.
+    """
+    shortpath = bundleset_name + bundle_directory.split(bundleset_name)[-1]
     return shortpath
     
     
 def add_to_index(bundle_lid, bundleset_member_index, shortpath):
-    """Add bundle information to index dictionary."""
+    """Add bundle information to index dictionary.
+    
+    Inputs:
+        bundle_lid    The LID of the bundle.xml file.
+        
+        bundleset_member_index    The dictionary of bundle.xml information that
+                                  will have the following added to it:
+                                      
+            "LID"                     The LID of the bundle.xml file.
+            
+            "Path"                    The path to the bundle.xml file. 
+            
+        shortpath                 The path to the bundle.xml file, starting from
+                                  the bundleset directory.
+    """
     bundleset_member_index[bundle_lid] = ({
         'LID': bundle_lid,
         'Path': shortpath})
 
 
-def file_creator(bundle_location, bundle_member_index):
+def file_creator(bundle_directory, bundleset_member_index):
     """Create a index file in the bundleset directory.
-
-    This takes bbundleset_member_index and creates a csv file at the location
-    of bundle_location. The bundle_location is the path leading to the 
-    bundle.
+    
+    Inputs:
+        bundle_directory    The path to the bundle directory.
+        
+        bundleset_member_index    The dictionary of all bundle.xml LIDs and
+                                  filepaths within a bundleset.
     """
-    with open(bundle_location + '/bundleset_member_index.csv',
+    with open(os.path.join(bundle_directory, 'bundleset_member_index.csv'),
               mode='w', encoding='utf8') as index_csv:
         bundle_member_index_writer = csv.DictWriter(
             index_csv,
             fieldnames=('LID',
                         'Path'))
         bundle_member_index_writer.writeheader()
-        for index in sorted(bundle_member_index):
-            bundle_member_index_writer.writerow(bundle_member_index[index])
+        for index in sorted(bundleset_member_index):
+            bundle_member_index_writer.writerow(bundleset_member_index[index])
 
 
 def main():
     bundleset_member_index = {}
     bundleset_name = args.directorypath.split('/')[-1]
-    bundlepaths = get_bundle_filepaths(args.directorypath)
-    for bundlepath in bundlepaths:
-        bundle_lid = get_member_lid(bundlepath)
-        shortpath = get_shortpath(bundleset_name, bundlepath)
+    bundlexml_paths = get_bundle_filepaths(args.directorypath)
+    for bundlexml_path in bundlexml_paths:
+        bundle_lid = get_member_lid(bundlexml_path)
+        shortpath = get_shortpath(bundleset_name, bundlexml_path)
         add_to_index(bundle_lid, bundleset_member_index, shortpath)
     file_creator(args.directorypath, bundleset_member_index)
 
