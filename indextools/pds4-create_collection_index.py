@@ -72,8 +72,6 @@ def add_to_index(collection_csv_path, collection_members):
         for line in csv_lines:
             parts = line.split(',')
             lidvid = parts[-1].strip()
-            if not lidvid.endswith('0'):
-                lidvid += '0'
             lid = lidvid.split('::')[0]
             vid = lidvid.split('::')[-1]
             if lid == vid:
@@ -118,8 +116,6 @@ def index_collections(fullpaths, collection_members, collection_directory):
         lid = str(root.Identification_Area.logical_identifier)
         vid = str(root.Identification_Area.version_id)
         lidvid = lid + '::' + vid
-        if not lidvid.endswith('0'):
-            lidvid += '0'
         shortpath = fullpath.replace(collection_directory, collection)
         if lidvid in collection_members:
             collection_members[lidvid]['Path'] = shortpath
