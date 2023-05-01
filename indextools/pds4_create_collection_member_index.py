@@ -2,17 +2,18 @@
 Creates a collection product file of collection member information.
 
 This tool takes the input in the form of a path to a collection_*.xml file. The
-file is then parsed to find the name of the the collection product's filename.
+file is then parsed to find the collection product's filename.
 The collection product's file is then scraped for LIDVIDs (separated into LID
 and VID) and member status. These values are then put into a dictionary. Each
-file in the collection directory is then scraped for its LID and crossmatched
-with the dictionary. If a file matches, its filepath is placed in the same
-entry as its LID, VID and member status information. If no match is found, a
-message is printed. The file will still be included in the collection index.
+file in the collection member directory is then scraped for its LIDVID and
+crossmatched with the dictionary. If a file matches, its filepath is placed in
+the same entry as its LID, VID and member status information. If no match is
+found, a message is printed. The file will still be included in the collection
+index.
 
 The resulting dictionary of collection member information is then put into a
-collection product file. This indexed collection product file is then placed
-inside the collection directory.
+new collection product file. This collection product file is then placed
+inside the collection member directory.
 """
 import argparse
 import csv
@@ -21,15 +22,16 @@ from lxml import objectify
 
 
 def get_collectionprod_file(collection_directory, collectionxml_file):
-    """Scrape the collection_*.xml files for the collection product's filename.
+    """Scrape the collection_*.xml file for the collection product's filename.
 
     Inputs:
-        collection_directory      The path to the collection directory.
+        collection_directory    The path to the collection directory.
 
-        collectionxml_file         The path to the collection's xml file.
+        collectionxml_file      The path to the collection's .xml file.
 
     Returns:
-        collection_product_filename    The path to the collection product's file.
+        collection_product_filename    The path to the collection product's
+                                       file.
     """
     ns = {'pds': 'http://pds.nasa.gov/pds4/pds/v1',
           'cassini': 'http://pds.nasa.gov/pds4/mission/cassini/v1'}
@@ -52,21 +54,24 @@ def add_to_index(collection_product_filename, collection_member_index):
     """Add information to the collection_member_index dictionary.
 
     Inputs:
-        collection_product_filename    The path to the collection product's file.
+        collection_product_filename    The path to the collection product's
+                                       file.
 
-        collection_member_index     The dictionary of collection member information.
-                               It will contain the following:
+        collection_member_index        The dictionary of collection member
+                                       information. It will contain the
+                                       following:
 
-            "LID"                  The LID (Logical IDentifier) of the data
-                                   file.
+            "LID"                          The LID (Logical IDentifier) of the
+                                           data file.
 
-            "Member Status"        The member status of the data product.
+            "Member Status"                The member status of the data
+                                           product.
 
-            "VID"                  The VID (Version IDentifier) of the data
-                                   file.
+            "VID"                          The VID (Version IDentifier) of the
+                                           data file.
 
-            "Path"                 The path to the data product. This is left
-                                   blank to be filled in later.
+            "Path"                         The path to the data product. This
+                                           is left blank to be filled in later.
     """
     with open(collection_product_filename, 'r') as collection_prod_file:
         lines = collection_prod_file.readlines()
@@ -103,10 +108,10 @@ def index_collections(fullpaths, collection_member_index, collection_directory):
     """Match the .xml/.lblx files to their filepaths.
 
     Inputs:
-        collection_member_index       The dictionary of collection information.
+        collection_member_index    The dictionary of collection information.
 
-        fullpaths                The paths to the .xml/.lblx files inside the
-                                 collection.
+        fullpaths                  The paths to the .xml/.lblx files inside
+                                   the collection.
     """
     collection = collection_directory.split('/')[-1]
     fullpaths_sorted = sorted(fullpaths)
@@ -121,29 +126,29 @@ def index_collections(fullpaths, collection_member_index, collection_directory):
         if lidvid in collection_member_index:
             collection_member_index[lidvid]['Path'] = shortpath
         else:
-            print(f'File {lid} located at {shortpath} in collection but is not '
-                  f'in the {collection} product file.')
+            print(f'PDS4 label found but not a member of this bundle: '
+                  f'{shortpath}, {lid}')
 
 
 def file_creator(collection_directory, collection_member_index):
     """Create a collection product file out of collection_member_index.
 
     Inputs:
-        collection_directory    The path to the collection.
+        collection_directory       The path to the collection.
 
-        collection members      The dictionary of collection information.
+        collection_member_index    The dictionary of collection information.
     """
     with open(os.path.join(collection_directory, 'collection_member_index.csv'),
               mode='w') as index_file:
-        collection_member_index_writer = csv.DictWriter(index_file,
+        collection_member_indexer = csv.DictWriter(index_file,
                                                         fieldnames=(['LID',
                                                                      'Member '
                                                                      'Status',
                                                                      'Path',
                                                                      'VID']))
-        collection_member_index_writer.writeheader()
+        collection_member_indexer.writeheader()
         for index in sorted(collection_member_index):
-            collection_member_index_writer.writerow(collection_member_index[index])
+            collection_member_indexer.writerow(collection_member_index[index])
 
 
 def main():
