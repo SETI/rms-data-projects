@@ -1,5 +1,5 @@
 """
-Creates a collection product file of collection member information.
+Creates an index file of collection member information.
 
 This tool takes the input in the form of a path to a collection_*.xml file. The
 file is then parsed to find the collection product's filename.
@@ -11,9 +11,9 @@ the same entry as its LID, VID and member status information. If no match is
 found, a message is printed. The file will still be included in the collection
 index.
 
-The resulting dictionary of collection member information is then put into a
-new collection product file. This collection product file is then placed
-inside the collection member directory.
+The resulting dictionary of collection member information is then put into an
+output file. This output file is then placed inside the collection member
+directory.
 """
 import argparse
 import csv
@@ -104,7 +104,7 @@ def fullpaths_populate(collection_directory, fullpaths):
                 fullpaths.append(os.path.join(root, file))
 
 
-def index_collections(fullpaths, collection_member_index, collection_directory):
+def index_collection(fullpaths, collection_member_index, collection_directory):
     """Match the .xml/.lblx files to their filepaths.
 
     Inputs:
@@ -131,7 +131,7 @@ def index_collections(fullpaths, collection_member_index, collection_directory):
 
 
 def file_creator(collection_directory, collection_member_index):
-    """Create a collection product file out of collection_member_index.
+    """Create an output file out of collection_member_index.
 
     Inputs:
         collection_directory       The path to the collection.
@@ -161,7 +161,7 @@ def main():
                                                           collectionxml_file)
     add_to_index(collection_product_filename, collection_member_index)
     fullpaths_populate(collection_directory, fullpaths)
-    index_collections(fullpaths, collection_member_index, collection_directory)
+    index_collection(fullpaths, collection_member_index, collection_directory)
     file_creator(collection_directory, collection_member_index)
 
 
