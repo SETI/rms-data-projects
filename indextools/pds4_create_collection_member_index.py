@@ -20,6 +20,16 @@ import csv
 import os
 from lxml import objectify
 
+def get_member_filepath(collection_directory):
+    
+    collectionxml_file = None
+    for path, subdirs, files in os.walk(collection_directory):
+        for file in files:
+            if 'collection' in file and file.endswith('.xml'):
+                collectionxml_file = os.path.join(path, file)
+                break
+    return collectionxml_file
+
 
 def get_collectionprod_file(collection_directory, collectionxml_file):
     """Scrape the collection_*.xml file for the collection product's filename.
@@ -84,8 +94,8 @@ def add_to_index(collection_product_filename, collection_member_index):
                 vid = ''
             collection_member_index[str(lidvid)] = {
                 'LID': lid,
-                'Member Status': parts[0],
                 'VID': vid,
+                'Member Status': parts[0],
                 'Path': '__'}
 
 
@@ -128,7 +138,7 @@ def index_collection(fullpaths, collection_member_index, collection_directory):
         else:
             print(f'PDS4 label found but not a member of this bundle: '
                   f'{shortpath}, {lid}')
-
+            
 
 def file_creator(collection_directory, collection_member_index):
     """Create an output file out of collection_member_index.
@@ -140,12 +150,14 @@ def file_creator(collection_directory, collection_member_index):
     """
     with open(os.path.join(collection_directory, 'collection_member_index.csv'),
               mode='w') as index_file:
-        collection_member_indexer = csv.DictWriter(index_file,
-                                                        fieldnames=(['LID',
-                                                                     'Member '
-                                                                     'Status',
-                                                                     'Path',
-                                                                     'VID']))
+        collection_member_indexer = csv.DictWriter(
+            index_file,
+            fieldnames=([
+                'LID',
+                'VID', 
+                'Member Status',
+                'Path'
+                ]))
         collection_member_indexer.writeheader()
         for index in sorted(collection_member_index):
             collection_member_indexer.writerow(collection_member_index[index])
@@ -154,8 +166,8 @@ def file_creator(collection_directory, collection_member_index):
 def main():
     collection_member_index = {}
     fullpaths = []
-    collectionxml_file = args.collectionpath
-    file = args.collectionpath.split('/')[-1]
+    collectionxml_file = get_member_filepath(args.collectionpath)
+    file = collectionxml_file.split('/')[-1]
     collection_directory = collectionxml_file.replace('/' + file, '')
     collection_product_filename = get_collectionprod_file(collection_directory,
                                                           collectionxml_file)
