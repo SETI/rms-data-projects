@@ -46,14 +46,26 @@ def get_member_filepaths(directory, filename, level):
     return files_found
 
 
+def get_schema(bundlexml_files, namespaces):
+    for file in bundlexml_files:
+        with open(file, 'r') as xml_file:
+            xml_file = xml_file.readlines()
+            for line in xml_file:
+                if 'xmlns:' in line:
+                    line = line.replace('xmlns:', '').strip()
+                    line = line.replace('"', '')
+                    line = line.split('=')
+                    namespaces[line[0]] = line[1]
+    return namespaces
+    
 
 def main():
+    namespaces = {}
     bundlefiles = get_member_filepaths(args.directorypath, args.filename,
                                        args.level_to_look)
-    for i in bundlefiles:
-        print(i)
+    get_schema(bundlefiles, namespaces)
     
-    
+
 parser = argparse.ArgumentParser()
 parser.add_argument('directorypath', type=str,
                     help='The path to the directory containing the bundles '
