@@ -13,12 +13,14 @@ import sys
 
 
 class FilepathsNotFound(Exception):
+    """Stop the program if no files were found in get_member_filepaths."""
+    
     def __init__(self, message):
         super().__init__(message)
         
 
 def get_member_filepaths(directory, filename, level):
-    """ Find and store all .xml/.lblx files that contain the filename.
+    """Find and store all .xml/.lblx files that contain the filename.
     
     Inputs:
         directory    The path to the directory containing the bundle/collection.
@@ -41,12 +43,20 @@ def get_member_filepaths(directory, filename, level):
                         files_found.append(os.path.join(root, file))
                         
     if files_found == []:
-        raise FilepathsNotFound(f'No files containing {filename} ending in '
+        raise FilepathsNotFound(f'No files containing "{filename}" ending in '
                                  '".xml" or ".lblx" could be found.')
     return files_found
 
 
 def get_schema(bundlexml_files, namespaces):
+    """Find all namespaces utilized by a bundle.
+    
+    Inputs:
+        bundlexml_files    The filepath(s) of bundle.xml files to look in.
+        
+        namespaces         The dictionary to contain the namespaces of the
+                           bundle.
+    """
     for file in bundlexml_files:
         with open(file, 'r') as xml_file:
             xml_file = xml_file.readlines()
@@ -55,15 +65,16 @@ def get_schema(bundlexml_files, namespaces):
                     line = line.replace('xmlns:', '').strip()
                     line = line.replace('"', '')
                     line = line.split('=')
-                    namespaces[line[0]] = line[1]
+                    namespaces.update({line[0]: line[-1]})
     return namespaces
-    
+
 
 def main():
     namespaces = {}
     bundlefiles = get_member_filepaths(args.directorypath, args.filename,
                                        args.level_to_look)
-    get_schema(bundlefiles, namespaces)
+    namespaces = get_schema(bundlefiles, namespaces)
+    print(namespaces)
     
 
 parser = argparse.ArgumentParser()
