@@ -44,7 +44,8 @@ def get_member_filepaths(directory, filename, level):
                         
     if files_found == []:
         raise FilepathsNotFound(f'No files containing "{filename}" ending in '
-                                 '".xml" or ".lblx" could be found.')
+                                 '".xml" or ".lblx" could be found in the '
+                                 'given levels.')
     return files_found
 
 
@@ -69,26 +70,82 @@ def get_schema(bundlexml_files, namespaces):
     return namespaces
 
 
-def main():
-    namespaces = {}
-    bundlefiles = get_member_filepaths(args.directorypath, args.filename,
-                                       args.level_to_look)
-    namespaces = get_schema(bundlefiles, namespaces)
-    print(namespaces)
+# Get bundle members
+
+def get_bundle_members(filepath, ns):
+    """Get all Bundle_Member_Entry sections from a bundle.xml file.
+
+    Input:
+        bundlexml_path               Path to the bundle.xml file.
+        
+        ns                           The bundle namespaces.
+
+    Returns:
+        bundle_member_entries        All elements within the bundle.xml file
+                                     that are tagged "Bundle_Member_Entry".
+    """
+    bundle_root = (objectify.parse(filepath,
+                                   objectify.makeparser(
+                                       remove_blank_text=True))
+                   .getroot())
+
+    bundle_member_entries = bundle_root.findall('pds:Bundle_Member_Entry',
+                                                namespaces=ns)
+
+    return bundle_member_entries
+
+
+def fullpaths_populate(directory, level):
+    """Generate the fullpaths to .xml and .lblx files within a subdirectory.
+
+    Any instance of .xml and .lblx files within the chosen level of
+    subdirectories will be collected and appended to the list of fullpaths.
+
+    Inputs:
+        directory    The path to the bundle directory.
+
+        level        The allowed level of subdirectories the search can go.
+        
+    Returns:
+        fullpaths    The list to be populated with filepaths.
+    """
+    fullpaths = []
+    directory = os.path.abspath(directory)
+    for root, dirs, files in os.walk(directory):
+        if root.count(os.sep) - directory.count(os.sep) < level:
+            for file in files:
+                if file.endswith(('.xml', '.lblx')):
+                    fullpaths.append(root + '/' + file)
     
+    if fullpaths == []:
+        raise FilepathsNotFound('No files ending in ".xml" or ".lblx" could '
+                                'be found in the given levels.')
 
-parser = argparse.ArgumentParser()
-parser.add_argument('directorypath', type=str,
-                    help='The path to the directory containing the bundles '
-                         'you wish to scrape.')
-parser.add_argument('--filename', type=str,
-                    help='The name of the files to look for. "bundle" or '
-                    '"collection" work.')
-parser.add_argument('--level-to-look', type=int,
-                    help='The number of levels down you want to search for '
-                         'files.')
 
-args = parser.parse_args()
+def add_to_index():
+    pass
 
-if __name__ == '__main__':
-    main()
+# NOT TESTED YET
+def file_creator(directory, file_name, fields, member_index):
+    """Create the file of the results."""
+    fieldnames = {}
+    # These are kept here until they have a place within the index population
+    # functions.
+    fieldnames['collection'] = ['LID', 'VID', 'Member Status', 'Path']
+    fieldnames['bundle'] = ['LID', 'Reference Type', 'Member Status', 'Path']
+    fieldnames['bundleset'] = ['LID', 'Path']
+    index_name = file_name+'_member_index.csv'
+    with open(os.path.join(directory, index_name),
+              mode='w', encoding='utf8') as index_file:
+        member_index_writer = csv.DictWriter(
+            index_file,
+            fieldnames=fieldnames[file_name])
+        member_index_writer.writeheader()
+        for index in sorted(member_index):
+            member_index_writer.writerow(member_index[index])
+
+
+def shortpaths(): pass
+
+
+
