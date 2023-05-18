@@ -70,29 +70,77 @@ def get_schema(bundlexml_files, namespaces):
     return namespaces
 
 
-# Get bundle members
-
-def get_bundle_members(filepath, ns):
-    """Get all Bundle_Member_Entry sections from a bundle.xml file.
-
-    Input:
-        bundlexml_path               Path to the bundle.xml file.
+# In-progress function
+def add_to_index(filepath, filename, namespaces, member_index):
+    """Fills index with appropriate contents according to specified filename.
+    
+    Inputs:
+        filepath        the path(s) to the file containing the information
         
-        ns                           The bundle namespaces.
-
-    Returns:
-        bundle_member_entries        All elements within the bundle.xml file
-                                     that are tagged "Bundle_Member_Entry".
+        filename        The keyword to determine which file to look for.
+        
+        namespaces        The xml schema to use in lxml parsing
+        
+        member_index        The index dictionary that will contain
+                            information depending on the filename.
+                                
     """
-    bundle_root = (objectify.parse(filepath,
-                                   objectify.makeparser(
-                                       remove_blank_text=True))
-                   .getroot())
+    if 'bundle' in filename:
+        if filename == 'bundleset':
+            for file in filepath:
+                bundle_root = (objectify.parse(file,
+                                               objectify.makeparser(
+                                                   remove_blank_text=True))
+                                        .getroot())
+                bundle_lid = str(bundle_root.Identification_Area.logical_identifier.text)
+                member_index[bundle_lid] = ({
+                    'LID': bundle_lid,
+                    'Path': file})
+        else:
+            assert filename == 'bundle'
+            bundle_root = (objectify.parse(filepath,
+                                           objectify.makeparser(
+                                               remove_blank_text=True))
+                                    .getroot())
+            bundle_member_entries = bundle_root.findall('pds:Bundle_Member_Entry',
+                                                        namespaces=namespaces)
+            for bundle_member_entry in bundle_member_entries:
+                member_lid = bundle_member_entry.lid_reference
+                member_index[member_lid] = {
+                    'LID': member_lid,
+                    'Reference Type': bundle_member_entry.reference_type,
+                    'Member Status': bundle_member_entry.member_status,
+                    'Path': ''}
+            
+        
+    else:
+        assert filename == 'collection'
 
-    bundle_member_entries = bundle_root.findall('pds:Bundle_Member_Entry',
-                                                namespaces=ns)
+        collection_file_root = (objectify.parse(filepath,
+                                objectify.makeparser(remove_blank_text=True)))
+        
+        collection_file = collection_file_root.findall('pds:File_Area_Inventory',
+                                                       namespaces=namespaces)
 
-    return bundle_member_entries
+        collection_product_filename = filepath.replace(filepath.split('/')[-1],
+                                                   collection_file[0].File
+                                                                     .file_name
+                                                                     .text)
+    
+        with open(collection_product_filename, 'r') as collection_prod_file:
+            lines = collection_prod_file.readlines()
+            for line in lines:
+                parts = line.split(',')
+                lidvid = parts[-1].strip()
+                lid = lidvid.split('::')[0]
+                vid = lidvid.split('::')[-1]
+                if lid == vid:
+                    vid = ''
+                member_index[str(lidvid)] = {
+                    'LID': lid,
+                    'VID': vid,
+                    'Member Status': parts[0],
+                    'Path': '__'}
 
 
 def fullpaths_populate(directory, level):
@@ -122,9 +170,6 @@ def fullpaths_populate(directory, level):
                                 'be found in the given levels.')
 
 
-def add_to_index():
-    pass
-
 # NOT TESTED YET
 def file_creator(directory, file_name, fields, member_index):
     """Create the file of the results."""
@@ -145,7 +190,19 @@ def file_creator(directory, file_name, fields, member_index):
             member_index_writer.writerow(member_index[index])
 
 
-def shortpaths(): pass
+def shortpaths(directory, bundle_name, member_index, fullpath):
+    """Shorten the paths in the member_index dictionary.
+    
+    Inputs:
+        directory            The path to the directory.
 
+        subdirectory_name    The name of the source directory.
 
+        member_index         The dictionary of indexed information.
 
+        fullpath             The original path of the data file.
+    """
+    for key in member_index:
+        fullpath = member_index[key]['Path']
+        shortpath = fullpath.replace(directory, bundle_name)
+        member_index[key]['Path'] = shortpath
