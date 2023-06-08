@@ -10,7 +10,7 @@ class FilepathsNotFound(Exception):
         super().__init__(message)
 
 
-def get_member_filepaths(directory, filename):
+def get_member_filepaths(directory, nlevels, filename):
     """Find and store all .xml/.lblx files that contain the filename.
 
     Inputs:
@@ -24,15 +24,10 @@ def get_member_filepaths(directory, filename):
                        is raised.
     """
     files_found = []
-    if 'bundle' in filename:
-        level = 2
-    else:
-        assert filename == 'collection'
-        level = 3
 
     directory = os.path.abspath(directory)
     for root, dirs, files in os.walk(directory):
-        if root.count(os.sep) - directory.count(os.sep) < level:
+        if root.count(os.sep) - directory.count(os.sep) < nlevels:
             for file in files:
                 if file.endswith(('.xml', '.lblx')):
                     if filename in file:
@@ -45,7 +40,7 @@ def get_member_filepaths(directory, filename):
     return files_found
 
 
-def get_schema(bundlexml_files, namespaces):
+def get_schema(bundlexml_files):
     """Find all namespaces utilized by a bundle.
 
     Inputs:
@@ -54,6 +49,7 @@ def get_schema(bundlexml_files, namespaces):
         namespaces         The dictionary to contain the namespaces of the
                            bundle.
     """
+    namespaces = {'pds': 'https://pds.nasa.gov/pds4/pds/v1/'}
     for file in bundlexml_files:
         with open(file, 'r') as xml_file:
             xml_file = xml_file.readlines()
@@ -65,7 +61,7 @@ def get_schema(bundlexml_files, namespaces):
                     namespaces.update({line[0]: line[-1]})
 
 
-def add_to_index(filepath, filename, namespaces):
+def add_to_index(directory, filepath, filename):
     """Fills index with appropriate contents according to specified filename.
 
     Inputs:
@@ -73,12 +69,11 @@ def add_to_index(filepath, filename, namespaces):
 
         filename      The keyword to determine which file to look for.
 
-        namespaces    The xml schema to use in lxml parsing
-
     Returns:
         member_index        The index dictionary that will contain
                             information depending on the filename.
     """
+    namespaces = get_schema(filepath)
     member_index = {}
     if 'bundle' in filename:
         if len(filepath) > 1:
@@ -143,6 +138,10 @@ def add_to_index(filepath, filename, namespaces):
                         'VID': vid,
                         'Member Status': parts[0],
                         'Path': '__'}
+
+    bundle_name = directory.split('/')[-2]
+    shortpaths(directory, bundle_name, member_index)
+
     return member_index
 
 
