@@ -177,6 +177,36 @@ def fullpaths_populate(directory, nlevels):
     return fullpaths
 
 
+def create_member_index(member_index, lid, labels, path, directory):
+    bundle_name = directory.split('/')[-2]
+    temp_dict = {'Path': '__'}
+    for label in labels:
+        if label == 'LID':
+            temp_dict.update({label: lid})
+        elif label == 'Path':
+            temp_dict.update({label: path})
+        else:
+            temp_dict.update({label: '__'})
+        temp_dict = dict(sorted(temp_dict.items()))
+        member_index[lid] = temp_dict
+    
+    shortpaths(directory, bundle_name, member_index)
+    return member_index
+
+
+def get_index_root(bundlexml_paths, directory, labels):
+    member_index = {}
+    for path in bundlexml_paths:
+        bundle_root = (objectify.parse(path,
+                                       objectify.makeparser(
+                                           remove_blank_text=True))
+                       .getroot())
+        bundle_lid = str(
+            bundle_root.Identification_Area.logical_identifier.text)
+        create_member_index(member_index, bundle_lid, labels, path, directory)
+    return member_index
+
+
 def match_lids_to_files(fullpaths, filename, member_index):
     """Match the LID of a file to its counterpart in the dictionary.
 
