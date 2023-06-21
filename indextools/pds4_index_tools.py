@@ -17,6 +17,9 @@ def get_member_filepaths(directory, nlevels, filename):
         directory    The path to the directory containing the
                      bundle/collection.
 
+        nlevels      The number of levels down within the directory the 
+                     search can go.
+
         filename     The chosen keyword to search the directory with.
 
     Returns:
@@ -45,9 +48,6 @@ def get_schema(bundlexml_files):
 
     Inputs:
         bundlexml_files    The filepath(s) of bundle.xml files to look in.
-
-        namespaces         The dictionary to contain the namespaces of the
-                           bundle.
     """
     namespaces = {'pds': 'https://pds.nasa.gov/pds4/pds/v1/'}
     for file in bundlexml_files:
@@ -65,13 +65,16 @@ def add_to_index(directory, filepath, filename):
     """Fills index with appropriate contents according to specified filename.
 
     Inputs:
+        directory     The path to the directory containing the
+                      bundle/collection.
+
         filepath      The path(s) to the file containing the information
 
         filename      The keyword to determine which file to look for.
 
     Returns:
-        member_index        The index dictionary that will contain
-                            information depending on the filename.
+        member_index    The index dictionary that will contain
+                        information depending on the filename.
     """
     namespaces = get_schema(filepath)
     member_index = {}
@@ -145,7 +148,7 @@ def add_to_index(directory, filepath, filename):
     return member_index
 
 
-def fullpaths_populate(directory, filename):
+def fullpaths_populate(directory, nlevels):
     """Generate the fullpaths to .xml and .lblx files within a subdirectory.
 
     Any instance of .xml and .lblx files within the chosen level of
@@ -154,20 +157,15 @@ def fullpaths_populate(directory, filename):
     Inputs:
         directory    The path to the bundle directory.
 
-        level        The allowed level of subdirectories the search can go.
+        nlevel        The allowed level of subdirectories the search can go.
 
     Returns:
         fullpaths    The list to be populated with filepaths.
     """
     fullpaths = []
-    if filename == 'bundle':
-        level = 2
-    else:
-        assert filename == 'collection'
-        level = 3
     directory = os.path.abspath(directory)
     for root, dirs, files in os.walk(directory):
-        if root.count(os.sep) - directory.count(os.sep) < level:
+        if root.count(os.sep) - directory.count(os.sep) < nlevels:
             for file in files:
                 if file.endswith(('.xml', '.lblx')):
                     fullpaths.append(root + '/' + file)
@@ -224,7 +222,7 @@ def match_lids_to_files(fullpaths, filename, member_index):
                       f'{path}, {lid}')
 
 
-def shortpaths(directory, bundle_name, member_index):
+def shortpaths(directory, subdirectory_name, member_index):
     """Shorten the paths in the member_index dictionary.
 
     Inputs:
@@ -236,7 +234,7 @@ def shortpaths(directory, bundle_name, member_index):
     """
     for key in member_index:
         fullpath = member_index[key]['Path']
-        shortpath = fullpath.replace(directory, bundle_name + '/')
+        shortpath = fullpath.replace(directory, subdirectory_name + '/')
         member_index[key]['Path'] = shortpath
 
 
@@ -246,7 +244,7 @@ def file_creator(directory, filename, member_index):
     Inputs:
         directory       The path to the directory.
 
-        file_name       The keyword to determine the contents.
+        filename       The keyword to determine the name of the file.
 
         member_index    The index of bundle member/collection product
                         information.
