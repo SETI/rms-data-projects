@@ -173,6 +173,7 @@ def get_bundle_entries(bundle_root, namespaces):
     return bundle_member_entries
 
 
+# FIXIT: add search for lidvid_reference
 def add_bundle_data(bundle_member_entries, member_index):
     """Add the bundle member info to the member_index dictionary.
 
