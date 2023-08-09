@@ -24,27 +24,31 @@ def add_bundle_data(bundle_member_entries, member_index):
                                  within the .xml document. These were located
                                  under a root element found via lxml.objectify
 
-        member_index             The dictionary that will contain the inform ation
-                                 regarding the data product.
+        member_index             The dictionary that will contain the
+                                 information regarding the data product.
     """
     for entry in bundle_member_entries:
         try:
             member_lid = str(entry.lid_reference)
         except AttributeError:
-            member_lid = str(entry.lidvid_reference).split('::')[0]
+            member_lid = str(entry.lidvid_reference).split('::', maxsplit=1)[0]
         member_lid_short = member_lid.split(':')[-1]
         create_member_index(member_index,
                             ['LID', 'Reference Type', 'Member Status'],
                             '__',
                             member_lid)
-        member_index[member_lid_short]['Reference Type'] = str(entry.reference_type)
-        member_index[member_lid_short]['Member Status'] = str(entry.member_status)
-        
-        
+        member_index[member_lid_short]['Reference Type'] = str(
+            entry.reference_type)
+        member_index[member_lid_short]['Member Status'] = str(
+            entry.member_status)
+
+
 def add_collection_data(directory, collectionprod_file, member_index):
     """Populate the member_index with information about collection members.
 
     Inputs:
+        directory              The path to the base directory.
+
         collectionprod_file    The path to the collection product file.
 
         member_index           The dictionary of indexed information.
@@ -67,16 +71,16 @@ def add_collection_data(directory, collectionprod_file, member_index):
             member_index[lid_short]['VID'] = vid
 
 
-def create_member_index(member_index, labels, shortpath, lid):
+def create_member_index(member_index, labels, filepath, lid):
     """Create the empty index with correct labels and contents.
 
     Inputs:
         member_index    The dictionary that will contain the information
-                        of the data product
+                        of the data products.
 
-        labels          The labels to put into member_index
+        labels          The labels to put into member_index.
 
-        shortpath       The shortened path to the file. If none exists, just
+        filepath       The path to the file. If none exists, just
                         use '_'
 
         lid             The LID of the indexed data. This will be used as the
@@ -88,35 +92,36 @@ def create_member_index(member_index, labels, shortpath, lid):
         if label == 'LID':
             temp_dict.update({label: lid})
         elif label == 'Path':
-            temp_dict.update({label: shortpath})
+            temp_dict.update({label: filepath})
         else:
             temp_dict.update({label: '_'})
         temp_dict = dict((temp_dict.items()))
         member_index[lid.split(':')[-1]] = temp_dict
-        
-        
+
+
 def dataprod_crossmatch(memberxml_paths, member_index, directory,
-                          subdirectory_name):
+                        subdirectory_name):
     """Match the LID of a file to its counterpart in the dictionary.
 
     Inputs:
-        memberxml_paths    The list of filepaths to files in the collection.
+        memberxml_paths      The list of data product filepaths.
 
-        member_index    The dictionary of indexed information.
+        member_index         The dictionary of indexed information.
 
-        directory       The path to the directory containing the collection.
+        directory            The path to the base directory.
 
-        subdirectory_name    The name of the collection member.
+        subdirectory_name    The name of the subdirectory containing the data
+                             products.
 
     """
     memberxml_paths_sorted = sorted(memberxml_paths)
     for path in memberxml_paths_sorted:
         root = (objectify.parse(os.path.join(directory.replace(
             subdirectory_name, ''), path
-            ),
-                                objectify.makeparser(
-                                remove_blank_text=True))
-                           .getroot())
+        ),
+            objectify.makeparser(
+            remove_blank_text=True))
+            .getroot())
         lid = str(root.Identification_Area.logical_identifier.text)
         if not any(lid in member_index[key]['LID'] for key in member_index):
             print(f'PDS4 label found but not a member of this collection: '
@@ -131,12 +136,11 @@ def file_creator(directory, keyword, member_index):
     """Create the file of the results.
 
     Inputs:
-        directory       The path to the directory.
+        directory       The path to the base directory.
 
-        keyword       The keyword to determine the name of the file.
+        keyword         The keyword to determine the name of the file.
 
-        member_index    The index of bundle member/collection product
-                        information.
+        member_index    The index of data product information.
     """
     _ = list(member_index.keys())[0]
     labels = list(member_index[_].keys())
@@ -158,13 +162,16 @@ def find_all_data_products(directory, nlevels, subdirectory_name):
     subdirectories will be collected and appended to the list of xml filepaths.
 
     Inputs:
-        directory    The path to the bundle directory.
+        directory            The path to the base directory.
 
-        nlevels      The allowed level of subdirectories down the search
-                     can go.
+        nlevels              The allowed level of subdirectories down the
+                             search can go.
+
+        subdirectory_name    The name of the subdirectory containing the data
+                             products.
 
     Returns:
-        memberxml_paths    The list to be populated with filepaths.
+        memberxml_paths      The list to be populated with filepaths.
     """
     memberxml_paths = []
     directory = os.path.abspath(directory)
@@ -172,9 +179,11 @@ def find_all_data_products(directory, nlevels, subdirectory_name):
         if basedir.count(os.sep) - directory.count(os.sep) < nlevels:
             for file in files:
                 if file.endswith(('.xml', '.lblx')):
-                    memberxml_paths.append(shortpaths(os.path.join(basedir, file),
-                                     directory,
-                                     directory[directory.find(subdirectory_name):]))
+                    memberxml_paths.append(shortpaths(
+                        os.path.join(basedir, file),
+                        directory,
+                        directory[directory.find(subdirectory_name):])
+                    )
 
     if not memberxml_paths:
         raise FilepathsNotFound('No files ending in ".xml" or ".lblx" could '
@@ -187,10 +196,9 @@ def get_bundle_entries(bundle_root, namespaces):
     """find and return all instances of Bundle_Member_Entry.
 
     Inputs:
-        bundle_root              The root element of a given bundle.xml file
+        bundle_root              The root element of a given bundle.xml file.
 
-        namespaces               The namespaces of the bundle.xml's data
-                                 products
+        namespaces               The namespaces of the bundle.xml's schema.
 
     Returns:
         bundle_member_entries    A list containing all instances of
@@ -206,7 +214,7 @@ def get_bundle_lid(bundle_root):
     """Search a bundle.xml file for the LID.
 
     Inputs:
-        bundle_root    The root element of a given bundle.xml file.
+        bundle_root    The root element of a given bundle.xml file
 
     Returns:
         bundle_lid     The LID of the bundle.xml file
@@ -216,7 +224,7 @@ def get_bundle_lid(bundle_root):
     return bundle_lid
 
 
-def get_collprod_filepath(collection_root, namespaces, collection_directory):
+def get_collprod_filepath(collection_root, namespaces):
     """Return the collection product filepath from the collection_*.xml file.
 
     Inputs:
@@ -225,16 +233,13 @@ def get_collprod_filepath(collection_root, namespaces, collection_directory):
         namespaces                     The namespaces present in the
                                        collection_*.xml file.
 
-        collection_directory           The directory containing the
-                                       collection_*.xml file.
-
     Returns:
-        collprod_filename    The collection product file.
+        collprod_filename              The collection product file.
     """
     collection_file = collection_root.findall('pds:File_Area_Inventory',
                                               namespaces=namespaces)
     collprod_filename = collection_file[0].File.file_name.text
-    
+
     return collprod_filename
 
 
@@ -258,17 +263,19 @@ def get_member_filepaths(directory, nlevels, keyword, subdirectory_name):
     """Find and store all .xml/.lblx files whose filenames contain the keyword.
 
     Inputs:
-        directory      The path to the directory containing the
-                       bundle/collection.
+        directory            The path to the base directory.
 
-        nlevels        The number of levels down within the directory the
-                       search can go.
+        nlevels              The number of levels down within the directory the
+                             search can go.
 
-        keyword       The chosen keyword to search the directory with.
+        keyword              The chosen keyword to search the directory with.
+
+        subdirectory_name    The name of the subdirectory containing the data
+                             products.
 
     Returns:
-        files_found    The results of the file search. If empty, an exception
-                       is raised.
+        files_found          The results of the file search. If empty, an
+                             exception is raised.
     """
     files_found = []
 
@@ -278,9 +285,11 @@ def get_member_filepaths(directory, nlevels, keyword, subdirectory_name):
             for file in files:
                 if file.endswith(('.xml', '.lblx')):
                     if keyword in file:
-                        files_found.append(shortpaths(os.path.join(basedir, file),
-                                         directory,
-                                         directory[directory.find(subdirectory_name):]))
+                        files_found.append(shortpaths(
+                            os.path.join(basedir, file),
+                            directory,
+                            directory[directory.find(subdirectory_name):])
+                        )
 
     if not files_found:
         raise FilepathsNotFound(f'No files containing "{keyword}" ending in '
@@ -293,12 +302,12 @@ def get_schema(directory, xml_files):
     """Find all namespaces utilized by a bundle.
 
     Inputs:
-        directory    The base directory that contains the bundle.xml file(s)
-        
+        directory    The path to the base directory.
+
         xml_files    The filepath(s) of bundle.xml files to look in.
-        
+
     Returns:
-        namespaces    The dictionary of XML namespaces used in this bundle.
+        namespaces   The namespaces of the bundle.xml's schema.
     """
     namespaces = {'pds': 'http://pds.nasa.gov/pds4/pds/v1',
                   'cassini': 'http://pds.nasa.gov/pds4/mission/cassini/v1'}
@@ -324,7 +333,7 @@ def shortpaths(fullpath, directory, replacement_text):
 
         directory            The path to the directory.
 
-        replaceemnt_text     The text to replace within the fullpath
+        replacement_text     The text to replace within the fullpath.
 
     Returns:
         shortpath            The shortened version of the filepath.

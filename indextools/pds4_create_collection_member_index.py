@@ -15,15 +15,14 @@ def main():
                                                     'collection',
                                                     collection_name)
     collection_root = tools.get_index_root(args.collectionpath.replace(
-                                               collection_name, ''),
-                                           collectionxml_file[0])
+        collection_name, ''),
+        collectionxml_file[0])
     namespaces = tools.get_schema(args.collectionpath.replace(
-                                      collection_name, ''),
-                                  collectionxml_file)
+        collection_name, ''),
+        collectionxml_file)
     # Grab the collection product file
     collectionprod_file = tools.get_collprod_filepath(collection_root,
-                                                      namespaces,
-                                                      args.collectionpath)
+                                                      namespaces)
     member_index = {}
     # Populate the member_index with required data, except filepaths
     tools.add_collection_data(args.collectionpath, collectionprod_file,
@@ -34,7 +33,7 @@ def main():
     # contents.
     tools.dataprod_crossmatch(memberxml_paths, member_index,
                               args.collectionpath,
-                                collection_name)
+                              collection_name)
     tools.file_creator(args.collectionpath, 'collection', member_index)
 
 
