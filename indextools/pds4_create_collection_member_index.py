@@ -12,19 +12,28 @@ def main():
     collection_name = args.collectionpath.split('/')[-2]
     # Grab the path to the collection_*.xml file
     collectionxml_file = tools.get_member_filepaths(args.collectionpath, 3,
-                                                    'collection')
-    collection_root = tools.get_index_root(collectionxml_file[0])
-    namespaces = tools.get_schema(collectionxml_file)
+                                                    'collection',
+                                                    collection_name)
+    collection_root = tools.get_index_root(args.collectionpath.replace(
+                                               collection_name, ''),
+                                           collectionxml_file[0])
+    namespaces = tools.get_schema(args.collectionpath.replace(
+                                      collection_name, ''),
+                                  collectionxml_file)
     # Grab the collection product file
-    collectionprod_file = tools.get_collection_entries(collection_root, namespaces,
-                                                       args.collectionpath)
+    collectionprod_file = tools.get_collprod_filepath(collection_root,
+                                                      namespaces,
+                                                      args.collectionpath)
     member_index = {}
     # Populate the member_index with required data, except filepaths
-    tools.add_collection_data(collectionprod_file, member_index)
-    fullpaths = tools.fullpaths_populate(args.collectionpath, 3)
+    tools.add_collection_data(args.collectionpath, collectionprod_file,
+                              member_index)
+    memberxml_paths = tools.find_all_data_products(args.collectionpath, 3,
+                                                   collection_name)
     # Crossmatches the LIDS of files with the collection product file's
     # contents.
-    tools.collection_crossmatch(fullpaths, member_index, args.collectionpath,
+    tools.dataprod_crossmatch(memberxml_paths, member_index,
+                              args.collectionpath,
                                 collection_name)
     tools.file_creator(args.collectionpath, 'collection', member_index)
 

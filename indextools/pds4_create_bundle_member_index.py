@@ -19,17 +19,21 @@ args = parser.parse_args()
 def main():
     bundle_name = args.directorypath.split('/')[-2]
     bundlexml_paths = tools.get_member_filepaths(
-        args.directorypath, 3, 'bundle')
-    namespaces = tools.get_schema(bundlexml_paths)
+        args.directorypath, 3, 'bundle', bundle_name)
+    namespaces = tools.get_schema(args.directorypath.replace(bundle_name, ''),
+                                  bundlexml_paths)
     member_index = {}
-    bundle_root = tools.get_index_root(bundlexml_paths[0])
+    bundle_root = tools.get_index_root(args.directorypath.replace(bundle_name, ''),
+                                       bundlexml_paths[0])
     # Get the bundle member entries for the bundle
     bundle_member_entries = tools.get_bundle_entries(bundle_root, namespaces)
     # Create and fill member_index with info, excluding filepaths
     tools.add_bundle_data(bundle_member_entries, member_index)
-    fullpaths = tools.fullpaths_populate(args.directorypath, 2)
+    memberxml_paths = tools.find_all_data_products(args.directorypath, 2,
+                                                   bundle_name)
     # crossmatching filepaths to LIDs in member_index
-    tools.bundle_crossmatch(fullpaths, member_index, args.directorypath,
+    tools.dataprod_crossmatch(memberxml_paths, member_index,
+                              args.directorypath,
                             bundle_name)
     tools.file_creator(args.directorypath, 'bundle', member_index)
 
