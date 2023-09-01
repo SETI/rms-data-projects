@@ -5,19 +5,26 @@ and filepaths of each file within a collection product. There is a single
 command-line argument, the path to the collection.
 """
 import argparse
+import os
 import pds4_index_tools as tools
 
 
 def main():
-    collection_name = args.collectionpath.split('/')[-2]
+    parser = argparse.ArgumentParser()
+    parser.add_argument('collectionpath', type=str,
+                        help='The path to the collection you wish to scrape')
+
+    args = parser.parse_args()
+    
+    basedir, collection_name = os.path.split(args.collectionpath)
     # Grab the path to the collection_*.xml file
-    collectionlabel_file = tools.get_member_filepaths(args.collectionpath, 3,
+    collectionlabel_file = tools.get_member_filepaths(args.collectionpath,
                                                       'collection',
                                                       collection_name)
     collection_root = tools.get_index_root(args.collectionpath.replace(
         collection_name, ''),
         collectionlabel_file[0])
-    namespaces = tools.get_schema(args.collectionpath.replace(
+    namespaces = tools.get_namespaces(args.collectionpath.replace(
         collection_name, ''),
         collectionlabel_file)
     # Grab the collection product file
@@ -34,14 +41,8 @@ def main():
     tools.dataprod_crossmatch(collprod_paths, member_index,
                               args.collectionpath,
                               collection_name)
-    tools.file_creator(args.collectionpath, 'collection', member_index)
+    tools.create_results_file(args.collectionpath, 'collection', member_index)
 
-
-parser = argparse.ArgumentParser()
-parser.add_argument('collectionpath', type=str,
-                    help='The path to the collection you wish to scrape')
-
-args = parser.parse_args()
 
 if __name__ == '__main__':
     main()
