@@ -4,13 +4,29 @@
 
 import csv
 import os
+import sys
+import re
 
 from lxml import objectify
-
+        
 
 class NoLabelsFound(Exception):
-    """Exception indicating no files were found."""
+    """Trigger if no top-level label files exist in the directory."""
+    
+    def __init__(self, message):
+        super().__init__(message)
 
+        
+class TooManyLabels(Exception):
+    """Trigger if too many top-level label files exist in the directory."""
+    
+    def __init__(self, message):
+        super().__init__(message)
+        
+        
+class MissingLabel(Exception):
+    """Trigger if a bundle/collection member is left without a corresponding path."""
+    
     def __init__(self, message):
         super().__init__(message)
 
@@ -54,7 +70,7 @@ def add_collection_data(base_directory, collprod_path, member_index):
     Inputs:
         base_directory    The path to the base directory.
 
-        collprod_file     The path to the collection product file.
+        collprod_path     The path to the collection product file.
 
         member_index      The dictionary of indexed information.
     """
@@ -69,8 +85,8 @@ def add_collection_data(base_directory, collprod_path, member_index):
             vid = lidvid.split('::')[-1]
             if lid == vid:
                 vid = ''
-            add_lid_to_member_index(member_index, ['LID', 'VID', 'Member Status', 'Path'],
-                                    None, lid)
+            add_lid_to_member_index(['LID', 'VID', 'Member Status', 'Path'],
+                                    None, lid, member_index)
             member_index[lid_short]['Member Status'] = parts[0]
             member_index[lid_short]['VID'] = vid
 
@@ -167,47 +183,6 @@ def dataprod_crossmatch(label_paths, base_directory, subdirectory, member_index)
                     member_index[key]['Path'] = path
 
 
-def find_all_data_products(base_directory, nlevels, subdirectory):
-    """Generate the paths to all .xml and .lblx files within a subdirectory.
-
-    Any instance of .xml and .lblx files within the chosen level of subdirectories will
-    be collected and appended to the list of filepaths. The value of nlevels will ensure
-    that files will only be returned froma select amount of subdirectories. If no files
-    ending in .xml/.lblx are found within the chosen amount of subdirectories,
-    NoLabelsFound will be raised. 
-
-    Inputs:
-        base_directory    The path to the base directory.
-
-        nlevels           The allowed level of subdirectories down the
-                          search can go.
-
-        subdirectory      The name of the subdirectory containing the data
-                          products.
-
-    Returns:
-        label_paths       The list of filepaths.
-    """
-    label_paths = []
-    base_directory = os.path.abspath(base_directory)
-    for subdir, _, files in os.walk(base_directory):
-        if subdir.count(os.sep) - base_directory.count(os.sep) < nlevels:
-            for file in files:
-                if file.endswith(('.xml', '.lblx')):
-                    label_paths.append(shortpaths(
-                        os.path.join(subdir, file),
-                        base_directory,
-                        base_directory[base_directory.find(subdirectory):])
-                    )
-
-    if not label_paths:
-        raise NoLabelsFound( 'No files ending in ".xml" or ".lblx" were found in '
-                            f'directory {base_directory} or within {nlevels} levels of '
-                             'subdirectories.')
-
-    return label_paths
-
-
 def get_bundle_entries(bunprod_root, namespaces):
     """Find and return all instances of Bundle_Member_Entry.
     
@@ -262,11 +237,17 @@ def get_collprod_filepath(collection_root, namespaces):
     Returns:
         collprod           The collection product file.
     """
-    collection_file = collection_root.findall('pds:File_Area_Inventory',
-                                              namespaces=namespaces)
-    collprod = collection_file[0].File.file_name.text
-
-    return collprod
+    try:
+        collection_file = collection_root.findall('pds:File_Area_Inventory',
+                                                  namespaces=namespaces)
+        
+        collprod = collection_file[0].File.file_name.text
+        
+        return collprod
+    
+    except IndexError as e:
+        print(e)
+        sys.exit(1)
 
 
 def get_index_root(base_directory, path):
@@ -290,44 +271,44 @@ def get_index_root(base_directory, path):
     return index_root
 
 
-def get_member_filepaths(base_directory, keyword, subdirectory):
+# FIXIT
+def get_member_files(directory, nlevels, subdirectory, file_type):
     """Find and return all .xml/.lblx files whose filenames contain the keyword.
     
     This function will return the first instance of an .xml/lblx file that exists within
     the directory structure in every subdirectory. When a match is found, the value for
     subdirs is reset to [], preventing any further recursion within that subdirectory
-    and returning to the top level for the next search. If no label files that contain
-    the keyword are found, NoLabelsFound is raised and a message is printed.
+    and returning to the top level for the next search.
 
     Inputs:
-        base_directory    The path to the base directory.
+        directory       The path to the base directory.
+        
+        nlevels         The number of subdirectory levels the search is limited to.
+                        If nlevels = 2, the search returns the toplevel label file.
+                        If nlevels = None, it will return all data products.
 
-        keyword           The chosen keyword to search the directory with.
-
-        subdirectory      The name of the subdirectory containing the data products.
+        subdirectory    The name of the subdirectory containing the data products.
+        
+        file_type       The type of file to look for. 
 
     Returns:
-        files_found       The results of the file search. If empty, the exception
-                          NoLablesFound is raised.
+        files_found     The results of the file search.
     """
-    files_found = []
-
-    for basedir, subdirs, files in os.walk(base_directory, topdown=True):
-        for file in files:
-            if keyword in file:
-                if file.endswith(('.xml', '.lblx')):
-                    files_found.append(shortpaths(
-                        os.path.join(basedir, file),
-                        base_directory,
-                        base_directory[base_directory.find(subdirectory):])
-                    )
-                    subdirs[:] = []
-                        
-
-    if not files_found:
-        raise NoLabelsFound(f'No files containing "{keyword}" ending in ".xml" or ".lblx"'
-                             'could be found in the given levels.')
-    return files_found
+    file_paths = []
+    regex=r'[\w-]+\.(?:'+re.escape(file_type)+')'
+    base_directory = os.path.abspath(directory)
+    base_dir_sep = base_directory.count(os.sep)
+    for subdir, _, files in os.walk(base_directory):
+        if nlevels is None or subdir.count(os.sep) - base_dir_sep < nlevels:
+                for file in files:
+                    if re.match(regex, file):
+                        file_paths.append(shortpaths(
+                            os.path.join(subdir, file),
+                            directory,
+                            directory[directory.find(subdirectory):])
+                        )
+                    
+    return file_paths
 
 
 def get_namespaces(base_directory, label_files):
@@ -351,11 +332,13 @@ def get_namespaces(base_directory, label_files):
         with open(label_filepath, 'r', encoding='utf8') as bunprod_file:
             lines = bunprod_file.readlines()
             for line in lines:
-                if 'xmlns:' in line:
+                if 'xmlns' in line:
                     uri = line.replace('xmlns:', '').strip()
                     uri = uri.replace('"', '')
                     uri = uri.split('=')
                     namespaces[uri[0]] = uri[-1]
+    namespaces['pds'] = namespaces.pop('xmlns')
+                
     return namespaces
 
 
