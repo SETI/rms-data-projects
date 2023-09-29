@@ -1,12 +1,19 @@
 """Create a csv file of a bundle's members and their information.
 
 This module creates an index file containing the LIDs, Reference Types, Member Statuses,
-and filepaths of each bundle.xml file. There is a two command-line arguments: the path
-to the bundle, and the file type of the label files. The file type can be xml or lblx,
-but if no argument is given, it will default to xml.
+and filepaths of the bundle member entries in the bundle.xml file. There are two
+command-line arguments.
+
+Usage:
+
+python pds4_create_bundle_member_index.py <bundle_dir> [--filesuffix (xml|lblx)]
+
+<bundle_dir> is the root directory of the bundle.
+If given, --filesuffix specifies the type of label file; if not given, the default is xml
 """
 import argparse
 import os
+import re
 import sys
 
 import pds4_index_tools as tools
@@ -18,55 +25,45 @@ def main():
                         help='The path to the directory containing the bundle '
                              'you wish to scrape.')
     
-    parser.add_argument('--filesuffix', nargs='?',  const=1, type=str, default='xml',
+    parser.add_argument('--filesuffix', type=str, default='xml',
                         help='The type of label file present within the collection')
 
     args = parser.parse_args()
 
     basedir, bundle_name = os.path.split(args.directorypath)
-    label_paths = tools.get_member_files(args.directorypath, 1, bundle_name,
-                                         args.filesuffix)
+    # In get_member_files, nlevels is set to 1 so that the search does not go below
+    # the top level of subdirectories. This ensures that only the bundle product is
+    # caught.
+    regex = r'[\w-]+\.(?:'+re.escape(args.filesuffix)+')'
+    label_paths = tools.get_member_files(args.directorypath, 1, basedir, regex)
     if len(label_paths) == 0:
-        try:
-            raise tools.NoLabelsFound(f'No label files ending in "{args.filesuffix}" '
-                                       'exist within this directory: '
-                                      f'{args.directorypath}')
-        except tools.NoLabelsFound as e:
-            print(e)
-            sys.exit(1)
+        print(f'No label files ending in "{args.filesuffix}" '
+              f'exist within this directory: {args.directorypath}')
+        sys.exit(1)
         
     if len(label_paths) > 1:
-        try:
-            raise tools.TooManyLabels(f'Chosen directory {args.directorypath} contains '
-                                      f'too many toplevel label files: {label_paths}')
-        except tools.TooManyLabels as e:
-            print(e)
-            sys.exit(1)
-    namespaces = tools.get_namespaces(args.directorypath.replace(bundle_name, ''),
-                                      label_paths)
+        print(f'Chosen directory {args.directorypath} contains '
+              f'too many toplevel label files: {label_paths}')
+        sys.exit(1)
     member_index = {}
-    bunprod_root = tools.get_index_root(args.directorypath.replace(bundle_name,
-                                                                   ''),
-                                        label_paths[0])
-    # Get the bundle member entries for the bundle
-    bundle_member_entries = tools.get_bundle_entries(bunprod_root, namespaces)
-    # Create and fill member_index with info, excluding filepaths
+
+    bunprod_root = tools.get_index_root(basedir, label_paths[0])
+    namespaces = tools.get_namespaces(bunprod_root)
+    bundle_member_entries = tools.get_bundle_member_entries(bunprod_root, namespaces)
     tools.add_bundle_data(bundle_member_entries, member_index)
-    dataprod_paths = tools.get_member_files(args.directorypath, 2, bundle_name,
-                                            args.filesuffix)
+    # Here we are using 2 for the nlevels parameter to specify that only the files in
+    # the first two levels of subdirectories are required. If set to None, it will
+    # iterate through all of the data products, making the runtime much longer.
+    dataprod_paths = tools.get_member_files(args.directorypath, 2, basedir, regex)
     # crossmatching filepaths to LIDs in member_index
     tools.dataprod_crossmatch(dataprod_paths,
-                              args.directorypath,
+                              basedir,
                               bundle_name,  member_index)
     for key in member_index:
         if member_index[key]['Path'] is None:
             lid = member_index[key]['LID']
-            try:
-                raise tools.MissingLabel(f'Data product with LID {lid} has no attributed '
-                                          'filepath.')
-            except tools.MissingLabel as e:
-                print(e)
-                sys.exit(1)
+            print(f'Data product with LID {lid} has no attributed filepath.')
+            sys.exit(1)
     tools.create_results_file(args.directorypath, 'bundle', member_index)
 
 

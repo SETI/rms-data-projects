@@ -8,27 +8,6 @@ import sys
 import re
 
 from lxml import objectify
-        
-
-class NoLabelsFound(Exception):
-    """Trigger if no top-level label files exist in the directory."""
-    
-    def __init__(self, message):
-        super().__init__(message)
-
-        
-class TooManyLabels(Exception):
-    """Trigger if too many top-level label files exist in the directory."""
-    
-    def __init__(self, message):
-        super().__init__(message)
-        
-        
-class MissingLabel(Exception):
-    """Trigger if a bundle/collection member is left without a corresponding path."""
-    
-    def __init__(self, message):
-        super().__init__(message)
 
 
 def add_bundle_data(bundle_member_entries, member_index):
@@ -39,6 +18,7 @@ def add_bundle_data(bundle_member_entries, member_index):
     further shortened to the name of the data product. Then add_lid_to_member_index places
     the LID into the member_index dictionary. From there, the Reference Type and Member
     Status of the data product are added to the dictionary.
+    
     Inputs:
         bundle_member_entries    The list of all Bundle_Member_Entry elements within the
                                  label document. These were located under a root element
@@ -76,8 +56,7 @@ def add_collection_data(base_directory, collprod_path, member_index):
     """
     with open(os.path.join(base_directory, collprod_path), 'r',
               encoding='utf8') as collprod_file:
-        lines = collprod_file.readlines()
-        for line in lines:
+        for line in collprod_file:
             parts = line.split(',')
             lidvid = parts[-1].strip()
             lid = lidvid.split('::')[0]
@@ -101,8 +80,6 @@ def add_lid_to_member_index(labels, filepath, lid, member_index):
     add_bundle_data (for bundle products) or add_collection_data (for collection
     products). This also creates the final version of member_index in the case of
     bundlesets.
-    
-    
 
     Inputs:
         labels          The labels to put into member_index.
@@ -120,12 +97,16 @@ def add_lid_to_member_index(labels, filepath, lid, member_index):
     lid_short = lid.split(':')[-1]
     for label in labels:
         if label == 'LID':
-            temp_dict.update({label: lid})
+            temp_dict[label] = lid
         elif label == 'Path':
-            temp_dict.update({label: filepath})
+            temp_dict[label] = filepath
         else:
-            temp_dict.update({label: None})
+            temp_dict[label] = None
     member_index[lid_short] = temp_dict
+    
+    if member_index == {}:
+        print('Dictionary of data product information was not populated.')
+        sys.exit(1)
 
 
 def create_results_file(base_directory, keyword, member_index):
@@ -157,8 +138,8 @@ def create_results_file(base_directory, keyword, member_index):
 def dataprod_crossmatch(label_paths, base_directory, subdirectory, member_index):
     """Match the LID of a file to its counterpart in the member_index.
     
-    Each path within label_paths parsed and scraped for its LID. If this LID exists as an
-    entry in member_index, the path is attributed as a value to the 'Path' key. If it has
+    Each path within label_paths is parsed and scraped for its LID. If this LID exists as
+    an entry in member_index, the 'Path' key is set to this value. If it has
     no match within member_index, a message is printed with the path and the LID.
 
     Inputs:
@@ -171,8 +152,7 @@ def dataprod_crossmatch(label_paths, base_directory, subdirectory, member_index)
         member_index      The dictionary of indexed information.
     """
     for path in sorted(label_paths):
-        root = (objectify.parse(os.path.join(base_directory.replace(subdirectory, ''),
-                                             path),
+        root = (objectify.parse(os.path.join(base_directory, path),
                                 objectify.makeparser(remove_blank_text=True)).getroot())
         lid = str(root.Identification_Area.logical_identifier.text)
         if not any(lid in member_index[key]['LID'] for key in member_index):
@@ -183,7 +163,7 @@ def dataprod_crossmatch(label_paths, base_directory, subdirectory, member_index)
                     member_index[key]['Path'] = path
 
 
-def get_bundle_entries(bunprod_root, namespaces):
+def get_bundle_member_entries(bunprod_root, namespaces):
     """Find and return all instances of Bundle_Member_Entry.
     
     The root element of the bundle product file is scraped for all instances of
@@ -237,16 +217,16 @@ def get_collprod_filepath(collection_root, namespaces):
     Returns:
         collprod           The collection product file.
     """
-    try:
-        collection_file = collection_root.findall('pds:File_Area_Inventory',
+    collection_file = collection_root.findall('pds:File_Area_Inventory',
                                                   namespaces=namespaces)
-        
+    
+    try:
         collprod = collection_file[0].File.file_name.text
-        
         return collprod
     
-    except IndexError as e:
-        print(e)
+    except IndexError:
+        print(f'Provided root element {collection_root} does not contain a '
+               'File_Area_Inventory element.')
         sys.exit(1)
 
 
@@ -271,9 +251,8 @@ def get_index_root(base_directory, path):
     return index_root
 
 
-# FIXIT
-def get_member_files(directory, nlevels, subdirectory, file_type):
-    """Find and return all .xml/.lblx files whose filenames contain the keyword.
+def get_member_files(directory, nlevels, basedir, regex):
+    """Find and return all .xml/.lblx files whose filenames match the regex.
     
     This function will return the first instance of an .xml/lblx file that exists within
     the directory structure in every subdirectory. When a match is found, the value for
@@ -281,68 +260,50 @@ def get_member_files(directory, nlevels, subdirectory, file_type):
     and returning to the top level for the next search.
 
     Inputs:
-        directory       The path to the base directory.
+        directory         The path to the base directory.
         
-        nlevels         The number of subdirectory levels the search is limited to.
-                        If nlevels = 2, the search returns the toplevel label file.
-                        If nlevels = None, it will return all data products.
+        nlevels           The number of subdirectory levels the search is limited to.
+                          If nlevels = 2, the search returns the toplevel label file.
+                          If nlevels = None, it will return all data products.
 
-        subdirectory    The name of the subdirectory containing the data products.
+        basedir           The path to the directory one level above directory.
         
-        file_type       The type of file to look for. 
+        file_type         The type of file to look for. 
 
     Returns:
-        files_found     The results of the file search.
+        files_found       The results of the file search.
     """
     file_paths = []
-    regex=r'[\w-]+\.(?:'+re.escape(file_type)+')'
     base_directory = os.path.abspath(directory)
     base_dir_sep = base_directory.count(os.sep)
     for subdir, _, files in os.walk(base_directory):
         if nlevels is None or subdir.count(os.sep) - base_dir_sep < nlevels:
-                for file in files:
-                    if re.match(regex, file):
-                        file_paths.append(shortpaths(
-                            os.path.join(subdir, file),
-                            directory,
-                            directory[directory.find(subdirectory):])
-                        )
+            for file in files:
+                if re.match(regex, file):
+                    file_paths.append(shortpaths(os.path.join(subdir, file), basedir))
                     
     return file_paths
 
 
-def get_namespaces(base_directory, label_files):
+def get_namespaces(bunprod_root):
     """Find all namespaces utilized by a bundle.
     
-    Every label file within label_files is opened and read line-by-line. The namespaces
-    are found, scrapared for their URI, and are placed in the namespaces dictionary. This
-    dictionary is then returned.
-
+    The namespaces of the bundle product are found with lxml.nsmap and returned
+    as a dictionary with the prefixes as the keys and the namespace URIs as the
+    values.
     Inputs:
-        base_directory    The path to the base directory.
-
-        label_files       The filepath(s) of label files to look in.
+        bunprod_root      The root element of the bundle product
 
     Returns:
         namespaces        The namespaces of the bundle product schema.
     """
-    namespaces = {'pds': 'http://pds.nasa.gov/pds4/pds/v1'}
-    for label_file in label_files:
-        label_filepath = os.path.join(base_directory, label_file)
-        with open(label_filepath, 'r', encoding='utf8') as bunprod_file:
-            lines = bunprod_file.readlines()
-            for line in lines:
-                if 'xmlns' in line:
-                    uri = line.replace('xmlns:', '').strip()
-                    uri = uri.replace('"', '')
-                    uri = uri.split('=')
-                    namespaces[uri[0]] = uri[-1]
-    namespaces['pds'] = namespaces.pop('xmlns')
+    namespaces = bunprod_root.nsmap
+    namespaces['pds'] = namespaces.pop(None)
                 
     return namespaces
 
 
-def shortpaths(fullpath, base_directory, replacement_text):
+def shortpaths(fullpath, base_directory):
     """Shorten the filepath.
     
     This function shortens the filepath to begin at the top level of a chosen directory.
@@ -352,10 +313,8 @@ def shortpaths(fullpath, base_directory, replacement_text):
 
         base_directory      The path to the base directory.
 
-        replacement_text    The text to replace within the fullpath.
-
     Returns:
         shortpath           The shortened version of the filepath.
     """
-    shortpath = fullpath.replace(base_directory, replacement_text)
+    shortpath = os.path.relpath(fullpath, start=base_directory)
     return shortpath
