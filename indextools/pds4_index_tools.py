@@ -112,10 +112,10 @@ def add_lid_to_member_index(labels, filepath, lid, member_index):
 def create_results_file(base_directory, keyword, member_index):
     """Create the file of the results.
     
-    The file is opened within the base_directory and contains the keyword in the name.
-    The labels are taken from the keys of the nested dictionaries within member_index,
-    and are used as fieldnames for the csv file. Each nested dictionary within
-    member_index is then entered as a row into the csv file.
+    The file is opened within the base_directory. The file is named
+    {keyword}_member_index.csv. The labels are taken from the keys of the nested
+    dictionaries within member_index, and are used as fieldnames for the csv file.
+    Each nested dictionary within member_index is then entered as a row into the csv file.
 
     Inputs:
         base_directory    The path to the base directory.
@@ -156,7 +156,8 @@ def dataprod_crossmatch(label_paths, base_directory, subdirectory, member_index)
                                 objectify.makeparser(remove_blank_text=True)).getroot())
         lid = str(root.Identification_Area.logical_identifier.text)
         if not any(lid in member_index[key]['LID'] for key in member_index):
-            print(f'PDS4 label found but not a member of this collection: {path}, {lid}')
+            print(f'PDS4 label found but not a member of the {subdirectory} collection: '
+                  f'{path}, {lid}')
         else:
             for key in member_index:
                 if lid == member_index[key]['LID']:
@@ -276,11 +277,12 @@ def get_member_files(directory, nlevels, basedir, regex):
     file_paths = []
     base_directory = os.path.abspath(directory)
     base_dir_sep = base_directory.count(os.sep)
-    for subdir, _, files in os.walk(base_directory):
+    for subdir, dirs, files in os.walk(base_directory):
         if nlevels is None or subdir.count(os.sep) - base_dir_sep < nlevels:
             for file in files:
                 if re.match(regex, file):
                     file_paths.append(shortpaths(os.path.join(subdir, file), basedir))
+                    dirs[:] = []
                     
     return file_paths
 
