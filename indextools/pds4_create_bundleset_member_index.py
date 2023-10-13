@@ -28,11 +28,10 @@ def main():
 
     args = parser.parse_args()
     
-    regex = r'[\w-]+\.(?:'+re.escape(args.filesuffix)+')'
     basedir, bundleset_name = os.path.split(args.directorypath)
     # In get_member_files, nlevels is set to 2 here to limit the search to the
     # bundle product files of the bundles within the bundleset.
-    label_paths = tools.get_member_files(args.directorypath, 2, basedir, regex)
+    label_paths = tools.get_member_files(args.directorypath, 2, basedir, r'bundle.xml')
     if len(label_paths) == 0:
         print(f'No label files ending in "{args.filesuffix}" exist within this '
               f'directory: {args.directorypath}')

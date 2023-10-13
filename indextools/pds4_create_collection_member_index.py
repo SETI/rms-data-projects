@@ -28,13 +28,13 @@ def main():
 
     args = parser.parse_args()
     
-    regex = r'[\w-]+\.(?:'+re.escape(args.filesuffix)+')'
     basedir, collection_name = os.path.split(args.collectionpath)
     # For collectionlabel_file, nlevels is set to 1 to limit the search to the top level.
+    # This ensures that only the collection label file is caught.
     collectionlabel_file = tools.get_member_files(args.collectionpath,
                                                   1,
                                                   basedir,
-                                                  regex)
+                                                  r'collection[\w]+.(?:xml)')
     
     if len(collectionlabel_file) == 0:
         print(f'No label files ending in "{args.filesuffix}" exist '
@@ -54,10 +54,13 @@ def main():
     member_index = {}
     # Populate the member_index with required data, except filepaths
     tools.add_collection_data(args.collectionpath, collprod_file, member_index)
+    # get_member_filepaths has nlevels set to None here so that the function can collect
+    # all files in all available subdirectories. This ensures that all files are
+    # collected for crossmatching.
     collprod_paths = tools.get_member_files(args.collectionpath,
                                             None, 
                                             basedir,
-                                            regex)
+                                            r'[\w-]+\.(?:'+re.escape(args.filesuffix)+')')
     # Crossmatches the LIDS of files with the collection product file's
     # contents.
     tools.dataprod_crossmatch(collprod_paths,

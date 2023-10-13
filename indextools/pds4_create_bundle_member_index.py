@@ -35,7 +35,7 @@ def main():
     # the top level of subdirectories. This ensures that only the bundle product is
     # caught.
     regex = r'[\w-]+\.(?:'+re.escape(args.filesuffix)+')'
-    label_paths = tools.get_member_files(args.directorypath, 1, basedir, regex)
+    label_paths = tools.get_member_files(args.directorypath, 1, basedir, )
     if len(label_paths) == 0:
         print(f'No label files ending in "{args.filesuffix}" '
               f'exist within this directory: {args.directorypath}')
@@ -52,8 +52,10 @@ def main():
     bundle_member_entries = tools.get_bundle_member_entries(bunprod_root, namespaces)
     tools.add_bundle_data(bundle_member_entries, member_index)
     # Here we are using 2 for the nlevels parameter to specify that only the files in
-    # the first two levels of subdirectories are required. If set to None, it will
-    # iterate through all of the data products, making the runtime much longer.
+    # the first two levels of subdirectories are required. This relies on the assumption
+    # that all the collection product files are within these subdirectories. If set to
+    # None, it will iterate through all of the data products, making the runtime much
+    # longer.
     dataprod_paths = tools.get_member_files(args.directorypath, 2, basedir, regex)
     # crossmatching filepaths to LIDs in member_index
     tools.dataprod_crossmatch(dataprod_paths,

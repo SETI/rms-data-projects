@@ -124,6 +124,9 @@ def create_results_file(base_directory, keyword, member_index):
 
         member_index      The index of data product information.
     """
+    if member_index == {}:
+        print('Dictionary of data product information was not populated.')
+        sys.exit(1)
     found_keys = list(member_index.keys())[0]
     labels = list(member_index[found_keys].keys())
     index_name = keyword+'_member_index.csv'
@@ -219,7 +222,7 @@ def get_collprod_filepath(collection_root, namespaces):
         collprod           The collection product file.
     """
     collection_file = collection_root.findall('pds:File_Area_Inventory',
-                                                  namespaces=namespaces)
+                                               namespaces=namespaces)
     
     try:
         collprod = collection_file[0].File.file_name.text
@@ -253,18 +256,19 @@ def get_index_root(base_directory, path):
 
 
 def get_member_files(directory, nlevels, basedir, regex):
-    """Find and return all .xml/.lblx files whose filenames match the regex.
+    """Find and return all label files whose filenames match the regex.
     
-    This function will return the first instance of an .xml/lblx file that exists within
-    the directory structure in every subdirectory. When a match is found, the value for
-    subdirs is reset to [], preventing any further recursion within that subdirectory
-    and returning to the top level for the next search.
+    This function will return the first instance of a file that matches the given regex
+    file that exists within the directory structure in every subdirectory. When a match
+    is found, the value for subdirs is reset to [], preventing any further recursion
+    within that subdirectory and returning to the top level for the next search.
 
     Inputs:
         directory         The path to the base directory.
         
         nlevels           The number of subdirectory levels the search is limited to.
-                          If nlevels = 2, the search returns the toplevel label file.
+                          If nlevels = int, the search is limited to the number of
+                          subdirectories as determined by the int value.
                           If nlevels = None, it will return all data products.
 
         basedir           The path to the directory one level above directory.
@@ -293,6 +297,7 @@ def get_namespaces(bunprod_root):
     The namespaces of the bundle product are found with lxml.nsmap and returned
     as a dictionary with the prefixes as the keys and the namespace URIs as the
     values.
+    
     Inputs:
         bunprod_root      The root element of the bundle product
 
