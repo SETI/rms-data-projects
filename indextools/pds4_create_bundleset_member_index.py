@@ -12,7 +12,6 @@ If given, --filesuffix specifies the type of label file; if not given, the defau
 """
 import argparse
 import os
-import re
 import sys
 
 import pds4_index_tools as tools
@@ -28,10 +27,12 @@ def main():
 
     args = parser.parse_args()
     
-    basedir, bundleset_name = os.path.split(args.directorypath)
+    basedir, bundleset_name = os.path.split(
+        tools.clean_directory_path(args.directorypath))
     # In get_member_files, nlevels is set to 2 here to limit the search to the
     # bundle product files of the bundles within the bundleset.
-    label_paths = tools.get_member_files(args.directorypath, 2, basedir, r'bundle.xml')
+    label_paths = tools.get_member_files(args.directorypath, 2, basedir,
+                                         r'bundle\.(xml|lblx)')
     if len(label_paths) == 0:
         print(f'No label files ending in "{args.filesuffix}" exist within this '
               f'directory: {args.directorypath}')

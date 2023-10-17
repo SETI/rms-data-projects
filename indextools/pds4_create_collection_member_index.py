@@ -28,13 +28,14 @@ def main():
 
     args = parser.parse_args()
     
-    basedir, collection_name = os.path.split(args.collectionpath)
+    basedir, collection_name = os.path.split(
+        tools.clean_directory_path(args.collectionpath))
     # For collectionlabel_file, nlevels is set to 1 to limit the search to the top level.
     # This ensures that only the collection label file is caught.
     collectionlabel_file = tools.get_member_files(args.collectionpath,
                                                   1,
                                                   basedir,
-                                                  r'collection[\w]+.(?:xml)')
+                                                  r'collection[\w]+.(?:xml|lblx)')
     
     if len(collectionlabel_file) == 0:
         print(f'No label files ending in "{args.filesuffix}" exist '

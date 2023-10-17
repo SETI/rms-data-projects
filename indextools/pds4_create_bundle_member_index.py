@@ -30,12 +30,13 @@ def main():
 
     args = parser.parse_args()
 
-    basedir, bundle_name = os.path.split(args.directorypath)
+    basedir, bundle_name = os.path.split(tools.clean_directory_path(args.directorypath))
     # In get_member_files, nlevels is set to 1 so that the search does not go below
     # the top level of subdirectories. This ensures that only the bundle product is
     # caught.
     regex = r'[\w-]+\.(?:'+re.escape(args.filesuffix)+')'
-    label_paths = tools.get_member_files(args.directorypath, 1, basedir, )
+    label_paths = tools.get_member_files(args.directorypath, 1, basedir,
+                                         r'bundle\.(xml|lblx)')
     if len(label_paths) == 0:
         print(f'No label files ending in "{args.filesuffix}" '
               f'exist within this directory: {args.directorypath}')

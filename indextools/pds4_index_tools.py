@@ -54,7 +54,7 @@ def add_collection_data(base_directory, collprod_path, member_index):
 
         member_index      The dictionary of indexed information.
     """
-    with open(os.path.join(base_directory, collprod_path), 'r',
+    with open(clean_join(base_directory, collprod_path), 'r',
               encoding='utf8') as collprod_file:
         for line in collprod_file:
             parts = line.split(',')
@@ -109,6 +109,17 @@ def add_lid_to_member_index(labels, filepath, lid, member_index):
         sys.exit(1)
 
 
+def clean_directory_path(path):
+    """ Return a path that is consistent with Unix format"""
+    clean_path = path.replace('\\', '/')
+    return clean_path
+
+
+def clean_join(path, *paths):
+    """ Join two paths and make consistent with Unix format"""
+    return os.path.join(path, *paths).replace('\\', '/')
+
+
 def create_results_file(base_directory, keyword, member_index):
     """Create the file of the results.
     
@@ -130,7 +141,7 @@ def create_results_file(base_directory, keyword, member_index):
     found_keys = list(member_index.keys())[0]
     labels = list(member_index[found_keys].keys())
     index_name = keyword+'_member_index.csv'
-    with open(os.path.join(base_directory, index_name),
+    with open(clean_join(base_directory, index_name),
               mode='w', encoding='utf8') as index_file:
         member_index_writer = csv.DictWriter(index_file, fieldnames=labels)
         member_index_writer.writeheader()
@@ -155,7 +166,7 @@ def dataprod_crossmatch(label_paths, base_directory, subdirectory, member_index)
         member_index      The dictionary of indexed information.
     """
     for path in sorted(label_paths):
-        root = (objectify.parse(os.path.join(base_directory, path),
+        root = (objectify.parse(clean_join(base_directory, path),
                                 objectify.makeparser(remove_blank_text=True)).getroot())
         lid = str(root.Identification_Area.logical_identifier.text)
         if not any(lid in member_index[key]['LID'] for key in member_index):
@@ -279,14 +290,16 @@ def get_member_files(directory, nlevels, basedir, regex):
         files_found       The results of the file search.
     """
     file_paths = []
-    base_directory = os.path.abspath(directory)
+    base_directory = clean_directory_path(os.path.abspath(directory))
     base_dir_sep = base_directory.count(os.sep)
     for subdir, dirs, files in os.walk(base_directory):
         if nlevels is None or subdir.count(os.sep) - base_dir_sep < nlevels:
             for file in files:
                 if re.match(regex, file):
-                    file_paths.append(shortpaths(os.path.join(subdir, file), basedir))
-                    dirs[:] = []
+                    file_paths.append(shortpaths(clean_join(subdir, file), basedir))
+        if nlevels is not None and subdir.count(os.sep) - base_dir_sep == nlevels-1:
+             # We are at the maximum depth, so go no further
+             dirs[:] = []
                     
     return file_paths
 
