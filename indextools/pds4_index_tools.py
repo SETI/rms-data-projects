@@ -136,8 +136,7 @@ def create_results_file(base_directory, keyword, member_index):
         member_index      The index of data product information.
     """
     if member_index == {}:
-        print('Dictionary of data product information was not populated.')
-        sys.exit(1)
+        raise ValueError('Dictionary of data product information was not populated.')
     found_keys = list(member_index.keys())[0]
     labels = list(member_index[found_keys].keys())
     index_name = keyword+'_member_index.csv'
