@@ -1,6 +1,6 @@
 ================================================================================
 
-https://github.com/SETI/pds-webserver/issues/4
+https://github.com/SETI/rms-webserver/issues/4
 
 All of the observations in COUVIS_0007 are from Cassini rev_no 000 except for
 "co-uvis-fuv2004_167_10_44" which is from rev_no 5.
@@ -52,7 +52,7 @@ Saturn Orbit Number: 005
 
 ================================================================================
 
-https://github.com/SETI/pds-webserver/issues/21
+https://github.com/SETI/rms-webserver/issues/21
 
 START_TIME and STOP_TIME are backwards in some COUVIS observations. This affects
 3 observations. In OPUS we set the stop time equal to the start time.
@@ -63,7 +63,7 @@ START_TIME and STOP_TIME are backwards in some COUVIS observations. This affects
 
 ================================================================================
 
-https://github.com/SETI/pds-opus/issues/336
+https://github.com/SETI/rms-opus/issues/336
 
 SPACECRAFT_CLOCK_START/STOP_COUNT have invalid suffixes in COUVIS
 observations. In OPUS we set them to .000.

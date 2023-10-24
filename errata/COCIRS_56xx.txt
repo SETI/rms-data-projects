@@ -1,6 +1,6 @@
 ================================================================================
 
-https://github.com/SETI/pds-webserver/issues/32
+https://github.com/SETI/rms-webserver/issues/32
 
 There are 6 COCIRS observations that have SPACECRAFT_CLOCK_START_COUNT and
 SPACECRAFT_CLOCK_STOP_COUNT in the wrong order. In OPUS we set the stop time
@@ -24,7 +24,7 @@ mysql> select opus_id, spacecraft_clock_count1, spacecraft_clock_count2
 
 ================================================================================
 
-https://github.com/SETI/pds-webserver/issues/33
+https://github.com/SETI/rms-webserver/issues/33
 
 There are two COCIRS_5905 observations that have illegally formatted
 SPACECRAFT_CLOCK_STOP_COUNT.

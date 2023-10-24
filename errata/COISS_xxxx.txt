@@ -33,7 +33,7 @@ labels. We have fixed this in our own metadata files.
 
 ================================================================================
 
-https://github.com/SETI/pds-webserver/issues/2
+https://github.com/SETI/rms-webserver/issues/2
 
 COISS_1xxx EARTH_RECEIVED_START/EARTH_RECEIVED_STOP_TIME are sometimes
 backwards. There are 81 observations affected. In OPUS we set the stop time
@@ -129,7 +129,7 @@ mysql> select volume_id, opus_id, ert1, ert2 from obs_mission_cassini
 
 ================================================================================
 
-https://github.com/SETI/pds-webserver/issues/18
+https://github.com/SETI/rms-webserver/issues/18
 
 The COISS_1001 index file has 280 entries for SPACECRAFT_CLOCK_START_COUNT and
 SPACECRAFT_CLOCK_STOP_COUNT that disagree with the label files for the
@@ -432,7 +432,7 @@ mysql> select opus_id, spacecraft_clock_count1, spacecraft_clock_count2
 
 ================================================================================
 
-https://github.com/SETI/pds-webserver/issues/22
+https://github.com/SETI/rms-webserver/issues/22
 
 COISS_1001 has "UNK" as EARTH_RECEIVED_START or EARTH_RECEIVED_STOP_TIME.
 
