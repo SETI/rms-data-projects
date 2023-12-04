@@ -23,7 +23,7 @@ Volume COVIMS_0003 has a data subdirectory incorrectly named
 
 ================================================================================
 
-https://github.com/SETI/pds-webserver/issues/21
+https://github.com/SETI/rms-webserver/issues/21
 
 START_TIME and STOP_TIME are backwards in many COVIMS observations. This affects
 251 observations. In OPUS we set the stop time equal to the start time.
@@ -282,8 +282,8 @@ START_TIME and STOP_TIME are backwards in many COVIMS observations. This affects
 
 ================================================================================
 
-https://github.com/SETI/pds-webserver/issues/21
-https://github.com/SETI/pds-opus/issues/336
+https://github.com/SETI/rms-webserver/issues/21
+https://github.com/SETI/rms-opus/issues/336
 
 SPACECRAFT_CLOCK_START/STOP_COUNT have invalid suffixes in 2 COVIMS
 observations. In OPUS we set them to .000.
@@ -295,7 +295,7 @@ We are replacing SCLK .971 and .973 with .000 for lack of anything better to do.
 
 ================================================================================
 
-https://github.com/SETI/pds-opus/issues/329
+https://github.com/SETI/rms-opus/issues/329
 
 SPACECRAFT_CLOCK_STOP_COUNT has an illegal value in the index. It has been fixed
 in the metadata index.
@@ -307,7 +307,7 @@ COVIMS_0029_index.tab line 398:
 
 ================================================================================
 
-https://github.com/SETI/pds-opus/issues/328, etc.
+https://github.com/SETI/rms-opus/issues/328, etc.
 
 COVIMS index files use -999, -1.E32 and +1.E32 to indicate unknown/missing/invalid
 values in many columns of the index files, but these constants are never defined
@@ -3335,9 +3335,3 @@ data/2006100T163551_2006106T084326/v1523381716_1.qub
 data/2006100T163551_2006106T084326/v1523382977_1.qub
 
 ================================================================================
-
-
-
-
-
-

@@ -1,6 +1,6 @@
 ================================================================================
 
-https://github.com/SETI/pds-webserver/issues/9
+https://github.com/SETI/rms-webserver/issues/9
 
 Some HSTNICMOS volumes have two different names for the same aperture:
 
@@ -10,7 +10,7 @@ Some HSTNICMOS volumes have two different names for the same aperture:
 
 ================================================================================
 
-https://github.com/SETI/pds-webserver/issues/28
+https://github.com/SETI/rms-webserver/issues/28
 
 The volume name is "HSTJ0_7319" while the actual volume is "HSTN0_7319".
 

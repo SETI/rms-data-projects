@@ -1,6 +1,6 @@
 ================================================================================
 
-https://github.com/SETI/pds-webserver/issues/6
+https://github.com/SETI/rms-webserver/issues/6
 
 The wavelength resolution for HST STIS is derived from the data handbook
 Table 1.1, where the resolution is in Angstroms. However, the label says it is
@@ -25,7 +25,7 @@ From Table 1.1 resolution = 2.73 Angstrom / pixel
 
 ================================================================================
 
-https://github.com/SETI/pds-webserver/issues/7
+https://github.com/SETI/rms-webserver/issues/7
 
 In some HST STIS volumes, the fields "MINIMUM_WAVELENGTH" and
 "MAXIMUM_WAVELENGTH" appear to be backwards. This is true for 209 observations
@@ -253,7 +253,7 @@ min and max to make them in the correct order.
 
 ================================================================================
 
-https://github.com/SETI/pds-webserver/issues/7
+https://github.com/SETI/rms-webserver/issues/7
 
 In some HST STIS volumes, the fields "MINIMUM_WAVELENGTH_RESOLUTION" and
 "MAXIMUM_WAVELENGTH_RESOLUTION" appear to be backwards. This is true for 22
@@ -285,7 +285,7 @@ make them in the correct order.
 
 ================================================================================
 
-https://github.com/SETI/pds-webserver/issues/10
+https://github.com/SETI/rms-webserver/issues/10
 
 The index field "OBSERVATION_TYPE" is supposed to be one of "SPECTRUM" or
 "IMAGE". However, for all of HST STIS, it has the values of "SPECTROSCOPIC" and
@@ -296,7 +296,7 @@ The index field "OBSERVATION_TYPE" is supposed to be one of "SPECTRUM" or
 
 ================================================================================
 
-https://github.com/SETI/pds-webserver/issues/26
+https://github.com/SETI/rms-webserver/issues/26
 
 One observation in HSTO0_9330 has the DETECTOR_ID as "CD" instead of "CCD".
 
@@ -304,6 +304,6 @@ One observation in HSTO0_9330 has the DETECTOR_ID as "CD" instead of "CCD".
 
 ================================================================================
 
-https://github.com/SETI/pds-webserver/issues/27
+https://github.com/SETI/rms-webserver/issues/27
 
 The HST STIS APERTURE_TYPE field has illegal values.
