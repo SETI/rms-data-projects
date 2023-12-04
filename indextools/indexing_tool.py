@@ -4,6 +4,7 @@ import pandas as pd
 import re
 import argparse
 
+
 def search_files(directory, current_level, nlevels, regex, file_paths):
     """
     Recursively search for files in a directory up to a specified level.
@@ -12,12 +13,12 @@ def search_files(directory, current_level, nlevels, regex, file_paths):
         directory        The directory to start the search.
 
         current_level    The current depth level in the directory structure.
-        
+
         nlevels          The maximum number of levels to search (set to None for
                          unlimited levels).
 
         regex            Regular expression pattern for file name matching.
-    
+
         file_paths       List to store the absolute paths of matching files.
     """
     # Check if the specified number of levels is reached
@@ -34,6 +35,7 @@ def search_files(directory, current_level, nlevels, regex, file_paths):
         # If the item is a directory, recursively call the search function
         elif item.is_dir():
             search_files(item, current_level + 1, nlevels, regex, file_paths)
+
 
 def get_member_files(directory, nlevels, regex):
     """
@@ -62,6 +64,7 @@ def get_member_files(directory, nlevels, regex):
     # Return the list of file paths
     return file_paths
 
+
 def convert_header_to_xpath(root, xpath_find, namespaces):
     """
     Convert an XML header path to an XPath expression.
@@ -70,7 +73,7 @@ def convert_header_to_xpath(root, xpath_find, namespaces):
         root           The root element of the XML document.
 
         xpath_find     Original XML header path.
-        
+
         namespaces     Dictionary of XML namespace mappings.
 
     Returns:
@@ -83,8 +86,9 @@ def convert_header_to_xpath(root, xpath_find, namespaces):
         portion = portion + '/' + sec
         tag = str(root.xpath(portion, namespaces=namespaces)[0].tag)
         xpath_final = xpath_final + '/' + tag
-        
+
     return xpath_final
+
 
 def store_element_text(element, tree, results_dict, prefixes):
     """
@@ -113,6 +117,7 @@ def store_element_text(element, tree, results_dict, prefixes):
         else:
             results_dict[xpath] = text
 
+
 def convert_header_to_tag(path, root, namespaces):
     """
     Convert an XPath expression to an XML tag.
@@ -130,6 +135,7 @@ def convert_header_to_tag(path, root, namespaces):
     tag = str(root.xpath(path, namespaces=namespaces)[0].tag)
 
     return tag
+
 
 def traverse_and_store(element, tree, results_dict, prefixes, elements_to_scrape):
     """
@@ -151,7 +157,9 @@ def traverse_and_store(element, tree, results_dict, prefixes, elements_to_scrape
     if elements_to_scrape is None or any(tag.endswith("}" + elem) for elem in elements_to_scrape):
         store_element_text(element, tree, results_dict, prefixes)
     for child in element:
-        traverse_and_store(child, tree, results_dict, prefixes, elements_to_scrape)
+        traverse_and_store(child, tree, results_dict,
+                           prefixes, elements_to_scrape)
+
 
 def write_results_to_csv(results_list, directory, bundle):
     """
@@ -175,6 +183,7 @@ def write_results_to_csv(results_list, directory, bundle):
     df = df.drop(columns=['LID'])
     df.to_csv(output_csv_path, index=False, na_rep='NaN')
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('directorypath', type=str,
@@ -192,7 +201,7 @@ def main():
 
     parser.add_argument('--filesuffix', type=str, default='xml',
                         help='The type of label file present within the collection')
-    
+
     parser.add_argument('--xpaths', action='store_true')
 
     args = parser.parse_args()
@@ -222,22 +231,25 @@ def main():
         prefixes = {v: k for k, v in namespaces.items()}
 
         xml_results = {}
-        traverse_and_store(root, tree, xml_results, prefixes, elements_to_scrape)
+        traverse_and_store(root, tree, xml_results,
+                           prefixes, elements_to_scrape)
 
         for key in list(xml_results.keys()):
             if args.xpaths:
-                if isinstance(xml_results[key], list): 
+                if isinstance(xml_results[key], list):
                     key_new = convert_header_to_xpath(root, key, namespaces)
                     for space in list(prefixes.keys()):
                         if space in key_new:
-                            key_new = key_new.replace('{'+space+'}', prefixes[space]+':')
+                            key_new = key_new.replace(
+                                '{'+space+'}', prefixes[space]+':')
                     xml_results[key_new] = xml_results[key]
                     del xml_results[key]
                 else:
                     key_new = convert_header_to_tag(key, root, namespaces)
                     for space in list(prefixes.keys()):
                         if space in key_new:
-                            key_new = key_new.replace('{'+space+'}', prefixes[space]+':')
+                            key_new = key_new.replace(
+                                '{'+space+'}', prefixes[space]+':')
                     xml_results[key_new] = xml_results[key]
                     del xml_results[key]
 
@@ -245,14 +257,16 @@ def main():
                 key_new = convert_header_to_tag(key, root, namespaces)
                 for space in list(prefixes.keys()):
                     if space in key_new:
-                        key_new = key_new.replace('{'+space+'}', prefixes[space]+':')
+                        key_new = key_new.replace(
+                            '{'+space+'}', prefixes[space]+':')
                 xml_results[key_new] = xml_results[key]
                 del xml_results[key]
 
         lid = xml_results.get('pds:logical_identifier', "Missing_LID")
         all_results.append({'LID': lid, 'Results': xml_results})
-        
+
     write_results_to_csv(all_results, directory, bundle)
+
 
 if __name__ == '__main__':
     main()
