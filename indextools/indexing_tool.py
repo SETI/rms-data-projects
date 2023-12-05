@@ -90,6 +90,25 @@ def convert_header_to_xpath(root, xpath_find, namespaces):
     return xpath_final
 
 
+def process_tags(xml_results, key, root, namespaces, prefixes, args):
+    if args.xpaths:
+        key_new = convert_header_to_xpath(root, key, namespaces)
+        for space in list(prefixes.keys()):
+            if space in key_new:
+                key_new = key_new.replace(
+                    '{'+space+'}', prefixes[space]+':')
+        xml_results[key_new] = xml_results[key]
+        del xml_results[key]
+    else:
+        key_new = convert_header_to_tag(key, root, namespaces)
+        for space in list(prefixes.keys()):
+            if space in key_new:
+                key_new = key_new.replace(
+                    '{'+space+'}', prefixes[space]+':')
+        xml_results[key_new] = xml_results[key]
+        del xml_results[key]
+
+
 def store_element_text(element, tree, results_dict, prefixes):
     """
     Store text content of an XML element in a results dictionary.
@@ -211,7 +230,7 @@ def main():
     bundle = directory.name
 
     nlevels = args.nlevels
-    regex = r'[\w-]+\.'+re.escape(args.filesuffix)
+    regex = r'[\w-]+/'+re.escape(args.filesuffix)
 
     label_files = get_member_files(directory, nlevels, regex)
     all_results = []
@@ -235,31 +254,7 @@ def main():
                            prefixes, elements_to_scrape)
 
         for key in list(xml_results.keys()):
-            if args.xpaths:
-                key_new = convert_header_to_xpath(root, key, namespaces)
-                for space in list(prefixes.keys()):
-                    if space in key_new:
-                        key_new = key_new.replace(
-                            '{'+space+'}', prefixes[space]+':')
-                xml_results[key_new] = xml_results[key]
-                del xml_results[key]
-            else:
-                key_new = convert_header_to_tag(key, root, namespaces)
-                for space in list(prefixes.keys()):
-                    if space in key_new:
-                        key_new = key_new.replace(
-                            '{'+space+'}', prefixes[space]+':')
-                xml_results[key_new] = xml_results[key]
-                del xml_results[key]
-
-            # else:
-            #     key_new = convert_header_to_tag(key, root, namespaces)
-            #     for space in list(prefixes.keys()):
-            #         if space in key_new:
-            #             key_new = key_new.replace(
-            #                 '{'+space+'}', prefixes[space]+':')
-            #     xml_results[key_new] = xml_results[key]
-            #     del xml_results[key]
+            process_tags(xml_results, key, root, namespaces, prefixes, args)
 
         lid = xml_results.get('pds:logical_identifier', "Missing_LID")
         all_results.append({'LID': lid, 'Results': xml_results})
