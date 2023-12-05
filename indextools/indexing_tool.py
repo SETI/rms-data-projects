@@ -5,6 +5,97 @@ import re
 import argparse
 
 
+def convert_header_to_tag(path, root, namespaces):
+    """
+    Convert an XPath expression to an XML tag.
+
+    Inputs:
+        path          XPath expression.
+
+        root          The root element of the XML document.
+
+        namespaces    Dictionary of XML namespace mappings.
+
+    Returns:
+        tag           Converted XML tag.
+    """
+    tag = str(root.xpath(path, namespaces=namespaces)[0].tag)
+
+    return tag
+
+
+def convert_header_to_xpath(root, xpath_find, namespaces):
+    """
+    Convert an XML header path to an XPath expression.
+
+    Inputs:
+        root           The root element of the XML document.
+
+        xpath_find     Original XML header path.
+
+        namespaces     Dictionary of XML namespace mappings.
+
+    Returns:
+        xpath_final    Converted XPath expression.
+    """
+    sections = xpath_find.split('/')
+    xpath_final = ''
+    portion = ''
+    for sec in sections[1:]:
+        portion = portion + '/' + sec
+        tag = str(root.xpath(portion, namespaces=namespaces)[0].tag)
+        xpath_final = xpath_final + '/' + tag
+
+    return xpath_final
+
+
+def get_member_files(directory, nlevels, regex):
+    """
+    Get a list of file paths within a directory up to a specified level.
+
+    Inputs:
+        directory    The directory to start the search.
+
+        nlevels      The maximum number of levels to search (set to None for unlimited
+                     levels).
+
+        regex        Regular expression pattern for file name matching.
+
+    Returns:
+        file_paths   List of absolute file paths.
+    """
+    # Initialize an empty list to store file paths
+    file_paths = []
+
+    # Get the absolute path of the specified directory
+    base_directory = Path(directory).resolve()
+
+    # Start the search from the base directory with an initial level of 0
+    search_files(base_directory, 0, nlevels, regex, file_paths)
+
+    # Return the list of file paths
+    return file_paths
+
+
+def process_tags(xml_results, key, root, namespaces, prefixes, args):
+    if args.xpaths:
+        key_new = convert_header_to_xpath(root, key, namespaces)
+        for space in list(prefixes.keys()):
+            if space in key_new:
+                key_new = key_new.replace(
+                    '{'+space+'}', prefixes[space]+':')
+        xml_results[key_new] = xml_results[key]
+        del xml_results[key]
+    else:
+        key_new = convert_header_to_tag(key, root, namespaces)
+        for space in list(prefixes.keys()):
+            if space in key_new:
+                key_new = key_new.replace(
+                    '{'+space+'}', prefixes[space]+':')
+        xml_results[key_new] = xml_results[key]
+        del xml_results[key]
+
+
 def search_files(directory, current_level, nlevels, regex, file_paths):
     """
     Recursively search for files in a directory up to a specified level.
@@ -37,78 +128,6 @@ def search_files(directory, current_level, nlevels, regex, file_paths):
             search_files(item, current_level + 1, nlevels, regex, file_paths)
 
 
-def get_member_files(directory, nlevels, regex):
-    """
-    Get a list of file paths within a directory up to a specified level.
-
-    Inputs:
-        directory    The directory to start the search.
-
-        nlevels      The maximum number of levels to search (set to None for unlimited
-                     levels).
-
-        regex        Regular expression pattern for file name matching.
-
-    Returns:
-        file_paths   List of absolute file paths.
-    """
-    # Initialize an empty list to store file paths
-    file_paths = []
-
-    # Get the absolute path of the specified directory
-    base_directory = Path(directory).resolve()
-
-    # Start the search from the base directory with an initial level of 0
-    search_files(base_directory, 0, nlevels, regex, file_paths)
-
-    # Return the list of file paths
-    return file_paths
-
-
-def convert_header_to_xpath(root, xpath_find, namespaces):
-    """
-    Convert an XML header path to an XPath expression.
-
-    Inputs:
-        root           The root element of the XML document.
-
-        xpath_find     Original XML header path.
-
-        namespaces     Dictionary of XML namespace mappings.
-
-    Returns:
-        xpath_final    Converted XPath expression.
-    """
-    sections = xpath_find.split('/')
-    xpath_final = ''
-    portion = ''
-    for sec in sections[1:]:
-        portion = portion + '/' + sec
-        tag = str(root.xpath(portion, namespaces=namespaces)[0].tag)
-        xpath_final = xpath_final + '/' + tag
-
-    return xpath_final
-
-
-def process_tags(xml_results, key, root, namespaces, prefixes, args):
-    if args.xpaths:
-        key_new = convert_header_to_xpath(root, key, namespaces)
-        for space in list(prefixes.keys()):
-            if space in key_new:
-                key_new = key_new.replace(
-                    '{'+space+'}', prefixes[space]+':')
-        xml_results[key_new] = xml_results[key]
-        del xml_results[key]
-    else:
-        key_new = convert_header_to_tag(key, root, namespaces)
-        for space in list(prefixes.keys()):
-            if space in key_new:
-                key_new = key_new.replace(
-                    '{'+space+'}', prefixes[space]+':')
-        xml_results[key_new] = xml_results[key]
-        del xml_results[key]
-
-
 def store_element_text(element, tree, results_dict, prefixes):
     """
     Store text content of an XML element in a results dictionary.
@@ -135,25 +154,6 @@ def store_element_text(element, tree, results_dict, prefixes):
             results_dict[xpath].append(text)
         else:
             results_dict[xpath] = text
-
-
-def convert_header_to_tag(path, root, namespaces):
-    """
-    Convert an XPath expression to an XML tag.
-
-    Inputs:
-        path          XPath expression.
-
-        root          The root element of the XML document.
-
-        namespaces    Dictionary of XML namespace mappings.
-
-    Returns:
-        tag           Converted XML tag.
-    """
-    tag = str(root.xpath(path, namespaces=namespaces)[0].tag)
-
-    return tag
 
 
 def traverse_and_store(element, tree, results_dict, prefixes, elements_to_scrape):
