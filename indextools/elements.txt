@@ -1,0 +1,4 @@
+logical_identifier
+version_id
+stop_date_time
+start_date_time

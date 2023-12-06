@@ -1,3 +1,42 @@
+"""
+XML Bundle Scraper
+
+This script scrapes XML files within specified directories, extracts information from
+user-defined XML elements, and generates a CSV index file. The script provides options
+for customizing the extraction process, such as specifying XPath headers, limiting
+search levels, and selecting elements to scrape.
+
+Dependencies:
+- Python 3.x
+- pathlib
+- lxml
+- pandas
+- re
+- argparse
+
+Usage:
+    python xml_bundle_scraper.py <directorypath> <pattern>
+        [--nlevels NLEVELS]
+        [--elements-file ELEMENTS_FILE]
+        [--filesuffix FILESUFFIX]
+        [--xpaths]
+
+Arguments:
+    directorypath        The path to the directory containing the bundle to scrape.
+    pattern              The glob pattern for the files to index.
+    --nlevels NLEVELS    The number of subdirectory levels to search (default: unlimited).
+    --elements-file ELEMENTS_FILE
+                         Optional text file containing elements to scrape.
+    --filesuffix FILESUFFIX
+                         The type of label file present within the collection (default: 'xml').
+    --xpaths             Activate XPath headers in the final index file.
+
+Example:
+    python xml_bundle_scraper.py /path/to/bundle_directory "*.xml" --nlevels 2
+        --elements-file elements.txt --filesuffix xml --xpaths
+"""
+
+
 from pathlib import Path
 from lxml import etree
 import pandas as pd
