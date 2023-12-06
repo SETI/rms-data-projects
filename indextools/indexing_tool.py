@@ -6,8 +6,7 @@ import argparse
 
 
 def convert_header_to_tag(path, root, namespaces):
-    """
-    Convert an XPath expression to an XML tag.
+    """Convert an XPath expression to an XML tag.
 
     Inputs:
         path          XPath expression.
@@ -25,8 +24,7 @@ def convert_header_to_tag(path, root, namespaces):
 
 
 def convert_header_to_xpath(root, xpath_find, namespaces):
-    """
-    Convert an XML header path to an XPath expression.
+    """Convert an XML header path to an XPath expression.
 
     Inputs:
         root           The root element of the XML document.
@@ -50,8 +48,7 @@ def convert_header_to_xpath(root, xpath_find, namespaces):
 
 
 def get_member_files(directory, nlevels, regex):
-    """
-    Get a list of file paths within a directory up to a specified level.
+    """Get a list of file paths within a directory up to a specified level.
 
     Inputs:
         directory    The directory to start the search.
@@ -78,6 +75,21 @@ def get_member_files(directory, nlevels, regex):
 
 
 def process_tags(xml_results, key, root, namespaces, prefixes, args):
+    """Process XML tags based on the provided options.
+
+    Inputs:
+        xml_results    A dictionary containing XML data to be processed.
+
+        key            The key representing the XML tag to be processed.
+
+        root           The root element of the XML tree.
+
+        namespaces     A dictionary containing XML namespace mappings.
+
+        prefixes       A dictionary containing XML namespace prefixes.
+
+        args           Command-line arguments.
+    """
     if args.xpaths:
         key_new = convert_header_to_xpath(root, key, namespaces)
         for space in list(prefixes.keys()):
@@ -97,8 +109,7 @@ def process_tags(xml_results, key, root, namespaces, prefixes, args):
 
 
 def search_files(directory, current_level, nlevels, regex, file_paths):
-    """
-    Recursively search for files in a directory up to a specified level.
+    """Recursively search for files in a directory up to a specified level.
 
     Inputs:
         directory        The directory to start the search.
@@ -129,8 +140,7 @@ def search_files(directory, current_level, nlevels, regex, file_paths):
 
 
 def store_element_text(element, tree, results_dict, prefixes):
-    """
-    Store text content of an XML element in a results dictionary.
+    """Store text content of an XML element in a results dictionary.
 
     Inputs:
         element         The XML element.
@@ -157,8 +167,7 @@ def store_element_text(element, tree, results_dict, prefixes):
 
 
 def traverse_and_store(element, tree, results_dict, prefixes, elements_to_scrape):
-    """
-    Traverse an XML tree and store text content of specified elements in a results dictionary.
+    """Traverse an XML tree and store text content of specified elements in a dictionary.
 
     Inputs:
         element               The current XML element.
@@ -173,7 +182,8 @@ def traverse_and_store(element, tree, results_dict, prefixes, elements_to_scrape
     """
     xpath = str(tree.getpath(element))
     tag = str(element.tag)
-    if elements_to_scrape is None or any(tag.endswith("}" + elem) for elem in elements_to_scrape):
+    if elements_to_scrape is None or any(tag.endswith("}" + elem) for elem in
+                                         elements_to_scrape):
         store_element_text(element, tree, results_dict, prefixes)
     for child in element:
         traverse_and_store(child, tree, results_dict,
@@ -181,8 +191,7 @@ def traverse_and_store(element, tree, results_dict, prefixes, elements_to_scrape
 
 
 def write_results_to_csv(results_list, directory):
-    """
-    Write results from a list of dictionaries to a CSV file.
+    """Write results from a list of dictionaries to a CSV file.
 
     Inputs:
         results_list    List of dictionaries containing results.
