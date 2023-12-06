@@ -180,7 +180,7 @@ def traverse_and_store(element, tree, results_dict, prefixes, elements_to_scrape
                            prefixes, elements_to_scrape)
 
 
-def write_results_to_csv(results_list, directory, bundle):
+def write_results_to_csv(results_list, directory):
     """
     Write results from a list of dictionaries to a CSV file.
 
@@ -191,7 +191,7 @@ def write_results_to_csv(results_list, directory, bundle):
 
         bundle          The bundle name.
     """
-    output_csv_path = directory / Path(bundle+'_indexed.csv')
+    output_csv_path = directory / Path('index_file.csv')
     rows = []
     for result_dict in results_list:
         row = {'LID': result_dict['LID']}
@@ -209,6 +209,9 @@ def main():
                         help='The path to the directory containing the bundle '
                              'you wish to scrape.')
 
+    parser.add_argument('pattern', type=str,
+                        help='The glob pattern for the files you wish to index.')
+
     # Argument for specifying the number of levels to search
     parser.add_argument('--nlevels', type=int,
                         help='The number of subdirectory levels to search (set to None '
@@ -221,45 +224,54 @@ def main():
     parser.add_argument('--filesuffix', type=str, default='xml',
                         help='The type of label file present within the collection')
 
-    parser.add_argument('--xpaths', action='store_true')
+    parser.add_argument('--xpaths', action='store_true',
+                        help='A flag that will activate XPath headers in the final '
+                             'index file.')
 
     args = parser.parse_args()
 
-    directory = Path(args.directorypath)
-    basedir = directory.parent.resolve()
-    bundle = directory.name
-
-    nlevels = args.nlevels
-    regex = r'[\w-]+/'+re.escape(args.filesuffix)
-
-    label_files = get_member_files(directory, nlevels, regex)
+    pattern_path = Path(args.directorypath)
+    directories = pattern_path.glob(args.pattern)
     all_results = []
 
-    if args.elements_file:
-        with open(args.elements_file, 'r') as elements_file:
-            elements_to_scrape = [line.strip() for line in elements_file]
-    else:
-        elements_to_scrape = None
+    for directory in directories:
+        # Existing code to process each directory...
+        directory = directory.resolve()  # Convert to absolute path
+        basedir = directory.parent.resolve()
+        bundle = directory.name
 
-    for file in label_files:
-        tree = etree.parse(file)
-        root = tree.getroot()
+        nlevels = args.nlevels
+        regex = r'[\w-]+('+args.filesuffix+')'
 
-        namespaces = root.nsmap
-        namespaces['pds'] = namespaces.pop(None)
-        prefixes = {v: k for k, v in namespaces.items()}
+        # Call get_member_files for the current subdirectory
+        label_files = get_member_files(directory, nlevels, regex)
 
-        xml_results = {}
-        traverse_and_store(root, tree, xml_results,
-                           prefixes, elements_to_scrape)
+        if args.elements_file:
+            with open(args.elements_file, 'r') as elements_file:
+                elements_to_scrape = [line.strip() for line in elements_file]
+        else:
+            elements_to_scrape = None
 
-        for key in list(xml_results.keys()):
-            process_tags(xml_results, key, root, namespaces, prefixes, args)
+        for file in label_files:
+            tree = etree.parse(file)
+            root = tree.getroot()
 
-        lid = xml_results.get('pds:logical_identifier', "Missing_LID")
-        all_results.append({'LID': lid, 'Results': xml_results})
+            namespaces = root.nsmap
+            namespaces['pds'] = namespaces.pop(None)
+            prefixes = {v: k for k, v in namespaces.items()}
 
-    write_results_to_csv(all_results, directory, bundle)
+            xml_results = {}
+            traverse_and_store(root, tree, xml_results,
+                               prefixes, elements_to_scrape)
+
+            for key in list(xml_results.keys()):
+                process_tags(xml_results, key, root,
+                             namespaces, prefixes, args)
+
+            lid = xml_results.get('pds:logical_identifier', "Missing_LID")
+            all_results.append({'LID': lid, 'Results': xml_results})
+
+    write_results_to_csv(all_results, args.directorypath)
 
 
 if __name__ == '__main__':
