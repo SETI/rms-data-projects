@@ -247,7 +247,8 @@ def write_results_to_csv(results_list, directory):
         rows.append(row)
 
     df = pd.DataFrame(rows)
-    df = df.drop(columns=['LID'])
+    if 'LID' in df.columns:
+        df = df.drop(columns=['LID'])
     df.to_csv(output_csv_path, index=False, na_rep='NaN')
 
 
@@ -269,7 +270,7 @@ def main():
     parser.add_argument('--elements-file', type=str,
                         help='Optional text file containing elements to scrape.')
 
-    parser.add_argument('--filesuffix', type=str, default='xml',
+    parser.add_argument('--filesuffix', type=str, default='.xml',
                         help='The type of label file present within the collection')
 
     parser.add_argument('--xpaths', action='store_true',
