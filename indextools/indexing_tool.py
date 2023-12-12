@@ -234,19 +234,33 @@ def write_results_to_csv(results_list, directory):
 
     Inputs:
         results_list    List of dictionaries containing results.
-
         directory       The output directory.
-
-        bundle          The bundle name.
     """
     output_csv_path = directory / Path('index_file.csv')
     rows = []
     for result_dict in results_list:
-        row = {'LID': result_dict['LID']}
+        lid = result_dict['LID']
+        blid = ':'.join(lid.split(':')[:4])
+        bundl = blid.split(':')[-1]
+
+        row = {
+            'LID': lid,
+            'pds:spec': result_dict['pds:spec'],
+            'pds:fname': result_dict['pds:fname'],
+            'pds:blid': blid,
+            'pds:bundl': bundl
+        }
         row.update(result_dict['Results'])
         rows.append(row)
 
     df = pd.DataFrame(rows)
+
+    # Reorder columns to have logical_identifier, FileName, FilePath, pds:blid, and pds:bundl
+    columns_order = ['LID', 'pds:fname', 'pds:spec', 'pds:blid', 'pds:bundl'] + \
+        [col for col in df.columns if col not in [
+            'LID', 'pds:fname', 'pds:spec', 'pds:blid', 'pds:bundl']]
+    df = df[columns_order]
+
     if 'LID' in df.columns:
         df = df.drop(columns=['LID'])
     df.to_csv(output_csv_path, index=False, na_rep='NaN')
@@ -318,7 +332,12 @@ def main():
                              namespaces, prefixes, args)
 
             lid = xml_results.get('pds:logical_identifier', "Missing_LID")
-            all_results.append({'LID': lid, 'Results': xml_results})
+
+            # Append file path and file name to the dictionary
+            result_dict = {'LID': lid, 'Results': xml_results,
+                           'pds:spec': str(file), 'pds:fname': file.name}
+
+            all_results.append(result_dict)
 
     write_results_to_csv(all_results, args.directorypath)
 
