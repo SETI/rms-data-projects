@@ -1,2 +1,11 @@
-The file JNOJIR_2xxx/CALIB/JIR_SPE_RESPONSIVITY_V02.LBL is the same in every volume.  However, in JNOJIR_2041 and JNOJIR_2042, the version obtained from the Atmospheres Node is slightly different.  Specifically, it refers to the associated data file as JIR_SPE_RESPONSIVITY_V03 instead of JIR_SPE_RESPONSIVITY_V02, which causes validation to throw an error.
-We have corrected this error, so that JIR_SPE_RESPONSIVITY_V02.LBL is the same in JNOJIR_2041 and JNOJIR_2042 as in all other JNOJIR_2xxx volumes.  We have regenerated tar.gz files and checksums accordingly, and the volume passes validation. 
+The file JNOJIR_2xxx/CALIB/JIR_SPE_RESPONSIVITY_V02.LBL is the same in every
+volume.  However, in JNOJIR_2041 and JNOJIR_2042, the version obtained from
+the Atmospheres Node is slightly different.  Specifically, it refers to the
+associated data file as JIR_SPE_RESPONSIVITY_V03 instead of
+JIR_SPE_RESPONSIVITY_V02, which causes validation to throw an error.
+
+We have corrected this error, so that JIR_SPE_RESPONSIVITY_V02.LBL is the same
+in JNOJIR_2041 and JNOJIR_2042 as in all other JNOJIR_2xxx volumes.  We have
+regenerated tar.gz files and checksums accordingly, and the volume passes
+validation.
+
