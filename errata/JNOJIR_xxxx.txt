@@ -8,4 +8,3 @@ We have corrected this error, so that JIR_SPE_RESPONSIVITY_V02.LBL is the same
 in JNOJIR_2041 and JNOJIR_2042 as in all other JNOJIR_2xxx volumes.  We have
 regenerated tar.gz files and checksums accordingly, and the volume passes
 validation.
-
