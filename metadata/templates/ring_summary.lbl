@@ -1349,7 +1349,7 @@ OBJECT                          = RING_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 50
-    NAME                        = MINUMUM_RING_CENTER_DISTANCE
+    NAME                        = MINIMUM_RING_CENTER_DISTANCE
     DATA_TYPE                   = ASCII_REAL
     START_BYTE                  = 560
     BYTES                       = 12

@@ -911,7 +911,7 @@ OBJECT                          = MOON_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 37
-    NAME                        = MINIMIM_SUB_OBSERVER_IAU_LONGITUDE
+    NAME                        = MINIMUM_SUB_OBSERVER_IAU_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
     START_BYTE                  = 405
     BYTES                       = 8
