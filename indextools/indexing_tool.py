@@ -22,6 +22,8 @@ Arguments:
     --file-suffix FILE_SUFFIX
                          The type of label file present within the collection (default: 'xml').
     --xpaths             Activate XPath headers in the final index file.
+    --output-file OUTPUT_FILE
+                         The output path and filename for the resulting index file.
 
 Example:
     python xml_bundle_scraper.py /path/to/bundle_directory '*.xml' --nlevels 2
@@ -33,6 +35,7 @@ from lxml import etree
 import pandas as pd
 from pathlib import Path
 import re
+import sys
 
 
 def convert_header_to_tag(path, root, namespaces):
@@ -198,14 +201,13 @@ def traverse_and_store(element, tree, results_dict, prefixes, elements_to_scrape
                            prefixes, elements_to_scrape)
 
 
-def write_results_to_csv(results_list, directory):
+def write_results_to_csv(results_list, output_csv_path):
     """Write results from a list of dictionaries to a CSV file.
 
     Inputs:
-        results_list    List of dictionaries containing results.
-        directory       The output directory.
+        results_list          List of dictionaries containing results.
+        output_csv_path       The output directory and filename.
     """
-    output_csv_path = directory / Path('index_file.csv')
     rows = []
     for result_dict in results_list:
         lid = result_dict['LID']
@@ -267,6 +269,10 @@ def main():
                         help='A flag that will activate XPath headers in the final '
                              'index file')
 
+    parser.add_argument('--output-file', type=str,
+                        help='The output filepath ending with your chosen filename for '
+                             'the resulting index file')
+
     args = parser.parse_args()
 
     pattern_path = Path(args.directorypath)
@@ -284,8 +290,9 @@ def main():
         label_files = get_member_files(directory, nlevels, regex)
 
         if label_files == []:
-            raise FileNotFoundError(f'No files with suffix {args.file_suffix} found in '
-                                    'directory: {directory}')
+            print(f'No files with suffix {args.file_suffix} found in '
+                  f'directory: {directory}')
+            sys.exit(1)
 
         if args.elements_file:
             with open(args.elements_file, 'r') as elements_file:
@@ -317,7 +324,13 @@ def main():
 
             all_results.append(result_dict)
 
-    write_results_to_csv(all_results, args.directorypath)
+    if args.output_file:
+        output_path = args.output_file
+        write_results_to_csv(all_results, args.output_file)
+    else:
+        output_path = args.directorypath
+        write_results_to_csv(
+            all_results, args.directorypath / Path('index_file.csv'))
 
 
 if __name__ == '__main__':
