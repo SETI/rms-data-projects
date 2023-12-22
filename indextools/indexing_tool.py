@@ -262,9 +262,6 @@ def main():
     parser.add_argument('--elements-file', type=str,
                         help='Optional text file containing elements to scrape')
 
-    parser.add_argument('--file-suffix', type=str, default='.xml',
-                        help='The type of label file present within the collection')
-
     parser.add_argument('--xpaths', action='store_true',
                         help='A flag that will activate XPath headers in the final '
                              'index file')
@@ -275,8 +272,13 @@ def main():
 
     args = parser.parse_args()
 
-    pattern_path = Path(args.directorypath)
-    directories = pattern_path.glob(args.pattern)
+    directory_path = Path(args.directorypath)
+    pattern_path = Path(args.pattern)
+    directory_parts = pattern_path.parts
+    toplevel = str(directory_parts[0])
+    filename = str(directory_parts[-1].strip('*'))
+    print(filename)
+    directories = directory_path.glob(str(pattern_path.parent))
     all_results = []
 
     for directory in directories:
@@ -284,13 +286,13 @@ def main():
         directory = directory.resolve()  # Convert to absolute path
 
         nlevels = args.nlevels
-        regex = r'[\w-]+('+args.file_suffix+')'
+        regex = r'[\w-]+('+filename+')'
 
         # Call get_member_files for the current subdirectory
         label_files = get_member_files(directory, nlevels, regex)
 
         if label_files == []:
-            print(f'No files with suffix {args.file_suffix} found in '
+            print(f'No files with suffix {filename} found in '
                   f'directory: {directory}')
             sys.exit(1)
 
@@ -303,6 +305,9 @@ def main():
         for file in label_files:
             tree = etree.parse(file)
             root = tree.getroot()
+
+            path_parts = Path(file).parts
+            filepath = Path(*path_parts[path_parts.index(toplevel):])
 
             namespaces = root.nsmap
             namespaces['pds'] = namespaces.pop(None)
@@ -320,7 +325,7 @@ def main():
 
             # Append file path and file name to the dictionary
             result_dict = {'LID': lid, 'Results': xml_results,
-                           'pds:spec': str(file), 'pds:fname': file.name}
+                           'pds:spec': filepath, 'pds:fname': file.name}
 
             all_results.append(result_dict)
 
