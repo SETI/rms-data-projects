@@ -12,6 +12,8 @@ Usage:
         [--elements-file ELEMENTS_FILE]
         [--file-suffix FILE_SUFFIX]
         [--xpaths]
+        [--output-file OUTPUT_FILE]
+        [--verbose]
 
 Arguments:
     directorypath        The path to the directory containing the bundle to scrape.
@@ -20,14 +22,17 @@ Arguments:
     --elements-file ELEMENTS_FILE
                          Optional text file containing elements to scrape.
     --file-suffix FILE_SUFFIX
-                         The type of label file present within the collection (default: 'xml').
+                         The type of label file present within the collection
+                         (default: 'xml').
     --xpaths             Activate XPath headers in the final index file.
     --output-file OUTPUT_FILE
                          The output path and filename for the resulting index file.
+    --verbose            Activate verbose printed statements during runtime.
 
 Example:
-    python xml_bundle_scraper.py /path/to/bundle_directory '*.xml' --nlevels 2
-        --elements-file elements.txt --file-suffix xml --xpaths
+    python3 indexing_tool.py /path/to/top/level/directory
+    "glob/pattern/for/filepath/and/filename" --output-file
+    "/path/ending/in/desired/output/filename" --elements-file "elements.txt" --verbose
 """
 
 import argparse
@@ -76,7 +81,7 @@ def convert_header_to_xpath(root, xpath_find, namespaces):
     return xpath_final
 
 
-def get_member_files(directory, nlevels, regex):
+def get_member_files(directory, nlevels, regex, verbose):
     """Get a list of file paths within a directory up to a specified level.
 
     Inputs:
@@ -98,6 +103,9 @@ def get_member_files(directory, nlevels, regex):
     search_files(base_directory, 0, nlevels, regex, file_paths)
 
     # Return the list of file paths
+    if verbose:
+        num = len(file_paths)
+        print(f'Directory search returned {num} matching files.')
     return file_paths
 
 
@@ -201,7 +209,7 @@ def traverse_and_store(element, tree, results_dict, prefixes, elements_to_scrape
                            prefixes, elements_to_scrape)
 
 
-def write_results_to_csv(results_list, output_csv_path):
+def write_results_to_csv(results_list, args, output_csv_path):
     """Write results from a list of dictionaries to a CSV file.
 
     Inputs:
@@ -242,6 +250,9 @@ def write_results_to_csv(results_list, output_csv_path):
 
     if 'LID' in df.columns:
         df = df.drop(columns=['LID'])
+    if args.elements_file:
+        df = df.drop(columns=['pds:fname', 'pds:spec',
+                     'pds:blid', 'pds:bundle'])
     df.to_csv(output_csv_path, index=False, na_rep='NaN')
 
 
@@ -270,16 +281,29 @@ def main():
                         help='The output filepath ending with your chosen filename for '
                              'the resulting index file')
 
+    parser.add_argument('--verbose', action='store_true',
+                        help='A flag that will activate printed statements throughout '
+                             'runtime.')
+
     args = parser.parse_args()
+
+    verboseprint = print if args.verbose else lambda *a, **k: None
+
+    if isinstance(args.pattern, list):
+        print('yes')
 
     directory_path = Path(args.directorypath)
     pattern_path = Path(args.pattern)
     directory_parts = pattern_path.parts
     toplevel = str(directory_parts[0])
     filename = str(directory_parts[-1].strip('*'))
-    print(filename)
     directories = directory_path.glob(str(pattern_path.parent))
     all_results = []
+
+    if args.xpaths:
+        verboseprint('XPath headers chosen for output file')
+    else:
+        verboseprint('Tags chosen for output file')
 
     for directory in directories:
         # Existing code to process each directory...
@@ -289,7 +313,9 @@ def main():
         regex = r'[\w-]+('+filename+')'
 
         # Call get_member_files for the current subdirectory
-        label_files = get_member_files(directory, nlevels, regex)
+        verboseprint('Gathering matching label files from chosen directory...')
+        label_files = get_member_files(directory, nlevels, regex, args.verbose)
+        verboseprint(f'{len(label_files)} matching files found')
 
         if label_files == []:
             print(f'No files with suffix {filename} found in '
@@ -297,12 +323,17 @@ def main():
             sys.exit(1)
 
         if args.elements_file:
+            verboseprint(
+                f'Element file {args.elements_file} chosen for input.')
             with open(args.elements_file, 'r') as elements_file:
                 elements_to_scrape = [line.strip() for line in elements_file]
+                verboseprint(
+                    f'Chosen elements to scrape: {elements_to_scrape}')
         else:
             elements_to_scrape = None
 
         for file in label_files:
+            verboseprint(f'Now scraping {file}')
             tree = etree.parse(file)
             root = tree.getroot()
 
@@ -330,12 +361,12 @@ def main():
             all_results.append(result_dict)
 
     if args.output_file:
-        output_path = args.output_file
-        write_results_to_csv(all_results, args.output_file)
+        verboseprint(f'File generating at {args.output_file} ')
+        write_results_to_csv(all_results, args, args.output_file)
     else:
-        output_path = args.directorypath
+        verboseprint(f'File generating at {args.directorypath} ')
         write_results_to_csv(
-            all_results, args.directorypath / Path('index_file.csv'))
+            all_results, args, args.directorypath / Path('index_file.csv'))
 
 
 if __name__ == '__main__':
