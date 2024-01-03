@@ -17,7 +17,7 @@ Usage:
 
 Arguments:
     directorypath        The path to the directory containing the bundle to scrape.
-    pattern              The glob pattern for the files to index.
+    pattern              The glob pattern(s) for the files to index.
     --nlevels NLEVELS    The number of subdirectory levels to search (default: unlimited).
     --elements-file ELEMENTS_FILE
                          Optional text file containing elements to scrape.
@@ -224,8 +224,8 @@ def write_results_to_csv(results_list, args, output_csv_path):
 
         row = {
             'LID': lid,
-            'pds:spec': result_dict['pds:spec'],
-            'pds:fname': result_dict['pds:fname'],
+            'pds:filepath': result_dict['pds:filepath'],
+            'pds:filename': result_dict['pds:filename'],
             'pds:blid': blid,
             'pds:bundle': bundle
         }
@@ -236,13 +236,13 @@ def write_results_to_csv(results_list, args, output_csv_path):
 
     # Reorder columns to have logical_identifier, FileName, FilePath, pds:blid, and pds:bundle
     columns_order = (['LID',
-                      'pds:fname',
-                      'pds:spec',
+                      'pds:filename',
+                      'pds:filepath',
                       'pds:blid',
                       'pds:bundle'] + [col for col in df.columns if col not in
                                        ['LID',
-                                        'pds:fname',
-                                        'pds:spec',
+                                        'pds:filename',
+                                        'pds:filepath',
                                         'pds:blid',
                                         'pds:bundle']])
 
@@ -251,7 +251,7 @@ def write_results_to_csv(results_list, args, output_csv_path):
     if 'LID' in df.columns:
         df = df.drop(columns=['LID'])
     if args.elements_file:
-        df = df.drop(columns=['pds:fname', 'pds:spec',
+        df = df.drop(columns=['pds:filename', 'pds:filepath',
                      'pds:blid', 'pds:bundle'])
     df.to_csv(output_csv_path, index=False, na_rep='NaN')
 
@@ -262,8 +262,10 @@ def main():
                         help='The path to the directory containing the bundle '
                              'you wish to scrape')
 
-    parser.add_argument('pattern', type=str,
-                        help='The glob pattern for the files you wish to index')
+    parser.add_argument('pattern', type=str, nargs='+',
+                        help='The glob pattern(s) for the files you wish to index. If '
+                             'using multiple, separate with spaces and surround each '
+                             'pattern with quotes.')
 
     # Argument for specifying the number of levels to search
     parser.add_argument('--nlevels', type=int, default=None,
@@ -289,16 +291,20 @@ def main():
 
     verboseprint = print if args.verbose else lambda *a, **k: None
 
-    if isinstance(args.pattern, list):
-        print('yes')
-
+    filenames = []
     directory_path = Path(args.directorypath)
-    pattern_path = Path(args.pattern)
-    directory_parts = pattern_path.parts
-    toplevel = str(directory_parts[0])
-    filename = str(directory_parts[-1].strip('*'))
-    directories = directory_path.glob(str(pattern_path.parent))
+    pattern_paths = [Path(p) for p in args.pattern]
+
+    for pattern_path in pattern_paths:
+        directories = directory_path.glob(str(pattern_path.parent))
+        directory_parts = pattern_path.parts
+        filenames.append(str(directory_parts[-1]).strip('*'))
     all_results = []
+
+    if len(filenames) > 1:
+        filenames = '|'.join(re.escape(value) for value in filenames)
+    else:
+        filenames = filenames[0]
 
     if args.xpaths:
         verboseprint('XPath headers chosen for output file')
@@ -310,7 +316,7 @@ def main():
         directory = directory.resolve()  # Convert to absolute path
 
         nlevels = args.nlevels
-        regex = r'[\w-]+('+filename+')'
+        regex = r'[\w-]+('+filenames+')'
 
         # Call get_member_files for the current subdirectory
         verboseprint('Gathering matching label files from chosen directory...')
@@ -318,7 +324,7 @@ def main():
         verboseprint(f'{len(label_files)} matching files found')
 
         if label_files == []:
-            print(f'No files with suffix {filename} found in '
+            print(f'No files with suffix(es) {filenames} found in '
                   f'directory: {directory}')
             sys.exit(1)
 
@@ -337,8 +343,7 @@ def main():
             tree = etree.parse(file)
             root = tree.getroot()
 
-            path_parts = Path(file).parts
-            filepath = Path(*path_parts[path_parts.index(toplevel):])
+            filepath = Path(file).relative_to(args.directorypath)
 
             namespaces = root.nsmap
             namespaces['pds'] = namespaces.pop(None)
@@ -356,17 +361,17 @@ def main():
 
             # Append file path and file name to the dictionary
             result_dict = {'LID': lid, 'Results': xml_results,
-                           'pds:spec': filepath, 'pds:fname': file.name}
+                           'pds:filepath': filepath, 'pds:filename': file.name}
 
             all_results.append(result_dict)
 
     if args.output_file:
-        verboseprint(f'File generating at {args.output_file} ')
-        write_results_to_csv(all_results, args, args.output_file)
+        output_path = args.output_file
     else:
-        verboseprint(f'File generating at {args.directorypath} ')
-        write_results_to_csv(
-            all_results, args, args.directorypath / Path('index_file.csv'))
+        output_path = args.directorypath / Path('index_file.csv')
+
+    verboseprint(f'Output file generated at {output_path}')
+    write_results_to_csv(all_results, args, output_path)
 
 
 if __name__ == '__main__':
