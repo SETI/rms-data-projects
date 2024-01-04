@@ -81,34 +81,6 @@ def convert_header_to_xpath(root, xpath_find, namespaces):
     return xpath_final
 
 
-def get_member_files(directory, nlevels, regex, verbose):
-    """Get a list of file paths within a directory up to a specified level.
-
-    Inputs:
-        directory    The directory to start the search.
-        nlevels      The maximum number of levels to search (set to None for unlimited
-                     levels).
-        regex        Regular expression pattern for file name matching.
-
-    Returns:
-        file_paths   List of absolute file paths.
-    """
-    # Initialize an empty list to store file paths
-    file_paths = []
-
-    # Get the absolute path of the specified directory
-    base_directory = Path(directory).resolve()
-
-    # Start the search from the base directory with an initial level of 0
-    search_files(base_directory, 0, nlevels, regex, file_paths)
-
-    # Return the list of file paths
-    if verbose:
-        num = len(file_paths)
-        print(f'Directory search returned {num} matching files.')
-    return file_paths
-
-
 def process_tags(xml_results, key, root, namespaces, prefixes, args):
     """Process XML tags based on the provided options.
 
@@ -136,33 +108,6 @@ def process_tags(xml_results, key, root, namespaces, prefixes, args):
                     '{'+namespace+'}', prefixes[namespace]+':')
         xml_results[key_new] = xml_results[key]
         del xml_results[key]
-
-
-def search_files(directory, current_level, nlevels, regex, file_paths):
-    """Recursively search for files in a directory up to a specified level.
-
-    Inputs:
-        directory        The directory to start the search.
-        current_level    The current depth level in the directory structure.
-        nlevels          The maximum number of levels to search (set to None for
-                         unlimited levels).
-        regex            Regular expression pattern for file name matching.
-        file_paths       List to store the absolute paths of matching files.
-    """
-    # Check if the specified number of levels is reached
-    if nlevels is not None and current_level == nlevels:
-        return
-
-    # Iterate over items (files and directories) in the current directory
-    for item in directory.iterdir():
-        # If the item is a file and matches the specified regex pattern
-        if item.is_file() and re.match(regex, item.name):
-            # Get the absolute path of the file and add it to the file_paths list
-            fullpath = item.resolve()
-            file_paths.append(fullpath)
-        # If the item is a directory, recursively call the search function
-        elif item.is_dir():
-            search_files(item, current_level + 1, nlevels, regex, file_paths)
 
 
 def store_element_text(element, tree, results_dict, prefixes):
@@ -293,77 +238,57 @@ def main():
 
     filenames = []
     directory_path = Path(args.directorypath)
-    pattern_paths = [Path(p) for p in args.pattern]
+    patterns = args.pattern
 
-    for pattern_path in pattern_paths:
-        directories = directory_path.glob(str(pattern_path.parent))
-        directory_parts = pattern_path.parts
-        filenames.append(str(directory_parts[-1]).strip('*'))
+    label_files = []
     all_results = []
+    for pattern in patterns:
+        files = directory_path.glob(f"{pattern}")
+        label_files.extend(files)
 
-    if len(filenames) > 1:
-        filenames = '|'.join(re.escape(value) for value in filenames)
-    else:
-        filenames = filenames[0]
+    verboseprint(f'{len(label_files)} matching files found')
 
-    if args.xpaths:
-        verboseprint('XPath headers chosen for output file')
-    else:
-        verboseprint('Tags chosen for output file')
+    if label_files == []:
+        print(f'No files with suffix(es) {filenames} found in '
+              f'directory: {directory_path}')
+        sys.exit(1)
 
-    for directory in directories:
-        # Existing code to process each directory...
-        directory = directory.resolve()  # Convert to absolute path
-
-        nlevels = args.nlevels
-        regex = r'[\w-]+('+filenames+')'
-
-        # Call get_member_files for the current subdirectory
-        verboseprint('Gathering matching label files from chosen directory...')
-        label_files = get_member_files(directory, nlevels, regex, args.verbose)
-        verboseprint(f'{len(label_files)} matching files found')
-
-        if label_files == []:
-            print(f'No files with suffix(es) {filenames} found in '
-                  f'directory: {directory}')
-            sys.exit(1)
-
-        if args.elements_file:
+    if args.elements_file:
+        verboseprint(
+            f'Element file {args.elements_file} chosen for input.')
+        with open(args.elements_file, 'r') as elements_file:
+            elements_to_scrape = [line.strip() for line in elements_file]
             verboseprint(
-                f'Element file {args.elements_file} chosen for input.')
-            with open(args.elements_file, 'r') as elements_file:
-                elements_to_scrape = [line.strip() for line in elements_file]
-                verboseprint(
-                    f'Chosen elements to scrape: {elements_to_scrape}')
-        else:
-            elements_to_scrape = None
+                f'Chosen elements to scrape: {elements_to_scrape}')
+    else:
+        elements_to_scrape = None
 
-        for file in label_files:
-            verboseprint(f'Now scraping {file}')
-            tree = etree.parse(file)
-            root = tree.getroot()
+    for file in label_files:
+        verboseprint(f'Now scraping {file}')
+        tree = etree.parse(str(file))
+        root = tree.getroot()
 
-            filepath = Path(file).relative_to(args.directorypath)
+        filepath = file.relative_to(args.directorypath)
 
-            namespaces = root.nsmap
-            namespaces['pds'] = namespaces.pop(None)
-            prefixes = {v: k for k, v in namespaces.items()}
+        namespaces = root.nsmap
+        namespaces['pds'] = namespaces.pop(None)
+        prefixes = {v: k for k, v in namespaces.items()}
 
-            xml_results = {}
-            traverse_and_store(root, tree, xml_results,
-                               prefixes, elements_to_scrape)
+        xml_results = {}
+        traverse_and_store(root, tree, xml_results,
+                           prefixes, elements_to_scrape)
 
-            for key in list(xml_results.keys()):
-                process_tags(xml_results, key, root,
-                             namespaces, prefixes, args)
+        for key in list(xml_results.keys()):
+            process_tags(xml_results, key, root,
+                         namespaces, prefixes, args)
 
-            lid = xml_results.get('pds:logical_identifier', 'Missing_LID')
+        lid = xml_results.get('pds:logical_identifier', 'Missing_LID')
 
-            # Append file path and file name to the dictionary
-            result_dict = {'LID': lid, 'Results': xml_results,
-                           'pds:filepath': filepath, 'pds:filename': file.name}
+        # Append file path and file name to the dictionary
+        result_dict = {'LID': lid, 'Results': xml_results,
+                       'pds:filepath': filepath, 'pds:filename': file.name}
 
-            all_results.append(result_dict)
+        all_results.append(result_dict)
 
     if args.output_file:
         output_path = args.output_file
