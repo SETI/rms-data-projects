@@ -8,9 +8,7 @@ search levels, and selecting elements to scrape.
 
 Usage:
     python xml_bundle_scraper.py <directorypath> <pattern>
-        [--nlevels NLEVELS]
         [--elements-file ELEMENTS_FILE]
-        [--file-suffix FILE_SUFFIX]
         [--xpaths]
         [--output-file OUTPUT_FILE]
         [--verbose]
@@ -18,28 +16,22 @@ Usage:
 Arguments:
     directorypath        The path to the directory containing the bundle to scrape.
     pattern              The glob pattern(s) for the files to index.
-    --nlevels NLEVELS    The number of subdirectory levels to search (default: unlimited).
     --elements-file ELEMENTS_FILE
                          Optional text file containing elements to scrape.
-    --file-suffix FILE_SUFFIX
-                         The type of label file present within the collection
-                         (default: 'xml').
     --xpaths             Activate XPath headers in the final index file.
     --output-file OUTPUT_FILE
                          The output path and filename for the resulting index file.
     --verbose            Activate verbose printed statements during runtime.
 
 Example:
-    python3 indexing_tool.py /path/to/top/level/directory
-    "glob/pattern/for/filepath/and/filename" --output-file
-    "/path/ending/in/desired/output/filename" --elements-file "elements.txt" --verbose
+python3 pds4_create_xml_index.py <toplevel_directory> "glob_path1" "glob_path2" 
+--output_file <outputfile> --elements-file sample_elements.txt --verbose
 """
 
 import argparse
 from lxml import etree
 import pandas as pd
 from pathlib import Path
-import re
 import sys
 
 
@@ -52,7 +44,7 @@ def convert_header_to_tag(path, root, namespaces):
         namespaces    Dictionary of XML namespace mappings.
 
     Returns:
-        tag           Converted XML tag.
+        Converted XML tag.
     """
     tag = str(root.xpath(path, namespaces=namespaces)[0].tag)
 
@@ -68,7 +60,7 @@ def convert_header_to_xpath(root, xpath_find, namespaces):
         namespaces     Dictionary of XML namespace mappings.
 
     Returns:
-        xpath_final    Converted XPath expression.
+        Converted XPath expression.
     """
     sections = xpath_find.split('/')
     xpath_final = ''
@@ -110,17 +102,15 @@ def process_tags(xml_results, key, root, namespaces, prefixes, args):
         del xml_results[key]
 
 
-def store_element_text(element, tree, results_dict, prefixes):
+def store_element_text(element, tree, results_dict):
     """Store text content of an XML element in a results dictionary.
 
     Inputs:
         element         The XML element.
         tree            The XML tree.
         results_dict    Dictionary to store results.
-        prefixes        Dictionary of XML namespace prefixes.
     """
     if element.text and element.text.strip():
-        tag = str(element.tag)
         xpath = tree.getpath(element)
         text = ' '.join(element.text.strip().split())
 
@@ -164,14 +154,14 @@ def write_results_to_csv(results_list, args, output_csv_path):
     rows = []
     for result_dict in results_list:
         lid = result_dict['LID']
-        blid = ':'.join(lid.split(':')[:4])
-        bundle = blid.split(':')[-1]
+        bundle_lid = ':'.join(lid.split(':')[:4])
+        bundle = bundle_lid.split(':')[-1]
 
         row = {
             'LID': lid,
             'pds:filepath': result_dict['pds:filepath'],
             'pds:filename': result_dict['pds:filename'],
-            'pds:blid': blid,
+            'pds:bundle_lid': bundle_lid,
             'pds:bundle': bundle
         }
         row.update(result_dict['Results'])
@@ -179,16 +169,16 @@ def write_results_to_csv(results_list, args, output_csv_path):
 
     df = pd.DataFrame(rows)
 
-    # Reorder columns to have logical_identifier, FileName, FilePath, pds:blid, and pds:bundle
+    # Reorder columns to have logical_identifier, FileName, FilePath, pds:bundle_lid, and pds:bundle
     columns_order = (['LID',
                       'pds:filename',
                       'pds:filepath',
-                      'pds:blid',
+                      'pds:bundle_lid',
                       'pds:bundle'] + [col for col in df.columns if col not in
                                        ['LID',
                                         'pds:filename',
                                         'pds:filepath',
-                                        'pds:blid',
+                                        'pds:bundle_lid',
                                         'pds:bundle']])
 
     df = df[columns_order]
@@ -197,40 +187,37 @@ def write_results_to_csv(results_list, args, output_csv_path):
         df = df.drop(columns=['LID'])
     if args.elements_file:
         df = df.drop(columns=['pds:filename', 'pds:filepath',
-                     'pds:blid', 'pds:bundle'])
+                              'pds:bundle_lid', 'pds:bundle'])
     df.to_csv(output_csv_path, index=False, na_rep='NaN')
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('directorypath', type=str,
-                        help='The path to the directory containing the bundle '
-                             'you wish to scrape')
+                        help='The path to the directory containing the bundleset, bundle, '
+                             'or collection you wish to scrape')
 
     parser.add_argument('pattern', type=str, nargs='+',
                         help='The glob pattern(s) for the files you wish to index. If '
                              'using multiple, separate with spaces and surround each '
                              'pattern with quotes.')
 
-    # Argument for specifying the number of levels to search
-    parser.add_argument('--nlevels', type=int, default=None,
-                        help='The number of subdirectory levels to search')
-
-    # Argument for specifying elements to scrape from a text file
     parser.add_argument('--elements-file', type=str,
-                        help='Optional text file containing elements to scrape')
+                        help='Optional text file containing elements to scrape. If not '
+                             'specified, all elements found in the XML files are '
+                             'included.')
 
     parser.add_argument('--xpaths', action='store_true',
                         help='A flag that will activate XPath headers in the final '
-                             'index file')
+                             'index file. If specified, use full XPaths in the column '
+                             'headers. If not specified, use only elements tags.')
 
     parser.add_argument('--output-file', type=str,
                         help='The output filepath ending with your chosen filename for '
                              'the resulting index file')
 
     parser.add_argument('--verbose', action='store_true',
-                        help='A flag that will activate printed statements throughout '
-                             'runtime.')
+                        help='Turn on verbose mode and show the details of file scraping')
 
     args = parser.parse_args()
 
