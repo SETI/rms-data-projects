@@ -12,6 +12,8 @@ Usage:
         [--xpaths]
         [--output-file OUTPUT_FILE]
         [--verbose]
+        [--sort-by SORT_BY] 
+        [--clean-header-field-names]
 
 Arguments:
     directorypath        The path to the directory containing the bundle to scrape.
@@ -22,6 +24,9 @@ Arguments:
     --output-file OUTPUT_FILE
                          The output path and filename for the resulting index file.
     --verbose            Activate verbose printed statements during runtime.
+    --sort-by            Sort the index file by a chosen set of columns.
+    --clean-header-field-names
+                         Replace the ":" and "/" with Windows-friendly characters.
 
 Example:
 python3 pds4_create_xml_index.py <toplevel_directory> "glob_path1" "glob_path2" 
@@ -124,7 +129,7 @@ def store_element_text(element, tree, results_dict):
             results_dict[xpath] = text
 
 
-def traverse_and_store(element, tree, results_dict, prefixes, elements_to_scrape):
+def traverse_and_store(element, tree, results_dict, elements_to_scrape):
     """Traverse an XML tree and store text content of specified elements in a dictionary.
 
     Inputs:
@@ -134,14 +139,12 @@ def traverse_and_store(element, tree, results_dict, prefixes, elements_to_scrape
         prefixes              Dictionary of XML namespace prefixes.
         elements_to_scrape    Optional list of elements to scrape.
     """
-    xpath = str(tree.getpath(element))
     tag = str(element.tag)
     if elements_to_scrape is None or any(tag.endswith("}" + elem)
                                          for elem in elements_to_scrape):
-        store_element_text(element, tree, results_dict, prefixes)
+        store_element_text(element, tree, results_dict)
     for child in element:
-        traverse_and_store(child, tree, results_dict,
-                           prefixes, elements_to_scrape)
+        traverse_and_store(child, tree, results_dict, elements_to_scrape)
 
 
 def write_results_to_csv(results_list, args, output_csv_path):
@@ -188,6 +191,13 @@ def write_results_to_csv(results_list, args, output_csv_path):
     if args.elements_file:
         df = df.drop(columns=['pds:filename', 'pds:filepath',
                               'pds:bundle_lid', 'pds:bundle'])
+
+    if args.sort_by:
+        df.sort_values(by=args.sort_by, inplace=True)
+
+    if args.clean_header_field_names:
+        df.rename(columns=lambda x: x.replace(
+            ':', '_').replace('/', '.'), inplace=True)
     df.to_csv(output_csv_path, index=False, na_rep='NaN')
 
 
@@ -218,6 +228,13 @@ def main():
 
     parser.add_argument('--verbose', action='store_true',
                         help='Turn on verbose mode and show the details of file scraping')
+
+    parser.add_argument('--sort-by', type=str, nargs='+',
+                        help='Sort resulting index file by one or more columns')
+
+    parser.add_argument('--clean-header-field-names', action='store_true',
+                        help='Replaces the ":" and "/" in the column headers with '
+                             'Windows-friendly characters')
 
     args = parser.parse_args()
 
@@ -262,8 +279,7 @@ def main():
         prefixes = {v: k for k, v in namespaces.items()}
 
         xml_results = {}
-        traverse_and_store(root, tree, xml_results,
-                           prefixes, elements_to_scrape)
+        traverse_and_store(root, tree, xml_results, elements_to_scrape)
 
         for key in list(xml_results.keys()):
             process_tags(xml_results, key, root,
