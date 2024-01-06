@@ -196,8 +196,8 @@ def write_results_to_csv(results_list, args, output_csv_path):
         df.sort_values(by=args.sort_by, inplace=True)
 
     if args.clean_header_field_names:
-        df.rename(columns=lambda x: x.replace(
-            ':', '_').replace('/', '.'), inplace=True)
+        df.rename(columns=lambda x: x.replace(':', '_').replace('/', '__'), inplace=True)
+        
     df.to_csv(output_csv_path, index=False, na_rep='NaN')
 
 
@@ -218,8 +218,7 @@ def main():
                              'included.')
 
     parser.add_argument('--xpaths', action='store_true',
-                        help='A flag that will activate XPath headers in the final '
-                             'index file. If specified, use full XPaths in the column '
+                        help='If specified, use full XPaths in the column '
                              'headers. If not specified, use only elements tags.')
 
     parser.add_argument('--output-file', type=str,
@@ -234,7 +233,7 @@ def main():
 
     parser.add_argument('--clean-header-field-names', action='store_true',
                         help='Replaces the ":" and "/" in the column headers with '
-                             'Windows-friendly characters')
+                             'alternative (legal friendly) characters')
 
     args = parser.parse_args()
 
