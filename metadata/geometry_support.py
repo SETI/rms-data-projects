@@ -732,7 +732,10 @@ def _make_label(filepath, creation_time=None, preserve_time=False):
     lblfile = os.path.join(dir, body) + '.lbl'
 
     # Check the data file
-    f = open(filepath)
+    try:
+        f = open(filepath)
+    except:
+        return
     lines = f.readlines()
     f.close()
     
@@ -772,9 +775,11 @@ def _make_label(filepath, creation_time=None, preserve_time=False):
 
     # Read the template
 #    template = 'templates/%sxxx%s.lbl' % (volume_id[:-3],
-    template = meta.TEMPLATES_PATH + '/%sxxx%s.lbl' % (volume_id[:-3],
-                                                       body[underscore+5:])
+#    template = meta.TEMPLATES_PATH + '/%sxxx%s.lbl' % (volume_id[:-3],
+#                                                       body[underscore+5:])
+    template = meta.TEMPLATES_PATH + '/%s.lbl' % body[underscore+6:]
 
+#    from IPython import embed; print('+++++++++++++'); embed()
     try:
         f = open(template)
         lines = f.readlines()
@@ -812,7 +817,7 @@ def _make_label(filepath, creation_time=None, preserve_time=False):
 
 #===============================================================================
 def _process_one_index(indir, outdir, 
-                       selection='', append=False, exclude=None, glob=None):
+                       selection='', append=False, exclude=None, glob=None, no_table=False):
     """Process one index file and write a selection of geometry files.
 
     Input:
@@ -825,6 +830,7 @@ def _process_one_index(indir, outdir,
         append          if True, geometry files that already exist are not
                         ignored
         exclude         list of volumes to exclude
+        no_table         If True, do not produce a table, just a label.
     """
 
     # Handle exclusions
@@ -835,205 +841,228 @@ def _process_one_index(indir, outdir,
 
     # Check for supplemental index
     files = os.listdir(indir)
-    name = fnmatch.filter(files, glob)[0]
-    filename = os.path.join(indir, name)
-    (root, ext) = os.path.splitext(filename)
-    supplemental_name = idx._get_index_name(indir, 'supplemental')
-    supplemental_filename = os.path.join(indir, supplemental_name+ext)
-    if(not os.path.exists(supplemental_filename)):
-        supplemental_filename = None
+    
+    index_names = fnmatch.filter(files, glob)
+    if len(index_names) == 0:
+        return
+    if len(index_names) > 1:
+        raise RuntimeError('Mulitple index files found in %s.' % indir)
+
+    index_name = index_names[0]
+    index_filename = os.path.join(indir, index_name)
+    (root, ext) = os.path.splitext(index_filename)
+    supplemental_index_name = idx._get_index_name(indir, 'supplemental')
+    supplemental_index_filename = os.path.join(indir, supplemental_index_name+ext)
+    if(not os.path.exists(supplemental_index_filename)):
+        supplemental_index_filename = None
 
     # Get snapshots
-    snapshots = config.from_index(filename, supplemental_filename)
+    snapshots = config.from_index(index_filename, supplemental_index_filename)
     volume_id = snapshots[0].dict["VOLUME_ID"]
     records = len(snapshots)
 
     # Open the output files
     prefix = outdir + "/" + volume_id
-    log_file = open(prefix + "_log.txt", "w")
-    inventory_file = open(prefix + "_inventory.tab", "w")
+
+    log_filename = prefix + "_log.txt"
+    inventory_filename = prefix + "_inventory.tab"
     
-    print("Log file: " + log_file.name)
-    print("Inventory file: " + inventory_file.name)
+    ring_summary_filename = prefix + "_ring_summary.tab"
+    planet_summary_filename = prefix + "_%s_summary.tab" % config.PLANET.lower()
+    moon_summary_filename = prefix + "_moon_summary.tab"
+    
+    ring_detailed_filename = prefix + "_ring_detailed.tab"
+    planet_detailed_filename = prefix + "_%s_detailed.tab" % config.PLANET.lower()
+    moon_detailed_filename = prefix + "_moon_detailed.tab"
 
-    if "S" in selection:
-        ring_summary   = open(prefix + "_ring_summary.tab", "w")
-        planet_summary = open(prefix + "_%s_summary.tab" % config.PLANET.lower(), "w")
-        moon_summary   = open(prefix + "_moon_summary.tab", "w")
+    test_summary_filename = prefix + "_test_summary.tab"
 
-        print("Ring summary file: " + ring_summary.name)
-        print("Planet summary file: " + planet_summary.name)
-        print("Moon summary file: " + moon_summary.name)
+    log_file = open(log_filename, "w")
+    inventory_file = open(inventory_filename, "w")
+    
+    if not no_table:
+        print("Log file: " + log_file.name)
+        print("Inventory file: " + inventory_file.name)
 
-    if "D" in selection:
-        ring_detailed   = open(prefix + "_ring_detailed.tab", "w")
-        planet_detailed = open(prefix + "_%s_detailed.tab" % config.PLANET.lower(),"w")
-        moon_detailed   = open(prefix + "_moon_detailed.tab", "w")
+        if "S" in selection:
+            ring_summary   = open(ring_summary_filename, "w")
+            planet_summary = open(planet_summary_filename, "w")
+            moon_summary   = open(moon_summary_filename, "w")
 
-        print("Ring detail file: " + ring_detailed.name)
-        print("Planet detail file: " + planet_detailed.name)
-        print("Moon detail file: " + moon_detailed.name)
+            print("Ring summary file: " + ring_summary_filename)
+            print("Planet summary file: " + planet_summary_filename)
+            print("Moon summary file: " + moon_summary_filename)
 
-    if "T" in selection:
-        test_summary = open(prefix + "_test_summary.tab", "w")
+        if "D" in selection:
+            ring_detailed   = open(ring_detailed_filename, "w")
+            planet_detailed = open(planet_detailed_filename,"w")
+            moon_detailed   = open(moon_detailed_filename, "w")
 
-        print("Test summary file: " + test_summary.name)
+            print("Ring detail file: " + ring_detailed_filename)
+            print("Planet detail file: " + planet_detailed_filename)
+            print("Moon detail file: " + moon_detailed_filename)
 
-    # Loop through the snapshots...
-    for i in range(records):
-        snapshot = snapshots[i]
+        if "T" in selection:
+            test_summary = open(test_summary_filename, "w")
+
+            print("Test summary file: " + test_summary_filename)
+
+        # Loop through the snapshots...
+        for i in range(records):
+            snapshot = snapshots[i]
         
-        if append:
-           if os.path.exists(ring_summary.name) or \
-              os.path.exists(moon_summary.name) or \
-              os.path.exists(planet_summary.name) :
-                   continue
+            if append:
+                if os.path.exists(ring_summary_filename) or \
+                    os.path.exists(moon_summary_filename) or \
+                    os.path.exists(planet_summary_filename) :
+                        continue
 
-        target = config.target_name(snapshot.dict)
+            target = config.target_name(snapshot.dict)
 
-        if target in config.TRANSLATIONS.keys():
-            target = config.TRANSLATIONS[target]
+            if target in config.TRANSLATIONS.keys():
+                target = config.TRANSLATIONS[target]
 
-        # Don't abort if cspice throws a runtime error
-        try:
+            # Don't abort if cspice throws a runtime error
+            try:
 
-            # Create the record prefix
-            volume_id = snapshot.dict["VOLUME_ID"]
-            filespec = snapshot.dict["FILE_SPECIFICATION_NAME"]
-            roid = config.ring_observation_id(snapshot.dict)
-            prefixes = ['"' + volume_id + '"',
-                        '"%-45s"' % filespec.replace(".IMG", ".LBL"),
-                        '"' + roid + '"']
+                # Create the record prefix
+                volume_id = snapshot.dict["VOLUME_ID"]
+                filespec = snapshot.dict["FILE_SPECIFICATION_NAME"]
+                roid = config.ring_observation_id(snapshot.dict)
+                prefixes = ['"' + volume_id + '"',
+                            '"%-45s"' % filespec.replace(".IMG", ".LBL"),
+                            '"' + roid + '"']
 
-            # Create the backplane
-            meshgrid = config.MESHGRIDS[(snapshot.dict['TELEMETRY_FORMAT_ID'])]
-            backplane = oops.backplane.Backplane(snapshot, meshgrid)
+                # Create the backplane
+                meshgrid = config.MESHGRIDS[(snapshot.dict['TELEMETRY_FORMAT_ID'])]
+                backplane = oops.backplane.Backplane(snapshot, meshgrid)
 
-            # Print a log of progress. This records where errors occurred
-            logstr = "%s  %4d/%4d  %s  %s" % (volume_id, i+1, records, roid,
-                                              target)
-            print(logstr)
+                # Print a log of progress. This records where errors occurred
+                logstr = "%s  %4d/%4d  %s  %s" % (volume_id, i+1, records, roid,
+                                                target)
+                print(logstr)
 
-            # Inventory the bodies in the FOV (including targeted irregulars)
-            if target not in config.SYSTEM_NAMES and oops.Body.exists(target):
-                body_names = config.SYSTEM_NAMES + [target]
-            else:
-                body_names = config.SYSTEM_NAMES
+                # Inventory the bodies in the FOV (including targeted irregulars)
+                if target not in config.SYSTEM_NAMES and oops.Body.exists(target):
+                    body_names = config.SYSTEM_NAMES + [target]
+                else:
+                    body_names = config.SYSTEM_NAMES
 
-            inventory_names = snapshot.inventory(body_names, expand=config.EXPAND, cache=False)
+                inventory_names = snapshot.inventory(body_names, expand=config.EXPAND, cache=False)
 
-            # Write a record into the inventory file
-            inventory_file.write(",".join(prefixes))
-            for name in inventory_names:
-                inventory_file.write(',"' + name + '"')
+                # Write a record into the inventory file
+                inventory_file.write(",".join(prefixes))
+                for name in inventory_names:
+                    inventory_file.write(',"' + name + '"')
 
-            inventory_file.write("\r\n")    # Use <CR><LF> line termination
+                inventory_file.write("\r\n")    # Use <CR><LF> line termination
 
-            # Convert the inventory into a list of moon names
-            if len(inventory_names) > 0 and inventory_names[0] == config.PLANET:
-                moon_names = inventory_names[1:]
-            else:
-                moon_names = inventory_names
+                # Convert the inventory into a list of moon names
+                if len(inventory_names) > 0 and inventory_names[0] == config.PLANET:
+                    moon_names = inventory_names[1:]
+                else:
+                    moon_names = inventory_names
 
-            # Define a blocker moon, if any
-            if target in moon_names:
-                blocker = target
-            else:
-                blocker = None
+                # Define a blocker moon, if any
+                if target in moon_names:
+                    blocker = target
+                else:
+                    blocker = None
 
-            # Add an irregular moon to the dictionaries if necessary
-            if target in moon_names and target not in config.MOON_SUMMARY_DICT.keys():
-                config.MOON_SUMMARY_DICT[target] = config.replace(config.MOON_SUMMARY_COLUMNS,
-                                                         config.MOONX, target)
-                MOON_DETAILED_DICT[target] = config.replace(config.MOON_DETAILED_COLUMNS,
-                                                          config.MOONX, target)
-                MOON_TILE_DICT[target] = config.replace(config.MOON_TILES, config.MOONX, target)
+                # Add an irregular moon to the dictionaries if necessary
+                if target in moon_names and target not in config.MOON_SUMMARY_DICT.keys():
+                    config.MOON_SUMMARY_DICT[target] = config.replace(config.MOON_SUMMARY_COLUMNS,
+                                                                      config.MOONX, target)
+                    MOON_DETAILED_DICT[target] = config.replace(config.MOON_DETAILED_COLUMNS,
+                                                                config.MOONX, target)
+                    MOON_TILE_DICT[target] = config.replace(config.MOON_TILES, config.MOONX, target)
 
-            # Write the summary files
-            if "S" in selection:
-                _write_record(prefixes, backplane, blocker,
-                              ring_summary, config.RING_SUMMARY_COLUMNS,
-                              config.PLANET)
-
-                _write_record(prefixes, backplane, blocker,
-                              planet_summary, config.PLANET_SUMMARY_COLUMNS,
-                              config.PLANET, moon=config.PLANET,
-                              moon_length=config.NAME_LENGTH)
-
-                for name in moon_names:
+                # Write the summary files
+                if "S" in selection:
                     _write_record(prefixes, backplane, blocker,
-                                  moon_summary, config.MOON_SUMMARY_DICT[name],
-                                  config.PLANET, moon=name,
+                                  ring_summary, config.RING_SUMMARY_COLUMNS,
+                                  config.PLANET)
+
+                    _write_record(prefixes, backplane, blocker,
+                                  planet_summary, config.PLANET_SUMMARY_COLUMNS,
+                                  config.PLANET, moon=config.PLANET,
                                   moon_length=config.NAME_LENGTH)
 
-            # Write the detailed files
-            if "D" in selection:
-                _write_record(prefixes, backplane, blocker,
+                    for name in moon_names:
+                        _write_record(prefixes, backplane, blocker,
+                                      moon_summary, config.MOON_SUMMARY_DICT[name],
+                                      config.PLANET, moon=name,
+                                      moon_length=config.NAME_LENGTH)
+
+                # Write the detailed files
+                if "D" in selection:
+                    _write_record(prefixes, backplane, blocker,
                                   ring_detailed, config.RING_DETAILED_COLUMNS,
                                   config.PLANET, tiles=(config.RING_TILES, config.OUTER_RING_TILES))
 
-                _write_record(prefixes, backplane, blocker,
-                              planet_detailed, config.PLANET_DETAILED_COLUMNS,
-                              config.PLANET, moon=config.PLANET,
-                              moon_length=config.NAME_LENGTH,
-                              tiles=PLANET_TILES)
-
-                for name in moon_names:
                     _write_record(prefixes, backplane, blocker,
-                                  moon_detailed, config.MOON_DETAILED_DICT[name],
-                                  config.PLANET, moon=name,
+                                  planet_detailed, config.PLANET_DETAILED_COLUMNS,
+                                  config.PLANET, moon=config.PLANET,
                                   moon_length=config.NAME_LENGTH,
-                                  tiles=config.MOON_TILE_DICT[name])
+                                  tiles=PLANET_TILES)
 
-            # Write the test geometry file
-            if "T" in selection:
-                _write_record(prefixes, backplane, blocker,
-                              test_summary, config.TEST_SUMMARY_COLUMNS, config.PLANET)
+                    for name in moon_names:
+                        _write_record(prefixes, backplane, blocker,
+                                      moon_detailed, config.MOON_DETAILED_DICT[name],
+                                      config.PLANET, moon=name,
+                                      moon_length=config.NAME_LENGTH,
+                                      tiles=config.MOON_TILE_DICT[name])
 
-        # A RuntimeError is probably caused by missing spice data. There is
-        # probably nothing we can do.
-        except RuntimeError as e:
+                # Write the test geometry file
+                if "T" in selection:
+                    _write_record(prefixes, backplane, blocker,
+                                  test_summary, config.TEST_SUMMARY_COLUMNS, config.PLANET)
 
-            print(e)
-            log_file.write(40*"*" + "\n" + logstr + "\n")
-            log_file.write(str(e))
-            log_file.write("\n\n")
+            # A RuntimeError is probably caused by missing spice data. There is
+            # probably nothing we can do.
+            except RuntimeError as e:
 
-        # Other kinds of errors are genuine bugs. For now, we just log the
-        # problem, and jump over the image; we can deal with it later.
-        except (AssertionError, AttributeError, IndexError, KeyError,
-                LookupError, TypeError, ValueError):
+                print(e)
+                log_file.write(40*"*" + "\n" + logstr + "\n")
+                log_file.write(str(e))
+                log_file.write("\n\n")
 
-            traceback.print_exc()
-#            log_file.write(40*"*" + "\n" + logstr + "\n")
-            log_file.write(traceback.format_exc())
-            log_file.write("\n\n")
+            # Other kinds of errors are genuine bugs. For now, we just log the
+            # problem, and jump over the image; we can deal with it later.
+            except (AssertionError, AttributeError, IndexError, KeyError,
+                    LookupError, TypeError, ValueError):
 
-    # Close all files and make labels
+                traceback.print_exc()
+#                log_file.write(40*"*" + "\n" + logstr + "\n")
+                log_file.write(traceback.format_exc())
+                log_file.write("\n\n")
+
+    # Close all files
     log_file.close()
     inventory_file.close()
 
-    if "S" in selection:
+    try:
         ring_summary.close()
         planet_summary.close()
         moon_summary.close()
-
-        _make_label(ring_summary.name)
-        _make_label(planet_summary.name)
-        _make_label(moon_summary.name)
-
-    if "D" in selection:
         ring_detailed.close()
         planet_detailed.close()
         moon_detailed.close()
-
-        _make_label(ring_summary.name)
-        _make_label(planet_summary.name)
-        _make_label(moon_summary.name)
-
-    if "T" in selection:
         test_summary.close()
-        _make_label(test_summary.name)
+    except:
+        pass
+
+    # Make labels
+    if "S" in selection:
+        _make_label(ring_summary_filename)
+        _make_label(planet_summary_filename)
+        _make_label(moon_summary_filename)
+    if "D" in selection:
+        _make_label(ring_detailed_filename)
+        _make_label(planet_detailed_filename)
+        _make_label(moon_detailed_filename)
+    if "T" in selection:
+        _make_label(test_summary_filename)
 
 ################################################################################
 # external functions
@@ -1041,14 +1070,20 @@ def _process_one_index(indir, outdir,
 
 #===============================================================================
 def process_index(input_tree, output_tree,
-                  selection='', append=False, exclude=None, glob=None, volume=None):
+                  selection='', append=False, exclude=None, glob=None, 
+                  volume=None, no_table=False):
 
     # Make index for each volume
     for dir in os.listdir(input_tree):
-        if not volume or dir == volume:
-            indir = os.path.join(input_tree, dir)
-            outdir = os.path.join(output_tree, dir)
-            _process_one_index(indir, outdir, 
-                               selection=selection, append=append, exclude=exclude, glob=glob)
+        if os.path.isdir(dir):
+            if not volume or dir == volume:
+                indir = os.path.join(input_tree, dir)
+                outdir = os.path.join(output_tree, dir)
+                _process_one_index(indir, outdir, 
+                                   selection=selection, 
+                                   append=append, 
+                                   exclude=exclude, 
+                                   glob=glob,
+                                   no_table=no_table)
 
 

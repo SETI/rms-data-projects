@@ -17,7 +17,6 @@ try:
 except IndexError:
     volume = None
 
-idx.make_index(sys.argv[1], sys.argv[2], 
+idx.make_index(sys.argv[1], sys.argv[2],
                type='supplemental', glob='C0*', volume=volume)
-               
 ################################################################################

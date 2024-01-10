@@ -514,76 +514,82 @@ def _make_label(template_lines, input_dir, output_dir, preserve_time=False, type
 
 
 #===============================================================================
-def _make_one_index(input_dir, output_dir, type='', glob=None):
+def _make_one_index(input_dir, output_dir, type='', glob=None, no_table=False):
 
-    # Get index and template filenames
-    primary_index_name = _get_index_name(input_dir, None)
-    index_name = _get_index_name(input_dir, type) 
-    template_name = _get_index_name('./', type)         # assumes top dir is pwd
+    if not no_table:
+        # Get index and template filenames
+        primary_index_name = _get_index_name(input_dir, None)
+        index_name = _get_index_name(input_dir, type) 
+        template_name = _get_index_name('./', type)         # assumes top dir is pwd
 
-    primary = index_name == primary_index_name
+        primary = index_name == primary_index_name
 
-    if not primary:
-        primary_index_path = os.path.join(output_dir, primary_index_name) + '.lbl'
-        if not os.path.exists(primary_index_path):
-            return          ## need error message here
+        if not primary:
+            primary_index_path = os.path.join(output_dir, primary_index_name) + '.lbl'
+            if not os.path.exists(primary_index_path):
+                return          ## need error message here
 
-    index_path = os.path.join(output_dir, index_name) + '.tab'
-    template_path = os.path.join('./templates/', template_name) + '.lbl'
+        index_path = os.path.join(output_dir, index_name) + '.tab'
+        template_path = os.path.join('./templates/', template_name) + '.lbl'
 
-    # Read template
-    f = open(template_path)
-    template_lines = f.readlines()
-    f.close()
+        # Read template
+        f = open(template_path)
+        template_lines = f.readlines()
+        f.close()
 
-    # Parse any directives in the columns
-    template_lines = _preprocess_template(template_lines)
+        # Parse any directives in the columns
+        template_lines = _preprocess_template(template_lines)
 
-    # Set up columns
-    column_descs = _get_columns(template_lines)
+        # Set up columns
+        column_descs = _get_columns(template_lines)
 
-    # Walk the directory tree...
+        # Walk the directory tree...
 
-    # Open the output file; create dir if necessary
-    if not os.path.isdir(output_dir):
-        os.mkdir(output_dir)
-    index = open(index_path, 'w')
+        # Open the output file; create dir if necessary
+        if not os.path.isdir(output_dir):
+            os.mkdir(output_dir)
+        index = open(index_path, 'w')
 
-    # If there is a primary file, read it and build the file list
-    if not primary:
-        table = pdstable.PdsTable(primary_index_path)
-        primary_row_dicts = table.dicts_by_row()
-        files = [primary_row_dict['FILE_SPECIFICATION_NAME'] for primary_row_dict in primary_row_dicts]
+        # If there is a primary file, read it and build the file list
+        if not primary:
+            table = pdstable.PdsTable(primary_index_path)
+            primary_row_dicts = table.dicts_by_row()
+            files = [primary_row_dict['FILE_SPECIFICATION_NAME'] for primary_row_dict in primary_row_dicts]
         
-        for i in range(len(files)): 
-            files[i] = os.path.splitext(os.path.join(input_dir, files[i]))[0] + '.LBL'
+            for i in range(len(files)): 
+                files[i] = os.path.splitext(os.path.join(input_dir, files[i]))[0] + '.LBL'
 
-    # Otherwise, build the file list from the directory tree
-    else:
-        files = [f for f in glb.glob(input_dir + "/**/*.LBL", recursive=True)]
+        # Otherwise, build the file list from the directory tree
+        else:
+            files = [f for f in glb.glob(input_dir + "/**/*.LBL", recursive=True)]
         
-    # Build the index
-    for file in files:
-        name = os.path.basename(file)
-        root = os.path.dirname(file)
+        # Build the index
+        for file in files:
+            name = os.path.basename(file)
+            root = os.path.dirname(file)
 
-        # Match the glob pattern
-        file = fnmatch.filter([name], glob)[0]
-        if file == []:
-            continue
+            # Match the glob pattern
+            file = fnmatch.filter([name], glob)[0]
+            if file == []:
+                continue
 
-        # Print volume ID and subpath
-        subdir = _get_subdir(root)
-        volume_id = _get_volume_id(input_dir)
-        print('    ', volume_id, os.path.join(subdir, name))
+            # Print volume ID and subpath
+            subdir = _get_subdir(root)
+            volume_id = _get_volume_id(input_dir)
+            print('    ', volume_id, os.path.join(subdir, name))
 
-        # Make the index for this file
-        _index_one_file(root, file, index, column_descs)
+            # Make the index for this file
+            _index_one_file(root, file, index, column_descs)
 
-    # Close index file and make label if the index exists
-    if index:
-        index.close()
-        _make_label(template_lines, input_dir, output_dir, type=type)    
+        # Close index file and make label if the index exists
+        try:
+            index.close()
+        except:
+            pass
+        
+#    if index:
+#        index.close()
+    _make_label(template_lines, input_dir, output_dir, type=type)    
         
 
 ################################################################################
@@ -591,12 +597,16 @@ def _make_one_index(input_dir, output_dir, type='', glob=None):
 ################################################################################
 
 #===============================================================================
-def make_index(input_tree, output_tree, type='', glob=None, volume=None):
+def make_index(input_tree, output_tree, type='', glob=None, volume=None, no_table=False):
 
     # Make index for each volume
     for dir in os.listdir(input_tree):
-        if not volume or dir == volume:
-            indir = os.path.join(input_tree, dir)
-            outdir = os.path.join(output_tree, dir)
-            _make_one_index(indir, outdir, type=type, glob=glob)
+        if os.path.isdir(dir):
+            if not volume or dir == volume:
+                indir = os.path.join(input_tree, dir)
+                outdir = os.path.join(output_tree, dir)
+                _make_one_index(indir, outdir, 
+                                type=type, 
+                                glob=glob, 
+                                no_table=no_table)
 
