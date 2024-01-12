@@ -20,16 +20,11 @@ class Test_MakeLabel(unittest.TestCase):
         self.assertGreaterEqual(val, min)
         self.assertLessEqual(val, max)
 
-### need to test index file outputs
-### need to test metadata code
-### need to test index code
-
     #===========================================================================
     # get summary filenames  ### LIB
     def match(self, dir, pattern):
         all_files = []
         for root, dirs, files in os.walk(dir):
-            print(root)
             all_files += glob.glob(os.path.join(root, pattern))
         return(all_files)
 
@@ -57,16 +52,20 @@ class Test_MakeLabel(unittest.TestCase):
         return(result)
 
     #===========================================================================
+    # test index common fields
+    def test_index_common(self):
+        pass
+
+    #===========================================================================
     # test geometry common fields
     def test_geometry_common(self):
-
-        print('Testing Common fields')
 
         # Get labels to test
         files = self.match(METADATA, '*_summary.lbl')
         files = self.exclude(files, 'templates/', 'old/')
 
         # Test labels
+        print()
         for file in files:
             print('Reading', file)
             table = pdstable.PdsTable(file)
@@ -84,13 +83,12 @@ class Test_MakeLabel(unittest.TestCase):
     # test geometry body fields
     def test_geometry_body(self):
 
-        print('Testing Body fields')
-
         # Get labels to test
         files = self.match(METADATA, '*_summary.lbl')
         files = self.exclude(files, 'templates/', 'old/', '_ring_')
 
         # Test labels
+        print()
         for file in files:
             print('Reading', file)
             table = pdstable.PdsTable(file)
@@ -135,14 +133,12 @@ class Test_MakeLabel(unittest.TestCase):
     # test geometry ring fields
     def test_geometry_ring(self):
 
-        print('Testing Ring fields')
-
         # Get labels to test
         files = self.match(METADATA, '*ring_summary.lbl')
         files = self.exclude(files, 'templates/', 'old/')
-        from IPython import embed; print('+++++++++++++'); embed()
 
         # Test labels
+        print()
         for file in files:
             print('Reading', file)
             table = pdstable.PdsTable(file)

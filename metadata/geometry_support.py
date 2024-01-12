@@ -458,15 +458,22 @@ def _formatted_column(values, format):
     """Returns one formatted column (or a pair of columns) as a string.
 
     Input:
-        columns         a list of the columns so far.
         values          a Scalar of values with its applied mask.
         format          a tuple (flag, number_of_values, column_width,
                         standard_format, overflow_format, null_value),
                         describing the format to use. Here...
-            flag        "DEG" implies that the values should be converted from
-                        radians to degrees; "360" implies that the values should
-                        be converted to a range of degrees, allowing for ranges
-                        that cross from 360 to 0.
+          flag              "DEG" implies that the values should be converted 
+                            from radians to degrees; "360" implies that the 
+                            values should be converted to a range of degrees, 
+                            allowing for ranges that cross from 360 to 0.
+          number_of_values  1 yields the mean value
+                            2 yields the minimium and maximum values
+          column_width      Total width of the formatted string.
+          standard_format   Desired format code for the field.
+          overflow_format   Format code if field overflows the standard_format
+                            length.
+          null_value        Value to indicate NULL.
+          
     """
 
     # Interpret the format
@@ -543,6 +550,8 @@ def _range_of_n_angles(n, prob=0.1, tests=100000):
     likelihood of all n angles falling within this range of one another has the
     given probability. Base this on the specified number of tests.
     """
+    #### This function is not used.  It should be removed and placed in a 
+    #### utility library.
 
     max_diffs = []
     for k in range(tests):
@@ -726,16 +735,24 @@ def _get_range_mod360(values, alt_format=None):
 
 #===============================================================================
 def _make_label(filepath, creation_time=None, preserve_time=False):
+    """Creates a label for a given geometry table.
+
+    Input:
+        filepath        Path to the geometry table.
+        creation_time   Creation time to use instead of the current time.
+        preserve_time   If True, the creation time is copied from any existing
+                        label before it is overwrittten.
+    """
 
     (dir, filename) = os.path.split(filepath)
     (body, ext) = os.path.splitext(filename)
     lblfile = os.path.join(dir, body) + '.lbl'
 
-    # Check the data file
-    try:
-        f = open(filepath)
-    except:
+    # Load the data file if it exists
+    if not os.path.isfile(filepath):
         return
+
+    f = open(filepath)
     lines = f.readlines()
     f.close()
     
@@ -757,29 +774,26 @@ def _make_label(filepath, creation_time=None, preserve_time=False):
 
     # Determine the creation time
     if preserve_time:
-        f = open(lblfile)
-        lines = f.readlines()
-        f.close()
+        if os.path.isfile(lblfile):
+            f = open(lblfile)
+            lines = f.readlines()
+            f.close()
 
-        creation_time = 'missing'
-        for line in lines:
-            if line.startswith('PRODUCT_CREATION_TIME'):
-                creation_time = line[-21:-2]
-                assert creation_time[:2] == '20'
-                break
+            creation_time = 'missing'
+            for line in lines:
+                if line.startswith('PRODUCT_CREATION_TIME'):
+                    creation_time = line[-21:-2]
+                    assert creation_time[:2] == '20'
+                    break
 
-        assert creation_time != 'missing'
+            assert creation_time != 'missing'
 
     elif creation_time is None:
         creation_time = '%04d-%02d-%02dT%02d:00:00' % time.gmtime()[:4]
 
     # Read the template
-#    template = 'templates/%sxxx%s.lbl' % (volume_id[:-3],
-#    template = meta.TEMPLATES_PATH + '/%sxxx%s.lbl' % (volume_id[:-3],
-#                                                       body[underscore+5:])
     template = meta.TEMPLATES_PATH + '/%s.lbl' % body[underscore+6:]
 
-#    from IPython import embed; print('+++++++++++++'); embed()
     try:
         f = open(template)
         lines = f.readlines()
@@ -806,7 +820,6 @@ def _make_label(filepath, creation_time=None, preserve_time=False):
             l += 1
 
         lines[l] = lines[l][:-3] + ' ' + subs[i] + '\n'
-        #print(lines[l])
 
     # Write the new label
     f = open(lblfile, 'w')
@@ -817,20 +830,24 @@ def _make_label(filepath, creation_time=None, preserve_time=False):
 
 #===============================================================================
 def _process_one_index(indir, outdir, 
-                       selection='', append=False, exclude=None, glob=None, no_table=False):
-    """Process one index file and write a selection of geometry files.
+                       selection='', append=False, exclude=None, glob=None, 
+                       no_table=False):
+    """Process the index file for a single volume and write a selection of 
+    geometry files.
 
     Input:
-        input_filename  the name of the label for an ISS index file.
+        indir           directory containing the volume.
+        outdir          directory in whioch to werite the geometry files.
         selection       a string containing...
                             "S" to generate summary files;
                             "D" to generate detailed files;
                             "T" to generate a test file (which matches the
                                 set of columns in the old geometry files).
         append          if True, geometry files that already exist are not
-                        ignored
-        exclude         list of volumes to exclude
-        no_table         If True, do not produce a table, just a label.
+                        ignored.
+        exclude         list of volumes to exclude.
+        glob            glob pattern for index files.
+        no_table        if True, do not produce a table, just a label.
     """
 
     # Handle exclusions
@@ -971,11 +988,11 @@ def _process_one_index(indir, outdir,
 
                 # Add an irregular moon to the dictionaries if necessary
                 if target in moon_names and target not in config.MOON_SUMMARY_DICT.keys():
-                    config.MOON_SUMMARY_DICT[target] = config.replace(config.MOON_SUMMARY_COLUMNS,
+                    config.MOON_SUMMARY_DICT[target] = meta.replace(config.MOON_SUMMARY_COLUMNS,
                                                                       config.MOONX, target)
-                    MOON_DETAILED_DICT[target] = config.replace(config.MOON_DETAILED_COLUMNS,
+                    config.MOON_DETAILED_DICT[target] = meta.replace(config.MOON_DETAILED_COLUMNS,
                                                                 config.MOONX, target)
-                    MOON_TILE_DICT[target] = config.replace(config.MOON_TILES, config.MOONX, target)
+                    config.MOON_TILE_DICT[target] = meta.replace(config.MOON_TILES, config.MOONX, target)
 
                 # Write the summary files
                 if "S" in selection:
@@ -1072,6 +1089,25 @@ def _process_one_index(indir, outdir,
 def process_index(input_tree, output_tree,
                   selection='', append=False, exclude=None, glob=None, 
                   volume=None, no_table=False):
+    """Creates geometry files for a collection of volumes.
+
+    Input:
+        input tree      root of the tree containing the volumes.
+        output tree     root of the tree in which the output files are
+                        written in the same directory structure as in the 
+                        input tree.
+        selection       a string containing...
+                            "S" to generate summary files;
+                            "D" to generate detailed files;
+                            "T" to generate a test file (which matches the
+                                set of columns in the old geometry files).
+        append          if True, geometry files that already exist are not
+                        ignored.
+        exclude         list of volumes to exclude.
+        glob            glob pattern for index files.
+        volume          if given, only this volume is processed.
+        no_table        if True, do not produce a table, just a label.
+    """
 
     # Make index for each volume
     for dir in os.listdir(input_tree):
@@ -1086,4 +1122,4 @@ def process_index(input_tree, output_tree,
                                    glob=glob,
                                    no_table=no_table)
 
-
+################################################################################
