@@ -256,7 +256,7 @@ def main():
     label_files = []
     all_results = []
     for pattern in patterns:
-        files = directory_path.glob(f"{pattern}", recursive=True)
+        files = directory_path.glob(f"{pattern}")
         label_files.extend(files)
 
     verboseprint(f'{len(label_files)} matching files found')
