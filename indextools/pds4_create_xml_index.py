@@ -17,8 +17,10 @@ Usage:
 
 Arguments:
     directorypath        The path to the directory containing the bundle to scrape.
-    pattern              Filename pattern(s), possibly including wildcards like * and ?,
-                         for files within <directorypath> to scrape for the index.
+    pattern              The glob pattern(s) (which may include wildcards like *, ?,
+                         and **) for the files you wish to index. Multiple patterns
+                         may be specified separated by spaces. Surround each pattern
+                         with quotes.
     --elements-file ELEMENTS_FILE
                          Optional text file containing elements to scrape.
     --xpaths             Activate XPath headers in the final index file.
@@ -216,9 +218,10 @@ def main():
                              'or collection you wish to scrape')
 
     parser.add_argument('pattern', type=str, nargs='+',
-                        help='The glob pattern(s) for the files you wish to index. If '
-                             'using multiple, separate with spaces and surround each '
-                             'pattern with quotes.')
+                        help='The glob pattern(s) for the files you wish to index. They '
+                             'may include wildcards like  *, ?, and **. If using '
+                             'multiple, separate with spaces. Surround each pattern '
+                             'with quotes.')
 
     parser.add_argument('--elements-file', type=str,
                         help='Optional text file containing elements to scrape. If not '
@@ -253,7 +256,7 @@ def main():
     label_files = []
     all_results = []
     for pattern in patterns:
-        files = directory_path.glob(f"{pattern}")
+        files = directory_path.glob(f"{pattern}", recursive=True)
         label_files.extend(files)
 
     verboseprint(f'{len(label_files)} matching files found')
