@@ -17,7 +17,8 @@ Usage:
 
 Arguments:
     directorypath        The path to the directory containing the bundle to scrape.
-    pattern              The glob pattern(s) for the files to index.
+    pattern              Filename pattern(s), possibly including wildcards like * and ?,
+                         for files within <directorypath> to scrape for the index.
     --elements-file ELEMENTS_FILE
                          Optional text file containing elements to scrape.
     --xpaths             Activate XPath headers in the final index file.
@@ -80,6 +81,13 @@ def convert_header_to_xpath(root, xpath_find, namespaces):
 
 def process_tags(xml_results, key, root, namespaces, prefixes, args):
     """Process XML tags based on the provided options.
+
+    If the --xpaths command is used, the XPath is converted into a format that
+    contains the names and namespaces of all the parent elements of that element.
+    If the --xpaths command is not used, the XPath is converted into the
+    associated element tag of that element, and given its associated namespace. These
+    values then replace their old versions in the xml_results dictionary.
+
 
     Inputs:
         xml_results    A dictionary containing XML data to be processed.
@@ -239,7 +247,6 @@ def main():
 
     verboseprint = print if args.verbose else lambda *a, **k: None
 
-    filenames = []
     directory_path = Path(args.directorypath)
     patterns = args.pattern
 
@@ -252,8 +259,7 @@ def main():
     verboseprint(f'{len(label_files)} matching files found')
 
     if label_files == []:
-        print(f'No files with suffix(es) {filenames} found in '
-              f'directory: {directory_path}')
+        print(f'No files matching {pattern} found in directory: {directory_path}')
         sys.exit(1)
 
     if args.elements_file:
