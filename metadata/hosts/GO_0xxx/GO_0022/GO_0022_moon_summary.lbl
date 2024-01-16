@@ -5,7 +5,7 @@ RECORD_BYTES                    = 489
 ^MOON_GEOMETRY_TABLE            = "GO_0022_moon_summary.tab"
 
 VOLUME_ID                       = "GO_0022"
-PRODUCT_CREATION_TIME           = 2024-01-12T05:00:00
+PRODUCT_CREATION_TIME           = 2024-01-12T21:00:00
 
 INSTRUMENT_HOST_NAME            = "GALILEO ORBITER"
 INSTRUMENT_HOST_ID              = GO

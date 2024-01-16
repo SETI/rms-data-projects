@@ -5,7 +5,7 @@ RECORD_BYTES                    = 748
 ^RING_GEOMETRY_TABLE            = "GO_0013_ring_summary.tab"
 
 VOLUME_ID                       = "GO_0013"
-PRODUCT_CREATION_TIME           = 2024-01-12T08:00:00
+PRODUCT_CREATION_TIME           = 2024-01-12T22:00:00
 
 INSTRUMENT_HOST_NAME            = "GALILEO ORBITER"
 INSTRUMENT_HOST_ID              = GO
