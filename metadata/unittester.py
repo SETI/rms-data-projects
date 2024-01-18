@@ -8,7 +8,8 @@ import fnmatch
 import os
 import numpy as np
 
-METADATA = './'
+#METADATA = './'
+METADATA = os.environ['RMS_METADATA']
 
 class Test_MakeLabel(unittest.TestCase):
 
@@ -27,16 +28,6 @@ class Test_MakeLabel(unittest.TestCase):
         for root, dirs, files in os.walk(dir):
             all_files += glob.glob(os.path.join(root, pattern))
         return(all_files)
-
-    #===========================================================================
-    # exclude test files  ### LIB
-    def ___exclude(self, files, *patterns):
-        result = []
-        for pattern in patterns:
-            for i in range(len(files)):
-                if files[i].find(pattern) == -1:
-                    result += [files[i]]
-        return(result)
 
     #===========================================================================
     # exclude test files  ### LIB

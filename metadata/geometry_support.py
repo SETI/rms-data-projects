@@ -1111,7 +1111,7 @@ def process_index(input_tree, output_tree,
 
     # Make index for each volume
     for dir in os.listdir(input_tree):
-        if os.path.isdir(dir):
+        if os.path.isdir(os.path.join(input_tree, dir)):
             if not volume or dir == volume:
                 indir = os.path.join(input_tree, dir)
                 outdir = os.path.join(output_tree, dir)

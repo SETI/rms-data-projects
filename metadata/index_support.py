@@ -7,6 +7,7 @@ import hosts.pds3 as pds3
 import pdsparser
 import fortranformat as ff
 import fnmatch
+import warnings
 
 import metadata as meta
 import metadata.index_config as config
@@ -539,7 +540,9 @@ def _make_one_index(input_dir, output_dir, type='', glob=None, no_table=False):
 
     Input:
         input_dir       directory containing the volume.
-        output_dir      directory in which to write the index files.
+        output_dir      directory in which to find the "updated" index file
+                        (e.g., <volume>_index.tab, and in which to write the 
+                        new index files.
         glob            glob pattern for index files.
         no_table        if True, do not produce a table, just a label.
     """
@@ -550,12 +553,14 @@ def _make_one_index(input_dir, output_dir, type='', glob=None, no_table=False):
         index_name = _get_index_name(input_dir, type) 
         template_name = _get_index_name('./', type)         # assumes top dir is pwd
 
-        primary = index_name == primary_index_name
+        create_primary = index_name == primary_index_name
 
-        if not primary:
+        # This assumes that the primary index file has been copied from the 
+        if not create_primary:
             primary_index_path = os.path.join(output_dir, primary_index_name) + '.lbl'
             if not os.path.exists(primary_index_path):
-                return          ## need error message here
+                warnings.warn('Primary index file not found: %s.  Skipping' % primary_index_path)
+                return
 
         index_path = os.path.join(output_dir, index_name) + '.tab'
         template_path = os.path.join('./templates/', template_name) + '.lbl'
@@ -579,7 +584,7 @@ def _make_one_index(input_dir, output_dir, type='', glob=None, no_table=False):
         index = open(index_path, 'w')
 
         # If there is a primary file, read it and build the file list
-        if not primary:
+        if not create_primary:
             table = pdstable.PdsTable(primary_index_path)
             primary_row_dicts = table.dicts_by_row()
             files = [primary_row_dict['FILE_SPECIFICATION_NAME'] for primary_row_dict in primary_row_dicts]
@@ -636,12 +641,12 @@ def make_index(input_tree, output_tree, type='', glob=None, volume=None, no_tabl
                         to create, e.g., 'supplemental'. 
         volume          if given, only this volume is processed.
         glob            glob pattern for index files.
-\       no_table        if True, do not produce a table, just a label.
+        no_table        if True, do not produce a table, just a label.
     """
 
     # Make index for each volume
     for dir in os.listdir(input_tree):
-        if os.path.isdir(dir):
+        if os.path.isdir(os.path.join(input_tree, dir)):
             if not volume or dir == volume:
                 indir = os.path.join(input_tree, dir)
                 outdir = os.path.join(output_tree, dir)
