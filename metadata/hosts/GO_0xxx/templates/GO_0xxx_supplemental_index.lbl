@@ -379,5 +379,41 @@ $END_NOTE
     DESCRIPTION                 = "REPLACE WITH USER CONTENT."
   END_OBJECT                    = COLUMN
 
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'START_TIME')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A23"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "Observation start time associated with the data in the given file. Given in PDS date/time format ('yyyy-mm-ddThh:mm:ss.sss')."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'STOP_TIME')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A23"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "Observation stop time associated with the data in the given file. Given in PDS date/time format ('yyyy-mm-ddThh:mm:ss.sss')."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'SPACECRAFT_STOP_COUNT')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A11"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "The spacecraft clock at time of shutter close. The SCLK is formatted as follows: RIM.MOD91."
+  END_OBJECT                    = COLUMN
+
 END_OBJECT                      = $TYPE$_INDEX_TABLE
 END
