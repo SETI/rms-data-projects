@@ -8,7 +8,7 @@ import warnings
 import fnmatch
 
 import metadata as meta
-import metadata.geometry_config as config
+import geometry_config as config
 import metadata.index_support as idx
 
 ################################################################################

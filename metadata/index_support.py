@@ -10,7 +10,7 @@ import fnmatch
 import warnings
 
 import metadata as meta
-import metadata.index_config as config
+import index_config as config
 import pdstable
 
 from pdstemplate import PdsTemplate
