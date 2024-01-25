@@ -174,18 +174,18 @@ def _format_column(value, name=None,
     return result
 
 #===============================================================================
-def _index_one_value(column_dict, label_path, label):
+def _index_one_value(column_desc, label_path, label):
     """Determine value for one row of one column.
 
     Inputs:
-        column_dict     column dictionary.
+        column_desc     column dictionary.
         label_path      path to the PDS label.
         
     Outputs:            determined value.
     """
 
     # Check for built-in key function
-    key = column_dict['name']
+    key = column_desc['name']
     fn_name = 'key__' + key.lower()
     try:
         fn = globals()[fn_name]
@@ -199,7 +199,7 @@ def _index_one_value(column_dict, label_path, label):
 
         # If no key function, just take the value from the label
         except AttributeError:
-            value = label[key] if key in label else column_dict['nullval']
+            value = label[key] if key in label else column_desc['nullval']
 
     return value
 
@@ -211,7 +211,7 @@ def _index_one_file(root, name, index, column_descs):
         root          top of the directory tree containing the volume. 
         name          name of PDS label.
         index         open descriptor fo the index file.
-        column_descs  list of column description dictionaries.
+        column_descs  dictionary of columns descriptions
     """
 
     # Read the PDS3 label
@@ -220,15 +220,16 @@ def _index_one_file(root, name, index, column_descs):
     # Write columns
     path = os.path.join(root, name)
     first = True
-    for column_dict in column_descs:
+    for name in column_descs:
+        column_desc = column_descs[name]
 
         # Get the value
-        value = _index_one_value(column_dict, path, label)
+        value = _index_one_value(column_desc, path, label)
 
         # Write the value into the index
         if not first:
             index.write(",")
-        fvalue = _format_column(value, **column_dict)
+        fvalue = _format_column(value, **column_desc)
         index.write(fvalue)
 
         first = False
@@ -329,12 +330,12 @@ def _parse_column(lines):
     Outputs:          column dictionary.
     """
     
-    column_dict = {}
+    column_desc = {}
     for line in lines:
         line = line.replace(' ', '')
         kv = line.split('=')
-        column_dict[kv[0]] = kv[1].strip()
-    return column_dict
+        column_desc[kv[0]] = kv[1].strip()
+    return column_desc
 
 #===============================================================================
 def _parse_columns(lines):
@@ -368,15 +369,16 @@ def _process_columns(column_dicts):
     """Convert column description info into more useful form.
     
     Inputs:
-       column_dicts   l;ist of column dictionaries. 
+       column_dicts   list of column dictionaries. 
         
-    Outputs:          list of column description dictionaries.
+    Outputs:          dictionary of column descriptions.
     """
 
     # Convert each column
-    column_descs = []
+    column_descs = {}
     for column_dict in column_dicts:
-        column_desc = {'name':column_dict['NAME']}
+        name = column_dict['NAME']
+        column_desc = {'name':name}
         
         column_desc['format'] = column_dict['FORMAT'].strip('"')
         (width, data_type) =  _format_parms(column_desc['format'])
@@ -395,7 +397,7 @@ def _process_columns(column_dicts):
         
         column_desc['nbytes'] = width-2 if data_type == 'CHARACTER' else width
 
-        column_descs.append(column_desc)
+        column_descs[name] = column_desc
 
     return column_descs
 
@@ -500,8 +502,9 @@ def _make_label(template_lines, input_dir, output_dir, type=''):
     # Add column-specific fields
     pos = 1
     line = index_lines[0]
-    for column_desc in column_descs:
-        name = column_desc['name']
+    for name in column_descs:
+        column_desc = column_descs[name]
+        
         count = column_desc['count']
         nbytes = column_desc['nbytes']
         width = column_desc['width']

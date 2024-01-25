@@ -8,6 +8,11 @@ import os
 import julian
 import cspyce
 
+
+cspyce.furnsh('leapseconds.ker')
+cspyce.furnsh('mk00062a.tsc')
+
+
 ################################################################################
 # Utilities
 ################################################################################
@@ -22,28 +27,43 @@ def get_volume_id(label_path):
     top = 'GO_0xxx'
     return label_path.split(top)[1].split('/')[1]
 
+#===============================================================================
+def _spacecraft_clock_count(label_path, label_dict, stop=False):
+    """Utility function for SCLK times.
 
-################################################################################
-# Key functions
-################################################################################
+    Inputs:
+        label_path        path to the PDS label.
+        label_dict        dictionary containing the PDS label fields.
+        stop              If False, the start count is returned.
+
+    Output: the requested clock count.
+    """
+    # get full stop count string
+    tai = _event_tai(label_path, label_dict, stop=stop)
+    if tai == 'UNK':
+        return tai
+    et = julian.tdb_from_tai(tai)
+
+    dp =  cspyce.sce2c(-77, et)
+    return cspyce.scdecd(-77, dp)
 
 #===============================================================================
-def __event_tai(label_path, label_dict, stop=False):
+def _event_tai(label_path, label_dict, stop=False):
     """Utility function for start/stop times.  FOR GOSSI, IMAGE_TIME refers to
     the center of the exposure.
 
     Inputs:
         label_path        path to the PDS label.
         label_dict        dictionary containing the PDS label fields.
+        stop              If False, the start time is returned.
 
-    The return value will appear in the index file under START_TIME.
+    Output: the requested TAI time.
     """
     # get IMAGE_TIME; pass though any NULL value
     image_time = label_dict['IMAGE_TIME']
-    try:
-        image_tai = julian.tai_from_iso(image_time)
-    except:
+    if image_time == 'UNK':
         return image_time
+    image_tai = julian.tai_from_iso(image_time)
 
     # compute offset from IMAGE_TIME
     exposure = label_dict['EXPOSURE_DURATION'] / 1000
@@ -51,6 +71,11 @@ def __event_tai(label_path, label_dict, stop=False):
     
     # offset to requested time
     return image_tai + sign*0.5*exposure
+
+
+################################################################################
+# Key functions
+################################################################################
 
 #===============================================================================
 def key__start_time(label_path, label_dict):
@@ -63,8 +88,13 @@ def key__start_time(label_path, label_dict):
 
     The return value will appear in the index file under START_TIME.
     """
-    return julian.iso_from_tai(__event_tai(label_path, label_dict), 
-                               digits=3, suffix='Z')
+    # get start tai; pass though any NULL value
+    start_tai = _event_tai(label_path, label_dict)
+    if start_tai == 'UNK':
+        return start_tai
+    start_time = julian.iso_from_tai(start_tai, digits=3, suffix='Z')
+
+    return start_time
 
 #===============================================================================
 def key__stop_time(label_path, label_dict):
@@ -75,28 +105,56 @@ def key__stop_time(label_path, label_dict):
         label_path        path to the PDS label.
         label_dict        dictionary containing the PDS label fields.
 
-    The return value will appear in the index file under START_TIME.
+    The return value will appear in the index file under STOP_TIME.
     """
-    return julian.iso_from_tai(__event_tai(label_path, label_dict, stop=True),
-                               digits=3, suffix='Z')
+    stop_tai = _event_tai(label_path, label_dict, stop=True)
+    if stop_tai == 'UNK':
+        return stop_tai
+    stop_time = julian.iso_from_tai(stop_tai, digits=3, suffix='Z')
+
+    return stop_time
 
 #===============================================================================
-def key__spacecraft_stop_count(label_path, label_dict):
-    """Key function for SPACECRAFT_STOP_COUNT.  
+def key__spacecraft_clock_stop_count(label_path, label_dict):
+    """Key function for SPACECRAFT_CLOCK_STOP_COUNT.  
 
     Inputs:
         label_path        path to the PDS label.
         label_dict        dictionary containing the PDS label fields.
 
-    The return value will appear in the index file under START_TIME.
+    The return value will appear in the index file under SPACECRAFT_CLOCK_STOP_COUNT.
     """
-    # get stop time
-    from IPython import embed; print('+++++++++++++'); embed()
-    cspyce.furnsh('leapseconds.ker')
-    cspyce.furnsh('mk00062a.tsc')
-    stop_et = julian.tdb_from_tai(__event_tai(label_path, label_dict, stop=False))
-    stopdp =  cspyce.sce2c(-77, stop_et)
-#    cspyce.scfmt(-77, stopdp)
+    # get full stop count string
+    stops_full = _spacecraft_clock_count(label_path, label_dict, stop=True)
+    if stops_full == 'UNK':
+        return stops_full
+
+    # reformat and truncate to match the (uselessly imprecise) SPACECRAFT_CLOCK_START_COUNT
+    return stops_full[2:13].replace(':', '.')
+
+#===============================================================================
+def key__spacecraft_clock_precise_start_count(label_path, label_dict):
+    """Key function for SPACECRAFT_CLOCK_PRECISE_START_COUNT.  
+
+    Inputs:
+        label_path        path to the PDS label.
+        label_dict        dictionary containing the PDS label fields.
+
+    The return value will appear in the index file under SPACECRAFT_CLOCK_PRECISE_START_COUNT.
+    """
+    return _spacecraft_clock_count(label_path, label_dict, stop=False)
+
+#===============================================================================
+def key__spacecraft_clock_precise_stop_count(label_path, label_dict):
+    """Key function for SPACECRAFT_CLOCK_PRECISE_STOP_COUNT.  
+
+    Inputs:
+        label_path        path to the PDS label.
+        label_dict        dictionary containing the PDS label fields.
+
+    The return value will appear in the index file under SPACECRAFT_CLOCK_PRECISE_STOP_COUNT.
+    """
+    return _spacecraft_clock_count(label_path, label_dict, stop=True)
 
 ################################################################################
 

@@ -404,7 +404,7 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'SPACECRAFT_STOP_COUNT')
+  $ONCE(COLUMN_NAME                                  = 'SPACECRAFT_CLOCK_STOP_COUNT')
     NAME                        = $COLUMN_NAME$
     START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
     COLUMN_NUMBER               = $COUNTER('COLUMN')$
@@ -413,6 +413,30 @@ $END_NOTE
     FORMAT                      = "A11"
     NULL_CONSTANT               = "UNK"
     DESCRIPTION                 = "The spacecraft clock at time of shutter close. The SCLK is formatted as follows: RIM.MOD91."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'SPACECRAFT_CLOCK_PRECISE_START_COUNT')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A17"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "The precise spacecraft clock at time of shutter open. The SCLK is formatted as follows: RIM:MOD91:MOD10:MOD8."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'SPACECRAFT_CLOCK_PRECISE_STOP_COUNT')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A17"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "The precise spacecraft clock at time of shutter close. The SCLK is formatted as follows: RIM:MOD91:MOD10:MOD8."
   END_OBJECT                    = COLUMN
 
 END_OBJECT                      = $TYPE$_INDEX_TABLE
