@@ -38,10 +38,10 @@ def _spacecraft_clock_count(label_path, label_dict, stop=False):
 
     Output: the requested clock count.
     """
-    # get full stop count string
     tai = _event_tai(label_path, label_dict, stop=stop)
     if tai == 'UNK':
         return tai
+
     et = julian.tdb_from_tai(tai)
 
     dp =  cspyce.sce2c(-77, et)
@@ -115,6 +115,19 @@ def key__stop_time(label_path, label_dict):
     return stop_time
 
 #===============================================================================
+def key__spacecraft_clock_start_count(label_path, label_dict):
+    """Key function for SPACECRAFT_CLOCK_START_COUNT.  Note this
+       definition supercedes that in the default index file.
+
+    Inputs:
+        label_path        path to the PDS label.
+        label_dict        dictionary containing the PDS label fields.
+
+    The return value will appear in the index file under SPACECRAFT_CLOCK_START_COUNT.
+    """
+    return _spacecraft_clock_count(label_path, label_dict, stop=False)
+
+#===============================================================================
 def key__spacecraft_clock_stop_count(label_path, label_dict):
     """Key function for SPACECRAFT_CLOCK_STOP_COUNT.  
 
@@ -123,36 +136,6 @@ def key__spacecraft_clock_stop_count(label_path, label_dict):
         label_dict        dictionary containing the PDS label fields.
 
     The return value will appear in the index file under SPACECRAFT_CLOCK_STOP_COUNT.
-    """
-    # get full stop count string
-    stops_full = _spacecraft_clock_count(label_path, label_dict, stop=True)
-    if stops_full == 'UNK':
-        return stops_full
-
-    # reformat and truncate to match the (uselessly imprecise) SPACECRAFT_CLOCK_START_COUNT
-    return stops_full[2:13].replace(':', '.')
-
-#===============================================================================
-def key__spacecraft_clock_precise_start_count(label_path, label_dict):
-    """Key function for SPACECRAFT_CLOCK_PRECISE_START_COUNT.  
-
-    Inputs:
-        label_path        path to the PDS label.
-        label_dict        dictionary containing the PDS label fields.
-
-    The return value will appear in the index file under SPACECRAFT_CLOCK_PRECISE_START_COUNT.
-    """
-    return _spacecraft_clock_count(label_path, label_dict, stop=False)
-
-#===============================================================================
-def key__spacecraft_clock_precise_stop_count(label_path, label_dict):
-    """Key function for SPACECRAFT_CLOCK_PRECISE_STOP_COUNT.  
-
-    Inputs:
-        label_path        path to the PDS label.
-        label_dict        dictionary containing the PDS label fields.
-
-    The return value will appear in the index file under SPACECRAFT_CLOCK_PRECISE_STOP_COUNT.
     """
     return _spacecraft_clock_count(label_path, label_dict, stop=True)
 
