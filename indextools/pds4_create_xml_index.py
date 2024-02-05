@@ -172,35 +172,34 @@ def write_results_to_csv(results_list, args, output_csv_path):
 
         row = {
             'LID': lid,
-            'pds:filepath': result_dict['pds:filepath'],
-            'pds:filename': result_dict['pds:filename'],
-            'pds:bundle_lid': bundle_lid,
-            'pds:bundle': bundle
+            'filepath': result_dict['filepath'],
+            'filename': result_dict['filename'],
+            'bundle_lid': bundle_lid,
+            'bundle': bundle
         }
         row.update(result_dict['Results'])
         rows.append(row)
 
     df = pd.DataFrame(rows)
 
-    # Reorder columns to have logical_identifier, FileName, FilePath, pds:bundle_lid, and pds:bundle
     columns_order = (['LID',
-                      'pds:filename',
-                      'pds:filepath',
-                      'pds:bundle_lid',
-                      'pds:bundle'] + [col for col in df.columns if col not in
+                      'filename',
+                      'filepath',
+                      'bundle_lid',
+                      'bundle'] + [col for col in df.columns if col not in
                                        ['LID',
-                                        'pds:filename',
-                                        'pds:filepath',
-                                        'pds:bundle_lid',
-                                        'pds:bundle']])
+                                        'filename',
+                                        'filepath',
+                                        'bundle_lid',
+                                        'bundle']])
 
     df = df[columns_order]
 
     if 'LID' in df.columns:
         df = df.drop(columns=['LID'])
     if args.elements_file:
-        df = df.drop(columns=['pds:filename', 'pds:filepath',
-                              'pds:bundle_lid', 'pds:bundle'])
+        df = df.drop(columns=['filename', 'filepath',
+                              'bundle_lid', 'bundle'])
 
     if args.sort_by:
         df.sort_values(by=args.sort_by, inplace=True)
@@ -297,7 +296,7 @@ def main():
 
         # Append file path and file name to the dictionary
         result_dict = {'LID': lid, 'Results': xml_results,
-                       'pds:filepath': filepath, 'pds:filename': file.name}
+                       'filepath': filepath, 'filename': file.name}
 
         all_results.append(result_dict)
 
