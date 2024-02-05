@@ -14,6 +14,7 @@ Usage:
         [--verbose]
         [--sort-by SORT_BY] 
         [--clean-header-field-names]
+        [--extra-file-info EXTRA_FILE_INFO]
 
 Arguments:
     directorypath        The path to the directory containing the bundle to scrape.
@@ -30,6 +31,10 @@ Arguments:
     --sort-by            Sort the index file by a chosen set of columns.
     --clean-header-field-names
                          Replace the ":" and "/" with Windows-friendly characters.
+    --extra-file-info    Add additional column(s) to the index file containing file or
+                         bundle information. Possible values are: "LID", "filename",
+                         "filepath", "bundle", and "bundle_lid". Multiple values may be
+                         specified separated by spaces. Surround each value with quotes.
 
 Example:
 python3 pds4_create_xml_index.py <toplevel_directory> "glob_path1" "glob_path2" 
@@ -166,40 +171,9 @@ def write_results_to_csv(results_list, args, output_csv_path):
     """
     rows = []
     for result_dict in results_list:
-        lid = result_dict['LID']
-        bundle_lid = ':'.join(lid.split(':')[:4])
-        bundle = bundle_lid.split(':')[-1]
-
-        row = {
-            'LID': lid,
-            'filepath': result_dict['filepath'],
-            'filename': result_dict['filename'],
-            'bundle_lid': bundle_lid,
-            'bundle': bundle
-        }
-        row.update(result_dict['Results'])
-        rows.append(row)
+        rows.append(result_dict['Results'])
 
     df = pd.DataFrame(rows)
-
-    columns_order = (['LID',
-                      'filename',
-                      'filepath',
-                      'bundle_lid',
-                      'bundle'] + [col for col in df.columns if col not in
-                                       ['LID',
-                                        'filename',
-                                        'filepath',
-                                        'bundle_lid',
-                                        'bundle']])
-
-    df = df[columns_order]
-
-    if 'LID' in df.columns:
-        df = df.drop(columns=['LID'])
-    if args.elements_file:
-        df = df.drop(columns=['filename', 'filepath',
-                              'bundle_lid', 'bundle'])
 
     if args.sort_by:
         df.sort_values(by=args.sort_by, inplace=True)
@@ -244,6 +218,11 @@ def main():
     parser.add_argument('--clean-header-field-names', action='store_true',
                         help='Replaces the ":" and "/" in the column headers with '
                              'alternative (legal friendly) characters')
+    parser.add_argument('--extra-file-info', type=str, nargs='+',
+                        help='Adds additional columns to the final index file. Choose '
+                             'from the following: "LID", "filename", "filepath", '
+                             '"bundle_lid", and "bundle". If using multiple, separate '
+                             'with spaces. Surround each value with quotes.')
 
     args = parser.parse_args()
 
@@ -294,10 +273,16 @@ def main():
 
         lid = xml_results.get('pds:logical_identifier', 'Missing_LID')
 
-        # Append file path and file name to the dictionary
-        result_dict = {'LID': lid, 'Results': xml_results,
-                       'filepath': filepath, 'filename': file.name}
-
+        # Attach extra columns if asked for.
+        bundle_lid = ':'.join(lid.split(':')[:4])
+        bundle = bundle_lid.split(':')[-1]
+        extras = {'LID': lid, 'filepath': filepath, 'filename': file.name,
+                  'bundle': bundle, 'bundle_lid': bundle_lid}
+        if args.extra_file_info:
+            xml_results = {**{ele: extras[ele] for ele in args.extra_file_info},
+                           **xml_results}
+            
+        result_dict = {'Results': xml_results}
         all_results.append(result_dict)
 
     if args.output_file:
