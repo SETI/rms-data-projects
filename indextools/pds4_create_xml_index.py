@@ -34,7 +34,7 @@ Arguments:
     --extra-file-info    Add additional column(s) to the index file containing file or
                          bundle information. Possible values are: "LID", "filename",
                          "filepath", "bundle", and "bundle_lid". Multiple values may be
-                         specified separated by spaces. Surround each value with quotes.
+                         specified separated by spaces.
 
 Example:
 python3 pds4_create_xml_index.py <toplevel_directory> "glob_path1" "glob_path2" 
@@ -218,11 +218,12 @@ def main():
     parser.add_argument('--clean-header-field-names', action='store_true',
                         help='Replaces the ":" and "/" in the column headers with '
                              'alternative (legal friendly) characters')
-    parser.add_argument('--extra-file-info', type=str, nargs='+',
+    parser.add_argument('--extra-file-info', type=str, nargs='+', 
+                        choices=['LID', 'filename', 'filepath', 'bundle_lid', 'bundle'],
                         help='Adds additional columns to the final index file. Choose '
                              'from the following: "LID", "filename", "filepath", '
                              '"bundle_lid", and "bundle". If using multiple, separate '
-                             'with spaces. Surround each value with quotes.')
+                             'with spaces.')
 
     args = parser.parse_args()
 
