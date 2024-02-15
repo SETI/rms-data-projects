@@ -1,0 +1,431 @@
+$NOTE 
+################################################################################
+# Index file template for Galileo SSI.  
+#
+#  This template controls the creation of index files.  The procedure for
+#  generating index files for a host is as follows.  Files referred to below
+#  should be copied into the top directory for the collection, e.g., GO_0xxx:
+#
+#  1. Copy and edit this template.
+#  2. Copy and edit the <collection>_index.py script to reflect the 
+#     type of index and glob pattern for the data files.
+#  3. Copy and edit index_config.py to address any host-dependent
+#     processing.
+#  4. Run <collection>_index.py from the collection top directory.
+#
+#  To edit the template, replace all values describing the new host.  
+#  Quantities enclosed in dollar signs are automatically filled in and should 
+#  not be edited.  Add a column for each quantity to be copied from the product 
+#  label into the index.  For quantities that require processing beyond simply 
+#  copying from the product label and reformatting, a key function should be 
+#  provided in index_config.py, defined as :
+#
+#           key__<COLUMN NAME>(name, label),
+#
+#  which returns the value to place in the index.
+#
+################################################################################
+$END_NOTE
+$ONCE(_=COUNTER('COLUMN', reset=True))
+
+PDS_VERSION_ID                  = PDS3
+RECORD_TYPE                     = FIXED_LENGTH
+RECORD_BYTES                    = $RECORD_BYTES$
+FILE_RECORDS                    = $FILE_RECORDS$
+^$TYPE$_INDEX_TABLE    = "$INDEX_FILENAME$"
+
+$NOTE 
+##############################################################
+# Edit these fields for the specific host
+##############################################################
+$END_NOTE
+MISSION_NAME                    = "GALILEO"
+INSTRUMENT_HOST_NAME            = "GALILEO"
+INSTRUMENT_HOST_ID              = "GLL"
+INSTRUMENT_NAME                 = "SOLID STATE IMAGER"
+INSTRUMENT_ID                   = "SSI"
+DATA_SET_ID                     = "GO-J/JSA-SSI-2-REDR-V1.0"
+$NOTE:########################################################
+
+PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
+
+OBJECT                          = $TYPE$_INDEX_TABLE
+  INTERCHANGE_FORMAT            = ASCII
+  ROWS                          = $ROWS$
+  COLUMNS                       = $COLUMNS$
+  ROW_BYTES                     = $ROW_BYTES$
+  INDEX_TYPE                    = SINGLE
+  DESCRIPTION                   = "This index file and its label have been
+edited by the PDS Ring Moon Systems Node for PDS3 compliance and to ensure
+that all numeric columns contain numeric values. Values of 'UNK' have been
+replaced by -999, which is indicated in this label to be the NULL_CONSTANT
+associated with each numeric column. A value of NULL_CONSTANT, where it
+appears in a column, indicates that the associated value is unknown or not
+applicable. Several unused columns have been removed."
+
+$NOTE 
+################################################################
+# Add a column below for each desired index quantity
+# Edit COLUMN NAME and any fields not enclosed in dollar signs
+################################################################
+$END_NOTE
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'VOLUME_ID')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A7"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'FILE_SPECIFICATION_NAME')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A32"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'TELEMETRY_FORMAT_ID')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A3"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'CUT_OUT_WINDOW')
+    NAME                        = $COLUMN_NAME$
+    ITEMS                       = 4
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    ITEM_BYTES                  = $$$COLUMN_NAME$_ITEM_BYTES$$
+    FORMAT                      = "I3"
+    ITEM_OFFSET                 = $$$COLUMN_NAME$_ITEM_OFFSET$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NULL_CONSTANT               = -1
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'TRUTH_TABLE')
+    NAME                        = $COLUMN_NAME$
+    ITEMS                       = 4
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    ITEM_BYTES                  = $$$COLUMN_NAME$_ITEM_BYTES$$
+    FORMAT                      = "I3"
+    ITEM_OFFSET                 = $$$COLUMN_NAME$_ITEM_OFFSET$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NULL_CONSTANT               = -1
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'LIGHT_FLOOD_STATE_FLAG')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A3"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'EXPOSURE_TYPE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A8"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'BLEMISH_PROTECTION_FLAG')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A3"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'INVERTED_CLOCK_STATE_FLAG')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A12"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'ON_CHIP_MOSAIC_FLAG')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A1"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'INSTRUMENT_MODE_ID')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A18"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'UNEVEN_BIT_WEIGHT_CORR_FLAG')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A3"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'DARK_CURRENT_FILE_NAME')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A20"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'SLOPE_FILE_NAME')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A20"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'BLEMISH_FILE_NAME')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A20"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'SHUTTER_OFFSET_FILE_NAME')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A20"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'DATA_TYPE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A20"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'HUFFMAN_TABLE_TYPE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A6"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'ICT_DESPIKE_THRESHOLD')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "I3"
+    NULL_CONSTANT               = -1
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'PRODUCT_VERSION_ID')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "I3"
+    NULL_CONSTANT               = -1
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'ICT_QUANTIZATION_STEP_SIZE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "I3"
+    NULL_CONSTANT               = -1
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'ICT_ZIGZAG_PATTERN')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A6"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'CMPRS_QUANTZ_TBL_ID')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A7"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'SOURCE_PRODUCT_ID')
+    NAME                        = $COLUMN_NAME$
+    ITEMS                       = 5
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    ITEM_BYTES                  = $$$COLUMN_NAME$_ITEM_BYTES$$
+    FORMAT                      = "A30"
+    ITEM_OFFSET                 = $$$COLUMN_NAME$_ITEM_OFFSET$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'ENTROPY')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "F7.3"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'START_TIME')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A23"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "Observation start time associated with the data in the given file. Given in PDS date/time format ('yyyy-mm-ddThh:mm:ss.sss')."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'STOP_TIME')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A23"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "Observation stop time associated with the data in the given file. Given in PDS date/time format ('yyyy-mm-ddThh:mm:ss.sss')."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'SPACECRAFT_CLOCK_START_COUNT')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A17"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "The spacecraft clock at time of shutter open. The SCLK is formatted as follows: RIM:MOD91:MOD10:MOD8."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'SPACECRAFT_CLOCK_STOP_COUNT')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A17"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "The spacecraft clock at time of shutter close. The SCLK is formatted as follows: RIM:MOD91:MOD10:MOD8."
+  END_OBJECT                    = COLUMN
+
+END_OBJECT                      = $TYPE$_INDEX_TABLE
+END
