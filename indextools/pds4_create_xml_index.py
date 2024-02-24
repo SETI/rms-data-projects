@@ -15,7 +15,7 @@ Usage:
         [--sort-by SORT_BY] 
         [--clean-header-field-names]
         [--extra-file-info EXTRA_FILE_INFO]
-        [--custom-config CUSTOM_CONFIG]
+        [--config-file config_file]
 
 Arguments:
     directorypath        The path to the directory containing the bundle to scrape.
@@ -29,15 +29,16 @@ Arguments:
     --output-file OUTPUT_FILE
                          The output path and filename for the resulting index file.
     --verbose            Activate verbose printed statements during runtime.
-    --sort-by            Sort the index file by a chosen set of columns.
+    --sort-by SORT_BY    Sort the index file by a chosen set of columns.
     --clean-header-field-names
                          Replace the ":" and "/" with Windows-friendly characters.
-    --extra-file-info    Add additional column(s) to the index file containing file or
+    --extra-file-info EXTRA_FILE_INFO  
+                         Add additional column(s) to the index file containing file or
                          bundle information. Possible values are: "LID", "filename",
                          "filepath", "bundle", and "bundle_lid". Multiple values may be
                          specified separated by spaces.
-    --custom-config      An optional .ini configuration file to determine default values
-                         in the event of nilled elements in the index file.
+    --config-file CONFIG_FILE
+                         An optional .ini configuration file for further customization.
 
 Example:
 python3 pds4_create_xml_index.py <toplevel_directory> "glob_path1" "glob_path2" 
@@ -52,6 +53,16 @@ from pathlib import Path
 import requests
 import sys
 
+
+def convert_data_type(config, data_type, nil_value):
+    if data_type == 'ASCII_Integer':
+        default = config[data_type].getint(nil_value)
+    elif data_type == 'ASCII_Real':
+        default = config[data_type].getfloat(nil_value)
+    else:
+        default = config[data_type][nil_value]
+
+    return default
 
 def convert_header_to_tag(path, root, namespaces):
     """Convert an XPath expression to an XML tag.
@@ -91,7 +102,7 @@ def convert_header_to_xpath(root, xpath_find, namespaces):
     return xpath_final
 
 
-def load_config_file(config_file):
+def load_config_file(config, config_file):
     """Loads in a .ini configuration file.
 
     Inputs:
@@ -100,7 +111,6 @@ def load_config_file(config_file):
     Returns:
         a ConfigParser object
     """
-    config = configparser.ConfigParser()
     with open(config_file, 'r', encoding='utf8') as configfile:
         config.read_file(configfile)
 
@@ -140,7 +150,7 @@ def parse_xsd_file(xsd_file, nillable_elements_info):
                 if type_definition:
                     type_definition = type_definition[0]  # Take the first match
                     base_type = None
-                    # For complexType with simpleContent or simpleType, find base attribute
+                    # For complexType with simpleContent or simpleType, find base attr
                     if type_definition.tag.endswith('simpleType'):
                         restriction = type_definition.find('.//xs:restriction',
                                                         namespaces=namespace)
@@ -159,6 +169,30 @@ def parse_xsd_file(xsd_file, nillable_elements_info):
                     nillable_elements_info[name] = 'External or built-in type'
 
     return nillable_elements_info
+
+
+def process_schema_location(file_path):
+    """Process schema location from an XML file.
+
+    Args:
+        file_path    Path to the XML file.
+
+    Returns:
+        List of XSD URLs extracted from the schema location.
+    """
+    # Load and parse the XML file
+    tree = etree.parse(file_path)
+    root = tree.getroot()
+
+    # Extract the xsi:schemaLocation attribute value
+    schema_location_values = root.get(
+        '{http://www.w3.org/2001/XMLSchema-instance}schemaLocation'
+        ).split()
+
+    # Filter XSD URLs
+    xsd_urls = [url for url in schema_location_values if url.endswith('.xsd')]
+
+    return xsd_urls
 
 
 def process_tags(xml_results, key, root, namespaces, prefixes, args):
@@ -197,30 +231,6 @@ def process_tags(xml_results, key, root, namespaces, prefixes, args):
         del xml_results[key]
 
 
-def process_schema_location(file_path):
-    """Process schema location from an XML file.
-
-    Args:
-        file_path    Path to the XML file.
-
-    Returns:
-        List of XSD URLs extracted from the schema location.
-    """
-    # Load and parse the XML file
-    tree = etree.parse(file_path)
-    root = tree.getroot()
-
-    # Extract the xsi:schemaLocation attribute value
-    schema_location_values = root.get(
-        '{http://www.w3.org/2001/XMLSchema-instance}schemaLocation'
-        ).split()
-
-    # Filter XSD URLs
-    xsd_urls = [url for url in schema_location_values if url.endswith('.xsd')]
-
-    return xsd_urls
-
-
 def store_element_text(element, tree, results_dict, nillable_elements_info, config):
     """Store text content of an XML element in a results dictionary.
 
@@ -249,7 +259,8 @@ def store_element_text(element, tree, results_dict, nillable_elements_info, conf
         nil_value = element.get('nilReason')
         if tag in nillable_elements_info.keys():
             data_type = nillable_elements_info[tag]
-            results_dict[xpath] = config[data_type][nil_value]
+            default = convert_data_type(config, data_type, nil_value)
+            results_dict[xpath] = default
         else:
             print(f'Non-nillable element has no associated text: {tag}')
 
@@ -338,20 +349,19 @@ def main():
                              'from the following: "LID", "filename", "filepath", '
                              '"bundle_lid", and "bundle". If using multiple, separate '
                              'with spaces.')
-    parser.add_argument('--custom-config', type=str,
-                        help='Allows for a user-specified configuration file of '
-                             'specified default values for nilled (empty) cells. File '
-                             'must be a .ini file and compliant with the configparser '
-                             'module.')
+    parser.add_argument('--config-file', type=str,
+                        help='Allows for a user-specified configuration file. File '
+                             'must be a .ini file.')
 
     args = parser.parse_args()
 
     verboseprint = print if args.verbose else lambda *a, **k: None
 
-    if args.custom_config:
-        config = load_config_file(args.custom_config)
-    else:
-        config = load_config_file('config_default.ini')
+    config = configparser.ConfigParser()
+    config = load_config_file(config, 'pds4indextools.ini')
+
+    if args.config_file:
+        config = load_config_file(config, args.config_file)
 
     directory_path = Path(args.directorypath)
     patterns = args.pattern
