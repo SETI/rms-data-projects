@@ -15,7 +15,7 @@ Usage:
         [--sort-by SORT_BY] 
         [--clean-header-field-names]
         [--extra-file-info EXTRA_FILE_INFO]
-        [--config-file config_file]
+        [--config-file CONFIG_FILE]
 
 Arguments:
     directorypath        The path to the directory containing the bundle to scrape.
