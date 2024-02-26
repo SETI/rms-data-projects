@@ -55,6 +55,16 @@ import sys
 
 
 def convert_data_type(config, data_type, nil_value):
+    """Convert strings to correct data types.
+    
+    Inputs:
+        config       The configuration file.
+        data_type    The attribute describing the data type of the element.
+        nil_value    The associated value for nilReason
+
+    Returns:
+        Default replacement value of correct data type.
+    """
     if data_type == 'pds:ASCII_Integer':
         default = config[data_type].getint(nil_value)
     elif data_type == 'pds:ASCII_Real':
