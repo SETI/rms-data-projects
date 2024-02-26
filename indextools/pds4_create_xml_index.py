@@ -55,9 +55,9 @@ import sys
 
 
 def convert_data_type(config, data_type, nil_value):
-    if data_type == 'ASCII_Integer':
+    if data_type == 'pds:ASCII_Integer':
         default = config[data_type].getint(nil_value)
-    elif data_type == 'ASCII_Real':
+    elif data_type == 'pds:ASCII_Real':
         default = config[data_type].getfloat(nil_value)
     else:
         default = config[data_type][nil_value]
