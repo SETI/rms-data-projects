@@ -54,13 +54,13 @@ import requests
 import sys
 
 
-def convert_data_type(config, data_type, nil_value):
+def default_value_for_nil(config, data_type, nil_value):
     """Convert strings to correct data types.
-    
+
     Inputs:
-        config       The configuration file.
+        config       The configuration data.
         data_type    The attribute describing the data type of the element.
-        nil_value    The associated value for nilReason
+        nil_value    The associated value for nilReason.
 
     Returns:
         Default replacement value of correct data type.
@@ -73,6 +73,7 @@ def convert_data_type(config, data_type, nil_value):
         default = config[data_type][nil_value]
 
     return default
+
 
 def convert_header_to_tag(path, root, namespaces):
     """Convert an XPath expression to an XML tag.
@@ -112,30 +113,46 @@ def convert_header_to_xpath(root, xpath_find, namespaces):
     return xpath_final
 
 
-def load_config_file(config, config_file):
-    """Loads in a .ini configuration file.
+def load_config_file(config, specified_config_file=None):
+    """Loads the default .ini configuration file and updates the existing config object.
+    If a specified config file is provided, it will also be loaded.
 
     Inputs:
-        config_file    The configuration file
+        config: The configuration data.
+        specified_config_file: Path to a specified configuration file (optional).
 
     Returns:
-        a ConfigParser object
+        A ConfigParser object.
     """
-    with open(config_file, 'r', encoding='utf8') as configfile:
-        config.read_file(configfile)
+    # Get the directory where this module lives
+    module_dir = Path(__file__).resolve().parent
+
+    # Default configuration file path
+    default_config_file = module_dir / 'pds4indextools.ini'
+
+    # Load default config file
+    with open(default_config_file, 'r', encoding='utf8') as default_configfile:
+        config.read_file(default_configfile)
+
+    # Load specified config file, if provided
+    if specified_config_file:
+        specified_config_file = Path(specified_config_file)
+        with open(specified_config_file, 'r', encoding='utf8') as specified_configfile:
+            config.read_file(specified_configfile)
 
     return config
 
 
-def parse_xsd_file(xsd_file, nillable_elements_info):
+def update_nillable_elements_from_xsd_file(xsd_file, nillable_elements_info):
     """Store all nillable elements and their data types in a dictionary.
 
     Inputs:
-        xsd file                  An XML Schema Definition file
-        nillable_elements_info    A dictionary containing nillable element information
+        xsd file                  An XML Schema Definition file.
+        nillable_elements_info    A dictionary containing nillable element information.
 
     Returns:
-        Populated dictionary of values
+        Populated dictionary containing all nillable elements as keys and their data
+        types as values.
     """
     tree = etree.fromstring(requests.get(xsd_file).content)
     namespace = {'xs': 'http://www.w3.org/2001/XMLSchema'}
@@ -150,30 +167,33 @@ def parse_xsd_file(xsd_file, nillable_elements_info):
             if type_attribute:
                 # Split the type attribute to handle namespace:typename format
                 type_parts = type_attribute.split(':')
-                type_name = type_parts[-1]  # Take the last part as the type name
+                # Take the last part as the type name
+                type_name = type_parts[-1]
 
                 # Attempt to find the type definition in the document
                 type_definition_xpath = (f'//xs:simpleType[@name="{type_name}"] | '
-                                        f'//xs:complexType[@name="{type_name}"]')
-                type_definition = tree.xpath(type_definition_xpath, namespaces=namespace)
+                                         f'//xs:complexType[@name="{type_name}"]')
+                type_definition = tree.xpath(
+                    type_definition_xpath, namespaces=namespace)
 
                 if type_definition:
-                    type_definition = type_definition[0]  # Take the first match
+                    # Take the first match
+                    type_definition = type_definition[0]
                     base_type = None
                     # For complexType with simpleContent or simpleType, find base attr
                     if type_definition.tag.endswith('simpleType'):
                         restriction = type_definition.find('.//xs:restriction',
-                                                        namespaces=namespace)
+                                                           namespaces=namespace)
                         if restriction is not None:
                             base_type = restriction.get('base')
                     elif type_definition.tag.endswith('complexType'):
                         extension = type_definition.find('.//xs:extension',
-                                                        namespaces=namespace)
+                                                         namespaces=namespace)
                         if extension is not None:
                             base_type = extension.get('base')
 
-                    nillable_elements_info[name] = (base_type if base_type
-                                                    else 'External or built-in type')
+                    nillable_elements_info[name] = (
+                        base_type or 'External or built-in type')
                 else:
                     # Type definition not found, might be external or built-in type
                     nillable_elements_info[name] = 'External or built-in type'
@@ -197,7 +217,7 @@ def process_schema_location(file_path):
     # Extract the xsi:schemaLocation attribute value
     schema_location_values = root.get(
         '{http://www.w3.org/2001/XMLSchema-instance}schemaLocation'
-        ).split()
+    ).split()
 
     # Filter XSD URLs
     xsd_urls = [url for url in schema_location_values if url.endswith('.xsd')]
@@ -248,8 +268,8 @@ def store_element_text(element, tree, results_dict, nillable_elements_info, conf
         element                   The XML element.
         tree                      The XML tree.
         results_dict              Dictionary to store results.
-        nillable_elements_info    A dictionary containing nillable element information
-        config                    The configuration file
+        nillable_elements_info    A dictionary containing nillable element information.
+        config                    The configuration data.
     """
     if element.text and element.text.strip():
         xpath = tree.getpath(element)
@@ -269,7 +289,7 @@ def store_element_text(element, tree, results_dict, nillable_elements_info, conf
         nil_value = element.get('nilReason')
         if tag in nillable_elements_info.keys():
             data_type = nillable_elements_info[tag]
-            default = convert_data_type(config, data_type, nil_value)
+            default = default_value_for_nil(config, data_type, nil_value)
             results_dict[xpath] = default
         else:
             print(f'Non-nillable element has no associated text: {tag}')
@@ -285,13 +305,14 @@ def traverse_and_store(element, tree, results_dict, elements_to_scrape,
         results_dict              Dictionary to store results.
         prefixes                  Dictionary of XML namespace prefixes.
         elements_to_scrape        Optional list of elements to scrape.
-        nillable_elements_info    A dictionary containing nillable element information
-        config                    The configuration file
+        nillable_elements_info    A dictionary containing nillable element information.
+        config                    The configuration data.
     """
     tag = str(element.tag)
     if elements_to_scrape is None or any(tag.endswith("}" + elem)
                                          for elem in elements_to_scrape):
-        store_element_text(element, tree, results_dict, nillable_elements_info, config)
+        store_element_text(element, tree, results_dict,
+                           nillable_elements_info, config)
     for child in element:
         traverse_and_store(child, tree, results_dict, elements_to_scrape,
                            nillable_elements_info, config)
@@ -314,8 +335,9 @@ def write_results_to_csv(results_list, args, output_csv_path):
         df.sort_values(by=args.sort_by, inplace=True)
 
     if args.clean_header_field_names:
-        df.rename(columns=lambda x: x.replace(':', '_').replace('/', '__'), inplace=True)
-        
+        df.rename(columns=lambda x: x.replace(
+            ':', '_').replace('/', '__'), inplace=True)
+
     df.to_csv(output_csv_path, index=False, na_rep='NaN')
 
 
@@ -351,17 +373,18 @@ def main():
                         help='Sort resulting index file by one or more columns')
 
     parser.add_argument('--clean-header-field-names', action='store_true',
-                        help='Replaces the ":" and "/" in the column headers with '
+                        help='Replace the ":" and "/" in the column headers with '
                              'alternative (legal friendly) characters')
-    parser.add_argument('--extra-file-info', type=str, nargs='+', 
-                        choices=['LID', 'filename', 'filepath', 'bundle_lid', 'bundle'],
-                        help='Adds additional columns to the final index file. Choose '
+    parser.add_argument('--extra-file-info', type=str, nargs='+',
+                        choices=['LID', 'filename', 'filepath',
+                                 'bundle_lid', 'bundle'],
+                        help='Add additional columns to the final index file. Choose '
                              'from the following: "LID", "filename", "filepath", '
                              '"bundle_lid", and "bundle". If using multiple, separate '
                              'with spaces.')
     parser.add_argument('--config-file', type=str,
-                        help='Allows for a user-specified configuration file. File '
-                             'must be a .ini file.')
+                        help='Read a user-specified configuration file.. File must be a '
+                             '.ini file.')
 
     args = parser.parse_args()
 
@@ -386,7 +409,8 @@ def main():
     verboseprint(f'{len(label_files)} matching files found')
 
     if label_files == []:
-        print(f'No files matching {pattern} found in directory: {directory_path}')
+        print(
+            f'No files matching {pattern} found in directory: {directory_path}')
         sys.exit(1)
 
     if args.elements_file:
@@ -406,7 +430,8 @@ def main():
 
         xml_urls = process_schema_location(file)
         for url in xml_urls:
-            nillable_elements_info = parse_xsd_file(url, nillable_elements_info)
+            nillable_elements_info = update_nillable_elements_from_xsd_file(
+                url, nillable_elements_info)
 
         filepath = file.relative_to(args.directorypath)
 
@@ -432,7 +457,7 @@ def main():
         if args.extra_file_info:
             xml_results = {**{ele: extras[ele] for ele in args.extra_file_info},
                            **xml_results}
-            
+
         result_dict = {'Results': xml_results}
         all_results.append(result_dict)
 
