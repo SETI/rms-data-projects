@@ -149,10 +149,6 @@ def update_nillable_elements_from_xsd_file(xsd_file, nillable_elements_info):
     Inputs:
         xsd file                  An XML Schema Definition file.
         nillable_elements_info    A dictionary containing nillable element information.
-
-    Returns:
-        Populated dictionary containing all nillable elements as keys and their data
-        types as values.
     """
     tree = etree.fromstring(requests.get(xsd_file).content)
     namespace = {'xs': 'http://www.w3.org/2001/XMLSchema'}
@@ -197,8 +193,6 @@ def update_nillable_elements_from_xsd_file(xsd_file, nillable_elements_info):
                 else:
                     # Type definition not found, might be external or built-in type
                     nillable_elements_info[name] = 'External or built-in type'
-
-    return nillable_elements_info
 
 
 def process_schema_location(file_path):
@@ -430,8 +424,7 @@ def main():
 
         xml_urls = process_schema_location(file)
         for url in xml_urls:
-            nillable_elements_info = update_nillable_elements_from_xsd_file(
-                url, nillable_elements_info)
+            update_nillable_elements_from_xsd_file(url, nillable_elements_info)
 
         filepath = file.relative_to(args.directorypath)
 
