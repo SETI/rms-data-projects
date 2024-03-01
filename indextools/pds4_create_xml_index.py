@@ -117,30 +117,25 @@ def load_config_file(specified_config_file=None):
     """Create a config object from a given configuration file.
 
     Inputs:
-        specified_config_file     Path to a specified configuration file.
+        specified_config_file     Name of or path to a specified configuration file.
 
     Returns:
         A ConfigParser object.
     """
     config = configparser.ConfigParser()
-    # Get the directory where this module lives
     module_dir = Path(__file__).resolve().parent
+    # If using --config-file, this is overran by user given path to config file.
+    default_config_file = module_dir / specified_config_file
 
-    # Default configuration file path
-    default_config_file = module_dir / 'pds4indextools.ini'
-
-    # Load default config file
     with open(default_config_file, 'r', encoding='utf8') as default_configfile:
         config.read_file(default_configfile)
 
-    # Load specified config file, if provided
     if specified_config_file:
-        specified_config_file = Path(specified_config_file)
-        with open(specified_config_file, 'r', encoding='utf8') as specified_configfile:
+        config_file = Path(specified_config_file)
+        with open(config_file, 'r', encoding='utf8') as specified_configfile:
             config.read_file(specified_configfile)
 
     return config
-
 
 def update_nillable_elements_from_xsd_file(xsd_file, nillable_elements_info):
     """Store all nillable elements and their data types in a dictionary.
@@ -386,7 +381,7 @@ def main():
     config = load_config_file('pds4indextools.ini')
 
     if args.config_file:
-        config = load_config_file(config, args.config_file)
+        config = load_config_file(args.config_file)
 
     directory_path = Path(args.directorypath)
     patterns = args.pattern
