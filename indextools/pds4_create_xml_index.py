@@ -55,7 +55,7 @@ import sys
 
 
 def default_value_for_nil(config, data_type, nil_value):
-    """Convert strings to correct data types.
+    """Find the default value for a nilled element.
 
     Inputs:
         config       The configuration data.
@@ -113,17 +113,16 @@ def convert_header_to_xpath(root, xpath_find, namespaces):
     return xpath_final
 
 
-def load_config_file(config, specified_config_file=None):
-    """Loads the default .ini configuration file and updates the existing config object.
-    If a specified config file is provided, it will also be loaded.
+def load_config_file(specified_config_file=None):
+    """Create a config object from a given configuration file.
 
     Inputs:
-        config: The configuration data.
-        specified_config_file: Path to a specified configuration file (optional).
+        specified_config_file     Path to a specified configuration file.
 
     Returns:
         A ConfigParser object.
     """
+    config = configparser.ConfigParser()
     # Get the directory where this module lives
     module_dir = Path(__file__).resolve().parent
 
@@ -384,8 +383,7 @@ def main():
 
     verboseprint = print if args.verbose else lambda *a, **k: None
 
-    config = configparser.ConfigParser()
-    config = load_config_file(config, 'pds4indextools.ini')
+    config = load_config_file('pds4indextools.ini')
 
     if args.config_file:
         config = load_config_file(config, args.config_file)
@@ -403,8 +401,7 @@ def main():
     verboseprint(f'{len(label_files)} matching files found')
 
     if label_files == []:
-        print(
-            f'No files matching {pattern} found in directory: {directory_path}')
+        print(f'No files matching {pattern} found in directory: {directory_path}')
         sys.exit(1)
 
     if args.elements_file:
