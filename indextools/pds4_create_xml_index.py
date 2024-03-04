@@ -113,7 +113,7 @@ def convert_header_to_xpath(root, xpath_find, namespaces):
     return xpath_final
 
 
-def load_config_file(specified_config_file=None):
+def load_config_file(specified_config_file):
     """Create a config object from a given configuration file.
 
     Inputs:
@@ -124,17 +124,14 @@ def load_config_file(specified_config_file=None):
     """
     config = configparser.ConfigParser()
     module_dir = Path(__file__).resolve().parent
-    # If using --config-file, this is overran by user given path to config file.
-    default_config_file = module_dir / specified_config_file
 
-    with open(default_config_file, 'r', encoding='utf8') as default_configfile:
-        config.read_file(default_configfile)
+    default_config_file = module_dir / 'pds4indextools.ini'
+
+    config.read(default_config_file)
 
     if specified_config_file:
-        config_file = Path(specified_config_file)
-        with open(config_file, 'r', encoding='utf8') as specified_configfile:
-            config.read_file(specified_configfile)
-
+        config.read(specified_config_file)
+    
     return config
 
 def update_nillable_elements_from_xsd_file(xsd_file, nillable_elements_info):
@@ -280,8 +277,10 @@ def store_element_text(element, tree, results_dict, nillable_elements_info, conf
             default = default_value_for_nil(config, data_type, nil_value)
             results_dict[xpath] = default
         else:
-            print(f'Non-nillable element has no associated text: {tag}')
-
+            parent_check = len(element)
+            if not parent_check:
+                print(f'Non-nillable element has no associated text: {tag}')
+                
 
 def traverse_and_store(element, tree, results_dict, elements_to_scrape,
                        nillable_elements_info, config):
@@ -378,10 +377,7 @@ def main():
 
     verboseprint = print if args.verbose else lambda *a, **k: None
 
-    config = load_config_file('pds4indextools.ini')
-
-    if args.config_file:
-        config = load_config_file(args.config_file)
+    config = load_config_file(args.config_file)
 
     directory_path = Path(args.directorypath)
     patterns = args.pattern
