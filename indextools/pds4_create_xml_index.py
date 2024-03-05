@@ -246,7 +246,7 @@ def process_tags(xml_results, key, root, namespaces, prefixes, args):
         del xml_results[key]
 
 
-def store_element_text(element, tree, results_dict, nillable_elements_info, config):
+def store_element_text(element, tree, results_dict, nillable_elements_info, config, label):
     """Store text content of an XML element in a results dictionary.
 
     Inputs:
@@ -255,6 +255,7 @@ def store_element_text(element, tree, results_dict, nillable_elements_info, conf
         results_dict              Dictionary to store results.
         nillable_elements_info    A dictionary containing nillable element information.
         config                    The configuration data.
+        label                     The name of the label file.
     """
     if element.text and element.text.strip():
         xpath = tree.getpath(element)
@@ -279,11 +280,11 @@ def store_element_text(element, tree, results_dict, nillable_elements_info, conf
         else:
             parent_check = len(element)
             if not parent_check:
-                print(f'Non-nillable element has no associated text: {tag}')
+                print(f'Non-nillable element in {label} has no associated text: {tag}')
                 
 
 def traverse_and_store(element, tree, results_dict, elements_to_scrape,
-                       nillable_elements_info, config):
+                       nillable_elements_info, config, label):
     """Traverse an XML tree and store text content of specified elements in a dictionary.
 
     Inputs:
@@ -294,15 +295,16 @@ def traverse_and_store(element, tree, results_dict, elements_to_scrape,
         elements_to_scrape        Optional list of elements to scrape.
         nillable_elements_info    A dictionary containing nillable element information.
         config                    The configuration data.
+        label                     The name of the label file.
     """
     tag = str(element.tag)
     if elements_to_scrape is None or any(tag.endswith("}" + elem)
                                          for elem in elements_to_scrape):
         store_element_text(element, tree, results_dict,
-                           nillable_elements_info, config)
+                           nillable_elements_info, config, label)
     for child in element:
         traverse_and_store(child, tree, results_dict, elements_to_scrape,
-                           nillable_elements_info, config)
+                           nillable_elements_info, config, label)
 
 
 def write_results_to_csv(results_list, args, output_csv_path):
@@ -422,7 +424,7 @@ def main():
 
         xml_results = {}
         traverse_and_store(root, tree, xml_results, elements_to_scrape,
-                           nillable_elements_info, config)
+                           nillable_elements_info, config, file)
 
         for key in list(xml_results.keys()):
             process_tags(xml_results, key, root,
