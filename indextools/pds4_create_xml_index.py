@@ -116,6 +116,10 @@ def convert_header_to_xpath(root, xpath_find, namespaces):
 def load_config_file(specified_config_file):
     """Create a config object from a given configuration file.
 
+    This will always load in the default configuration file 'pds4indextools.ini'. In the
+    event a specified configuration file is given, the contents of that file will
+    override what is in the default configuration file.
+
     Inputs:
         specified_config_file     Name of or path to a specified configuration file.
 
@@ -127,10 +131,18 @@ def load_config_file(specified_config_file):
 
     default_config_file = module_dir / 'pds4indextools.ini'
 
-    config.read(default_config_file)
+    try:
+        config.read_file(open(default_config_file))
+    except OSError:
+        print(f'Unable to read the default configuration file: {default_config_file}')
+        sys.exit(1)
 
     if specified_config_file:
-        config.read(specified_config_file)
+        try:
+            config.read_file(open(default_config_file))
+        except OSError:
+            print(f'Unable to read configuration file: {specified_config_file}')
+            sys.exit(1)
     
     return config
 
