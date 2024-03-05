@@ -139,7 +139,7 @@ def load_config_file(specified_config_file):
 
     if specified_config_file:
         try:
-            config.read_file(open(default_config_file))
+            config.read_file(open(specified_config_file))
         except OSError:
             print(f'Unable to read configuration file: {specified_config_file}')
             sys.exit(1)
