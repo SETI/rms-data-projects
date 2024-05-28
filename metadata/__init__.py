@@ -1,12 +1,15 @@
-import os, sys
+import sys
+
+from pathlib import Path
+from .fancyindex import FancyIndex
 
 
 ###############################
 # Define constants
 ###############################
 metadata = sys.modules[__name__]
-COLUMNS_PATH = os.path.join(os.path.dirname(metadata.__file__), 'columns')
-TEMPLATES_PATH = os.path.join(os.path.dirname(metadata.__file__), 'templates')
+COLUMNS_PATH = Path(metadata.__file__).parent / 'columns'
+TEMPLATES_PATH = Path(metadata.__file__).parent / 'templates'
 
 NULL = "null"                   # Indicates a suppressed backplane calculation
 
@@ -14,6 +17,36 @@ NULL = "null"                   # Indicates a suppressed backplane calculation
 ###############################
 # Functions
 ###############################
+
+#===============================================================================
+def download(outdir, url, patterns):
+    """Download data to local machine."""
+
+    outdir = Path(outdir)
+
+    # Determine instrument collection and instrument ids
+    p = Path('.') 
+    curdir = p.absolute()               # e.g., /rms-data-projects/metadata/hosts/GO_xxxx
+    collection = curdir.name            # e.g., GO_0XXX, COISS_XXXX
+
+    # Determine collection directory
+    coldir = outdir / collection
+    colurl = url + '/' + collection
+
+    # Copy tree from URL
+    print('Indexing...')
+    F = FancyIndex(colurl, recursive=True)
+    print('Transferring files...')
+    for pattern in patterns:
+        F.walk(pattern=pattern, dest=coldir)
+
+#===============================================================================
+def splitpath(path, string):                    ## move to utilities
+    """Split a path at a given string."""
+
+    parts = path.parts
+    i = parts.index(string)
+    return (Path('').joinpath(*parts[0:i]), Path('').joinpath(*parts[i+1:]))
 
 #===============================================================================
 def replace(tree, placeholder, name):
@@ -47,6 +80,20 @@ def replacement_dict(tree, placeholder, names):
         dict[name] = replace(tree, placeholder, name)
 
     return dict
+
+#===============================================================================
+def get_volume_glob(col):
+    """Build appropriate glob strign for this volume.
+
+    Inputs:
+        col      collection name, e.g., GO_xxxx.
+    """
+    parts = col.rsplit('_', 1)
+    id = parts[1]
+    id_glob = id.replace('x','[0-9]')
+    vol_glob = parts[0] + '_' + id_glob
+
+    return vol_glob
 
 ################################################################################
 

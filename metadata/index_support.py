@@ -13,6 +13,7 @@ import metadata as meta
 import index_config as config
 import pdstable
 
+from pathlib import Path
 from pdstemplate import PdsTemplate
 
 ################################################################################
@@ -41,8 +42,7 @@ def key__file_specification_name(label_path, label_dict):
 
     The return value will appear in the index file under FILE_SPECIFICATION_NAME.
     """
-    dir, name = os.path.split(label_path)
-    return _get_subdir(os.path.join(dir, name))
+    return _get_subdir(label_path)
     
 
 ################################################################################
@@ -69,7 +69,6 @@ def _format_value(value, format):
         result = '"' + result + '"'
     
     return result
-
 
 #===============================================================================
 def _format_parms(format):
@@ -210,15 +209,15 @@ def _index_one_file(root, name, index, column_descs):
     Inputs:
         root          top of the directory tree containing the volume. 
         name          name of PDS label.
-        index         open descriptor fo the index file.
+        index         open descriptor for the index file.
         column_descs  dictionary of columns descriptions
     """
 
     # Read the PDS3 label
-    label = pds3.get_label(os.path.join(root, name))
+    path = root/name
+    label = pds3.get_label(path.as_posix())
 
     # Write columns
-    path = os.path.join(root, name)
     first = True
     for name in column_descs:
         column_desc = column_descs[name]
@@ -256,7 +255,7 @@ def _get_subdir(path):
         
     Outputs:          final directory in tree.
     """
-    return path.split(_get_volume_id(path))[1][1:]
+    return meta.splitpath(path, _get_volume_id(path))[1]
 
 #===============================================================================
 def _get_index_name(dir, type):
@@ -269,20 +268,39 @@ def _get_index_name(dir, type):
     Outputs:          index name.
     """   
 
-    dir = os.path.abspath(dir)
+    # Name starts with volume id
+    dir = dir.absolute()
+    name = _get_volume_id(dir)
+    name += '_index'
 
-    # Use the volume ID if the given dir contains it
-    try:
-        name = _get_volume_id(dir)
-
-    # Otherwise use current dir
-    except IndexError:
-        name = os.path.basename(os.path.normpath(dir))
-  
     # Add type if given
     if type:
         name += '_' + type
+
+    return name
+
+#===============================================================================
+def _get_template_name(type):
+    """Determine the name of the index file.
+    
+    Inputs:
+        dir           top dir for volume. 
+        name          base name of the index file and label.  If None, it 
+                      is derived from the volume id.
+        type          index type. 
+        
+    Outputs:          index name.
+    """   
+
+    # Name starts with collection id
+    dir = Path.cwd()
+    name = dir.name
+
     name += '_index'
+
+    # Add type if given
+    if type:
+        name += '_' + type
 
     return name
 
@@ -464,11 +482,11 @@ def _make_label(template_lines, input_dir, output_dir, type=''):
     # Get filenames
     index_name = _get_index_name(input_dir, type) 
 
-    index_filename = index_name + '.tab'
-    label_filename = index_name + '.lbl'
+    index_filename = Path(index_name + '.tab')
+    label_filename = Path(index_name + '.lbl')
 
-    index_path = os.path.join(output_dir, index_filename)
-    label_path = os.path.join(output_dir, label_filename)
+    index_path = output_dir/index_filename
+    label_path = output_dir/label_filename
 
     # Read the data file
     f = open(index_path)
@@ -534,7 +552,7 @@ def _make_label(template_lines, input_dir, output_dir, type=''):
 
     # Process the template
     template = PdsTemplate('', content=template_lines)
-    template.write(fields, label_path)
+    template.write(fields, label_path.as_posix())
 
 
 #===============================================================================
@@ -542,10 +560,13 @@ def _make_one_index(input_dir, output_dir, type='', glob=None, no_table=False):
     """Creates index file for a single volume.
 
     Input:
-        input_dir       directory containing the volume.
+        input_dir       directory containing the volume, specifically the 
+                        data labels
         output_dir      directory in which to find the "updated" index file
                         (e.g., <volume>_index.tab, and in which to write the 
                         new index files.
+        type            qualifying string identifying the type of index file
+                        to create, e.g., 'supplemental'. 
         glob            glob pattern for index files.
         no_table        if True, do not produce a table, just a label.
     """
@@ -554,19 +575,19 @@ def _make_one_index(input_dir, output_dir, type='', glob=None, no_table=False):
         # Get index and template filenames
         primary_index_name = _get_index_name(input_dir, None)
         index_name = _get_index_name(input_dir, type) 
-        template_name = _get_index_name('./', type)         # assumes top dir is pwd
+        template_name = _get_template_name(type)         # assumes top dir is pwd
 
         create_primary = index_name == primary_index_name
 
         # This assumes that the primary index file has been copied from the 
         if not create_primary:
-            primary_index_path = os.path.join(output_dir, primary_index_name) + '.lbl'
-            if not os.path.exists(primary_index_path):
+            primary_index_path = output_dir/(primary_index_name + '.lbl')
+            if not primary_index_path.exists():
                 warnings.warn('Primary index file not found: %s.  Skipping' % primary_index_path)
                 return
 
-        index_path = os.path.join(output_dir, index_name) + '.tab'
-        template_path = os.path.join('./templates/', template_name) + '.lbl'
+        index_path = output_dir/(index_name + '.tab')
+        template_path = Path('./templates/')/(template_name + '.lbl')
 
         # Read template
         f = open(template_path)
@@ -582,27 +603,28 @@ def _make_one_index(input_dir, output_dir, type='', glob=None, no_table=False):
         # Walk the directory tree...
 
         # Open the output file; create dir if necessary
-        if not os.path.isdir(output_dir):
-            os.mkdir(output_dir)
+        output_dir.mkdir(exist_ok=True)
         index = open(index_path, 'w')
 
         # If there is a primary file, read it and build the file list
         if not create_primary:
             table = pdstable.PdsTable(primary_index_path)
             primary_row_dicts = table.dicts_by_row()
-            files = [primary_row_dict['FILE_SPECIFICATION_NAME'] for primary_row_dict in primary_row_dicts]
-        
+            files = [Path(primary_row_dict['FILE_SPECIFICATION_NAME']) \
+                        for primary_row_dict in primary_row_dicts]
+
             for i in range(len(files)): 
-                files[i] = os.path.splitext(os.path.join(input_dir, files[i]))[0] + '.LBL'
+                files[i] = Path(os.path.splitext(os.path.join(input_dir.as_posix(), files[i].as_posix()))[0] + '.LBL')
+#xx                files[i] = input_dir/files[i].removesuffix.with_suffix('.LBL'))   # Doesn't work in 3.8
 
         # Otherwise, build the file list from the directory tree
         else:
-            files = [f for f in glb.glob(input_dir + "/**/*.LBL", recursive=True)]
-        
+            files = [f for f in input_dir.rglob('*.LBL')]
+
         # Build the index
         for file in files:
-            name = os.path.basename(file)
-            root = os.path.dirname(file)
+            name = file.name
+            root = file.parent
 
             # Match the glob pattern
             file = fnmatch.filter([name], glob)[0]
@@ -612,7 +634,7 @@ def _make_one_index(input_dir, output_dir, type='', glob=None, no_table=False):
             # Print volume ID and subpath
             subdir = _get_subdir(root)
             volume_id = _get_volume_id(input_dir)
-            print('    ', volume_id, os.path.join(subdir, name))
+            print('    ', volume_id, subdir/name)
 
             # Make the index for this file
             _index_one_file(root, file, index, column_descs)
@@ -640,6 +662,8 @@ def make_index(input_tree, output_tree, type='', glob=None, volume=None, no_tabl
         output tree     root of the tree in which the output files are
                         written in the same directory structure as in the 
                         input tree.
+        prefix          prefix for index file namesof the form:
+                            <prefix>_<volid>  
         type            qualifying string identifying the type of index file
                         to create, e.g., 'supplemental'. 
         volume          if given, only this volume is processed.
@@ -647,12 +671,29 @@ def make_index(input_tree, output_tree, type='', glob=None, volume=None, no_tabl
         no_table        if True, do not produce a table, just a label.
     """
 
-    # Make index for each volume
-    for dir in os.listdir(input_tree):
-        if os.path.isdir(os.path.join(input_tree, dir)):
-            if not volume or dir == volume:
-                indir = os.path.join(input_tree, dir)
-                outdir = os.path.join(output_tree, dir)
+    input_tree = Path(input_tree) 
+    output_tree = Path(output_tree) 
+
+    # Build volume glob
+    vol_glob = meta.get_volume_glob(input_tree.name)
+
+    # Walk the input tree, making indexes for each found volume
+#xx    for root, dirs, files in input_tree.walk():    #### Path.walk() doens't exist in python 3.8
+    for root, dirs, files in os.walk(input_tree.as_posix()):
+        root = Path(root)
+
+        # Determine notional set and volume
+        parts = root.parts
+        set = parts[-2]
+        vol = parts[-1]
+
+        # Test whether this root is a volume
+        if fnmatch.filter([vol], vol_glob):
+            if not volume or vol == volume:
+                indir = root
+                if output_tree.parts[-1] != set: 
+                    outdir = output_tree/set
+                outdir = output_tree/vol
                 _make_one_index(indir, outdir, 
                                 type=type, 
                                 glob=glob, 

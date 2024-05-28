@@ -11,6 +11,8 @@ import metadata as meta
 import geometry_config as config
 import metadata.index_support as idx
 
+from pathlib import Path
+
 ################################################################################
 # FORMAT_DICT tuples are:
 #
@@ -744,12 +746,13 @@ def _make_label(filepath, creation_time=None, preserve_time=False):
                         label before it is overwrittten.
     """
 
-    (dir, filename) = os.path.split(filepath)
-    (body, ext) = os.path.splitext(filename)
-    lblfile = os.path.join(dir, body) + '.lbl'
+    filename = filepath.name
+    dir = filepath.parent
+    body = filepath.stem
+    lblfile = dir / (body + '.lbl')
 
     # Load the data file if it exists
-    if not os.path.isfile(filepath):
+    if not filepath.is_file():
         return
 
     f = open(filepath)
@@ -774,7 +777,7 @@ def _make_label(filepath, creation_time=None, preserve_time=False):
 
     # Determine the creation time
     if preserve_time:
-        if os.path.isfile(lblfile):
+        if lblfile.is_file():
             f = open(lblfile)
             lines = f.readlines()
             f.close()
@@ -792,7 +795,7 @@ def _make_label(filepath, creation_time=None, preserve_time=False):
         creation_time = '%04d-%02d-%02dT%02d:00:00' % time.gmtime()[:4]
 
     # Read the template
-    template = meta.TEMPLATES_PATH + '/%s.lbl' % body[underscore+6:]
+    template = meta.TEMPLATES_PATH.as_posix() + '/%s.lbl' % body[underscore+6:]
 
     try:
         f = open(template)
@@ -853,46 +856,43 @@ def _process_one_index(indir, outdir,
     # Handle exclusions
     if exclude is not None:
         for item in exclude:
-            if indir.find(item) != -1:
+            if item in indir.parts:
                 return
 
     # Check for supplemental index
-    files = os.listdir(indir)
-    
-    index_names = fnmatch.filter(files, glob)
-    if len(index_names) == 0:
+    index_filenames = list(indir.glob(glob))
+    if len(index_filenames) == 0:
         return
-    if len(index_names) > 1:
+    if len(index_filenames) > 1:
         raise RuntimeError('Mulitple index files found in %s.' % indir)
 
-    index_name = index_names[0]
-    index_filename = os.path.join(indir, index_name)
-    (root, ext) = os.path.splitext(index_filename)
+    index_filename = index_filenames[0]
+    ext = index_filename.suffix
     supplemental_index_name = idx._get_index_name(indir, 'supplemental')
-    supplemental_index_filename = os.path.join(indir, supplemental_index_name+ext)
-    if(not os.path.exists(supplemental_index_filename)):
+    supplemental_index_filename = indir.joinpath(supplemental_index_name+ext)
+    if not supplemental_index_filename.exists():
         supplemental_index_filename = None
 
-    # Get snapshots
-    snapshots = config.from_index(index_filename, supplemental_index_filename)
-    volume_id = snapshots[0].dict["VOLUME_ID"]
-    records = len(snapshots)
+    # Get observations
+    observations = config.from_index(index_filename, supplemental_index_filename)
+    volume_id = observations[0].dict["VOLUME_ID"]
+    records = len(observations)
 
     # Open the output files
-    prefix = outdir + "/" + volume_id
+    prefix = outdir.joinpath(volume_id).as_posix()
 
-    log_filename = prefix + "_log.txt"
-    inventory_filename = prefix + "_inventory.tab"
+    log_filename = Path(prefix + "_log.txt")
+    inventory_filename = Path(prefix + "_inventory.tab")
     
-    ring_summary_filename = prefix + "_ring_summary.tab"
-    planet_summary_filename = prefix + "_%s_summary.tab" % config.PLANET.lower()
-    moon_summary_filename = prefix + "_moon_summary.tab"
+    ring_summary_filename = Path(prefix + "_ring_summary.tab")
+    planet_summary_filename = Path(prefix + "_%s_summary.tab" % config.PLANET.lower())
+    moon_summary_filename = Path(prefix + "_moon_summary.tab")
     
-    ring_detailed_filename = prefix + "_ring_detailed.tab"
-    planet_detailed_filename = prefix + "_%s_detailed.tab" % config.PLANET.lower()
-    moon_detailed_filename = prefix + "_moon_detailed.tab"
+    ring_detailed_filename = Path(prefix + "_ring_detailed.tab")
+    planet_detailed_filename = Path(prefix + "_%s_detailed.tab" % config.PLANET.lower())
+    moon_detailed_filename = Path(prefix + "_moon_detailed.tab")
 
-    test_summary_filename = prefix + "_test_summary.tab"
+    test_summary_filename = Path(prefix + "_test_summary.tab")
 
     log_file = open(log_filename, "w")
     inventory_file = open(inventory_filename, "w")
@@ -906,35 +906,35 @@ def _process_one_index(indir, outdir,
             planet_summary = open(planet_summary_filename, "w")
             moon_summary   = open(moon_summary_filename, "w")
 
-            print("Ring summary file: " + ring_summary_filename)
-            print("Planet summary file: " + planet_summary_filename)
-            print("Moon summary file: " + moon_summary_filename)
+            print("Ring summary file:", ring_summary_filename)
+            print("Planet summary file:", planet_summary_filename)
+            print("Moon summary file:", moon_summary_filename)
 
         if "D" in selection:
             ring_detailed   = open(ring_detailed_filename, "w")
             planet_detailed = open(planet_detailed_filename,"w")
             moon_detailed   = open(moon_detailed_filename, "w")
 
-            print("Ring detail file: " + ring_detailed_filename)
-            print("Planet detail file: " + planet_detailed_filename)
-            print("Moon detail file: " + moon_detailed_filename)
+            print("Ring detail file:", ring_detailed_filename)
+            print("Planet detail file:", planet_detailed_filename)
+            print("Moon detail file:", moon_detailed_filename)
 
         if "T" in selection:
             test_summary = open(test_summary_filename, "w")
 
-            print("Test summary file: " + test_summary_filename)
+            print("Test summary file:", test_summary_filename)
 
-        # Loop through the snapshots...
+        # Loop through the observations...
         for i in range(records):
-            snapshot = snapshots[i]
+            observation = observations[i]
         
             if append:
-                if os.path.exists(ring_summary_filename) or \
-                    os.path.exists(moon_summary_filename) or \
-                    os.path.exists(planet_summary_filename) :
+                if ring_summary_filename.exists() or \
+                    moon_summary_filename.exists() or \
+                    planet_summary_filename.exists() :
                         continue
 
-            target = config.target_name(snapshot.dict)
+            target = config.target_name(observation.dict)
 
             if target in config.TRANSLATIONS.keys():
                 target = config.TRANSLATIONS[target]
@@ -943,16 +943,16 @@ def _process_one_index(indir, outdir,
             try:
 
                 # Create the record prefix
-                volume_id = snapshot.dict["VOLUME_ID"]
-                filespec = snapshot.dict["FILE_SPECIFICATION_NAME"]
-                roid = config.ring_observation_id(snapshot.dict)
+                volume_id = observation.dict["VOLUME_ID"]
+                filespec = observation.dict["FILE_SPECIFICATION_NAME"]
+                roid = config.ring_observation_id(observation.dict)
                 prefixes = ['"' + volume_id + '"',
                             '"%-45s"' % filespec.replace(".IMG", ".LBL"),
                             '"' + roid + '"']
 
                 # Create the backplane
-                meshgrid = config.MESHGRIDS[(snapshot.dict['TELEMETRY_FORMAT_ID'])]
-                backplane = oops.backplane.Backplane(snapshot, meshgrid)
+                meshgrid = config.meshgrid(observation)
+                backplane = oops.backplane.Backplane(observation, meshgrid)
 
                 # Print a log of progress. This records where errors occurred
                 logstr = "%s  %4d/%4d  %s  %s" % (volume_id, i+1, records, roid,
@@ -965,7 +965,7 @@ def _process_one_index(indir, outdir,
                 else:
                     body_names = config.SYSTEM_NAMES
 
-                inventory_names = snapshot.inventory(body_names, expand=config.EXPAND, cache=False)
+                inventory_names = observation.inventory(body_names, expand=config.EXPAND, cache=False)
 
                 # Write a record into the inventory file
                 inventory_file.write(",".join(prefixes))
@@ -1109,12 +1109,29 @@ def process_index(input_tree, output_tree,
         no_table        if True, do not produce a table, just a label.
     """
 
-    # Make index for each volume
-    for dir in os.listdir(input_tree):
-        if os.path.isdir(os.path.join(input_tree, dir)):
-            if not volume or dir == volume:
-                indir = os.path.join(input_tree, dir)
-                outdir = os.path.join(output_tree, dir)
+    input_tree = Path(input_tree) 
+    output_tree = Path(output_tree) 
+
+    # Build volume glob
+    vol_glob = meta.get_volume_glob(input_tree.name)
+
+    # Walk the input tree, making indexes for each found volume
+#    for root, dirs, files in input_tree.walk():    #### Path.walk() doens't exist in python 3.8
+    for root, dirs, files in os.walk(input_tree.as_posix()):
+        root = Path(root)
+
+        # Determine notional set and volume
+        parts = root.parts
+        set = parts[-2]
+        vol = parts[-1]
+
+        # Test whether this root is a volume
+        if fnmatch.filter([vol], vol_glob):
+            if not volume or vol == volume:
+                indir = root
+                if output_tree.parts[-1] != set: 
+                    outdir = output_tree.joinpath(set)
+                outdir = output_tree.joinpath(vol)
                 _process_one_index(indir, outdir, 
                                    selection=selection, 
                                    append=append, 
