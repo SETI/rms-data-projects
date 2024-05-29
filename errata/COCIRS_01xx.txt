@@ -13,3 +13,12 @@ images.
 [COCIRS_0808 index row 364 "COCIRS_0808/DATA/CUBE/EQUIRECTANGULAR/081RI_VTMPN60LP001_CI015_699_F4_039E.tar.gz"] Missing all browse/diagram images for "COCIRS_0808/DATA/CUBE/EQUIRECTANGULAR/081RI_VTMPN60LP001_CI015_699_F4_039E.LBL"
 [COCIRS_0808 index row 365 "COCIRS_0808/DATA/CUBE/EQUIRECTANGULAR/081RI_VTMPN60LP001_CI____699_F1_039E.tar.gz"] Missing all browse/diagram images for "COCIRS_0808/DATA/CUBE/EQUIRECTANGULAR/081RI_VTMPN60LP001_CI____699_F1_039E.LBL"
 [COCIRS_0808 index row 367 "COCIRS_0808/DATA/CUBE/EQUIRECTANGULAR/081RI_VTMPN60LP001_CI____699_F4_039E.tar.gz"] Missing all browse/diagram images for "COCIRS_0808/DATA/CUBE/EQUIRECTANGULAR/081RI_VTMPN60LP001_CI____699_F4_039E.LBL"
+
+================================================================================
+
+Field explanations found during OPUS import (see rms-opus pull #1375):
+
+- CSS:MEAN_RING_BORESIGHT_SOLAR_ZENITH is North-based incidence angle
+- CSS:MEAN_RING_BORESIGHT_EMISSION_ANGLE is North-based emission angle
+- CSS:MEAN_RING_BORESIGHT_LOCAL_TIME is in hours, not degrees
+- CSS:MEAN_RING_BORESIGHT_LONGITUDE_ZPD is in some weird coordinate system that appears to be exactly 180 degrees off from what we expect
