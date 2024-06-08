@@ -6,19 +6,19 @@ $NOTE
 #  generating index files for a host is as follows.  Files referred to below
 #  should be copied into the top directory for the collection, e.g., GO_0xxx:
 #
-#  1. Copy and edit this template.
+#  1. Copy and edit this template and the host_defs file (see below).
 #  2. Copy and edit the <collection>_index.py script to reflect the 
 #     type of index and glob pattern for the data files.
 #  3. Copy and edit index_config.py to address any host-dependent
 #     processing.
 #  4. Run <collection>_index.py from the collection top directory.
 #
-#  To edit the template, replace all values describing the new host.  
-#  Quantities enclosed in dollar signs are automatically filled in and should 
-#  not be edited.  Add a column for each quantity to be copied from the product 
-#  label into the index.  For quantities that require processing beyond simply 
-#  copying from the product label and reformatting, a key function should be 
-#  provided in index_config.py, defined as :
+#  In the host_defs files, replace all values describing the new host.  
+#  In this template, quantities enclosed in dollar signs are automatically 
+#  filled in and should not be edited.  Add a column for each quantity to be 
+#  copied from the product label into the index.  For quantities that require 
+#  processing beyond simply copying from the product label and reformatting, 
+#  a key function should be provided in index_config.py, defined as :
 #
 #           key__<COLUMN NAME>(name, label),
 #
@@ -34,18 +34,7 @@ RECORD_BYTES                    = $RECORD_BYTES$
 FILE_RECORDS                    = $FILE_RECORDS$
 ^$TYPE$_INDEX_TABLE    = "$INDEX_FILENAME$"
 
-$NOTE 
-##############################################################
-# Edit these fields for the specific host
-##############################################################
-$END_NOTE
-MISSION_NAME                    = "GALILEO"
-INSTRUMENT_HOST_NAME            = "GALILEO"
-INSTRUMENT_HOST_ID              = "GLL"
-INSTRUMENT_NAME                 = "SOLID STATE IMAGER"
-INSTRUMENT_ID                   = "SSI"
-DATA_SET_ID                     = "GO-J/JSA-SSI-2-REDR-V1.0"
-$NOTE:########################################################
+$INSERT{./templates/host_defs.lbl}
 
 PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
 
@@ -79,7 +68,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A7"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The volume id element provides a unique identifier for a data volume. Example: MG 1001."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -91,7 +80,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A32"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The file specification name element provides the full name of a file, including a path name, relative to a PDS volume. It excludes node or volume location. Path names are limited to eight (8) directory levels, and are separated by the forward slash (/) character. Each directory is limited to 8 characters chosen from the set A-Z, 0-9, }. The path is followed by a valid file name. See also: file name. Example values: TG15NXXX/TG15N1XX/TG15N12X/TG15N120.DAT EDR/C100611/E1006110.00A"
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -103,7 +92,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A3"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The TELEMETRY FORMAT ID element supplies a telemetry format code."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -118,7 +107,7 @@ $END_NOTE
     ITEM_OFFSET                 = $$$COLUMN_NAME$_ITEM_OFFSET$$
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     NULL_CONSTANT               = -1
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "Galileo Solid State Imaging-specific. Images can be edited so that only an image area or CUT OUT WINDOW is compressed using Integer Cosine Transform, BARC or Huffman compression and transmitted to Earth. The cut out - window element indicates the location and size of this image area as defined by four numbers: starting line, starting sample, number of lines, number of samples (the origin of the image coordinate system is at line, sample=1,1 for the upper-left corner with samples increasing to the right and lines increasing down)."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -133,7 +122,7 @@ $END_NOTE
     ITEM_OFFSET                 = $$$COLUMN_NAME$_ITEM_OFFSET$$
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     NULL_CONSTANT               = -1
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The position of the Truth Window. 0,0 indicates no truth window on this line."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -145,7 +134,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A3"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The light flood state flag element indicates the mode (on or off) of light flooding for an instrument."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -157,7 +146,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A8"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The EXPOSURE TYPE element indicates the exposure setting on a camera. For MPF, the auto and incremental exposures iterate off a starting value to determine the exposure time. For auto exposures, the value is preset. Incremental exposures start with the exposure time of the previous exposure. Manual exposure is a single exposure with a set exposure time. Pre-timed exposure uses the very last exposure time used, regardless of the type of exposure that it was. No exposure indicates that the command moves only the camera and doesn't take an exposure."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -169,7 +158,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A3"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The BLEMISH PROTECTION FLAG element indicates whether the blemish protection was on or off."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -181,7 +170,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A12"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The inverted clock state element indicates whether a clock signal was inverted."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -193,7 +182,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A1"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "Galileo Solid State Imaging-specific. The on chip mosaic flag element indicates whether the image is part of a multiple exposure/single read-out mode, or ON CHIP MOSAIC. For example, four images of the target-body are acquired by slewing the camera to image the target at each of the four corners of the Charged Coupled Device (CCD) array. The CCD read-out is suppressed until all four exposures are completed, thus resulting in a 2X2 mosaic. An on chip mosaic is not limited to a 2x2 mosaic, it can be an nxm mosaic."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -205,7 +194,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A18"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The instrument mode id element provides an instrument-dependent designation of operating mode. This may be simply a number, letter or code, or a word such as 'normal', 'full resolution', 'near encounter' or 'fixed grating'."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -217,7 +206,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A3"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The uneven bit weight corr flag element is used to indicate whether a correction has been applied to adjust for uneven bit weighting of the analog-to-digital converter. In image processing, the correction is applied to every pixel in an image."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -229,7 +218,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A20"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The DARK CURRENT FILE NAME element provides the dark current image file (an image taken without opening the camera shutter) which should be used to perform radiometric calibration of the image. The dark current image provides a reference label of the build-up of any charges on the sensor that need to be subtracted from a shuttered image during calibration. Selection of the appropriate dark current image may be based on time, camera, temperature, readout conditions, light flood, gain and offset."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -241,7 +230,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A20"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The SLOPE FILE NAME element provides the file containing corrections for variances in responsivity (shading) across the field-of-view of an imaging sensor."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -253,7 +242,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A20"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The blemish file name element indicates the file that provides corrections for blemishes (reseaus, dust spots, etc.) that affect the response of the sensor at specific locations. The blemish file is selected based on camera, filter, gain-state, camera mode, and time."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -265,7 +254,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A20"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The shutter offset file name element identifies the file that contains the corrections for discrepancies between commanded and actual shutter times. Because the shutter blades travel in a vertical direction, offsets in actual exposure are a function of image line number."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -277,7 +266,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A20"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The data type element supplies the internal representation and/or mathematical properties of a value being stored. When DATA TYPE is used within a FIELD object definition, its value applies only when the field is populated. Note: In the PDS, users may find a bit-level description of each data type in the Standards Reference document."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -289,7 +278,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A6"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The The huffman table type element indicates the type of Huffman table used in compression. For Galileo the valid values are: SKEWED, UNIFORM, N/A."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -301,7 +290,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "I3"
     NULL_CONSTANT               = -1
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The ict despike threshold (integer cosine transform despike threshold) element indicates the threshold value at which despiking occurs. Despiking is used as a pre-processing step to the Integer Cosine Transform in order to minimize the effects of radiation-induced noise on compression efficiency. This element is Galileo Solid State Imaging-specific."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -313,7 +302,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "I3"
     NULL_CONSTANT               = -1
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The product version id element identifies the version of an individual product within a data set. Example: 1.0, 2A, 1.2.3C. Note: This is not the same as the data set version that is an element of the data set id value. Product version id is intended for use within AMMOS to identify separate iterations of a given product, which will also have a unique file name."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -325,7 +314,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "I3"
     NULL_CONSTANT               = -1
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The ict quantization step size (integer cosine transform quantization step size) element provides the integer value by which the ICT transform is divided. The greater the step-size/compression, the greater the data loss."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -337,7 +326,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A6"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The ict zigzag pattern element provides the name of the Integer Cosine Transform zigzag pattern used to rearrange the transform. For Galileo, the valid values are: ZIGZAG or ALT."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -349,7 +338,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A7"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The cmprs quantz tbl id (compression quantization table identifier) element provides the Integer Cosine Transform 8X8 quantization matrix identifier. For Galileo the valid values are: UNIFORM, VG2, VG3, UNK"
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -364,7 +353,7 @@ $END_NOTE
     ITEM_OFFSET                 = $$$COLUMN_NAME$_ITEM_OFFSET$$
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The source product id data element identifies a product used as input to create a new product. The source product id may be based on a file name. See also: product id. Note: For Mars Pathfinder, this refers to the filenames of the SPICE kernels used to produce the product and its ancillary data."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -376,7 +365,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "F7.3"
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "REPLACE WITH USER CONTENT."
+    DESCRIPTION                 = "The ENTROPY element identifies the average entropy level (bits/pixel). Entropy is a measure of scene activity and it applies to the entire image. Note: For the Galileo SSI flight images the entropy is defined as: H = - SUM (from j= -255 to j= +255) p(j) [log(2) p(j)] where p(j) is the probability that two horizontally adjacent pixels have a different j, where - 255 ¡j ¡ 255."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -388,7 +377,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A23"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "Observation start time associated with the data in the given file. Given in PDS date/time format ('yyyy-mm-ddThh:mm:ss.sss')."
+    DESCRIPTION                 = "The start time element provides the date and time of the beginning of an event or observation (whether it be a spacecraft, ground-based, or system event) in UTC. Formation rule: YYYY-MM-DDThh:mm:ss[.fff]."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -400,7 +389,7 @@ $END_NOTE
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A23"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "Observation stop time associated with the data in the given file. Given in PDS date/time format ('yyyy-mm-ddThh:mm:ss.sss')."
+    DESCRIPTION                 = "The stop time element provides the date and time of the end of an observation or event (whether it be a spacecraft, ground-based, or system event) in UTC. Formation rule: YYYY-MM-DDThh:mm:ss[.fff]."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN

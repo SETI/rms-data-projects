@@ -271,17 +271,18 @@ def _get_index_name(dir, type):
     # Name starts with volume id
     dir = dir.absolute()
     name = _get_volume_id(dir)
-    name += '_index'
 
     # Add type if given
     if type:
         name += '_' + type
 
+    name += '_index'
+
     return name
 
 #===============================================================================
 def _get_template_name(type):
-    """Determine the name of the index file.
+    """Determine the name of the label template.
     
     Inputs:
         dir           top dir for volume. 
@@ -296,11 +297,30 @@ def _get_template_name(type):
     dir = Path.cwd()
     name = dir.name
 
-    name += '_index'
-
     # Add type if given
     if type:
         name += '_' + type
+
+    name += '_index'
+
+    return name
+
+#===============================================================================
+def _get_override_name(type):
+    """Determine the name of the override label.
+    
+    Inputs:
+        dir           top dir for volume. 
+        name          base name of the index file and label.  If None, it 
+                      is derived from the volume id.
+        type          index type. 
+        
+    Outputs:          index name.
+    """   
+
+    # Name starts with collection id
+    dir = Path.cwd()
+    name = dir.name + '_override'
 
     return name
 
@@ -414,6 +434,7 @@ def _process_columns(column_dicts):
         column_desc['description'] = column_dict['DESCRIPTION'] if 'DESCRIPTION' in column_dict.keys() else ''
         
         column_desc['nbytes'] = width-2 if data_type == 'CHARACTER' else width
+#        column_desc['nbytes'] = width-1 if data_type == 'CHARACTER' else width
 
         column_descs[name] = column_desc
 
@@ -421,14 +442,18 @@ def _process_columns(column_dicts):
 
 #===============================================================================
 def _preprocess_template(lines):
-    """Initial parse of the column descriptions using PdsTemplate in order
-    to create the directive names for creating the final label.
+    """Initial parse of the column descriptions handling preprocessor 
+    directives and using PdsTemplate to create the directive names for 
+    building the final label.
 
     Input:
         lines       list of strings containing the label template.
 
     Output:         list of strings containing the pre-processed label template.
     """
+
+    # Handle preprocessor directives
+    lines = meta.preprocess_label(lines)
 
     # Parse each column description with PdsTemplate
     head = 0
@@ -488,18 +513,23 @@ def _make_label(template_lines, input_dir, output_dir, type=''):
     index_path = output_dir/index_filename
     label_path = output_dir/label_filename
 
+
+
+    override_name = _get_override_name(type)        # assumes top dir is pwd
+    override_path = Path('./templates/')/(override_name + '.lbl')
+
+
+
     # Read the data file
     f = open(index_path)
     index_lines = f.readlines()
     f.close()
 
     # Validate the data file
-    is_inventory = ('inventory' in index_name)
     recs = len(index_lines)
     linelen = len(index_lines[0])
     for line in index_lines:
-        if not is_inventory:
-            assert len(line) == linelen     # all lines have the same length
+        assert len(line) == linelen         # all lines have the same length
         assert line[-1] == '\n'             # all lines have proper <crlf>
 
     # Get the volume_id
@@ -537,9 +567,11 @@ def _make_label(template_lines, input_dir, output_dir, type=''):
         total_width = width
         if count>1:
             total_width = nbytes*count + (count-1)
+            bytes = total_width
             if data_type == 'CHARACTER':
-                total_width += 2*count - 2
-            fields[name + '_BYTES'] = total_width
+                total_width += 2*count
+                bytes = total_width - 2
+            fields[name + '_BYTES'] = bytes
             fields[name + '_ITEM_BYTES'] = item_bytes
             fields[name + '_ITEM_OFFSET'] = nbytes + 1
             if data_type == 'CHARACTER':
@@ -553,7 +585,6 @@ def _make_label(template_lines, input_dir, output_dir, type=''):
     # Process the template
     template = PdsTemplate('', content=template_lines)
     template.write(fields, label_path.as_posix())
-
 
 #===============================================================================
 def _make_one_index(input_dir, output_dir, type='', glob=None, no_table=False):

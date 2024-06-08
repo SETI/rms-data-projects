@@ -708,7 +708,8 @@ def _get_range_mod360(values, alt_format=None):
 
     # With only one value, we know nothing
     if values.size <= 1:
-        return complete_coverage
+#        return complete_coverage
+        return [values, values]
 
     # Locate the largest gap in coverage
     values = np.sort(values % 360)
@@ -761,7 +762,7 @@ def _make_label(filepath, creation_time=None, preserve_time=False):
     
     if lines == []:
         return
-
+    
     recs = len(lines)
     linelen = len(lines[0])
 
@@ -804,6 +805,9 @@ def _make_label(filepath, creation_time=None, preserve_time=False):
     except:
         return
 
+    # Preprocess the template
+    lines = meta.preprocess_label(lines)
+
     # Replace the tags in the template
     if is_inventory:
         subs = ('"' + filename + '"',
@@ -834,7 +838,7 @@ def _make_label(filepath, creation_time=None, preserve_time=False):
 #===============================================================================
 def _process_one_index(indir, outdir, 
                        selection='', append=False, exclude=None, glob=None, 
-                       no_table=False):
+                       no_table=False, no_log=True):
     """Process the index file for a single volume and write a selection of 
     geometry files.
 
@@ -851,6 +855,7 @@ def _process_one_index(indir, outdir,
         exclude         list of volumes to exclude.
         glob            glob pattern for index files.
         no_table        if True, do not produce a table, just a label.
+        no_log          if True, do not produce a log file.
     """
 
     # Handle exclusions
@@ -881,7 +886,7 @@ def _process_one_index(indir, outdir,
     # Open the output files
     prefix = outdir.joinpath(volume_id).as_posix()
 
-    log_filename = Path(prefix + "_log.txt")
+##    log_filename = Path(prefix + "_log.txt")
     inventory_filename = Path(prefix + "_inventory.tab")
     
     ring_summary_filename = Path(prefix + "_ring_summary.tab")
@@ -894,11 +899,11 @@ def _process_one_index(indir, outdir,
 
     test_summary_filename = Path(prefix + "_test_summary.tab")
 
-    log_file = open(log_filename, "w")
+##    log_file = open(log_filename, "w")
     inventory_file = open(inventory_filename, "w")
     
     if not no_table:
-        print("Log file: " + log_file.name)
+##        print("Log file: " + log_file.name)
         print("Inventory file: " + inventory_file.name)
 
         if "S" in selection:
@@ -1040,9 +1045,9 @@ def _process_one_index(indir, outdir,
             except RuntimeError as e:
 
                 print(e)
-                log_file.write(40*"*" + "\n" + logstr + "\n")
-                log_file.write(str(e))
-                log_file.write("\n\n")
+##                log_file.write(40*"*" + "\n" + logstr + "\n")
+##                log_file.write(str(e))
+##                log_file.write("\n\n")
 
             # Other kinds of errors are genuine bugs. For now, we just log the
             # problem, and jump over the image; we can deal with it later.
@@ -1051,11 +1056,11 @@ def _process_one_index(indir, outdir,
 
                 traceback.print_exc()
 #                log_file.write(40*"*" + "\n" + logstr + "\n")
-                log_file.write(traceback.format_exc())
-                log_file.write("\n\n")
+##                log_file.write(traceback.format_exc())
+##                log_file.write("\n\n")
 
     # Close all files
-    log_file.close()
+##    log_file.close()
     inventory_file.close()
 
     try:
@@ -1070,6 +1075,8 @@ def _process_one_index(indir, outdir,
         pass
 
     # Make labels
+    _make_label(inventory_filename)
+
     if "S" in selection:
         _make_label(ring_summary_filename)
         _make_label(planet_summary_filename)

@@ -19,6 +19,46 @@ NULL = "null"                   # Indicates a suppressed backplane calculation
 ###############################
 
 #===============================================================================
+def _directive_insert(lines, lnum, filename):
+
+    # Read file
+    f = open(filename, 'r')
+    insert_lines = f.readlines()
+    f.close()
+
+    # Insert into label
+    lines = lines[0:lnum] + insert_lines + lines[lnum+1:]
+    lnum += len(insert_lines)
+
+    return(lines, lnum)
+
+#===============================================================================
+def preprocess_label(lines):
+    """Return a copy of the tree of objects, with each occurrence of the
+    placeholder string replaced by the given name."""
+
+    directives = ['INSERT']
+
+    lnum = 0
+    for line in lines:
+        for directive in directives:
+        
+            # test for directive pattern at start of line: $<directive>{
+            pattern = '$' + directive + '{'
+            if line.startswith(pattern):
+                try:
+                    arg = line.split('{')[1].split('}')[0]
+                except:
+                    raise SyntaxError(line)
+
+                # call directive function
+                fn = globals()['_directive_' + directive.lower()]
+                (lines, lnum) = fn(lines, lnum, arg)
+        lnum += 1
+
+    return lines
+
+#===============================================================================
 def download(outdir, url, patterns):
     """Download data to local machine."""
 

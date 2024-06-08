@@ -2,7 +2,7 @@
 # Metadata unit tests
 ################################################################################
 import unittest
-import pdstable
+import pdstable, pdsparser
 import glob
 import fnmatch
 import os
@@ -43,9 +43,42 @@ class Test_MakeLabel(unittest.TestCase):
         return(result)
 
     #===========================================================================
-    # test index common fields
-    def test_index_common(self):
-        pass
+    # test inventory file
+    def test_inventory(self):
+
+        # Get labels to test
+        files = self.match(METADATA, '*_inventory.lbl')
+        files = self.exclude(files, 'templates/', 'old/')
+
+        # Test labels
+        print()
+        for file in files:
+            print('Reading', file)
+            label = pdsparser.PdsLabel.from_file(file)
+
+    #===========================================================================
+    # test supplemental index common fields
+    def test_supplemental_index_common(self):
+    
+        # Get labels to test
+        files = self.match(METADATA, '*_supplemental_index.lbl')
+        files = self.exclude(files, 'templates/', 'old/')
+
+        # Test labels
+        print()
+        for file in files:
+            print('Reading', file)
+            table = pdstable.PdsTable(file)
+
+            # verify # rows, columns          
+            self.assertEqual(table.info.rows, len(table.column_values['VOLUME_ID']))
+            self.assertEqual(table.info.columns, len(table.keys))
+            
+            # validate column values
+            self.assertIsInstance(table.column_values['VOLUME_ID'][0], np.str_)
+            self.assertIsInstance(table.column_values['FILE_SPECIFICATION_NAME'][0], np.str_)
+            self.assertIsInstance(table.column_values['START_TIME'][0], np.str_)
+            self.assertIsInstance(table.column_values['STOP_TIME'][0], np.str_)
 
     #===========================================================================
     # test geometry common fields
@@ -134,6 +167,7 @@ class Test_MakeLabel(unittest.TestCase):
             print('Reading', file)
             table = pdstable.PdsTable(file)
 
+#            from IPython import embed; print('+++++++++++++'); embed()
             # validate bounded values
             self.bounds_test(table, 'MINIMUM_RIGHT_ASCENSION')
             self.bounds_test(table, 'MAXIMUM_RIGHT_ASCENSION')

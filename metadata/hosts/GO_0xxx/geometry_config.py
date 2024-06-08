@@ -1,3 +1,9 @@
+################################################################################
+# geometry_config.py for GLL SSI
+#
+#  Host-specific utilites.
+#
+################################################################################
 import oops
 import hosts.galileo.ssi as ssi
 import numpy as np
