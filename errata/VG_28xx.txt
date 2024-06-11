@@ -1,0 +1,7 @@
+================================================================================
+
+In VG_2802, the Saturn delta Sco ingress RAWDATA labels, US2R01*.LBL,
+incorrectly state a date of 1981-08-26 for the STOP_TIME, this should be
+1981-08-25. Note the equivalent EASYDATA, found in:
+`VG_2802/EASYDATA/{KM005, KM010, KM020, KM050} /US2P01.LBL`,
+correctly state 1981-08-25 for start and stop.
