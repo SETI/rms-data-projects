@@ -796,7 +796,7 @@ def _make_label(filepath, creation_time=None, preserve_time=False):
         creation_time = '%04d-%02d-%02dT%02d:00:00' % time.gmtime()[:4]
 
     # Read the template
-    template = meta.TEMPLATES_PATH.as_posix() + '/%s.lbl' % body[underscore+6:]
+    template = meta.TEMPLATES_DIR.as_posix() + '/%s.lbl' % body[underscore+6:]
 
     try:
         f = open(template)
@@ -806,7 +806,7 @@ def _make_label(filepath, creation_time=None, preserve_time=False):
         return
 
     # Preprocess the template
-    lines = meta.preprocess_label(lines)
+    lines = meta.process_diectives(lines)
 
     # Replace the tags in the template
     if is_inventory:

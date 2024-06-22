@@ -15,8 +15,8 @@
 #         RMS_METADATA = ~/SETI/RMS/metadata_test
 #         RMS_VOLUMES = ~/SETI/RMS/holdings/volumes
 #
-#  2) From the host directory (e.g., rms-data-projects/metadata/hosts/GO_0xxx.),
-#     run download.sh to create and populate the metadata and volume tree s:
+#  2) From the host directory (e.g., rms-data-projects/metadata/hosts/GO_0xxx),
+#     run download.sh to create and populate the metadata and volume trees:
 #
 #         python ../download.py $RMS_METADATA $RMS_VOLUMES
 #

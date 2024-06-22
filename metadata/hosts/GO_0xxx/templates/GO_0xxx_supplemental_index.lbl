@@ -96,6 +96,18 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'PRODUCT_CREATION_TIME')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A23"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "The TELEMETRY FORMAT ID element supplies a telemetry format code."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
   $ONCE(COLUMN_NAME                                  = 'CUT_OUT_WINDOW')
     NAME                        = $COLUMN_NAME$
     ITEMS                       = 4

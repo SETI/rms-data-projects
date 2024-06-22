@@ -1,5 +1,5 @@
 ################################################################################
-# index_support.py
+# index_support.py - Tools for generating geometric index files
 ################################################################################
 import os, time
 import glob as glb
@@ -22,25 +22,30 @@ from pdstemplate import PdsTemplate
 
 #===============================================================================
 def key__volume_id(label_path, label_dict):
-    """Key function for VOLUME_ID.
+    """Key function for VOLUME_ID.   The return value will appear in the index 
+    file under VOLUME_ID.
 
-    Inputs:
-        label_path        path to the PDS label.
-        label_dict        dictionary containing the PDS label fields.
+    Args:
+        label_path  (str): Path to the PDS label.
+        label_dict (doct): Dictionary containing the PDS label fields.
 
-    The return value will appear in the index file under VOLUME_ID.
+    Returns:
+        str: Volume ID
+   
     """
     return config.get_volume_id(label_path)
 
 #===============================================================================
 def key__file_specification_name(label_path, label_dict):
-    """Key function for FILE_SPECIFICATION_NAME.
+    """Key function for FILE_SPECIFICATION_NAME.  The return value will appear in 
+    the index file under FILE_SPECIFICATION_NAME.
 
-    Inputs:
-        label_path        path to the PDS label.
-        label_dict        dictionary containing the PDS label fields.
+    Args:
+        label_path  (str): Path to the PDS label.
+        label_dict (dict): Dictionary containing the PDS label fields.
 
-    The return value will appear in the index file under FILE_SPECIFICATION_NAME.
+    Returns:
+        str: File Specification name.
     """
     return _get_subdir(label_path)
     
@@ -53,11 +58,12 @@ def key__file_specification_name(label_path, label_dict):
 def _format_value(value, format):
     """Format a single value using a Fortran format code.
 
-    Inputs:
-        value         value to format.
-        format        FORTRAN_style format code.
+    Args:
+        value  (str): Value to format.
+        format (str): FORTRAN_style format code.
         
-    Outputs:          formatted value.
+    Returns:
+        str: formatted value.
     """
     
     # format value
@@ -74,13 +80,15 @@ def _format_value(value, format):
 def _format_parms(format):
     """Determine len and type corresopnding to a given FORTRAN format code..
 
-    Inputs:
-        format        FORTRAN_style format code.
+    Args:
+        format (str): FORTRAN_style format code.
         
-    Output:           (width, data_type)
-        width         number of bytes required for a formatted value, including
-                      any quotes.
-        data_type     data type corresponding to the format code.
+    Returns:           (width, data_type)
+        NamedTuple (width (int), data_type (str)): 
+            width     (int): Number of bytes required for a formatted value, 
+                      including any quotes.
+            data_type (str): Data type corresponding to the format code.
+
     """
     
     data_types = {'A':'CHARACTER', 
@@ -108,11 +116,21 @@ def _format_column(value, name=None,
                           description=None):
     """Format a column.
 
-    Inputs:
-        value       value to format.       
-        <keys>      fields of the column dictionary.
-        
-    Outputs:        formatted value.
+    Args:
+        value       (str): Value to format.       
+        name        (str): Column name. Default: None.
+        count       (int): Number of items, if array. Default: None.
+        nbytes      (int): Number of bytes in the value  Default: None. 
+        width       (int): Number of bytes required for a formatted value, 
+                           including any quotes. Default: None. 
+        format      (str): FORTRAN format code. Default: None. 
+        nullval     (str): Value to use for a null value. Default: None. 
+        data_type   (str): Data type. Default: None. 
+        description (str): Column description. Default: None.
+  
+    Returns:
+        str: Formatted value.
+
     """
 
     # Split multiple elements into individual columns
@@ -176,11 +194,12 @@ def _format_column(value, name=None,
 def _index_one_value(column_desc, label_path, label):
     """Determine value for one row of one column.
 
-    Inputs:
-        column_desc     column dictionary.
-        label_path      path to the PDS label.
+    Args:
+        column_desc (dict): Column dictionary.
+        label_path   (str): Path to the PDS label.
         
-    Outputs:            determined value.
+    Returns:
+        str: Determined value.
     """
 
     # Check for built-in key function
@@ -200,17 +219,24 @@ def _index_one_value(column_desc, label_path, label):
         except AttributeError:
             value = label[key] if key in label else column_desc['nullval']
 
+    # If a key function returned None, insert a NULL value.
+    if value is None:
+        value = column_desc['nullval']
+
     return value
 
 #===============================================================================
 def _index_one_file(root, name, index, column_descs):
-    """Write a single index file entry .
+    """Write a single index file entry.
 
-    Inputs:
-        root          top of the directory tree containing the volume. 
-        name          name of PDS label.
-        index         open descriptor for the index file.
-        column_descs  dictionary of columns descriptions
+    Args:
+        root          (str): Top of the directory tree containing the volume. 
+        name          (str): Name of PDS label.
+        index        ([[]]): Open descriptor for the index file.
+        column_descs (dict): Dictionary of column descriptions.
+        
+    Returns:
+        None.
     """
 
     # Read the PDS3 label
@@ -239,10 +265,11 @@ def _index_one_file(root, name, index, column_descs):
 def _get_volume_id(dir):
     """Determine the volume ID.
 
-    Inputs:
-        path          top dir for volume. 
+    Args:
+        path (str): Top dir for volume. 
         
-    Outputs:          volume ID.
+    Returns:
+        str: volume ID.
     """
     return config.get_volume_id(dir)
 
@@ -250,10 +277,11 @@ def _get_volume_id(dir):
 def _get_subdir(path):
     """Determine the Subdirectory of an input file.
 
-    Inputs:
-        path          input path or directory. 
+    Args:
+        path (str): Input path or directory. 
         
-    Outputs:          final directory in tree.
+    Returns:
+        str: Final directory in tree.
     """
     return meta.splitpath(path, _get_volume_id(path))[1]
 
@@ -261,11 +289,12 @@ def _get_subdir(path):
 def _get_index_name(dir, type):
     """Determine the name of the index file.
     
-    Inputs:
-        dir           top dir for volume. 
-        type          index type. 
+    Args:
+        dir   (str): Top dir for volume. 
+        type (tstr): Index type. 
         
-    Outputs:          index name.
+    Returns:
+        str: Index name.
     """   
 
     # Name starts with volume id
@@ -284,13 +313,14 @@ def _get_index_name(dir, type):
 def _get_template_name(type):
     """Determine the name of the label template.
     
-    Inputs:
-        dir           top dir for volume. 
-        name          base name of the index file and label.  If None, it 
-                      is derived from the volume id.
-        type          index type. 
+    Args:
+        dir  (str): Top dir for volume. 
+        name (str): Base name of the index file and label.  If None, it 
+                    is derived from the volume id.
+        type (str): Index type. 
         
-    Outputs:          index name.
+    Returns:
+        str: Index name.
     """   
 
     # Name starts with collection id
@@ -309,13 +339,14 @@ def _get_template_name(type):
 def _get_override_name(type):
     """Determine the name of the override label.
     
-    Inputs:
-        dir           top dir for volume. 
-        name          base name of the index file and label.  If None, it 
-                      is derived from the volume id.
-        type          index type. 
+    Args:
+        dir  (str): Top dir for volume. 
+        name (str): Base name of the index file and label.  If None, it 
+                    is derived from the volume id.
+        type (str): Index type. 
         
-    Outputs:          index name.
+    Returns:
+        str: Index name.
     """   
 
     # Name starts with collection id
@@ -329,16 +360,17 @@ def _parse_block(lines, head=0,
                  start_token='OBJECT=COLUMN', end_token='END_OBJECT=COLUMN'):
     """Extract a block of lines between two tokens.
     
-    Inputs:
-        lines         list of strings. 
-        head          line at which to start search. 
-        start_token   string giving token that starts a block. 
-        end_token     string giving token that ends a block. 
+    Args:
+        lines      (list): List of strings. 
+        head       (list): Line at which to start search.  Default: 0.
+        start_token (str): Block start token.  Default: 'OBJECT=COLUMN'.
+        end_token   (str): Block end token.  Default: END_OBJECT=COLUMN'.
         
-    Outputs:
-        block         list of strings inthe first detected block.
-        head          line number of the start of the block.
-        tail          line number of the end of the block.
+    Returns:
+        NamedTuple (block (list), head (int), tail (int)): 
+            block   (list): List of strings in the first detected block.
+            head     (int): Line number of the start of the block.
+            tail     (int): Line number of the end of the block.
     """   
 
     tail = -1
@@ -361,12 +393,13 @@ def _parse_block(lines, head=0,
 #===============================================================================
 def _parse_column(lines):
     """Parse a column description into a dictionary.
-    
-    Inputs:
-        lines         list of strings giving the column description. 
         
-    Outputs:          column dictionary.
-    """
+    Args:
+        lines (list): Column description. 
+        
+    Returns:
+        dict: Column dictionary.
+    """   
     
     column_desc = {}
     for line in lines:
@@ -379,10 +412,11 @@ def _parse_column(lines):
 def _parse_columns(lines):
     """Parse all column descriptions into a list of dictionaries.
     
-    Inputs:
-        lines         list of strings containing the PDS label. 
+    Args:
+        lines (list): PDS label. 
         
-    Outputs:          list of column dictionaries.
+    Returns:
+        list: Column dictionaries.
     """
 
     column_dicts = []
@@ -406,10 +440,11 @@ def _parse_columns(lines):
 def _process_columns(column_dicts):
     """Convert column description info into more useful form.
     
-    Inputs:
-       column_dicts   list of column dictionaries. 
+    Args:
+       column_dicts (list): Column dictionaries. 
         
-    Outputs:          dictionary of column descriptions.
+    Returns:
+        dict: Column descriptions.
     """
 
     # Convert each column
@@ -446,14 +481,15 @@ def _preprocess_template(lines):
     directives and using PdsTemplate to create the directive names for 
     building the final label.
 
-    Input:
-        lines       list of strings containing the label template.
+    Args:
+        lines (list): Label template.
 
-    Output:         list of strings containing the pre-processed label template.
+    Returns:
+        list: Pre-processed label template.
     """
 
     # Handle preprocessor directives
-    lines = meta.preprocess_label(lines)
+    lines = meta.process_diectives(lines)
 
     # Parse each column description with PdsTemplate
     head = 0
@@ -482,10 +518,11 @@ def _preprocess_template(lines):
 def _get_columns(template):
     """Create column descriptions from a label template.
 
-    Input:
-        template    list of strings containing the label template.
+    Args:
+        template (list): Label template.
 
-    Output:         column description dictionaries
+    Returns:
+        list: Column description dictionaries
     """
 
     column_dicts = _parse_columns(template)
@@ -496,12 +533,14 @@ def _get_columns(template):
 def _make_label(template_lines, input_dir, output_dir, type=''):
     """Creates a label for a given index table.
 
-    Input:
-        template_lines  list of strings containing the label template.
-        input_dir       directory containing the volume.
-        output_dir      directory in which to write the index files.
-        type            qualifying string identifying the type of index file
-                        to create, e.g., 'supplemental'. 
+    Args:
+        template_lines (list): Label template.
+        input_dir       (str): Directory containing the volume.
+        output_dir      (str): Directory in which to write the index files.
+        type            (str): Qualifying string identifying the type of index 
+                               file to create, e.g., 'supplemental'. 
+    Returns:
+        None
     """
 
     # Get filenames
@@ -517,8 +556,6 @@ def _make_label(template_lines, input_dir, output_dir, type=''):
 
     override_name = _get_override_name(type)        # assumes top dir is pwd
     override_path = Path('./templates/')/(override_name + '.lbl')
-
-
 
     # Read the data file
     f = open(index_path)
@@ -590,16 +627,19 @@ def _make_label(template_lines, input_dir, output_dir, type=''):
 def _make_one_index(input_dir, output_dir, type='', glob=None, no_table=False):
     """Creates index file for a single volume.
 
-    Input:
-        input_dir       directory containing the volume, specifically the 
-                        data labels
-        output_dir      directory in which to find the "updated" index file
-                        (e.g., <volume>_index.tab, and in which to write the 
-                        new index files.
-        type            qualifying string identifying the type of index file
-                        to create, e.g., 'supplemental'. 
-        glob            glob pattern for index files.
-        no_table        if True, do not produce a table, just a label.
+    Args:
+        input_dir  (str): Directory containing the volume, specifically the 
+                          data labels.
+        output_dir (str): Directory in which to find the "updated" index file
+                          (e.g., <volume>_index.tab, and in which to write the 
+                          new index files.
+        type       (str): Qualifying string identifying the type of index file
+                          to create, e.g., 'supplemental'. 
+        glob       (str): Glob pattern for index files.
+        no_table  (bool): If True, do not produce a table, just a label.
+
+    Returns:
+        None.
     """
 
     if not no_table:
@@ -688,7 +728,7 @@ def _make_one_index(input_dir, output_dir, type='', glob=None, no_table=False):
 def make_index(input_tree, output_tree, type='', glob=None, volume=None, no_table=False):
     """Creates index files for a collection of volumes.
 
-    Input:
+    Args:
         input tree      root of the tree containing the volumes.
         output tree     root of the tree in which the output files are
                         written in the same directory structure as in the 
@@ -700,6 +740,9 @@ def make_index(input_tree, output_tree, type='', glob=None, volume=None, no_tabl
         volume          if given, only this volume is processed.
         glob            glob pattern for index files.
         no_table        if True, do not produce a table, just a label.
+
+    Returns:
+        None.
     """
 
     input_tree = Path(input_tree) 

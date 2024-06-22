@@ -17,7 +17,7 @@ ssi.initialize()
 ############################################
 # Key parameters of run
 ############################################
-exec(open(meta.COLUMNS_PATH / 'COLUMNS_JUPITER.py').read())
+exec(open(meta.COLUMNS_DIR / 'COLUMNS_JUPITER.py').read())
 
 SAMPLING = 8                        # pixel sampling density
 #SELECTION = "S"                     # summary files only

@@ -6,8 +6,11 @@
 ################################################################################
 import os
 import julian
+import vicar
 import cspyce
+import warnings
 
+from pathlib import Path
 import metadata as meta
 
 cspyce.furnsh('leapseconds.ker')
@@ -79,8 +82,40 @@ def _event_tai(label_path, label_dict, stop=False):
 ################################################################################
 
 #===============================================================================
+def key__product_creation_time(label_path, label_dict):
+    """Key function for PRODUCT_CREATION_TIME.  
+
+    Inputs:
+        label_path        path to the PDS label.
+        label_dict        dictionary containing the PDS label fields.
+
+    The return value will appear in the index file under PRODUCT_CREATION_TIME.
+    """
+    # Get path for VICAR image
+    image_path = Path(os.path.splitext(label_path.as_posix())[0] + '.IMG')
+#xx    image_path = label_path.removesuffix.with_suffix('.img'))   # Doesn't work in 3.8
+
+    # Read the VICAR label and take the latest DAT_TIM value
+    try:
+        viclab = vicar.VicarLabel.from_file(image_path)
+    except FileNotFoundError:
+        raise FileNotFoundError(image_path)
+    except vicar.VicarError as err:
+        warnings.warn(f'VICAR error in file {image_path}, PRODUCT_CREATION_TIME cannot be determined: {err}', RuntimeWarning)
+        return None
+
+    pct = viclab['DAT_TIM', -1]
+
+    # Convert to ISO format
+    pct = pct[20:] + pct[3:20]
+
+    return julian.iso_from_tai(
+                julian.tai_from_day_sec(
+                *julian.day_sec_in_strings(pct, first=True)), digits=3, suffix='Z')
+
+#===============================================================================
 def key__start_time(label_path, label_dict):
-    """Key function for START_TIME.  FOR GOSSI, IMAGE_TIME refers to
+    """Key function for START_TIME.  For GOSSI, IMAGE_TIME refers to
     the center of the exposure.
 
     Inputs:
@@ -99,7 +134,7 @@ def key__start_time(label_path, label_dict):
 
 #===============================================================================
 def key__stop_time(label_path, label_dict):
-    """Key function for STOP_TIME.  FOR GOSSI, IMAGE_TIME refers to
+    """Key function for STOP_TIME.  For GOSSI, IMAGE_TIME refers to
     the center of the exposure.
 
     Inputs:
