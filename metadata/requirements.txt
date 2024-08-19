@@ -1,0 +1,20 @@
+# oops
+# fancyindex
+IPython
+astropy
+coverage
+cspyce
+numpy
+Pillow
+pyparsing
+rms-fpzip
+rms-interval
+rms-julian
+rms-pdsparser
+rms-pdstable
+rms-polymath
+rms-tabulation
+rms-vax
+rms-vicar
+requests
+fortranformat

@@ -109,10 +109,22 @@ ALT_FORMAT_DICT = {
 ################################################################################
 
 #===============================================================================
-def _write_record(prefixes, backplane, blocker, outfile, column_descs, planet,
+def _write_table(filename, rows):
+    if rows == []:
+        return
+
+    f = open(filename, "w")
+    for row in rows:
+        f.write(row)
+    f.close()
+
+#===============================================================================
+def _add_record(prefixes, backplane, blocker, column_descs, planet,
                   moon=None, moon_length=0,
                   tiles=[], tiling_min=100,
-                  ignore_shadows=False, start_index=1, allow_zero_rows=False):
+                  ignore_shadows=False, 
+                  start_index=1, 
+                  allow_zero_rows=False,):
     """Generates the geometry and writes rows of a file, given a list of column
     descriptions.
 
@@ -137,32 +149,39 @@ def _write_record(prefixes, backplane, blocker, outfile, column_descs, planet,
     values are null. In a detailed listing, only records associated with
     non-empty regions of the meshgrid are written.
 
-    Input:
-        prefixes        a list of the strings to appear at the beginning of the
-                        line, up to and including the ring observation ID. Each
-                        individual string should already be enclosed in quotes.
-        backplane       backplane for the observation.
-        blocker         the name of one moon that may be able to block or shadow
-                        other bodies.
-        outfile         the output file, already open.
-        column_descs    a list of column descriptions.
-        planet          name of planet, uppercase, e.g., "SATURN".
-        moon            optionally, the moon name to write into the record.
-        moon_length     the character width of a column to contain moon names.
-                        If zero (which is the default), then no moon name is
-                        written into the record.
-        tiles           an optional list of boolean backplane keys, used to
-                        support the generation of detailed tabulations instead
-                        of summary tabulations. See details above.
-        tiling_min      the lower limit on the number of meshgrid points in a
-                        region before that region is subdivided into tiles.
-        ignore_shadows  True to ignore any mask constraints applicable to
-                        shadowing or to the sunlit faces of surfaces.
-        start_index     index to use for first subregion. Default 1.
-        allow_zero_rows True to allow the function to return no rows. If False,
-                        a row filled with null values will be returned if
-                        necessary.
+    Args:
+        prefixes (xxx):
+            A list of the strings to appear at the beginning of the
+            line, up to and including the ring observation ID. Each
+            individual string should already be enclosed in quotes.
+        backplane (xxx): Backplane for the observation.
+        blocker (xxx):
+            The name of one moon that may be able to block or shadow
+            other bodies.
+        column_descs (xxx): A list of column descriptions.
+        planet (xxx): Name of planet, uppercase, e.g., "SATURN".
+        moon (xxx, optional): Optionally, the moon name to write into the record.
+        moon_length (int, optional):
+            The character width of a column to contain moon names.
+            If zero (which is the default), then no moon name is
+            written into the record.
+        tiles (list, optional):
+            An optional list of boolean backplane keys, used to
+            support the generation of detailed tabulations instead
+            of summary tabulations. See details above.
+        tiling_min (int, optional):
+            The lower limit on the number of meshgrid points in a
+            region before that region is subdivided into tiles.
+        ignore_shadows (bool, optional):
+            True to ignore any mask constraints applicable to
+            shadowing or to the sunlit faces of surfaces.
+        start_index (int, optional): Index to use for first subregion. Default 1.
+        allow_zero_rows (bool, optional):
+            True to allow the function to return no rows. If False,
+            a row filled with null values will be returned if
+            necessary.
     """
+#xxx Insert "*"?
 
     # Prepare the rows
     rows = _prep_rows(prefixes, backplane, blocker, column_descs,
@@ -170,15 +189,19 @@ def _write_record(prefixes, backplane, blocker, outfile, column_descs, planet,
                       tiles, tiling_min, ignore_shadows,
                       start_index, allow_zero_rows)
 
-    # Write the complete rows to the output file
+    # Append the complete rows to the output
+    lines = []
     for row in rows:
-        outfile.write(row[0])
+        line = row[0]
         for column in row[1:]:
-            outfile.write(",")
-            outfile.write(column)
+            line += ','
+            line += column
 
         # Always use PDS-style line termination
-        outfile.write("\r\n")
+        line += '\r\n'
+        lines.append(line)
+  
+    return lines
 
 #===============================================================================
 def _prep_rows(prefixes, backplane, blocker, column_descs,
@@ -209,31 +232,42 @@ def _prep_rows(prefixes, backplane, blocker, column_descs,
     values are null. In a detailed listing, only records associated with
     non-empty regions of the meshgrid are written.
 
-    Input:
-        prefixes        a list of the strings to appear at the beginning of the
-                        line, up to and including the ring observation ID. Each
-                        individual string should already be enclosed in quotes.
-        backplane       backplane for the observation.
-        blocker         the name of one moon that may be able to block or shadow
-                        other bodies.
-        column_descs    a list of column descriptions.
-        planet          name of planet, uppercase, e.g., "SATURN".
-        moon            optionally, the moon name to write into the record.
-        moon_length     the character width of a column to contain moon names.
-                        If zero (which is the default), then no moon name is
-                        written into the record.
-        tiles           an optional list of boolean backplane keys, used to
-                        support the generation of detailed tabulations instead
-                        of summary tabulations. See details above.
-        tiling_min      the lower limit on the number of meshgrid points in a
-                        region before that region is subdivided into tiles.
-        ignore_shadows  True to ignore any mask constraints applicable to
-                        shadowing or to the sunlit faces of surfaces.
-        start_index     index to use for first subregion. Default 1.
-        allow_zero_rows True to allow the function to return no rows. If False,
-                        a row filled with null values will be returned if
-                        necessary.
+    Args:
+        prefixes (xxx):
+            A list of the strings to appear at the beginning of the
+            line, up to and including the ring observation ID. Each
+            individual string should already be enclosed in quotes.
+        backplane (xxx): Backplane for the observation.
+        blocker (xxx):
+            The name of one moon that may be able to block or shadow
+            other bodies.
+        column_descs (xxx): A list of column descriptions.
+        planet (xxx): Name of planet, uppercase, e.g., "SATURN".
+        moon (xxx, optional): Optionally, the moon name to write into the record.
+        moon_length (int, optional):
+            The character width of a column to contain moon names.
+            If zero (which is the default), then no moon name is
+            written into the record.
+        tiles (list, optional):
+            An optional list of boolean backplane keys, used to
+            support the generation of detailed tabulations instead
+            of summary tabulations. See details above.
+        tiling_min (int, optional):
+            The lower limit on the number of meshgrid points in a
+            region before that region is subdivided into tiles.
+        ignore_shadows (bool, optional):
+            True to ignore any mask constraints applicable to
+            shadowing or to the sunlit faces of surfaces.
+        start_index (int, optional): Index to use for first subregion. Default 1.
+        allow_zero_rows (bool, optional):
+            True to allow the function to return no rows. If False,
+            a row filled with null values will be returned if
+            necessary.
+
+    Returns:
+        xxx: xxx
     """
+#xxx Insert "*"?
 
     # Handle option for multiple tile sets
     if type(tiles) == tuple:
@@ -371,32 +405,39 @@ def _construct_excluded_mask(backplane, target, planet, mask_desc,
     """Return a mask using the specified target, maskers and shadowers to
     indicate excluded pixels.
 
-    Input:
-        backplane       the backplane defining the target surface.
-        target          the name of the target surface.
-        planet          name of planet, e.g., "SATURN".
-        mask_desc       (masker, shadower, face), where
-            masker      a string identifying what surfaces can obscure the
-                        target. It is a concatenation of:
-                            "P" to let the planet obscure the target;
-                            "R" to let the rings obscure the target;
-                            "M" to let the blocker moon obscure the target.
+    Args:
+        backplane (xxx): The backplane defining the target surface.
+        target (xxx): The name of the target surface.
+        planet (xxx): Name of planet, e.g., "SATURN".
+        mask_desc (masker, shadower, face), where):
+            Masker      a string identifying what surfaces can obscure the
+            target. It is a concatenation of:
+            "P" to let the planet obscure the target;
+            "R" to let the rings obscure the target;
+            "M" to let the blocker moon obscure the target.
             shadower    a string identifying what surfaces can shadow the
-                        target. It is a string containing:
-                            "P" to let the planet shadow the target;
-                            "R" to let the rings shadow the target;
-                            "M" to let the blocker moon shadow the target.
+            target. It is a string containing:
+            "P" to let the planet shadow the target;
+            "R" to let the rings shadow the target;
+            "M" to let the blocker moon shadow the target.
             face        a string identifying which face(s) of the surface to
-                        include:
-                            "D" to include only the day side of the target;
-                            "N" to include only the night side of the target;
-                            ""  to include both faces of the target.
-        blocker         optionally, the name of the moon to use for any "M"
-                        codes that appear in the mask_desc.
-        ignore_shadows  True to ignore any shadower or face constraints; default
-                        is False.
-        planet          name of planet, e.g., "SATURN".
+            include:
+            "D" to include only the day side of the target;
+            "N" to include only the night side of the target;
+            ""  to include both faces of the target.
+        blocker (xxx, optional):
+            Optionally, the name of the moon to use for any "M"
+            codes that appear in the mask_desc.
+        ignore_shadows (bool, optional):
+            True to ignore any shadower or face constraints; default
+            is False.
+        planet (xxx): Name of planet, e.g., "SATURN".
+
+    Returns:
+        xxx: xxx
     """
+#xxx Insert "*"?
+#xxx Unknown arg name: planet
 
     # Do not let a body block itself
     if target == blocker:
@@ -459,23 +500,26 @@ def _construct_excluded_mask(backplane, target, planet, mask_desc,
 def _formatted_column(values, format):
     """Returns one formatted column (or a pair of columns) as a string.
 
-    Input:
-        values          a Scalar of values with its applied mask.
-        format          a tuple (flag, number_of_values, column_width,
-                        standard_format, overflow_format, null_value),
-                        describing the format to use. Here...
-          flag              "DEG" implies that the values should be converted 
-                            from radians to degrees; "360" implies that the 
-                            values should be converted to a range of degrees, 
-                            allowing for ranges that cross from 360 to 0.
-          number_of_values  1 yields the mean value
-                            2 yields the minimium and maximum values
-          column_width      Total width of the formatted string.
-          standard_format   Desired format code for the field.
-          overflow_format   Format code if field overflows the standard_format
-                            length.
-          null_value        Value to indicate NULL.
-          
+    Args:
+        values (xxx): A Scalar of values with its applied mask.
+        format (xxx):
+            A tuple (flag, number_of_values, column_width,
+            standard_format, overflow_format, null_value),
+            describing the format to use. Here...
+            flag              "DEG" implies that the values should be converted
+            from radians to degrees; "360" implies that the
+            values should be converted to a range of degrees,
+            allowing for ranges that cross from 360 to 0.
+            number_of_values  1 yields the mean value
+            2 yields the minimium and maximum values
+            column_width      Total width of the formatted string.
+            standard_format   Desired format code for the field.
+            overflow_format   Format code if field overflows the standard_format
+            length.
+            null_value        Value to indicate NULL.
+
+    Returns:
+        xxx: xxx
     """
 
     # Interpret the format
@@ -551,6 +595,14 @@ def _range_of_n_angles(n, prob=0.1, tests=100000):
     For a set of n randomly chosen angles 0-360, return the range such that the
     likelihood of all n angles falling within this range of one another has the
     given probability. Base this on the specified number of tests.
+
+    Args:
+        n (xxx): Xxx
+        prob (float, optional): Xxx
+        tests (int, optional): Xxx
+
+    Returns:
+        xxx: xxx
     """
     #### This function is not used.  It should be removed and placed in a 
     #### utility library.
@@ -678,7 +730,14 @@ NINETY_PERCENT_RANGE_DEGREES = np.array([
 def _ninety_percent_gap_degrees(n):
     """For n samples, return the approximate number of degrees for the largest
     gap in coverage providing 90% confidence that the angular coverage is not
-    actually complete."""
+    actually complete.
+
+    Args:
+        n (xxx): Xxx
+
+    Returns:
+        xxx: xxx
+    """
 
     # Below 1000, use the tabulation
     if n < 1000:
@@ -692,10 +751,14 @@ def _get_range_mod360(values, alt_format=None):
     """Returns the minimum and maximum values in the array, allowing for the
     possibility that the numeric range wraps around from 360 to 0.
 
-    Input:
-        values          the set of values for which to determine the range.
-        alt_format      "-180" to return values in the range (-180,180) rather
-                        than (0,360).
+    Args:
+        values (xxx): The set of values for which to determine the range.
+        alt_format (xxx, optional):
+            "-180" to return values in the range (-180,180) rather
+            than (0,360).
+
+    Returns:
+        xxx: xxx
     """
 
     # Check for use of negative values
@@ -740,11 +803,12 @@ def _get_range_mod360(values, alt_format=None):
 def _make_label(filepath, creation_time=None, preserve_time=False):
     """Creates a label for a given geometry table.
 
-    Input:
-        filepath        Path to the geometry table.
-        creation_time   Creation time to use instead of the current time.
-        preserve_time   If True, the creation time is copied from any existing
-                        label before it is overwrittten.
+    Args:
+        filepath (xxx): Path to the geometry table.
+        creation_time (xxx, optional): Creation time to use instead of the current time.
+        preserve_time (bool, optional):
+            If True, the creation time is copied from any existing
+            label before it is overwrittten.
     """
 
     filename = filepath.name
@@ -839,24 +903,27 @@ def _make_label(filepath, creation_time=None, preserve_time=False):
 def _process_one_index(indir, outdir, 
                        selection='', append=False, exclude=None, glob=None, 
                        no_table=False, no_log=True):
-    """Process the index file for a single volume and write a selection of 
+    """Process the index file for a single volume and write a selection of
     geometry files.
 
-    Input:
-        indir           directory containing the volume.
-        outdir          directory in whioch to werite the geometry files.
-        selection       a string containing...
-                            "S" to generate summary files;
-                            "D" to generate detailed files;
-                            "T" to generate a test file (which matches the
-                                set of columns in the old geometry files).
-        append          if True, geometry files that already exist are not
-                        ignored.
-        exclude         list of volumes to exclude.
-        glob            glob pattern for index files.
-        no_table        if True, do not produce a table, just a label.
-        no_log          if True, do not produce a log file.
+    Args:
+        indir (xxx): Directory containing the volume.
+        outdir (xxx): Directory in whioch to werite the geometry files.
+        selection (str, optional):
+            A string containing...
+            "S" to generate summary files;
+            "D" to generate detailed files;
+            "T" to generate a test file (which matches the
+            set of columns in the old geometry files).
+        append (bool, optional):
+            If True, geometry files that already exist are not
+            ignored.
+        exclude (xxx, optional): List of volumes to exclude.
+        glob (xxx, optional): Glob pattern for index files.
+        no_table (bool, optional): If True, do not produce a table, just a label.
+        no_log (bool, optional): If True, do not produce a log file.
     """
+#xxx Insert "*"?
 
     # Handle exclusions
     if exclude is not None:
@@ -886,8 +953,8 @@ def _process_one_index(indir, outdir,
     # Open the output files
     prefix = outdir.joinpath(volume_id).as_posix()
 
-##    log_filename = Path(prefix + "_log.txt")
-    inventory_filename = Path(prefix + "_inventory.tab")
+    log_filename = Path(prefix + "_log.txt")
+    inventory_filename = Path(prefix + "_inventory.csv")
     
     ring_summary_filename = Path(prefix + "_ring_summary.tab")
     planet_summary_filename = Path(prefix + "_%s_summary.tab" % config.PLANET.lower())
@@ -899,35 +966,35 @@ def _process_one_index(indir, outdir,
 
     test_summary_filename = Path(prefix + "_test_summary.tab")
 
-##    log_file = open(log_filename, "w")
+###    log_file = open(log_filename, "w")
     inventory_file = open(inventory_filename, "w")
     
     if not no_table:
-##        print("Log file: " + log_file.name)
+###        print("Log file: " + log_file.name)
         print("Inventory file: " + inventory_file.name)
 
         if "S" in selection:
-            ring_summary   = open(ring_summary_filename, "w")
-            planet_summary = open(planet_summary_filename, "w")
-            moon_summary   = open(moon_summary_filename, "w")
-
             print("Ring summary file:", ring_summary_filename)
             print("Planet summary file:", planet_summary_filename)
             print("Moon summary file:", moon_summary_filename)
 
         if "D" in selection:
-            ring_detailed   = open(ring_detailed_filename, "w")
-            planet_detailed = open(planet_detailed_filename,"w")
-            moon_detailed   = open(moon_detailed_filename, "w")
-
             print("Ring detail file:", ring_detailed_filename)
             print("Planet detail file:", planet_detailed_filename)
             print("Moon detail file:", moon_detailed_filename)
 
         if "T" in selection:
-            test_summary = open(test_summary_filename, "w")
-
             print("Test summary file:", test_summary_filename)
+
+        ring_summary = []
+        planet_summary = []
+        moon_summary = []
+
+        ring_detailed = []
+        planet_detailed = []
+        moon_detailed = []
+
+        test_summary = []
 
         # Loop through the observations...
         for i in range(records):
@@ -979,11 +1046,18 @@ def _process_one_index(indir, outdir,
 
                 inventory_file.write("\r\n")    # Use <CR><LF> line termination
 
+
+
                 # Convert the inventory into a list of moon names
+                primary_planet = config.PLANET
                 if len(inventory_names) > 0 and inventory_names[0] == config.PLANET:
+#                    primary_planet = config.PLANET
                     moon_names = inventory_names[1:]
                 else:
+#                    primary_planet = inventory_names[0]
                     moon_names = inventory_names
+
+
 
                 # Define a blocker moon, if any
                 if target in moon_names:
@@ -1001,53 +1075,56 @@ def _process_one_index(indir, outdir,
 
                 # Write the summary files
                 if "S" in selection:
-                    _write_record(prefixes, backplane, blocker,
-                                  ring_summary, config.RING_SUMMARY_COLUMNS,
-                                  config.PLANET)
+                    if primary_planet == config.PLANET:
+                        ring_summary += _add_record(prefixes, backplane, blocker,
+                                                    config.RING_SUMMARY_COLUMNS,
+                                                    config.PLANET)
 
-                    _write_record(prefixes, backplane, blocker,
-                                  planet_summary, config.PLANET_SUMMARY_COLUMNS,
-                                  config.PLANET, moon=config.PLANET,
-                                  moon_length=config.NAME_LENGTH)
+                        planet_summary += _add_record(prefixes, backplane, blocker,
+                                                      config.PLANET_SUMMARY_COLUMNS,
+                                                      config.PLANET, moon=config.PLANET,
+                                                      moon_length=config.NAME_LENGTH)
 
                     for name in moon_names:
-                        _write_record(prefixes, backplane, blocker,
-                                      moon_summary, config.MOON_SUMMARY_DICT[name],
+                        moon_summary += _add_record(prefixes, backplane, blocker,
+                                      config.MOON_SUMMARY_DICT[name],
                                       config.PLANET, moon=name,
                                       moon_length=config.NAME_LENGTH)
 
                 # Write the detailed files
                 if "D" in selection:
-                    _write_record(prefixes, backplane, blocker,
-                                  ring_detailed, config.RING_DETAILED_COLUMNS,
-                                  config.PLANET, tiles=(config.RING_TILES, config.OUTER_RING_TILES))
+                    if primary_planet == config.PLANET:
+                        ring_detailed += _add_record(prefixes, backplane, blocker,
+                                                     config.RING_DETAILED_COLUMNS,
+                                                     config.PLANET, tiles=(config.RING_TILES, config.OUTER_RING_TILES))
 
-                    _write_record(prefixes, backplane, blocker,
-                                  planet_detailed, config.PLANET_DETAILED_COLUMNS,
-                                  config.PLANET, moon=config.PLANET,
-                                  moon_length=config.NAME_LENGTH,
-                                  tiles=PLANET_TILES)
+                        planet_detailed += _add_record(prefixes, backplane, blocker,
+                                                       config.PLANET_DETAILED_COLUMNS,
+                                                       config.PLANET, moon=config.PLANET,
+                                                       moon_length=config.NAME_LENGTH,
+                                                       tiles=PLANET_TILES)
 
                     for name in moon_names:
-                        _write_record(prefixes, backplane, blocker,
-                                      moon_detailed, config.MOON_DETAILED_DICT[name],
+                        moon_detailed += _add_record(prefixes, backplane, blocker,
+                                      config.MOON_DETAILED_DICT[name],
                                       config.PLANET, moon=name,
                                       moon_length=config.NAME_LENGTH,
                                       tiles=config.MOON_TILE_DICT[name])
 
                 # Write the test geometry file
                 if "T" in selection:
-                    _write_record(prefixes, backplane, blocker,
-                                  test_summary, config.TEST_SUMMARY_COLUMNS, config.PLANET)
+                    if primary_planet == config.PLANET:
+                        test_summary += _add_record(prefixes, backplane, blocker,
+                                                    config.TEST_SUMMARY_COLUMNS, config.PLANET)
 
             # A RuntimeError is probably caused by missing spice data. There is
             # probably nothing we can do.
             except RuntimeError as e:
 
                 print(e)
-##                log_file.write(40*"*" + "\n" + logstr + "\n")
-##                log_file.write(str(e))
-##                log_file.write("\n\n")
+###                log_file.write(40*"*" + "\n" + logstr + "\n")
+###                log_file.write(str(e))
+###                log_file.write("\n\n")
 
             # Other kinds of errors are genuine bugs. For now, we just log the
             # problem, and jump over the image; we can deal with it later.
@@ -1055,37 +1132,37 @@ def _process_one_index(indir, outdir,
                     LookupError, TypeError, ValueError):
 
                 traceback.print_exc()
-#                log_file.write(40*"*" + "\n" + logstr + "\n")
-##                log_file.write(traceback.format_exc())
-##                log_file.write("\n\n")
+###                log_file.write(40*"*" + "\n" + logstr + "\n")
+###                log_file.write(traceback.format_exc())
+###                log_file.write("\n\n")
 
     # Close all files
-##    log_file.close()
+###    log_file.close()
     inventory_file.close()
 
-    try:
-        ring_summary.close()
-        planet_summary.close()
-        moon_summary.close()
-        ring_detailed.close()
-        planet_detailed.close()
-        moon_detailed.close()
-        test_summary.close()
-    except:
-        pass
 
-    # Make labels
+    # Write tables and Make labels 
     _make_label(inventory_filename)
 
+#    from IPython import embed; print('+++++-----++++++++'); embed()
     if "S" in selection:
+        _write_table(ring_summary_filename, ring_summary)
         _make_label(ring_summary_filename)
+        _write_table(planet_summary_filename, planet_summary)
         _make_label(planet_summary_filename)
+        _write_table(moon_summary_filename, moon_summary)
         _make_label(moon_summary_filename)
+
     if "D" in selection:
+        _write_table(ring_detailed_filename, ring_detailed)
         _make_label(ring_detailed_filename)
+        _write_table(planet_detailed_filename, planet_detailed)
         _make_label(planet_detailed_filename)
+        _write_table(moon_detailed_filename, moon_detailed)
         _make_label(moon_detailed_filename)
+
     if "T" in selection:
+        _write_table(test_summary_filename, test_summary)
         _make_label(test_summary_filename)
 
 ################################################################################
@@ -1093,28 +1170,36 @@ def _process_one_index(indir, outdir,
 ################################################################################
 
 #===============================================================================
-def process_index(input_tree, output_tree,
+def process_index(input_tree, output_tree, *,
                   selection='', append=False, exclude=None, glob=None, 
                   volume=None, no_table=False):
     """Creates geometry files for a collection of volumes.
 
-    Input:
-        input tree      root of the tree containing the volumes.
-        output tree     root of the tree in which the output files are
-                        written in the same directory structure as in the 
-                        input tree.
-        selection       a string containing...
-                            "S" to generate summary files;
-                            "D" to generate detailed files;
-                            "T" to generate a test file (which matches the
-                                set of columns in the old geometry files).
-        append          if True, geometry files that already exist are not
-                        ignored.
-        exclude         list of volumes to exclude.
-        glob            glob pattern for index files.
-        volume          if given, only this volume is processed.
-        no_table        if True, do not produce a table, just a label.
+    Args:
+        input (xxx): Tree      root of the tree containing the volumes.
+        output (xxx):
+            Tree     root of the tree in which the output files are
+            written in the same directory structure as in the
+            input tree.
+        selection (str, optional):
+            A string containing...
+            "S" to generate summary files;
+            "D" to generate detailed files;
+            "T" to generate a test file (which matches the
+            set of columns in the old geometry files).
+        append (bool, optional):
+            If True, geometry files that already exist are not
+            ignored.
+        exclude (xxx, optional): List of volumes to exclude.
+        glob (xxx, optional): Glob pattern for index files.
+        volume (xxx, optional): If given, only this volume is processed.
+        no_table (bool, optional): If True, do not produce a table, just a label.
+        input_tree (xxx): Xxx
+        output_tree (xxx): Xxx
     """
+#xxx Unknown arg name: input
+#xxx Unknown arg name: output
+#xxx Arg defined out of order: no_table
 
     input_tree = Path(input_tree) 
     output_tree = Path(output_tree) 

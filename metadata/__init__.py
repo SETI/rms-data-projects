@@ -218,7 +218,6 @@ def download(outdir: str, url: str, patterns: str, first=False):
     print('Transferring files...')
     match = False
     for i in range(len(patterns)):
-#    for pattern in patterns:
         try:
             F.walk(pattern=patterns[i], dest=coldir)
             match = True
@@ -302,7 +301,6 @@ def replacement_dict(tree, placeholder, names):
 
     """
 
-    from IPython import embed; print('++++-+-++-++-++-++'); embed()
     dict = {}
     for name in names:
         dict[name] = replace(tree, placeholder, name)

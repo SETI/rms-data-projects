@@ -59,7 +59,7 @@ class Test_MakeLabel(unittest.TestCase):
     #===========================================================================
     # test supplemental index common fields
     def test_supplemental_index_common(self):
-    
+
         # Get labels to test
         files = self.match(METADATA, '*_supplemental_index.lbl')
         files = self.exclude(files, 'templates/', 'old/')
@@ -70,10 +70,10 @@ class Test_MakeLabel(unittest.TestCase):
             print('Reading', file)
             table = pdstable.PdsTable(file)
 
-            # verify # rows, columns          
+            # verify # rows, columns
             self.assertEqual(table.info.rows, len(table.column_values['VOLUME_ID']))
             self.assertEqual(table.info.columns, len(table.keys))
-            
+
             # validate column values
             self.assertIsInstance(table.column_values['VOLUME_ID'][0], np.str_)
             self.assertIsInstance(table.column_values['FILE_SPECIFICATION_NAME'][0], np.str_)
@@ -94,10 +94,10 @@ class Test_MakeLabel(unittest.TestCase):
             print('Reading', file)
             table = pdstable.PdsTable(file)
 
-            # verify # rows, columns          
+            # verify # rows, columns
             self.assertEqual(table.info.rows, len(table.column_values['OPUS_ID']))
             self.assertEqual(table.info.columns, len(table.keys))
-            
+
             # validate column values
             self.assertIsInstance(table.column_values['VOLUME_ID'][0], np.str_)
             self.assertIsInstance(table.column_values['FILE_SPECIFICATION_NAME'][0], np.str_)
@@ -116,7 +116,7 @@ class Test_MakeLabel(unittest.TestCase):
         for file in files:
             print('Reading', file)
             table = pdstable.PdsTable(file)
-            
+
             # validate column values
             self.assertIsInstance(table.column_values['TARGET_NAME'][0], np.str_)
 

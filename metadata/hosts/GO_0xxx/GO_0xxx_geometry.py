@@ -24,6 +24,7 @@ except IndexError:
 
 geom.process_index(sys.argv[1], sys.argv[2], volume=volume, append=False, #no_table=True,
                    selection="S", 
-                   exclude=['GO_0016', 'GO_0999'],
+#                   exclude=['GO_0016', 'GO_0999'],
+                   exclude=['GO_0999'], 
                    glob='GO_????_index.lbl')
 ################################################################################
