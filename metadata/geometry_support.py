@@ -1032,10 +1032,10 @@ def _process_one_index(indir, outdir,
                 print(logstr)
 
                 # Inventory the bodies in the FOV (including targeted irregulars)
-                if target not in config.SYSTEM_NAMES and oops.Body.exists(target):
-                    body_names = config.SYSTEM_NAMES + [target]
+                if target not in config.BODY_NAMES and oops.Body.exists(target):
+                    body_names = config.BODY_NAMES + [target]
                 else:
-                    body_names = config.SYSTEM_NAMES
+                    body_names = config.BODY_NAMES
 
                 inventory_names = observation.inventory(body_names, expand=config.EXPAND, cache=False)
 
@@ -1051,10 +1051,8 @@ def _process_one_index(indir, outdir,
                 # Convert the inventory into a list of moon names
                 primary_planet = config.PLANET
                 if len(inventory_names) > 0 and inventory_names[0] == config.PLANET:
-#                    primary_planet = config.PLANET
                     moon_names = inventory_names[1:]
                 else:
-#                    primary_planet = inventory_names[0]
                     moon_names = inventory_names
 
 

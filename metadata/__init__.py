@@ -96,7 +96,7 @@ from .fancyindex import FancyIndex
 # Define constants
 ###############################
 _metadata = sys.modules[__name__]
-COLUMNS_DIR = Path(_metadata.__file__).parent / 'columns'
+BODY_DIR = Path(_metadata.__file__).parent / 'body'
 TEMPLATES_DIR = Path(_metadata.__file__).parent / 'templates'
 NULL = "null"
 

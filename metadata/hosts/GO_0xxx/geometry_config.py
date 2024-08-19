@@ -17,7 +17,16 @@ ssi.initialize()
 ############################################
 # Key parameters of run
 ############################################
-exec(open(meta.COLUMNS_DIR / 'COLUMNS_JUPITER.py').read())
+#planet_files = list(Path('.').glob('PLANET_*'))
+#for file in planet_files:
+#    exec(open(meta.BODY_DIR / file).read())
+
+exec(open(meta.BODY_DIR / 'PLANET_JUPITER.py').read())         ####
+
+
+exec(open(meta.BODY_DIR / 'COLUMNS_SKY.py').read())
+exec(open(meta.BODY_DIR / 'COLUMNS_BODY.py').read())
+exec(open(meta.BODY_DIR / 'COLUMNS_RING.py').read())
 
 SAMPLING = 8                        # pixel sampling density
 #SELECTION = "S"                     # summary files only
