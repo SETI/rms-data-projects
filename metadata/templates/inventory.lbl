@@ -1,15 +1,15 @@
 PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = STREAM
 
-^TEXT                           = $
+^TEXT                           = "$FILENAME$"
 
-VOLUME_ID                       = $
-PRODUCT_CREATION_TIME           = $
+VOLUME_ID                       = "$VOLUME_ID$"
+PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
 
 $INSERT{./templates/host_defs.lbl}
 
 OBJECT                          = TEXT
-  PUBLICATION_DATE              = $
+  PUBLICATION_DATE              = $PUBLICATION_DATE$
   NOTE                          = "Description of the contents of
 the Inventory table."
 END_OBJECT                      = TEXT

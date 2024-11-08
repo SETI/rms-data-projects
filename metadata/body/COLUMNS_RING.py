@@ -1,11 +1,8 @@
 ################################################################################
 # COLUMNS_RING.py: Column definitions for ring geometry tables
 ################################################################################
-import oops
-import metadata as meta
-
-planet_ring = PLANET + ":RING"
-planet_ansa = PLANET + ":ANSA"
+planet_ring = BODYX + ":RING"
+planet_ansa = BODYX + ":ANSA"
 
 ################################################################################
 # *COLUMN description tuples are
@@ -38,7 +35,6 @@ planet_ansa = PLANET + ":ANSA"
 #                       "-180" = use the range (-180,180) instead of (0,360).
 #
 ################################################################################
-
 RING_COLUMNS = [
     (("ring_radius",            planet_ring),               ("PM", "P", "")),
     (("resolution",             planet_ring, "v"),          ("PM", "P", "")),
@@ -91,55 +87,26 @@ ANSA_COLUMNS = [
     (("ansa_longitude",         planet_ansa, "sha"),        ("PM", "P", ""))]
 #    (("ansa_longitude",         planet_ansa, "obs"),        ("PM", "P", ""))]
 
-TEST_COLUMNS = [
-    (("right_ascension",        ()),                        ("",   "",  "")),
-    (("declination",            ()),                        ("",   "",  "")),
-    (("ring_radius",            planet_ring),               ("P",  "P", "")),
-    (("ring_radial_resolution", planet_ring),               ("P",  "P", "")),
-    (("ring_longitude",         planet_ring, "node"),       ("P",  "P", "")),
-    (("ring_longitude",         planet_ring, "obs"),        ("P",  "P", "")),
-    (("ring_longitude",         planet_ring, "sha"),        ("P",  "P", "")),
-    (("phase_angle",            planet_ring),               ("P",  "P", "")),
-    (("incidence_angle",        planet_ring),               ("P",  "P", "")),
-    (("emission_angle",         planet_ring),               ("P",  "P", "")),
-    (("distance",               planet_ring),               ("P",  "",  "")),
-    (("where_inside_shadow",    planet_ring, PLANET),       ("P",  "",  "")),
-    (("where_in_front",         planet_ring, PLANET),       ("P",  "",  "")),
-    (("where_antisunward",      planet_ring),               ("P",  "",  "")),
-    (("ansa_radius",            planet_ansa),               ("P",  "",  "")),
-    (("ansa_altitude",          planet_ansa),               ("P",  "",  "")),
-    (("ansa_longitude",         planet_ansa, "node"),       ("P",  "",  "")),
-    (("ansa_longitude",         planet_ansa, "sha"),        ("P",  "",  "")),
-    (("distance",               planet_ansa),               ("P",  "",  "")),
-    (("ansa_radial_resolution", planet_ansa),               ("P",  "",  ""))]
-
-TEST_COLUMNS = [
-    (("right_ascension",        ()),                        ("",   "",  "")),
-    (("declination",            ()),                        ("",   "",  "")),
-    (("ring_radius",            planet_ring),               ("P",  "P", "")),
-    (("ring_radial_resolution", planet_ring),               ("P",  "P", "")),
-    (("ring_longitude",         planet_ring, "node"),       ("P",  "P", "")),
-    (("ring_longitude",         planet_ring, "obs"),        ("P",  "P", "")),
-    (("ring_longitude",         planet_ring, "sha"),        ("P",  "P", "")),
-    (("phase_angle",            planet_ring),               ("P",  "P", "")),
-    (("incidence_angle",        planet_ring),               ("P",  "P", "")),
-    (("emission_angle",         planet_ring),               ("P",  "P", "")),
-    (("distance",               planet_ring),               ("P",  "",  "")),
-    (("where_inside_shadow",    planet_ring, PLANET),       ("P",  "",  "")),
-    (("where_in_front",         planet_ring, PLANET),       ("P",  "",  "")),
-    (("where_antisunward",      planet_ring),               ("P",  "",  "")),
-    (("ansa_radius",            planet_ansa),               ("P",  "",  "")),
-    (("ansa_altitude",          planet_ansa),               ("P",  "",  "")),
-    (("ansa_longitude",         planet_ansa, "node"),       ("P",  "",  "")),
-    (("ansa_longitude",         planet_ansa, "sha"),        ("P",  "",  "")),
-    (("distance",               planet_ansa),               ("P",  "",  "")),
-    (("ansa_radial_resolution", planet_ansa),               ("P",  "",  ""))]
-
 # Assemble the column lists for each type of file for the rings and for Saturn
-
 RING_SUMMARY_COLUMNS  = (RING_COLUMNS + ANSA_COLUMNS +
                          RING_GRIDLESS_COLUMNS)
 RING_DETAILED_COLUMNS = RING_COLUMNS + ANSA_COLUMNS
+
+# Create a dictionary for the columns of each planet
+#RING_SUMMARY_DICT = {}
+#RING_DETAILED_DICT = {}
+#for planet in PLANET_NAMES:
+#    RING_SUMMARY_DICT[planet]  = replacement_dict(RING_SUMMARY_COLUMNS,
+#                                                         BODYX, [planet])
+#    RING_DETAILED_DICT[planet] = replacement_dict(RING_DETAILED_COLUMNS,
+#                                                         BODYX, [planet])
+RING_SUMMARY_DICT = {}
+RING_DETAILED_DICT = {}
+for planet in PLANET_NAMES:
+    RING_SUMMARY_DICT.update(replacement_dict(RING_SUMMARY_COLUMNS,
+                                                         BODYX, [planet]))
+    RING_DETAILED_DICT.update(replacement_dict(RING_DETAILED_COLUMNS,
+                                                         BODYX, [planet]))
 
 ################################################################################
 # Define the tiling for detailed listings
@@ -150,38 +117,50 @@ RING_DETAILED_COLUMNS = RING_COLUMNS + ANSA_COLUMNS
 ################################################################################
 RING_AZ = ("ring_azimuth", planet_ring, "obs")
 
-RING_TILES = [
-    ("where_all",                                   # mask over remaining tiles
-        ("where_in_front", planet_ring, PLANET),
-        ("where_outside_shadow", planet_ring, PLANET),
-        ("where_below", ("ring_radius", planet_ring), 150000.)),
-    ("where_between", RING_AZ, 0.20 * np.pi, 0.45 * np.pi),
-    ("where_between", RING_AZ, 0.45 * np.pi, 0.55 * np.pi),
-    ("where_between", RING_AZ, 0.55 * np.pi, 0.80 * np.pi),
-    ("where_between", RING_AZ, 0.80 * np.pi, 1.20 * np.pi),
-    ("where_between", RING_AZ, 1.20 * np.pi, 1.45 * np.pi),
-    ("where_between", RING_AZ, 1.45 * np.pi, 1.55 * np.pi),
-    ("where_between", RING_AZ, 1.55 * np.pi, 1.80 * np.pi),
-    ("where_any",
-        ("where_below", RING_AZ, 0.20 * np.pi),
-        ("where_above", RING_AZ, 1.80 * np.pi)),
-]
+RING_TILES = {}
+for planet in PLANET_NAMES:
+    RING_TILES[planet] = [
+        ("where_all",                                   # mask over remaining tiles
+            ("where_in_front", planet_ring, BODYX),
+            ("where_outside_shadow", planet_ring, BODYX),
+            ("where_below", ("ring_radius", planet_ring), 150000.)),
+        ("where_between", RING_AZ, 0.20 * np.pi, 0.45 * np.pi),
+        ("where_between", RING_AZ, 0.45 * np.pi, 0.55 * np.pi),
+        ("where_between", RING_AZ, 0.55 * np.pi, 0.80 * np.pi),
+        ("where_between", RING_AZ, 0.80 * np.pi, 1.20 * np.pi),
+        ("where_between", RING_AZ, 1.20 * np.pi, 1.45 * np.pi),
+        ("where_between", RING_AZ, 1.45 * np.pi, 1.55 * np.pi),
+        ("where_between", RING_AZ, 1.55 * np.pi, 1.80 * np.pi),
+        ("where_any",
+            ("where_below", RING_AZ, 0.20 * np.pi),
+            ("where_above", RING_AZ, 1.80 * np.pi)),
+    ]
 
-OUTER_RING_TILES = [
-    ("where_all",                                   # mask over remaining tiles
-        ("where_in_front", planet_ring, PLANET),
+OUTER_RING_TILES = {}
+for planet in PLANET_NAMES:
+    OUTER_RING_TILES[planet] = [
+        ("where_all",                                   # mask over remaining tiles
+                ("where_in_front", planet_ring, BODYX),
         ("where_above", ("ring_radius", planet_ring), 150000.)),
-    ("where_between", RING_AZ, 0.20 * np.pi, 0.45 * np.pi),
-    ("where_between", RING_AZ, 0.45 * np.pi, 0.55 * np.pi),
-    ("where_between", RING_AZ, 0.55 * np.pi, 0.80 * np.pi),
-    ("where_between", RING_AZ, 0.80 * np.pi, 1.20 * np.pi),
-    ("where_between", RING_AZ, 1.20 * np.pi, 1.45 * np.pi),
-    ("where_between", RING_AZ, 1.45 * np.pi, 1.55 * np.pi),
-    ("where_between", RING_AZ, 1.55 * np.pi, 1.80 * np.pi),
-    ("where_between", RING_AZ, 0.80 * np.pi, 1.20 * np.pi),
-    ("where_any",
-        ("where_below", RING_AZ, 0.20 * np.pi),
-        ("where_above", RING_AZ, 1.80 * np.pi)),
-]
+        ("where_between", RING_AZ, 0.20 * np.pi, 0.45 * np.pi),
+        ("where_between", RING_AZ, 0.45 * np.pi, 0.55 * np.pi),
+        ("where_between", RING_AZ, 0.55 * np.pi, 0.80 * np.pi),
+        ("where_between", RING_AZ, 0.80 * np.pi, 1.20 * np.pi),
+        ("where_between", RING_AZ, 1.20 * np.pi, 1.45 * np.pi),
+        ("where_between", RING_AZ, 1.45 * np.pi, 1.55 * np.pi),
+        ("where_between", RING_AZ, 1.55 * np.pi, 1.80 * np.pi),
+        ("where_between", RING_AZ, 0.80 * np.pi, 1.20 * np.pi),
+        ("where_any",
+            ("where_below", RING_AZ, 0.20 * np.pi),
+            ("where_above", RING_AZ, 1.80 * np.pi)),
+    ]
+
+RING_TILE_DICT = {}
+for planet in PLANET_NAMES:
+    RING_TILE_DICT[planet] = replace(RING_TILES[planet], BODYX, planet)
+
+OUTER_RING_TILE_DICT = {}
+for planet in PLANET_NAMES:
+    OUTER_RING_TILE_DICT[planet] = replace(OUTER_RING_TILES[planet], BODYX, planet)
 
 ################################################################################

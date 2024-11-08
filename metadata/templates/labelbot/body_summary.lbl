@@ -1,20 +1,44 @@
+$NOTE 
+################################################################################
+# Geometry file template for bodies.  
+#
+#  This template controls the creation of body geometry files.  The procedure 
+#  for generating geometry files for a host is as follows.  Files referred to 
+#  below should be copied into the top directory for the collection, e.g., 
+#  GO_0xxx:
+#
+#  2. Copy and edit the <collection>_geometry.py script to reflect the 
+#     type of index and glob pattern for the table files.
+#  3. Copy and edit config.py to address any host-dependent processing.
+#  4. Run <collection>_geometry.py from the collection top directory.
+#
+#  In the host_defs files, replace all values describing the new host.  
+#  In this template, quantities enclosed in dollar signs are automatically 
+#  filled in and should not be edited.  Add a column for each quantity to be 
+#  copied from the product label into the index.  
+#
+################################################################################
+$END_NOTE
+$ONCE(_=COUNTER('COLUMN', reset=True))
+
 PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = FIXED_LENGTH
-FILE_RECORDS                    = $
-RECORD_BYTES                    = 489
-^MOON_GEOMETRY_TABLE            = $
-
-VOLUME_ID                       = $
-PRODUCT_CREATION_TIME           = $
+RECORD_BYTES                    = $RECORD_BYTES$
+FILE_RECORDS                    = $FILE_RECORDS$
+^$TABLE_TYPE$_TABLE             = "$FILENAME$"
 
 $INSERT{./templates/host_defs.lbl}
 
-OBJECT                          = MOON_GEOMETRY_TABLE
-  INTERCHANGE_FORMAT            = ASCII
-  ROWS                          = $
-  ROW_BYTES                     = 489
-  COLUMNS                       = 44
+PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
 
+VOLUME_ID                       = "{VOLUME_ID}"
+
+OBJECT                          = $TABLE_TYPE$_TABLE
+  INTERCHANGE_FORMAT            = ASCII
+  ROWS                          = $ROWS$
+  COLUMNS                       = $COLUMNS$
+  ROW_BYTES                     = $ROW_BYTES$
+  INDEX_TYPE                    = SINGLE
   DESCRIPTION                   = "This index describes the intercept geometry
     for the regular satellites and other targeted bodies within the field of
     view of the instrument. The table contains zero or more rows for each
@@ -49,48 +73,45 @@ OBJECT                          = MOON_GEOMETRY_TABLE
     independent of the field of view. These quantities are tabulated as single
     values rather than as minimum/maximum pairs."
 
+$NOTE 
+################################################################
+# Add a column below for each desired index quantity
+# Edit COLUMN NAME and any fields not enclosed in dollar signs
+################################################################
+$END_NOTE
+
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 1
-    NAME                        = VOLUME_ID
-    DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 2
-    BYTES                       = 7
-    FORMAT                      = "A7"
+  $ONCE(COLUMN_NAME                                  = 'VOLUME_ID')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     DESCRIPTION                 = "The volume ID provides a unique identifier
       for a PDS data volume."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 2
-    NAME                        = FILE_SPECIFICATION_NAME
-    DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 12
-    BYTES                       = 45
-    FORMAT                      = "A45"
+  $ONCE(COLUMN_NAME                                  = 'FILE_SPECIFICATION_NAME')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A32"
     DESCRIPTION                 = "The file specification name provides the
       full name of a file, including a path name, relative to the root
       directory of the PDS volume."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 3
-    NAME                        = OPUS_ID
-    DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 60
-    BYTES                       = 24
-    FORMAT                      = "A24"
-    DESCRIPTION                 = "The OPUS ID uniquely identifies a single
-      experiment or observation (image, occultation profile, spectrum, etc.)
-      within a data set. This is the common tag by which data are identified
-      within the RMS Node catalog, OPUS."
-  END_OBJECT                    = COLUMN
-
-  OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 4
-    NAME                        = TARGET_NAME
-    DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 87
-    BYTES                       = 12
+  $ONCE(COLUMN_NAME                                  = 'SYSTEM')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A12"
     DESCRIPTION                 = "The target name is the name of the body for
       which the surface geometry parameters in this row of the table are
@@ -98,12 +119,26 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 5
-    NAME                        = MINIMUM_PLANETOCENTRIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 101
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'TARGET_NAME')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A12"
+    DESCRIPTION                 = "The target name is the name of the body for
+      which the surface geometry parameters in this row of the table are
+      applicable."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_PLANETOCENTRIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -129,11 +164,12 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 6
-    NAME                        = MAXIMUM_PLANETOCENTRIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 110
-    BYTES                       = 8
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_PLANETOCENTRIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
@@ -160,12 +196,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 7
-    NAME                        = MINIMUM_PLANETOGRAPHIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 119
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_PLANETOGRAPHIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -190,11 +227,12 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 8
-    NAME                        = MAXIMUM_PLANETOGRAPHIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 128
-    BYTES                       = 8
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_PLANETOGRAPHIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
@@ -220,12 +258,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 9
-    NAME                        = MINIMUM_IAU_LONGITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 137
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_IAU_LONGITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
@@ -248,11 +287,12 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 10
-    NAME                        = MAXIMUM_IAU_LONGITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 146
-    BYTES                       = 8
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_IAU_LONGITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
@@ -276,12 +316,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 11
-    NAME                        = MINIMUM_LOCAL_HOUR_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 155
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_LOCAL_HOUR_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
@@ -306,12 +347,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 12
-    NAME                        = MAXIMUM_LOCAL_HOUR_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 164
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_LOCAL_HOUR_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
@@ -336,12 +378,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 13
-    NAME                        = MINIMUM_LONGITUDE_WRT_OBSERVER
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 173
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_LONGITUDE_WRT_OBSERVER')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -180.
     VALID_MAXIMUM               = 180.
@@ -362,12 +405,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 14
-    NAME                        = MAXIMUM_LONGITUDE_WRT_OBSERVER
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 182
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_LONGITUDE_WRT_OBSERVER')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -180.
     VALID_MAXIMUM               = 180.
@@ -388,12 +432,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 15
-    NAME                        = MINIMUM_FINEST_SURFACE_RESOLUTION
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 191
-    BYTES                       = 10
-    FORMAT                      = "F10.5"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_FINEST_SURFACE_RESOLUTION')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Finest surface resolution is the shorter
@@ -414,12 +459,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 16
-    NAME                        = MAXIMUM_FINEST_SURFACE_RESOLUTION
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 202
-    BYTES                       = 10
-    FORMAT                      = "F10.5"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_FINEST_SURFACE_RESOLUTION')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Finest surface resolution is the shorter
@@ -442,12 +488,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 17
-    NAME                        = MINIMUM_COARSEST_SURFACE_RESOLUTION
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 213
-    BYTES                       = 10
-    FORMAT                      = "F10.5"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_COARSEST_SURFACE_RESOLUTION')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Coarsest surface resolution is the longer
@@ -473,12 +520,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 18
-    NAME                        = MAXIMUM_COARSEST_SURFACE_RESOLUTION
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 224
-    BYTES                       = 10
-    FORMAT                      = "F10.5"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_COARSEST_SURFACE_RESOLUTION')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Coarsest surface resolution is the longer
@@ -503,12 +551,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 19
-    NAME                        = MINIMUM_SURFACE_DISTANCE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 235
-    BYTES                       = 12
-    FORMAT                      = "F12.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SURFACE_DISTANCE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Surface distance is the separation between
@@ -526,12 +575,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 20
-    NAME                        = MAXIMUM_SURFACE_DISTANCE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 248
-    BYTES                       = 12
-    FORMAT                      = "F12.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SURFACE_DISTANCE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Surface distance is the separation between
@@ -549,12 +599,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 21
-    NAME                        = MINIMUM_PHASE_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 261
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_PHASE_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
@@ -573,12 +624,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 22
-    NAME                        = MAXIMUM_PHASE_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 270
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_PHASE_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
@@ -597,12 +649,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 23
-    NAME                        = MINIMUM_INCIDENCE_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 279
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_INCIDENCE_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
@@ -621,12 +674,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 24
-    NAME                        = MAXIMUM_INCIDENCE_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 288
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_INCIDENCE_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
@@ -645,12 +699,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 25
-    NAME                        = MINIMUM_EMISSION_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 297
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_EMISSION_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 90.
@@ -669,12 +724,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 26
-    NAME                        = MAXIMUM_EMISSION_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 306
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_EMISSION_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 90.
@@ -693,12 +749,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 27
-    NAME                        = MINIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 315
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -715,12 +772,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 28
-    NAME                        = MAXIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 324
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -737,12 +795,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 29
-    NAME                        = MINIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 333
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -759,12 +818,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 30
-    NAME                        = MAXIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 342
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -781,12 +841,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 31
-    NAME                        = MINIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 351
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -803,12 +864,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 32
-    NAME                        = MAXIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 360
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -825,12 +887,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 33
-    NAME                        = MINIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 369
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -847,12 +910,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 34
-    NAME                        = MAXIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 378
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -869,12 +933,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 35
-    NAME                        = MINIMUM_SUB_SOLAR_IAU_LONGITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 387
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SUB_SOLAR_IAU_LONGITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
@@ -888,12 +953,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 36
-    NAME                        = MAXIMUM_SUB_SOLAR_IAU_LONGITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 396
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SUB_SOLAR_IAU_LONGITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
@@ -907,11 +973,12 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 37
-    NAME                        = MINIMUM_SUB_OBSERVER_IAU_LONGITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 405
-    BYTES                       = 8
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SUB_OBSERVER_IAU_LONGITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
@@ -926,11 +993,12 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 38
-    NAME                        = MAXIMUM_SUB_OBSERVER_IAU_LONGITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 414
-    BYTES                       = 8
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SUB_OBSERVER_IAU_LONGITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
@@ -945,12 +1013,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 39
-    NAME                        = MINIMUM_CENTER_RESOLUTION
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 423
-    BYTES                       = 10
-    FORMAT                      = "F10.5"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_CENTER_RESOLUTION')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "The linear size of a pixel as projected at
@@ -961,12 +1030,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 40
-    NAME                        = MAXIMUM_CENTER_RESOLUTION
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 434
-    BYTES                       = 10
-    FORMAT                      = "F10.5"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_CENTER_RESOLUTION')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "The linear size of a pixel as projected at
@@ -977,12 +1047,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 41
-    NAME                        = MINIMUM_CENTER_DISTANCE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 445
-    BYTES                       = 12
-    FORMAT                      = "F12.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_CENTER_DISTANCE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Distance from the observer to the center of
@@ -993,12 +1064,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 42
-    NAME                        = MAXIMUM_CENTER_DISTANCE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 458
-    BYTES                       = 12
-    FORMAT                      = "F12.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_CENTER_DISTANCE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Distance from the observer to the center of
@@ -1009,12 +1081,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 43
-    NAME                        = MINIMUM_CENTER_PHASE_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 471
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_CENTER_PHASE_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
@@ -1032,12 +1105,13 @@ OBJECT                          = MOON_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 44
-    NAME                        = MAXIMUM_CENTER_PHASE_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 480
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_CENTER_PHASE_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
@@ -1054,5 +1128,5 @@ OBJECT                          = MOON_GEOMETRY_TABLE
       among all of the pixels observed in that direction."
   END_OBJECT                    = COLUMN
 
-END_OBJECT                      = MOON_GEOMETRY_TABLE
+END_OBJECT                      = BODY_GEOMETRY_TABLE
 END

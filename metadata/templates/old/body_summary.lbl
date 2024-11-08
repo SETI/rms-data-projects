@@ -1,24 +1,29 @@
 PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = FIXED_LENGTH
-FILE_RECORDS                    = $
-RECORD_BYTES                    = 489
-^PLANET_GEOMETRY_TABLE          = $
+FILE_RECORDS                    = $ROWS$
+RECORD_BYTES                    = 449
+^BODY_GEOMETRY_TABLE            = "$FILENAME$"
 
-VOLUME_ID                       = $
-PRODUCT_CREATION_TIME           = $
+PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
 
 $INSERT{./templates/host_defs.lbl}
 
-OBJECT                          = PLANET_GEOMETRY_TABLE
-  INTERCHANGE_FORMAT            = ASCII
-  ROWS                          = $
-  ROW_BYTES                     = 489
-  COLUMNS                       = 44
+VOLUME_ID                       = "$VOLUME_ID$"
 
-  DESCRIPTION                   = "This index describes the Jupiter intercept
-    geometry of the field of view of the instrument. The table contains
-    one row for each image file found on the volume identified by the
-    VOLUME_ID keyword above.
+OBJECT                          = BODY_GEOMETRY_TABLE
+  INDEX_TYPE                    = $INDEX_TYPE$
+  INTERCHANGE_FORMAT            = ASCII
+  ROWS                          = $ROWS$
+  ROW_BYTES                     = 449
+  COLUMNS                       = 43
+
+  DESCRIPTION                   = "This index describes the intercept geometry
+    for the regular satellites and other targeted bodies within the field of
+    view of the instrument. The table contains zero or more rows for each
+    image file found on the volume identified by the VOLUME_ID keyword above.
+    For each image, the file contains one row for each regular satellite
+    falling within the field of view, plus one row if the targeted body is not
+    a regular satellite (generally, an irregular satellite).
 
     Occasionally, SPICE pointing information is unavailable for the time at
     which an image was exposed. When this situation occurs, no row has been
@@ -34,11 +39,13 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
     calculated, and the minimum and maximum values of each quantity have been
     tabulated. Note that, for angular quantities that cycle from 360 degrees
     to zero, the tabulated minimum can be numerically greater than the
-    maximum. If Jupiter does not fall within the field of view, values of the
-    NULL_CONSTANT appear in the table.
+    maximum.
 
-    Regions of Jupiter that are obscured by a targeted moon are excluded from
-    the tabulation. The dark side of the planet is also generally excluded.
+    Regions of a body that are obscured by Jupiter or by a targeted moon are
+    excluded from the tabulation. The dark side of each body is also generally
+    excluded. If a body is too small to have been captured in an 8x8 sampling
+    of the image, then the associated NULL_CONSTANT will appear in each
+    column.
 
     Note that the last nine columns of the table contain quantities that are
     independent of the field of view. These quantities are tabulated as single
@@ -60,8 +67,8 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
     NAME                        = FILE_SPECIFICATION_NAME
     DATA_TYPE                   = CHARACTER
     START_BYTE                  = 12
-    BYTES                       = 45
-    FORMAT                      = "A45"
+    BYTES                       = 32
+    FORMAT                      = "A32"
     DESCRIPTION                 = "The file specification name provides the
       full name of a file, including a path name, relative to the root
       directory of the PDS volume."
@@ -69,22 +76,9 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 3
-    NAME                        = OPUS_ID
-    DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 60
-    BYTES                       = 24
-    FORMAT                      = "A24"
-    DESCRIPTION                 = "The OPUS ID uniquely identifies a single
-      experiment or observation (image, occultation profile, spectrum, etc.)
-      within a data set. This is the common tag by which data are identified
-      within the RMS Node catalog, OPUS."
-  END_OBJECT                    = COLUMN
-
-  OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 4
     NAME                        = TARGET_NAME
     DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 87
+    START_BYTE                  = 47
     BYTES                       = 12
     FORMAT                      = "A12"
     DESCRIPTION                 = "The target name is the name of the body for
@@ -93,10 +87,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 5
+    COLUMN_NUMBER               = 4
     NAME                        = MINIMUM_PLANETOCENTRIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 101
+    START_BYTE                  = 61
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -124,10 +118,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 6
+    COLUMN_NUMBER               = 5
     NAME                        = MAXIMUM_PLANETOCENTRIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 110
+    START_BYTE                  = 70
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -155,10 +149,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 7
+    COLUMN_NUMBER               = 6
     NAME                        = MINIMUM_PLANETOGRAPHIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 119
+    START_BYTE                  = 79
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -185,10 +179,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 8
+    COLUMN_NUMBER               = 7
     NAME                        = MAXIMUM_PLANETOGRAPHIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 128
+    START_BYTE                  = 88
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -215,10 +209,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 9
+    COLUMN_NUMBER               = 8
     NAME                        = MINIMUM_IAU_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 137
+    START_BYTE                  = 97
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -243,10 +237,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 10
+    COLUMN_NUMBER               = 9
     NAME                        = MAXIMUM_IAU_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 146
+    START_BYTE                  = 106
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -271,10 +265,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 11
+    COLUMN_NUMBER               = 10
     NAME                        = MINIMUM_LOCAL_HOUR_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 155
+    START_BYTE                  = 115
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -301,10 +295,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 12
+    COLUMN_NUMBER               = 11
     NAME                        = MAXIMUM_LOCAL_HOUR_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 164
+    START_BYTE                  = 124
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -331,10 +325,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 13
+    COLUMN_NUMBER               = 12
     NAME                        = MINIMUM_LONGITUDE_WRT_OBSERVER
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 173
+    START_BYTE                  = 133
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -357,10 +351,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 14
+    COLUMN_NUMBER               = 13
     NAME                        = MAXIMUM_LONGITUDE_WRT_OBSERVER
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 182
+    START_BYTE                  = 142
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -383,10 +377,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 15
+    COLUMN_NUMBER               = 14
     NAME                        = MINIMUM_FINEST_SURFACE_RESOLUTION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 191
+    START_BYTE                  = 151
     BYTES                       = 10
     FORMAT                      = "F10.5"
     UNIT                        = "KM"
@@ -409,10 +403,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 16
+    COLUMN_NUMBER               = 15
     NAME                        = MAXIMUM_FINEST_SURFACE_RESOLUTION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 202
+    START_BYTE                  = 162
     BYTES                       = 10
     FORMAT                      = "F10.5"
     UNIT                        = "KM"
@@ -437,10 +431,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 17
+    COLUMN_NUMBER               = 16
     NAME                        = MINIMUM_COARSEST_SURFACE_RESOLUTION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 213
+    START_BYTE                  = 173
     BYTES                       = 10
     FORMAT                      = "F10.5"
     UNIT                        = "KM"
@@ -468,10 +462,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 18
+    COLUMN_NUMBER               = 17
     NAME                        = MAXIMUM_COARSEST_SURFACE_RESOLUTION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 224
+    START_BYTE                  = 184
     BYTES                       = 10
     FORMAT                      = "F10.5"
     UNIT                        = "KM"
@@ -498,10 +492,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 19
+    COLUMN_NUMBER               = 18
     NAME                        = MINIMUM_SURFACE_DISTANCE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 235
+    START_BYTE                  = 195
     BYTES                       = 12
     FORMAT                      = "F12.3"
     UNIT                        = "KM"
@@ -521,10 +515,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 20
+    COLUMN_NUMBER               = 19
     NAME                        = MAXIMUM_SURFACE_DISTANCE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 248
+    START_BYTE                  = 208
     BYTES                       = 12
     FORMAT                      = "F12.3"
     UNIT                        = "KM"
@@ -544,10 +538,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 21
+    COLUMN_NUMBER               = 20
     NAME                        = MINIMUM_PHASE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 261
+    START_BYTE                  = 221
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -568,10 +562,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 22
+    COLUMN_NUMBER               = 21
     NAME                        = MAXIMUM_PHASE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 270
+    START_BYTE                  = 230
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -592,10 +586,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 23
+    COLUMN_NUMBER               = 22
     NAME                        = MINIMUM_INCIDENCE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 279
+    START_BYTE                  = 239
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -616,10 +610,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 24
+    COLUMN_NUMBER               = 23
     NAME                        = MAXIMUM_INCIDENCE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 288
+    START_BYTE                  = 248
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -640,10 +634,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 25
+    COLUMN_NUMBER               = 24
     NAME                        = MINIMUM_EMISSION_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 297
+    START_BYTE                  = 257
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -664,10 +658,10 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 26
+    COLUMN_NUMBER               = 25
     NAME                        = MAXIMUM_EMISSION_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 306
+    START_BYTE                  = 266
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -688,10 +682,32 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 27
+    COLUMN_NUMBER               = 26
     NAME                        = MINIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 315
+    START_BYTE                  = 275
+    BYTES                       = 8
+    FORMAT                      = "F8.3"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = -90.
+    VALID_MAXIMUM               = 90.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Planetocentric latitude of the sub-solar
+      point on the surface of the planet or specified target body. The
+      planetocentric value is defined by the angle from the body's equator
+      plane to a line defined by a vector from the body center to the
+      sub-solar point. Values are positive in the body's northern hemisphere
+      and negative in the southern hemisphere.
+
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    COLUMN_NUMBER               = 27
+    NAME                        = MAXIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE
+    DATA_TYPE                   = ASCII_REAL
+    START_BYTE                  = 284
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -711,21 +727,21 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 28
-    NAME                        = MAXIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE
+    NAME                        = MINIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 324
+    START_BYTE                  = 293
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Planetocentric latitude of the sub-solar
+    DESCRIPTION                 = "Planetographic latitude of the sub-solar
       point on the surface of the planet or specified target body. The
-      planetocentric value is defined by the angle from the body's equator
-      plane to a line defined by a vector from the body center to the
-      sub-solar point. Values are positive in the body's northern hemisphere
-      and negative in the southern hemisphere.
+      planetographic value is defined by the angle between the body's
+      equator plane and the local surface normal at the sub-solar point.
+      Values are positive in the body's northern hemisphere and negative in
+      the southern hemisphere.
 
       This value is defined by the instantaneous geometry at the time of the
       observation; it is independent of the field of view."
@@ -733,9 +749,9 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 29
-    NAME                        = MINIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE
+    NAME                        = MAXIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 333
+    START_BYTE                  = 302
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -755,21 +771,21 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 30
-    NAME                        = MAXIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE
+    NAME                        = MINIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 342
+    START_BYTE                  = 311
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Planetographic latitude of the sub-solar
+    DESCRIPTION                 = "Planetocentric latitude of the sub-observer
       point on the surface of the planet or specified target body. The
-      planetographic value is defined by the angle between the body's
-      equator plane and the local surface normal at the sub-solar point.
-      Values are positive in the body's northern hemisphere and negative in
-      the southern hemisphere.
+      planetocentric value is defined by the angle from the body's equator
+      plane to a line defined by a vector from the body center to the
+      sub-observer point. Values are positive in the body's northern
+      hemisphere and negative in the southern hemisphere.
 
       This value is defined by the instantaneous geometry at the time of the
       observation; it is independent of the field of view."
@@ -777,9 +793,9 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 31
-    NAME                        = MINIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE
+    NAME                        = MAXIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 351
+    START_BYTE                  = 320
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -799,21 +815,21 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 32
-    NAME                        = MAXIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE
+    NAME                        = MINIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 360
+    START_BYTE                  = 329
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Planetocentric latitude of the sub-observer
+    DESCRIPTION                 = "Planetographic latitude of the sub-observer
       point on the surface of the planet or specified target body. The
-      planetocentric value is defined by the angle from the body's equator
-      plane to a line defined by a vector from the body center to the
-      sub-observer point. Values are positive in the body's northern
-      hemisphere and negative in the southern hemisphere.
+      planetographic value is defined by the angle between the body's
+      equator plane and the local surface normal at the sub-observer point.
+      Values are positive in the body's northern hemisphere and negative in
+      the southern hemisphere.
 
       This value is defined by the instantaneous geometry at the time of the
       observation; it is independent of the field of view."
@@ -821,9 +837,9 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 33
-    NAME                        = MINIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE
+    NAME                        = MAXIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 369
+    START_BYTE                  = 338
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -843,21 +859,18 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 34
-    NAME                        = MAXIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE
+    NAME                        = MINIMUM_SUB_SOLAR_IAU_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 378
+    START_BYTE                  = 347
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
-    VALID_MINIMUM               = -90.
-    VALID_MAXIMUM               = 90.
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Planetographic latitude of the sub-observer
-      point on the surface of the planet or specified target body. The
-      planetographic value is defined by the angle between the body's
-      equator plane and the local surface normal at the sub-observer point.
-      Values are positive in the body's northern hemisphere and negative in
-      the southern hemisphere.
+    DESCRIPTION                 = "Longitude of the sub-solar point on the
+      surface of the planet or specified target body. Longitudes increase
+      toward the west from the IAU-defined prime meridian.
 
       This value is defined by the instantaneous geometry at the time of the
       observation; it is independent of the field of view."
@@ -865,9 +878,9 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 35
-    NAME                        = MINIMUM_SUB_SOLAR_IAU_LONGITUDE
+    NAME                        = MAXIMUM_SUB_SOLAR_IAU_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 387
+    START_BYTE                  = 356
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -884,16 +897,16 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 36
-    NAME                        = MAXIMUM_SUB_SOLAR_IAU_LONGITUDE
+    NAME                        = MINIMUM_SUB_OBSERVER_IAU_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 396
+    START_BYTE                  = 365
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Longitude of the sub-solar point on the
+    DESCRIPTION                 = "Longitude of the sub-observer point on the
       surface of the planet or specified target body. Longitudes increase
       toward the west from the IAU-defined prime meridian.
 
@@ -903,9 +916,9 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 37
-    NAME                        = MINIMUM_SUB_OBSERVER_IAU_LONGITUDE
+    NAME                        = MAXIMUM_SUB_OBSERVER_IAU_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 405
+    START_BYTE                  = 374
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -922,18 +935,15 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 38
-    NAME                        = MAXIMUM_SUB_OBSERVER_IAU_LONGITUDE
+    NAME                        = MINIMUM_CENTER_RESOLUTION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 414
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
-    UNIT                        = "DEGREES"
-    VALID_MINIMUM               = 0.
-    VALID_MAXIMUM               = 360.
+    START_BYTE                  = 383
+    BYTES                       = 10
+    FORMAT                      = "F10.5"
+    UNIT                        = "KM"
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Longitude of the sub-observer point on the
-      surface of the planet or specified target body. Longitudes increase
-      toward the west from the IAU-defined prime meridian.
+    DESCRIPTION                 = "The linear size of a pixel as projected at
+      the distance of the planet or specified target body.
 
       This value is defined by the instantaneous geometry at the time of the
       observation; it is independent of the field of view."
@@ -941,9 +951,9 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 39
-    NAME                        = MINIMUM_CENTER_RESOLUTION
+    NAME                        = MAXIMUM_CENTER_RESOLUTION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 423
+    START_BYTE                  = 394
     BYTES                       = 10
     FORMAT                      = "F10.5"
     UNIT                        = "KM"
@@ -957,15 +967,15 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 40
-    NAME                        = MAXIMUM_CENTER_RESOLUTION
+    NAME                        = MINIMUM_CENTER_DISTANCE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 434
-    BYTES                       = 10
-    FORMAT                      = "F10.5"
+    START_BYTE                  = 405
+    BYTES                       = 12
+    FORMAT                      = "F12.3"
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "The linear size of a pixel as projected at
-      the distance of the planet or specified target body.
+    DESCRIPTION                 = "Distance from the observer to the center of
+      the planet or a specified target body.
 
       This value is defined by the instantaneous geometry at the time of the
       observation; it is independent of the field of view."
@@ -973,9 +983,9 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 41
-    NAME                        = MINIMUM_CENTER_DISTANCE
+    NAME                        = MAXIMUM_CENTER_DISTANCE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 445
+    START_BYTE                  = 418
     BYTES                       = 12
     FORMAT                      = "F12.3"
     UNIT                        = "KM"
@@ -989,48 +999,32 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 42
-    NAME                        = MAXIMUM_CENTER_DISTANCE
+    NAME                        = MINIMUM_CENTER_PHASE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 458
-    BYTES                       = 12
-    FORMAT                      = "F12.3"
-    UNIT                        = "KM"
+    START_BYTE                  = 431
+    BYTES                       = 8
+    FORMAT                      = "F8.3"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Distance from the observer to the center of
-      the planet or a specified target body.
+    DESCRIPTION                 = "Phase angle at the center of the planet or
+      specified target body. This is the angle between the local direction
+      of in incoming photon from the Sun and the local direction of an
+      outgoing photon to the observer.
 
       This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      observation; it is independent of the field of view.
+
+      This column tabulates the minimum value of center phase angle
+      among all of the pixels observed in that direction."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 43
-    NAME                        = MINIMUM_CENTER_PHASE_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 471
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
-    UNIT                        = "DEGREES"
-    VALID_MINIMUM               = 0.
-    VALID_MAXIMUM               = 180.
-    NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Phase angle at the center of the planet or
-      specified target body. This is the angle between the local direction
-      of in incoming photon from the Sun and the local direction of an
-      outgoing photon to the observer.
-
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view.
-
-      This column tabulates the minimum value of center phase angle
-      among all of the pixels observed in that direction."
-  END_OBJECT                    = COLUMN
-
-  OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 44
     NAME                        = MAXIMUM_CENTER_PHASE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 480
+    START_BYTE                  = 440
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -1049,5 +1043,5 @@ OBJECT                          = PLANET_GEOMETRY_TABLE
       among all of the pixels observed in that direction."
   END_OBJECT                    = COLUMN
 
-END_OBJECT                      = PLANET_GEOMETRY_TABLE
+END_OBJECT                      = BODY_GEOMETRY_TABLE
 END

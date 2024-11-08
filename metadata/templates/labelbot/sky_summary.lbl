@@ -1,0 +1,158 @@
+$NOTE 
+################################################################################
+# Geometry file template for bodies.  
+#
+#  This template controls the creation of body geometry files.  The procedure 
+#  for generating geometry files for a host is as follows.  Files referred to 
+#  below should be copied into the top directory for the collection, e.g., 
+#  GO_0xxx:
+#
+#  2. Copy and edit the <collection>_geometry.py script to reflect the 
+#     type of index and glob pattern for the table files.
+#  3. Copy and edit config.py to address any host-dependent processing.
+#  4. Run <collection>_geometry.py from the collection top directory.
+#
+#  In the host_defs files, replace all values describing the new host.  
+#  In this template, quantities enclosed in dollar signs are automatically 
+#  filled in and should not be edited.  Add a column for each quantity to be 
+#  copied from the product label into the index.  
+#
+################################################################################
+$END_NOTE
+$ONCE(_=COUNTER('COLUMN', reset=True))
+
+PDS_VERSION_ID                  = PDS3
+RECORD_TYPE                     = FIXED_LENGTH
+RECORD_BYTES                    = $RECORD_BYTES$
+FILE_RECORDS                    = $FILE_RECORDS$
+^$TABLE_TYPE$_TABLE             = "$FILENAME$"
+
+$INSERT{./templates/host_defs.lbl}
+
+PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
+
+VOLUME_ID                       = "{VOLUME_ID}"
+
+OBJECT                          = $TABLE_TYPE$_TABLE
+  INTERCHANGE_FORMAT            = ASCII
+  ROWS                          = $ROWS$
+  COLUMNS                       = $COLUMNS$
+  ROW_BYTES                     = $ROW_BYTES$
+  INDEX_TYPE                    = SINGLE
+  DESCRIPTION                   = "This index describes the sky intercept
+    geometry of the field of view of the instrument. The table contains
+    one row for each image file found on the volume identified by the
+    VOLUME_ID keyword above.
+
+    Occasionally, SPICE pointing information is unavailable for the time at
+    which an image was exposed. When this situation occurs, no row has been
+    added to the file.
+
+    This geometry information has been constructed by uniformly sampling the
+    pixels that comprise each image. Pixels have been sampled on an 8x8 grid,
+    i.e., every 64th pixel. To accommodate pointing uncertainty, the image
+    boundary was expanded on every side by a distance equivalent to 25
+    narrow-angle pixels."
+
+$NOTE 
+################################################################
+# Add a column below for each desired index quantity
+# Edit COLUMN NAME and any fields not enclosed in dollar signs
+################################################################
+$END_NOTE
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'VOLUME_ID')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    DESCRIPTION                 = "The volume ID provides a unique identifier
+      for a PDS data volume."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'FILE_SPECIFICATION_NAME')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$FILE_SPECIFICATION_NAME_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$FILE_SPECIFICATION_NAME_DATA_TYPE$$
+    BYTES                       = $$FILE_SPECIFICATION_NAME_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    DESCRIPTION                 = "The file specification name provides the
+      full name of a file, including a path name, relative to the root
+      directory of the PDS volume."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_RIGHT_ASCENSION')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "This is the minimum value for J2000 right
+      ascension within the field of view sampled by this observation. For
+      fields of view that cross 360 degrees, the tabulated minimum value
+      will be greater than the maximum."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_RIGHT_ASCENSION')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "This is the maximum value for J2000 right
+      ascension within the field of view sampled by this observation. For
+      fields of view that cross 360 degrees, the tabulated minimum value
+      will be greater than the maximum."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_DECLINATION')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = -90.
+    VALID_MAXIMUM               = 90.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "This is the minimum value for J2000
+      declination within the field of view sampled by the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_DECLINATION')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = -90.
+    VALID_MAXIMUM               = 90.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "This is the maximum value for J2000
+      declination within the field of view sampled by the observation."
+  END_OBJECT                    = COLUMN
+
+END_OBJECT                      = SKY_GEOMETRY_TABLE
+END

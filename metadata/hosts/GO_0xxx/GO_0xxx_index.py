@@ -29,14 +29,12 @@
 #  5) Run this script to generate the supplemental files in that tree.
 #
 ################################################################################
-import sys
+import metadata as meta
 import metadata.index_support as idx
 
-try:
-    volume = sys.argv[3]
-except IndexError:
-    volume = None
+parser = meta.get_index_args(host='GOISS', type='supplemental')
+args = parser.parse_args()
 
-idx.make_index(sys.argv[1], sys.argv[2], 
-               type='supplemental', glob='C0*', volume=volume)
+idx.make_index(args.input_tree, args.output_tree, volume=args.volume,
+               type=args.type, glob='C0*')
 ################################################################################

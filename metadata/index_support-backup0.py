@@ -558,9 +558,10 @@ def _make_label(template_lines, input_dir, output_dir, type=''):
     override_path = Path('./templates/')/(override_name + '.lbl')
 
     # Read the data file
-    f = open(index_path)
-    index_lines = f.readlines()
-    f.close()
+#    f = open(index_path)
+#    index_lines = f.readlines()
+#    f.close()
+    index_lines = meta.read_txt_file(index_path):           
 
     # Validate the data file
     recs = len(index_lines)
@@ -661,9 +662,10 @@ def _make_one_index(input_dir, output_dir, type='', glob=None, no_table=False):
         template_path = Path('./templates/')/(template_name + '.lbl')
 
         # Read template
-        f = open(template_path)
-        template_lines = f.readlines()
-        f.close()
+#        f = open(template_path)
+#        template_lines = f.readlines()
+#        f.close()
+        template_lines = meta.read_txt_file(template_path):           
 
         # Parse any directives in the columns
         template_lines = _preprocess_template(template_lines)
@@ -685,8 +687,8 @@ def _make_one_index(input_dir, output_dir, type='', glob=None, no_table=False):
                         for primary_row_dict in primary_row_dicts]
 
             for i in range(len(files)): 
-                files[i] = Path(os.path.splitext(os.path.join(input_dir.as_posix(), files[i].as_posix()))[0] + '.LBL')
-#xx                files[i] = input_dir/files[i].removesuffix.with_suffix('.LBL'))   # Doesn't work in 3.8
+#                files[i] = Path(os.path.splitext(os.path.join(input_dir.as_posix(), files[i].as_posix()))[0] + '.LBL')
+                files[i] = input_dir/files[i].with_suffix('.LBL'))
 
         # Otherwise, build the file list from the directory tree
         else:
@@ -752,8 +754,8 @@ def make_index(input_tree, output_tree, type='', glob=None, volume=None, no_tabl
     vol_glob = meta.get_volume_glob(input_tree.name)
 
     # Walk the input tree, making indexes for each found volume
-#xx    for root, dirs, files in input_tree.walk():    #### Path.walk() doens't exist in python 3.8
-    for root, dirs, files in os.walk(input_tree.as_posix()):
+    for root, dirs, files in input_tree.walk():
+#    for root, dirs, files in os.walk(input_tree.as_posix()):
         root = Path(root)
 
         # Determine notional set and volume

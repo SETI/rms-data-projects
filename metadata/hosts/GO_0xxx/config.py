@@ -1,20 +1,89 @@
 ################################################################################
-# index_config.py for GLL SSI
+# config.py for GLL SSI
 #
 #  Host-specific utilites and key functions.
 #
 ################################################################################
-import os
+import os, sys, traceback
 import julian
 import vicar
 import cspyce
 import warnings
 
 from pathlib import Path
+
+import oops
+import hosts.galileo.ssi as ssi
 import metadata as meta
 
 cspyce.furnsh('leapseconds.ker')
 cspyce.furnsh('mk00062a.tsc')
+
+SCLK_BASES = [16777215,91,10,8]
+SAMPLING = 8                        # pixel sampling density
+
+ssi.initialize()
+################################################################################
+# SCLK-dependent mission-specific data.
+################################################################################
+SYSTEMS_TABLE = [
+#      SCLK_START range (inclusive)   SYSTEM      SECONDARIES
+    (('00180626.00', '00190641.00'), 'VENUS',     []),
+    (('00594697.00', '00623035.00'), 'EARTH',     []), 
+#    (('00997579.45', '01073185.13'), 'GASPRA',    []), 
+    (('01645330.00', '01663247.00'), 'EARTH',     []), 
+#    (('02025307.00', '02025628.00'), 'IDA',       []), 
+#    (('03464059.00', '06475387.00'), 'JUPITER',   ['IO', 'EUROPA', 'GANYMEDE', 'CALLISTO']) ]
+    (('03464059.00', '06475387.00'), 'JUPITER',   []) ]
+
+
+############################################
+# Construct the meshgrids
+############################################
+## TODO: this should be obtainable from the host module
+MODE_SIZES  = {"FULL":1,
+               "HMA": 1,
+               "HIM": 1,
+               "IM8": 1,
+               "HCA": 1,
+               "IM4": 1,
+               "XCM": 1,
+               "HCM": 1,
+               "HCJ": 1,
+               "HIS": 2,
+               "AI8": 2}
+
+BORDER = 25         # in units of full-size SSI pixels
+NAC_PIXEL = 6.0e-6  # approximate full-size SSI pixel in units of radians
+EXPAND = BORDER * NAC_PIXEL
+
+MESHGRIDS = {}
+for mode in MODE_SIZES.keys():
+    pixel_wrt_full = MODE_SIZES[mode]
+    pixels = 800 / MODE_SIZES[mode]
+
+    # Define sampling of FOV
+    origin = -float(BORDER) / pixel_wrt_full
+    limit = pixels - origin
+
+    # Revise the sampling to be exact
+    samples = int((limit - origin) / SAMPLING + 0.999)
+    under = (limit - origin) / samples
+
+    # Construct the meshgrid
+    limit += 0.0001
+    meshgrid = oops.Meshgrid.for_fov(ssi.SSI.fovs[mode], origin,
+                                     undersample=under, limit=limit, swap=True)
+    MESHGRIDS[mode] = meshgrid
+
+MESHGRID_KEY = 'TELEMETRY_FORMAT_ID'
+
+#===============================================================================
+def meshgrid(snapshot):
+    """Returns the meshgrid given the dictionary derived from the
+    SSI index file.
+    """
+    return MESHGRIDS[snapshot.dict['TELEMETRY_FORMAT_ID']]
 
 
 ################################################################################
@@ -22,60 +91,9 @@ cspyce.furnsh('mk00062a.tsc')
 ################################################################################
 
 #===============================================================================
-def _add_by_base(x_digits, y_digits, bases):           ### move to utilities
-    import math
-
-    result = [0]*(len(bases)+1)
-    for i, (x_digit, y_digit, base) in \
-        enumerate(zip(reversed(x_digits), reversed(y_digits), reversed(bases))):
-        result[i] += (x_digit + y_digit) % base
-        result[i+1] += (x_digit + y_digit) // base
-    return list(reversed(result))
-
-#===============================================================================
-def _rebase(x, bases, ceil=False):           ### move to utilities
-    import math
-
-    digits = []
-    for base in reversed(bases):
-        digit = x % base
-        if not ceil:
-            digit = int(digit)
-        else:
-            digit = math.ceil(digit)
-        digits.append(digit)
-
-        x //= base
-    return (list(reversed(digits)),x)
-
-#===============================================================================
-def _sclk_split_count(count, delim='.'):
-    fields = list(map(int, (count.split(delim))))
-    fields = fields + [0,0,0,0]
-    return fields[0:4]
-
-#===============================================================================
-def _sclk_format_count(fields, format):
-
-    # Get delimiters
-    delims = [c for c in format if not c.isalnum()] + ['']
-
-    # Get field formats (i.e. field widths)
-    f = "".join([s if s.isalnum() else '/' for s in format])
-    formats = f.split('/')
-    widths = [len(f) for f in formats]
-
-    # Build count string
-    count = ''
-    for delim, width, field in zip(delims, widths, fields):
-        s = f'{field}'
-        count += '0'*(width-len(s)) + s + delim
-
-    return count
-
-#===============================================================================
 def get_volume_id(label_path):
-    """Edit this function to determine the volume ID for this collection.
+    """Edit this function to determine the volume ID for this collection
+       using the label path when there is no observation or label available.
 
     Inputs:
         label_path      Path to the PDS label.
@@ -183,8 +201,8 @@ def _spacecraft_clock_start_count_from_label(label_path, label_dict):
     The return value will appear in the index file under SPACECRAFT_CLOCK_START_COUNT.
     """
     start_count = label_dict['SPACECRAFT_CLOCK_START_COUNT']
-    start_fields = _sclk_split_count(start_count)
-    return _sclk_format_count(start_fields, 'nnnnnnnn:nn:n:n')
+    start_fields = meta.sclk_split_count(start_count)
+    return meta.sclk_format_count(start_fields, 'nnnnnnnn:nn:n:n')
 
 #===============================================================================
 def _spacecraft_clock_stop_count_from_label(label_path, label_dict):
@@ -202,14 +220,14 @@ def _spacecraft_clock_stop_count_from_label(label_path, label_dict):
     """
 
     start_count = label_dict['SPACECRAFT_CLOCK_START_COUNT']
-    start_fields = _sclk_split_count(start_count)
+    start_fields = meta.sclk_split_count(start_count)
 
     exposure = label_dict['EXPOSURE_DURATION'] / 1000
     exposure_ticks = exposure*120
-    exposure_fields,over = _rebase(exposure_ticks, [16777215,91,10,8], ceil=True)
+    exposure_fields,over = meta.rebase(exposure_ticks, SCLK_BASES, ceil=True)
 
-    stop_fields = _add_by_base(start_fields, exposure_fields, [16777215,91,10,8])
-    return _sclk_format_count(stop_fields[1:], 'nnnnnnnn:nn:n:n')
+    stop_fields = meta.add_by_base(start_fields, exposure_fields, SCLK_BASES)
+    return meta.sclk_format_count(stop_fields[1:], 'nnnnnnnn:nn:n:n')
 
 
 ################################################################################
@@ -335,5 +353,43 @@ def key__image_stop_time(label_path, label_dict):
     """
     return _spacecraft_time(label_path, label_dict, stop=True)
 
+################################################################################
+
+
+############################################
+# SSI geometry functions
+############################################
+
+from_index = ssi.from_index
+
+#===============================================================================
+def target_name(dict):
+    """Returns the target name from the snapshot's dictionary. If the given
+    name is "SKY", it checks the CIMS ID and the TARGET_DESC for something
+    different."""
+
+    return  dict["TARGET_NAME"]
+
+    target = dict["TARGET_NAME"]
+    if target != "SKY": return target
+
+    id = dict["OBSERVATION_ID"]
+    abbrev = id[id.index("_"):][4:6]
+
+    if abbrev == "SK":
+        desc = dict["TARGET_DESC"]
+        if desc in MOON_NAMES:
+            return desc
+
+    try:
+        return columns.CIMS_TARGET_ABBREVIATIONS[abbrev]
+    except KeyError:
+        return target
+
+#===============================================================================
+def cleanup():
+    """Cleanup function for geometry code.  This function is called after
+       the geometry table and labels are written, before exiting."""
+    pass
 ################################################################################
 

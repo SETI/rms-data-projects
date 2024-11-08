@@ -14,17 +14,14 @@
 #  2) Run this script to generate the geometry tables in the output tree.
 #
 ################################################################################
-import sys
+import metadata as meta
 import metadata.geometry_support as geom
 
-try:
-    volume = sys.argv[3]
-except IndexError:
-    volume = None
+parser = meta.get_geometry_args(host='GOISS', 
+                                selection="S", exclude=['GO_0999'])
+args = parser.parse_args()
 
-geom.process_index(sys.argv[1], sys.argv[2], volume=volume, append=False, #no_table=True,
-                   selection="S", 
-#                   exclude=['GO_0016', 'GO_0999'],
-                   exclude=['GO_0999'], 
+geom.process_index(args.input_tree, args.output_tree, volume=args.volume,
+                   selection=args.selection, exclude=args.exclude, 
                    glob='GO_????_index.lbl')
 ################################################################################

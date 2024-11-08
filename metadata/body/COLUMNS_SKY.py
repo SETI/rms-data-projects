@@ -2,7 +2,6 @@
 # COLUMNS_SKY.py: Column definitions for sky geometry tables
 ################################################################################
 import oops
-import metadata as meta
 
 ################################################################################
 # *COLUMN description tuples are
@@ -35,13 +34,12 @@ import metadata as meta
 #                       "-180" = use the range (-180,180) instead of (0,360).
 #
 ################################################################################
-
 SKY_COLUMNS = [
     (("right_ascension",        ()),                        ("",  "",  "")),
     (("declination",            ()),                        ("",  "",  ""))]
 
-SKY_SUMMARY_COLUMNS  = (SKY_COLUMNS)
-SKY_DETAILED_COLUMNS = SKY_COLUMNS
+#SKY_SUMMARY_COLUMNS  = (SKY_COLUMNS)
+#SKY_DETAILED_COLUMNS = SKY_COLUMNS
 
 ################################################################################
 # Define the tiling for detailed listings

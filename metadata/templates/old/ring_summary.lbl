@@ -1,7 +1,7 @@
 PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = FIXED_LENGTH
 FILE_RECORDS                    = $ROWS$
-RECORD_BYTES                    = 679
+RECORD_BYTES                    = 664
 ^RING_GEOMETRY_TABLE            = "$FILENAME$"
 
 PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
@@ -14,8 +14,8 @@ OBJECT                          = RING_GEOMETRY_TABLE
   INDEX_TYPE                    = $INDEX_TYPE$
   INTERCHANGE_FORMAT            = ASCII
   ROWS                          = $ROWS$
-  ROW_BYTES                     = 679
-  COLUMNS                       = 65
+  ROW_BYTES                     = 664
+  COLUMNS                       = 64
 
   DESCRIPTION                   = "This index describes the ring intercept
     geometry of the field of view of the instrument. The table contains
@@ -70,20 +70,9 @@ OBJECT                          = RING_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 3
-    NAME                        = SYSTEM
-    DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 47
-    BYTES                       = 12
-    FORMAT                      = "A12"
-    DESCRIPTION                 = "The system is the name of the central body
-      to which any ambiguous names, like rings, may refer."
-  END_OBJECT                    = COLUMN
-
-  OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 4
     NAME                        = MINIMUM_RING_RADIUS
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 61
+    START_BYTE                  = 46
     BYTES                       = 12
     FORMAT                      = "F12.3"
     UNIT                        = "KM"
@@ -99,14 +88,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the minimum value of ring radius within the
-      field of view occurring during the observation."
+      field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 5
+    COLUMN_NUMBER               = 4
     NAME                        = MAXIMUM_RING_RADIUS
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 74
+    START_BYTE                  = 59
     BYTES                       = 12
     FORMAT                      = "F12.3"
     UNIT                        = "KM"
@@ -122,14 +111,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the maximum value of ring radius within the
-      field of view occurring during the observation."
+      field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 6
+    COLUMN_NUMBER               = 5
     NAME                        = FINEST_RING_INTERCEPT_RESOLUTION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 87
+    START_BYTE                  = 72
     BYTES                       = 10
     FORMAT                      = "F10.5"
     UNIT                        = "KM"
@@ -147,14 +136,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the minimum (finest) value of ring intercept
-      resolution within the field of view occurring during the observation."
+      resolution within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 7
+    COLUMN_NUMBER               = 6
     NAME                        = COARSEST_RING_INTERCEPT_RESOLUTION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 98
+    START_BYTE                  = 83
     BYTES                       = 10
     FORMAT                      = "F10.5"
     UNIT                        = "KM"
@@ -172,14 +161,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the maximum (coarsest) value of ring intercept
-      resolution within the field of view occurring during the observation."
+      resolution within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 8
+    COLUMN_NUMBER               = 7
     NAME                        = FINEST_RADIAL_RESOLUTION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 109
+    START_BYTE                  = 94
     BYTES                       = 10
     FORMAT                      = "F10.5"
     UNIT                        = "KM"
@@ -197,14 +186,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the minimum (finest) value of radial resolution
-      within the field of view occurring during the observation."
+      within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 9
+    COLUMN_NUMBER               = 8
     NAME                        = COARSEST_RADIAL_RESOLUTION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 120
+    START_BYTE                  = 105
     BYTES                       = 10
     FORMAT                      = "F10.5"
     UNIT                        = "KM"
@@ -222,14 +211,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the maximum (coarsest) value of radial
-      resolution within the field of view occurring during the observation."
+      resolution within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 10
+    COLUMN_NUMBER               = 9
     NAME                        = MINIMUM_RING_DISTANCE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 131
+    START_BYTE                  = 116
     BYTES                       = 12
     FORMAT                      = "F12.3"
     UNIT                        = "KM"
@@ -244,14 +233,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       that are shadowed by the planet are also ignored.
 
       This column tabulates the minimum value of ring distance within the
-      field of view occurring during the observation."
+      field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 11
+    COLUMN_NUMBER               = 10
     NAME                        = MAXIMUM_RING_DISTANCE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 144
+    START_BYTE                  = 129
     BYTES                       = 12
     FORMAT                      = "F12.3"
     UNIT                        = "KM"
@@ -267,14 +256,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the maximum value of ring distance within the
-      field of view occurring during the observation."
+      field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 12
+    COLUMN_NUMBER               = 11
     NAME                        = MINIMUM_RING_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 157
+    START_BYTE                  = 142
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -295,16 +284,16 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the minimum value of ring longitude within the
-      field of view occurring during the observation. For fields of view that 
-      cross the prime meridian, the tabulated minimum value will be greater 
-      than the maximum."
+      field of view of the observation. For fields of view that cross the
+      prime meridian, the tabulated minimum value will be greater than the
+      maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 13
+    COLUMN_NUMBER               = 12
     NAME                        = MAXIMUM_RING_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 166
+    START_BYTE                  = 151
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -325,16 +314,16 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the maximum value of ring longitude within the
-      field of view occurring during the observation. For fields of view that 
-      cross the prime meridian, the tabulated minimum value will be greater 
-      than the maximum."
+      field of view of the observation. For fields of view that cross the
+      prime meridian, the tabulated minimum value will be greater than the
+      maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 14
+    COLUMN_NUMBER               = 13
     NAME                        = MINIMUM_SOLAR_HOUR_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 175
+    START_BYTE                  = 160
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -351,16 +340,16 @@ OBJECT                          = RING_GEOMETRY_TABLE
       that are shadowed by the planet are not ignored.
 
       This column tabulates the minimum value of solar hour angle within the
-      field of view occurring during the observation. For fields of view that 
-      cross the midnight meridian, the tabulated minimum value will be greater 
-      than the maximum."
+      field of view of the observation. For fields of view that cross the
+      midnight meridian, the tabulated minimum value will be greater than
+      the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 15
+    COLUMN_NUMBER               = 14
     NAME                        = MAXIMUM_SOLAR_HOUR_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 184
+    START_BYTE                  = 169
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -377,16 +366,16 @@ OBJECT                          = RING_GEOMETRY_TABLE
       that are shadowed by the planet are not ignored.
 
       This column tabulates the maximum value of solar hour angle within the
-      field of view occurring during the observation. For fields of view that 
-      cross the midnight meridian, the tabulated minimum value will be greater 
-      than the maximum."
+      field of view of the observation. For fields of view that cross the
+      midnight meridian, the tabulated minimum value will be greater than
+      the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 16
+    COLUMN_NUMBER               = 15
     NAME                        = MINIMUM_RING_LONGITUDE_WRT_OBSERVER
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 193
+    START_BYTE                  = 178
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -406,14 +395,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the minimum value of the this ring longitude
-      within the field of view occurring during the observation."
+      within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 17
+    COLUMN_NUMBER               = 16
     NAME                        = MAXIMUM_RING_LONGITUDE_WRT_OBSERVER
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 202
+    START_BYTE                  = 187
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -433,14 +422,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the maximum value of this ring longitude within
-      the field of view occurring during the observation."
+      the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 18
+    COLUMN_NUMBER               = 17
     NAME                        = MINIMUM_RING_AZIMUTH
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 211
+    START_BYTE                  = 196
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -464,16 +453,16 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the minimum value of ring azimuth within the
-      field of view occurring during the observation. For fields of view that 
-      cross 360 degrees, the tabulated minimum value will be greater than the
+      field of view of the observation. For fields of view that cross 360
+      degrees, the tabulated minimum value will be greater than the
       maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 19
+    COLUMN_NUMBER               = 18
     NAME                        = MAXIMUM_RING_AZIMUTH
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 220
+    START_BYTE                  = 205
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -497,16 +486,16 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the maximum value of ring azimuth within the
-      field of view occurring during the observation. For fields of view that 
-      cross 360 degrees, the tabulated minimum value will be greater than the
+      field of view of the observation. For fields of view that cross 360
+      degrees, the tabulated minimum value will be greater than the
       maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 20
+    COLUMN_NUMBER               = 19
     NAME                        = MINIMUM_RING_PHASE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 229
+    START_BYTE                  = 214
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -524,14 +513,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the minimum value of ring phase angle within the
-      field of view occurring during the observation."
+      field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 21
+    COLUMN_NUMBER               = 20
     NAME                        = MAXIMUM_RING_PHASE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 238
+    START_BYTE                  = 223
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -549,14 +538,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the maximum value of ring phase angle within the
-      field of view occurring during the observation."
+      field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 22
+    COLUMN_NUMBER               = 21
     NAME                        = MINIMUM_RING_INCIDENCE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 247
+    START_BYTE                  = 232
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -575,14 +564,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the minimum value of ring incidence angle within
-      the field of view occurring during the observation."
+      the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 23
+    COLUMN_NUMBER               = 22
     NAME                        = MAXIMUM_RING_INCIDENCE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 256
+    START_BYTE                  = 241
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -601,14 +590,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the maximum value of ring incidence angle within
-      the field of view occurring during the observation."
+      the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 24
+    COLUMN_NUMBER               = 23
     NAME                        = MINIMUM_NORTH_BASED_INCIDENCE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 265
+    START_BYTE                  = 250
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -628,15 +617,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the minimum value of the north-based ring
-      incidence angle within the field of view occurring during the 
-      observation."
+      incidence angle within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 25
+    COLUMN_NUMBER               = 24
     NAME                        = MAXIMUM_NORTH_BASED_INCIDENCE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 274
+    START_BYTE                  = 259
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -656,15 +644,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the maximum value of the north-based ring
-      incidence angle within the field of view occurring during the 
-      observation."
+      incidence angle within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 26
+    COLUMN_NUMBER               = 25
     NAME                        = MINIMUM_RING_EMISSION_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 283
+    START_BYTE                  = 268
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -685,14 +672,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the minimum value of ring emission angle within
-      the field of view occurring during the observation."
+      the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 27
+    COLUMN_NUMBER               = 26
     NAME                        = MAXIMUM_RING_EMISSION_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 292
+    START_BYTE                  = 277
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -713,14 +700,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the maximum value of ring emission angle within
-      the field of view occurring during the observation."
+      the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 28
+    COLUMN_NUMBER               = 27
     NAME                        = MINIMUM_NORTH_BASED_EMISSION_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 301
+    START_BYTE                  = 286
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -740,14 +727,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the minimum value of north-based ring emission
-      angle within the field of view occurring during the observation."
+      angle within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 29
+    COLUMN_NUMBER               = 28
     NAME                        = MAXIMUM_NORTH_BASED_EMISSION_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 310
+    START_BYTE                  = 295
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -767,14 +754,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the maximum value of north-based ring emission
-      angle within the field of view occurring during the observation."
+      angle within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 30
+    COLUMN_NUMBER               = 29
     NAME                        = MINIMUM_SOLAR_RING_ELEVATION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 319
+    START_BYTE                  = 304
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -795,14 +782,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the minimum value of solar ring elevation within
-      the field of view occurring during the observation."
+      the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 31
+    COLUMN_NUMBER               = 30
     NAME                        = MAXIMUM_SOLAR_RING_ELEVATION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 328
+    START_BYTE                  = 313
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -823,14 +810,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the maximum value of solar ring elevation within
-      the field of view occurring during the observation."
+      the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 32
+    COLUMN_NUMBER               = 31
     NAME                        = MINIMUM_OBSERVER_RING_ELEVATION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 337
+    START_BYTE                  = 322
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -851,14 +838,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the minimum value of observer ring elevation
-      within the field of view occurring during the observation."
+      within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 33
+    COLUMN_NUMBER               = 32
     NAME                        = MAXIMUM_OBSERVER_RING_ELEVATION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 346
+    START_BYTE                  = 331
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -879,14 +866,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       are also ignored.
 
       This column tabulates the maximum value of observer ring elevation
-      within the field of view occurring during the observation."
+      within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 34
+    COLUMN_NUMBER               = 33
     NAME                        = MINIMUM_EDGE_ON_RING_RADIUS
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 355
+    START_BYTE                  = 340
     BYTES                       = 12
     FORMAT                      = "F12.3"
     UNIT                        = "KM"
@@ -909,14 +896,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       also ignored.
 
       This column tabulates the minimum value of the edge-on ring radius
-      within the field of view occurring during the observation."
+      within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 35
+    COLUMN_NUMBER               = 34
     NAME                        = MAXIMUM_EDGE_ON_RING_RADIUS
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 368
+    START_BYTE                  = 353
     BYTES                       = 12
     FORMAT                      = "F12.3"
     UNIT                        = "KM"
@@ -939,14 +926,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       also ignored.
 
       This column tabulates the maximum value of the edge-on ring radius
-      within the field of view occurring during the observation."
+      within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 3635
+    COLUMN_NUMBER               = 35
     NAME                        = MINIMUM_EDGE_ON_RING_ALTITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 381
+    START_BYTE                  = 366
     BYTES                       = 12
     FORMAT                      = "F12.3"
     UNIT                        = "KM"
@@ -972,14 +959,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       also ignored.
 
       This column tabulates the minimum value of the edge-on ring altitude
-      within the field of view occurring during the observation."
+      within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 37
+    COLUMN_NUMBER               = 36
     NAME                        = MAXIMUM_EDGE_ON_RING_ALTITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 394
+    START_BYTE                  = 379
     BYTES                       = 12
     FORMAT                      = "F12.3"
     UNIT                        = "KM"
@@ -1005,14 +992,47 @@ OBJECT                          = RING_GEOMETRY_TABLE
       also ignored.
 
       This column tabulates the maximum value of the edge-on ring altitude
-      within the field of view occurring during the observation."
+      within the field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    COLUMN_NUMBER               = 37
+    NAME                        = FINEST_EDGE_ON_RADIAL_RESOLUTION
+    DATA_TYPE                   = ASCII_REAL
+    START_BYTE                  = 392
+    BYTES                       = 10
+    FORMAT                      = "F10.5"
+    UNIT                        = "KM"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Edge-on radial resolution is the gradient
+      of the edge-on ring radius. It is equal to the largest change in the
+      radius resulting from a one-pixel shift of the line of sight. In
+      practice, it defines the approximate size of the narrowest ring
+      feature that can be resolved.
+
+      Edge-on intercept geometry is optimized for describing observations of
+      planetary rings obtained from viewpoints close to the ring plane. It
+      employs cylindrical coordinates (radius, altitude, longitude), where
+      radius values are measured from the ring rotation pole and altitude is
+      normal to the ring plane. The intercept is defined as the point along
+      a line of sight where that line is tangent to a cylinder with a
+      particular radius.
+
+      Edge-on intercept points that are obscured by the planet or a moon
+      within the observed field of view are ignored. For observations
+      capturing reflected sunlight (i.e., with wavelengths in the visual or
+      near-infrared), intercept points that are shadowed by the planet are
+      also ignored.
+
+      This column tabulates the minimum value of the edge-on radial
+      resolution within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 38
-    NAME                        = FINEST_EDGE_ON_RADIAL_RESOLUTION
+    NAME                        = COARSEST_EDGE_ON_RADIAL_RESOLUTION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 407
+    START_BYTE                  = 403
     BYTES                       = 10
     FORMAT                      = "F10.5"
     UNIT                        = "KM"
@@ -1037,48 +1057,15 @@ OBJECT                          = RING_GEOMETRY_TABLE
       near-infrared), intercept points that are shadowed by the planet are
       also ignored.
 
-      This column tabulates the minimum (finest) value of the edge-on radial
-      resolution within the field of view occurring during the observation."
+      This column tabulates the maximum value of the edge-on radial
+      resolution within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 39
-    NAME                        = COARSEST_EDGE_ON_RADIAL_RESOLUTION
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 418
-    BYTES                       = 10
-    FORMAT                      = "F10.5"
-    UNIT                        = "KM"
-    NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Edge-on radial resolution is the gradient
-      of the edge-on ring radius. It is equal to the largest change in the
-      radius resulting from a one-pixel shift of the line of sight. In
-      practice, it defines the approximate size of the narrowest ring
-      feature that can be resolved.
-
-      Edge-on intercept geometry is optimized for describing observations of
-      planetary rings obtained from viewpoints close to the ring plane. It
-      employs cylindrical coordinates (radius, altitude, longitude), where
-      radius values are measured from the ring rotation pole and altitude is
-      normal to the ring plane. The intercept is defined as the point along
-      a line of sight where that line is tangent to a cylinder with a
-      particular radius.
-
-      Edge-on intercept points that are obscured by the planet or a moon
-      within the observed field of view are ignored. For observations
-      capturing reflected sunlight (i.e., with wavelengths in the visual or
-      near-infrared), intercept points that are shadowed by the planet are
-      also ignored.
-
-      This column tabulates the maximum (coarsest) value of the edge-on radial
-      resolution within the field of view occurring during the observation."
-  END_OBJECT                    = COLUMN
-
-  OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 40
     NAME                        = MINIMUM_EDGE_ON_INTERCEPT_DISTANCE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 429
+    START_BYTE                  = 414
     BYTES                       = 12
     FORMAT                      = "F12.3"
     UNIT                        = "KM"
@@ -1101,14 +1088,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       also ignored.
 
       This column tabulates the minimum value of the edge-on intercept
-      distance within the field of view occurring during the observation."
+      distance within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 41
+    COLUMN_NUMBER               = 40
     NAME                        = MAXIMUM_EDGE_ON_INTERCEPT_DISTANCE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 442
+    START_BYTE                  = 427
     BYTES                       = 12
     FORMAT                      = "F12.3"
     UNIT                        = "KM"
@@ -1131,14 +1118,14 @@ OBJECT                          = RING_GEOMETRY_TABLE
       also ignored.
 
       This column tabulates the maximum value of the edge-on intercept
-      distance within the field of view occurring during the observation."
+      distance within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 42
+    COLUMN_NUMBER               = 41
     NAME                        = MINIMUM_EDGE_ON_RING_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 455
+    START_BYTE                  = 440
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -1167,16 +1154,16 @@ OBJECT                          = RING_GEOMETRY_TABLE
       also ignored.
 
       This column tabulates the minimum value of the edge-on ring longitude
-      within the field of view ooccurring during the observation. For fields of
-      view that cross the prime meridian, the tabulated minimum  value will be 
-      greater than the maximum."
+      within the field of view of the observation. For fields of view that
+      cross the prime meridian, the tabulated minimum value will be greater
+      than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 43
+    COLUMN_NUMBER               = 42
     NAME                        = MAXIMUM_EDGE_ON_RING_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 464
+    START_BYTE                  = 449
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -1205,16 +1192,16 @@ OBJECT                          = RING_GEOMETRY_TABLE
       also ignored.
 
       This column tabulates the maximum value of the edge-on ring longitude
-      within the field of view occurring during the observation. For fields of 
-      view that cross the prime meridian, the tabulated minimum value will be 
-      greater than the maximum."
+      within the field of view of the observation. For fields of view that
+      cross the prime meridian, the tabulated minimum value will be greater
+      than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 44
+    COLUMN_NUMBER               = 43
     NAME                        = MINIMUM_EDGE_ON_SOLAR_HOUR_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 473
+    START_BYTE                  = 458
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -1241,16 +1228,16 @@ OBJECT                          = RING_GEOMETRY_TABLE
       also ignored.
 
       This column tabulates the minimum value of the edge-on solar hour
-      angle within the field of view occurring during the observation. For 
-      fields of view that cross the midnight meridian, the tabulated minimum 
-      value will be greater than the maximum."
+      angle within the field of view of the observation. For fields of view
+      that cross the midnight meridian, the tabulated minimum value will be
+      greater than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 45
+    COLUMN_NUMBER               = 44
     NAME                        = MAXIMUM_EDGE_ON_SOLAR_HOUR_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 482
+    START_BYTE                  = 467
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -1277,16 +1264,32 @@ OBJECT                          = RING_GEOMETRY_TABLE
       also ignored.
 
       This column tabulates the maximum value of the edge-on solar hour
-      angle within the field of view occurring during the observation. For 
-      fields of view that cross the midnight meridian, the tabulated minimum 
-      value will be greater than the maximum."
+      angle within the field of view of the observation. For fields of view
+      that cross the midnight meridian, the tabulated minimum value will be
+      greater than the maximum."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    COLUMN_NUMBER               = 45
+    NAME                        = MINIMUM_RING_CENTER_DISTANCE
+    DATA_TYPE                   = ASCII_REAL
+    START_BYTE                  = 476
+    BYTES                       = 12
+    FORMAT                      = "F12.3"
+    UNIT                        = "KM"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Distance from the observer to the center of
+      the ring system.
+
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 46
-    NAME                        = MINIMUM_RING_CENTER_DISTANCE
+    NAME                        = MAXIMUM_RING_CENTER_DISTANCE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 491
+    START_BYTE                  = 489
     BYTES                       = 12
     FORMAT                      = "F12.3"
     UNIT                        = "KM"
@@ -1294,33 +1297,37 @@ OBJECT                          = RING_GEOMETRY_TABLE
     DESCRIPTION                 = "Distance from the observer to the center of
       the ring system.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the minimum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 47
-    NAME                        = MAXIMUM_RING_CENTER_DISTANCE
+    NAME                        = MINIMUM_SUB_SOLAR_RING_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 504
-    BYTES                       = 12
-    FORMAT                      = "F12.3"
-    UNIT                        = "KM"
+    START_BYTE                  = 502
+    BYTES                       = 8
+    FORMAT                      = "F8.3"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Distance from the observer to the center of
-      the ring system.
+    DESCRIPTION                 = "Inertial longitude of the sub-solar point
+      on the ring plane. Longitudes increase in the prograde direction.
+      Values are defined by a broken angle from the J2000 First Point of
+      Aries (right ascension = 0), along the J2000 x-y plane to the
+      ascending node of the ring system's invariable plane, and then along
+      the ring plane.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the maximum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 48
-    NAME                        = MINIMUM_SUB_SOLAR_RING_LONGITUDE
+    NAME                        = MAXIMUM_SUB_SOLAR_RING_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 517
+    START_BYTE                  = 511
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -1334,39 +1341,37 @@ OBJECT                          = RING_GEOMETRY_TABLE
       ascending node of the ring system's invariable plane, and then along
       the ring plane.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the minimum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 49
-    NAME                        = MAXIMUM_SUB_SOLAR_RING_LONGITUDE
+    NAME                        = MINIMUM_SUB_OBSERVER_RING_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 526
+    START_BYTE                  = 520
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Inertial longitude of the sub-solar point
-      on the ring plane. Longitudes increase in the prograde direction.
-      Values are defined by a broken angle from the J2000 First Point of
-      Aries (right ascension = 0), along the J2000 x-y plane to the
+    DESCRIPTION                 = "Inertial longitude of the sub-observer
+      point on the ring plane. Longitudes increase in the prograde
+      direction. Values are defined by a broken angle from the J2000 First
+      Point of Aries (right ascension = 0), along the J2000 x-y plane to the
       ascending node of the ring system's invariable plane, and then along
       the ring plane.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the maximum value
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 50
-    NAME                        = MINIMUM_SUB_OBSERVER_RING_LONGITUDE
+    NAME                        = MAXIMUM_SUB_OBSERVER_RING_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 535
+    START_BYTE                  = 529
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -1380,39 +1385,35 @@ OBJECT                          = RING_GEOMETRY_TABLE
       ascending node of the ring system's invariable plane, and then along
       the ring plane.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the minimum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 51
-    NAME                        = MAXIMUM_SUB_OBSERVER_RING_LONGITUDE
+    NAME                        = MINIMUM_RING_CENTER_PHASE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 544
+    START_BYTE                  = 538
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
-    VALID_MAXIMUM               = 360.
+    VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Inertial longitude of the sub-observer
-      point on the ring plane. Longitudes increase in the prograde
-      direction. Values are defined by a broken angle from the J2000 First
-      Point of Aries (right ascension = 0), along the J2000 x-y plane to the
-      ascending node of the ring system's invariable plane, and then along
-      the ring plane.
+    DESCRIPTION                 = "Phase angle at the center of the ring
+      system. This is the angle between the local direction of in incoming
+      photon from the Sun and the local direction of an outgoing photon to
+      the observer.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the maximum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 52
-    NAME                        = MINIMUM_RING_CENTER_PHASE_ANGLE
+    NAME                        = MAXIMUM_RING_CENTER_PHASE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 553
+    START_BYTE                  = 547
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -1424,37 +1425,35 @@ OBJECT                          = RING_GEOMETRY_TABLE
       photon from the Sun and the local direction of an outgoing photon to
       the observer.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the minimum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 53
-    NAME                        = MAXIMUM_RING_CENTER_PHASE_ANGLE
+    NAME                        = MINIMUM_RING_CENTER_INCIDENCE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 562
+    START_BYTE                  = 556
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
-    VALID_MAXIMUM               = 180.
+    VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Phase angle at the center of the ring
-      system. This is the angle between the local direction of in incoming
-      photon from the Sun and the local direction of an outgoing photon to
-      the observer.
+    DESCRIPTION                 = "Ring incidence angle at the center of the
+      ring system. This is the angle measured from the local surface normal
+      vector on the sunlit side of the ring plane to the direction of the
+      incoming photon from the Sun. Note that it never exceeds 90 degrees.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the maximum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 54
-    NAME                        = MINIMUM_RING_CENTER_INCIDENCE_ANGLE
+    NAME                        = MAXIMUM_RING_CENTER_INCIDENCE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 571
+    START_BYTE                  = 565
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -1466,37 +1465,36 @@ OBJECT                          = RING_GEOMETRY_TABLE
       vector on the sunlit side of the ring plane to the direction of the
       incoming photon from the Sun. Note that it never exceeds 90 degrees.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the minimum value
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 55
-    NAME                        = MAXIMUM_RING_CENTER_INCIDENCE_ANGLE
+    NAME                        = MINIMUM_RING_CENTER_NORTH_BASED_INCIDENCE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 580
+    START_BYTE                  = 574
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
-    VALID_MAXIMUM               = 90.
+    VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Ring incidence angle at the center of the
-      ring system. This is the angle measured from the local surface normal
-      vector on the sunlit side of the ring plane to the direction of the
-      incoming photon from the Sun. Note that it never exceeds 90 degrees.
+    DESCRIPTION                 = "North-based ring incidence angle at the
+      center of the ring system. This is the angle measured from the local
+      surface normal vector on the north side of the ring plane to the
+      direction of the incoming photon from the Sun. It is > 90 degrees
+      when the Sun shines on the south face of the rings.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the maximum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 56
-    NAME                        = MINIMUM_RING_CENTER_NORTH_BASED_INCIDENCE_ANGLE
+    NAME                        = MAXIMUM_RING_CENTER_NORTH_BASED_INCIDENCE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 589
+    START_BYTE                  = 583
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -1509,38 +1507,36 @@ OBJECT                          = RING_GEOMETRY_TABLE
       direction of the incoming photon from the Sun. It is > 90 degrees
       when the Sun shines on the south face of the rings.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the minimum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 57
-    NAME                        = MAXIMUM_RING_CENTER_NORTH_BASED_INCIDENCE_ANGLE
+    NAME                        = MINIMUM_RING_CENTER_EMISSION_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 598
+    START_BYTE                  = 592
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "North-based ring incidence angle at the
-      center of the ring system. This is the angle measured from the local
-      surface normal vector on the north side of the ring plane to the
-      direction of the incoming photon from the Sun. It is > 90 degrees
-      when the Sun shines on the south face of the rings.
+    DESCRIPTION                 = "Ring emission angle at the center of the
+      ring system. This is the angle measured from the local surface normal
+      vector on the sunlit side of the ring plane to the direction of the
+      outgoing photon to the observer. It is < 90 degrees on the sunlit side
+      of the ring plane and > 90 degrees on the 'dark' side.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the maximum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 58
-    NAME                        = MINIMUM_RING_CENTER_EMISSION_ANGLE
+    NAME                        = MAXIMUM_RING_CENTER_EMISSION_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 607
+    START_BYTE                  = 601
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -1553,38 +1549,37 @@ OBJECT                          = RING_GEOMETRY_TABLE
       outgoing photon to the observer. It is < 90 degrees on the sunlit side
       of the ring plane and > 90 degrees on the 'dark' side.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the minimum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 59
-    NAME                        = MAXIMUM_RING_CENTER_EMISSION_ANGLE
+    NAME                        = MINIMUM_RING_CENTER_NORTH_BASED_EMISSION_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 616
+    START_BYTE                  = 610
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Ring emission angle at the center of the
-      ring system. This is the angle measured from the local surface normal
-      vector on the sunlit side of the ring plane to the direction of the
-      outgoing photon to the observer. It is < 90 degrees on the sunlit side
-      of the ring plane and > 90 degrees on the 'dark' side.
+    DESCRIPTION                 = "North-based ring emission angle at the
+      center of the ring system. This is the angle measured from the local
+      surface normal vector on the north side of the ring plane to the
+      direction of the outgoing photon to the observer. It is < 90 degrees
+      on the north side of the ring plane and > 90 degrees on the south
+      side.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the maximum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 60
-    NAME                        = MINIMUM_RING_CENTER_NORTH_BASED_EMISSION_ANGLE
+    NAME                        = MAXIMUM_RING_CENTER_NORTH_BASED_EMISSION_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 625
+    START_BYTE                  = 619
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -1598,39 +1593,35 @@ OBJECT                          = RING_GEOMETRY_TABLE
       on the north side of the ring plane and > 90 degrees on the south
       side.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the minimum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 61
-    NAME                        = MAXIMUM_RING_CENTER_NORTH_BASED_EMISSION_ANGLE
+    NAME                        = MINIMUM_SOLAR_RING_OPENING_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 634
+    START_BYTE                  = 628
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
-    VALID_MINIMUM               = 0.
-    VALID_MAXIMUM               = 180.
+    VALID_MINIMUM               = -90.
+    VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "North-based ring emission angle at the
-      center of the ring system. This is the angle measured from the local
-      surface normal vector on the north side of the ring plane to the
-      direction of the outgoing photon to the observer. It is < 90 degrees
-      on the north side of the ring plane and > 90 degrees on the south
-      side.
+    DESCRIPTION                 = "Solar ring opening angle at the center of
+      the ring system. This is the angle from the ring plane to the
+      direction of incoming photon from the Sun. It is positive on the north
+      side of the ring plane and negative on the south side.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the maximum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 62
-    NAME                        = MINIMUM_SOLAR_RING_OPENING_ANGLE
+    NAME                        = MAXIMUM_SOLAR_RING_OPENING_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 643
+    START_BYTE                  = 637
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -1642,58 +1633,35 @@ OBJECT                          = RING_GEOMETRY_TABLE
       direction of incoming photon from the Sun. It is positive on the north
       side of the ring plane and negative on the south side.
 
-      This value is defined by the ephemeris at the time of the observation;
-      it is independent of the field of view. This is the minimum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 63
-    NAME                        = MAXIMUM_SOLAR_RING_OPENING_ANGLE
+    NAME                        = MINIMUM_OBSERVER_RING_OPENING_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 652
+    START_BYTE                  = 646
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Solar ring opening angle at the center of
-      the ring system. This is the angle from the ring plane to the
-      direction of incoming photon from the Sun. It is positive on the north
-      side of the ring plane and negative on the south side.
+    DESCRIPTION                 = "Observed ring opening angle at the center
+      of the ring system. This is the angle from the ring plane to the
+      direction of outgoing photon to the observer. It is positive on the
+      north side of the ring plane and negative on the south side.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the maximum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 64
-    NAME                        = MINIMUM_OBSERVER_RING_OPENING_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 661
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
-    UNIT                        = "DEGREES"
-    VALID_MINIMUM               = -90.
-    VALID_MAXIMUM               = 90.
-    NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Observed ring opening angle at the center
-      of the ring system. This is the angle from the ring plane to the
-      direction of outgoing photon to the observer. It is positive on the
-      north side of the ring plane and negative on the south side.
-
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the minimum value 
-      occurring during the observation."
-  END_OBJECT                    = COLUMN
-
-  OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 65
     NAME                        = MAXIMUM_OBSERVER_RING_OPENING_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 670
+    START_BYTE                  = 655
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -1705,9 +1673,8 @@ OBJECT                          = RING_GEOMETRY_TABLE
       direction of outgoing photon to the observer. It is positive on the
       north side of the ring plane and negative on the south side.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the maximum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
 END_OBJECT                      = RING_GEOMETRY_TABLE

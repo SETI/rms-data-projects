@@ -2,22 +2,7 @@
 # COLUMNS_BODY.py: Column definitions for body geometry tables
 ################################################################################
 import oops
-import metadata as meta
 
-planet_limb = PLANET + ":LIMB"
-
-################################################################################
-# Create a list of body IDs
-################################################################################
-planet_body = oops.Body.lookup(PLANET)
-moon_bodies = planet_body.select_children("REGULAR")
-
-MOON_NAMES   = [moon.name for moon in moon_bodies]
-BODY_NAMES = [PLANET] + MOON_NAMES
-NAME_LENGTH = 12
-
-# Maintain a list of translations for target names
-TRANSLATIONS = {}
 
 ################################################################################
 # *COLUMN description tuples are
@@ -50,123 +35,49 @@ TRANSLATIONS = {}
 #                       "-180" = use the range (-180,180) instead of (0,360).
 #
 ################################################################################
-
-MOONX = "moonx"                 # Indicates a placeholder for an arbitrary moon
-
-#SKY_COLUMNS = [
-#    (("right_ascension",        ()),                        ("",  "",  "")),
-#    (("declination",            ()),                        ("",  "",  ""))]
-
-PLANET_COLUMNS = [
-    (("latitude",               PLANET, "centric"),         ("RM", "R",  "D")),
-    (("latitude",               PLANET, "graphic"),         ("RM", "R",  "D")),
-    (("longitude",              PLANET, "iau", "west"),     ("RM", "R",  "D")),
-#    (("longitude",              PLANET, "iau", "east"),     ("RM", "R",  "D")),
-    (("longitude",              PLANET, "sha", "east"),     ("RM", "R",  "" )),
-    (("longitude",              PLANET, "obs", "west"),
+BODY_COLUMNS = [
+    (("latitude",               BODYX, "centric"),         ("RM", "R",  "D")),
+    (("latitude",               BODYX, "graphic"),         ("RM", "R",  "D")),
+    (("longitude",              BODYX, "iau", "west"),     ("RM", "R",  "D")),
+#    (("longitude",              BODYX, "iau", "east"),     ("RM", "R",  "D")),
+    (("longitude",              BODYX, "sha", "east"),     ("RM", "R",  "" )),
+    (("longitude",              BODYX, "obs", "west"),
                                                             ("RM", "R",  "D"), "-180"),
-#    (("longitude",              PLANET, "obs", "east"),
+#    (("longitude",              BODYX, "obs", "east"),
 #                                                            ("RM", "R",  "D"), "-180"),
-    (("finest_resolution",      PLANET),                    ("RM", "R",  "D")),
-    (("coarsest_resolution",    PLANET),                    ("RM", "R",  "D")),
-    (("distance",               PLANET),                    ("RM", "",   "" )),
-#    (("phase_angle",            PLANET),                    ("RM", "",   "D")),
-    (("phase_angle",            PLANET),                    ("RM", "",   "")),
-    (("incidence_angle",        PLANET),                    ("RM", "",   "" )),
-    (("emission_angle",         PLANET),                    ("RM", "",   "" ))]
+    (("finest_resolution",      BODYX),                    ("RM", "R",  "D")),
+    (("coarsest_resolution",    BODYX),                    ("RM", "R",  "D")),
+    (("distance",               BODYX),                    ("RM", "",   "" )),
+#    (("phase_angle",            BODYX),                    ("RM", "",   "D")),
+    (("phase_angle",            BODYX),                    ("RM", "",   "")),
+    (("incidence_angle",        BODYX),                    ("RM", "",   "" )),
+    (("emission_angle",         BODYX),                    ("RM", "",   "" ))]
 
-PLANET_GRIDLESS_COLUMNS = [
-    (("sub_solar_latitude",     PLANET, "centric"),         ("",   "",  "" )),
-    (("sub_solar_latitude",     PLANET, "graphic"),         ("",   "",  "" )),
-    (("sub_observer_latitude",  PLANET, "centric"),         ("",   "",  "" )),
-    (("sub_observer_latitude",  PLANET, "graphic"),         ("",   "",  "" )),
-    (("sub_solar_longitude",    PLANET, "iau", "west"),     ("",   "",  "" )),
-#    (("sub_solar_longitude",    PLANET, "iau", "east"),     ("",   "",  "" )),
-    (("sub_observer_longitude", PLANET, "iau", "west"),     ("",   "",  "" )),
-#    (("sub_observer_longitude", PLANET, "iau", "east"),     ("",   "",  "" )),
-    (("center_resolution",      PLANET, "u"),               ("",   "",  "" )),
-    (("center_distance",        PLANET, "obs"),             ("",   "",  "" )),
-    (("center_phase_angle",     PLANET),                    ("",   "",  "" ))]
+BODY_GRIDLESS_COLUMNS = [
+    (("sub_solar_latitude",     BODYX, "centric"),         ("",   "",  "" )),
+    (("sub_solar_latitude",     BODYX, "graphic"),         ("",   "",  "" )),
+    (("sub_observer_latitude",  BODYX, "centric"),         ("",   "",  "" )),
+    (("sub_observer_latitude",  BODYX, "graphic"),         ("",   "",  "" )),
+    (("sub_solar_longitude",    BODYX, "iau", "west"),     ("",   "",  "" )),
+#    (("sub_solar_longitude",    BODYX, "iau", "east"),     ("",   "",  "" )),
+    (("sub_observer_longitude", BODYX, "iau", "west"),     ("",   "",  "" )),
+#    (("sub_observer_longitude", BODYX, "iau", "east"),     ("",   "",  "" )),
+    (("center_resolution",      BODYX, "u"),               ("",   "",  "" )),
+    (("center_distance",        BODYX, "obs"),             ("",   "",  "" )),
+    (("center_phase_angle",     BODYX),                    ("",   "",  "" ))]
 
-MOON_COLUMNS = [
-    (("latitude",               MOONX, "centric"),          ("P",  "",  "D")),
-    (("latitude",               MOONX, "graphic"),          ("P",  "",  "D")),
-    (("longitude",              MOONX, "iau", "west"),      ("P",  "",  "D")),
-#    (("longitude",              MOONX, "iau", "east"),      ("P",  "",  "D")),
-    (("longitude",              MOONX, "sha", "east"),      ("P",  "",  "" )),
-    (("longitude",              MOONX, "obs", "west"),("P",  "",  "D"), "-180"),
-#    (("longitude",              MOONX, "obs", "east"),("P",  "",  "D"), "-180"),
-    (("finest_resolution",      MOONX),                     ("P",  "",  "D")),
-    (("coarsest_resolution",    MOONX),                     ("P",  "",  "D")),
-    (("distance",               MOONX),                     ("P",  "",  "" )),
-#    (("phase_angle",            MOONX),                     ("P",  "",  "D")),
-    (("phase_angle",            MOONX),                     ("P",  "",  "")),
-    (("incidence_angle",        MOONX),                     ("P",  "",  "" )),
-    (("emission_angle",         MOONX),                     ("P",  "",  "" ))]
+# Assemble the column lists for each type of file for the moons and planet
 
-MOON_GRIDLESS_COLUMNS = [
-    (("sub_solar_latitude",     MOONX, "centric"),          ("",   "",  "" )),
-    (("sub_solar_latitude",     MOONX, "graphic"),          ("",   "",  "" )),
-    (("sub_observer_latitude",  MOONX, "centric"),          ("",   "",  "" )),
-    (("sub_observer_latitude",  MOONX, "graphic"),          ("",   "",  "" )),
-    (("sub_solar_longitude",    MOONX, "iau", "west"),      ("",   "",  "" )),
-#    (("sub_solar_longitude",    MOONX, "iau", "east"),      ("",   "",  "" )),
-    (("sub_observer_longitude", MOONX, "iau", "west"),      ("",   "",  "" )),
-#    (("sub_observer_longitude", MOONX, "iau", "east"),      ("",   "",  "" )),
-    (("center_resolution",      MOONX, "u"),                ("",   "",  "" )),
-    (("center_distance",        MOONX, "obs"),              ("",   "",  "" )),
-    (("center_phase_angle",     MOONX),                     ("",   "",  "" ))]
+BODY_SUMMARY_COLUMNS  = BODY_COLUMNS + BODY_GRIDLESS_COLUMNS
+BODY_DETAILED_COLUMNS = BODY_COLUMNS
 
-SUN_COLUMNS = [
-    (("latitude",               "SUN", "centric"),          ("",  "",  "" )),
-    (("latitude",               "SUN", "graphic"),          ("",  "",  "" )),
-    (("longitude",              "SUN", "iau", "west"),      ("",  "",  "" )),
-#    (("longitude",              "SUN", "iau", "east"),      ("",  "",  "" )),
-    (("longitude",              meta.NULL, "sha", "east"),  ("",  "",  "" )),
-    (("longitude",              "SUN", "obs", "west"),("",  "",  "" ), "-180"),
-#    (("longitude",              "SUN", "obs", "east"),("",  "",  "" ), "-180"),
-    (("finest_resolution",      "SUN"),                     ("",  "",  "" )),
-    (("coarsest_resolution",    "SUN"),                     ("",  "",  "" )),
-    (("distance",               "SUN"),                     ("",  "",  "" )),
-    (("phase_angle",            meta.NULL),                 ("",  "",  "" )),
-    (("incidence_angle",        meta.NULL),                 ("",  "",  "" )),
-    (("emission_angle",         meta.NULL),                 ("",  "",  "" ))]
-
-SUN_GRIDLESS_COLUMNS = [
-    (("sub_solar_latitude",     meta.NULL, "centric"),      ("",   "",  "" )),
-    (("sub_solar_latitude",     meta.NULL, "graphic"),      ("",   "",  "" )),
-    (("sub_observer_latitude",  "SUN", "centric"),          ("",   "",  "" )),
-    (("sub_observer_latitude",  "SUN", "graphic"),          ("",   "",  "" )),
-    (("sub_solar_longitude",    meta.NULL, "iau", "west"),  ("",   "",  "" )),
-#    (("sub_solar_longitude",    meta.NULL, "iau", "east"),  ("",   "",  "" )),
-    (("sub_observer_longitude", "SUN", "west"),             ("",   "",  "" )),
-#    (("sub_observer_longitude", "SUN", "east"),             ("",   "",  "" )),
-    (("center_resolution",      "SUN", "u"),                ("",   "",  "" )),
-    (("center_distance",        "SUN", "obs"),              ("",   "",  "" )),
-    (("center_phase_angle",     meta.NULL),                 ("",   "",  "" ))]
-
-# Assemble the column lists for each type of file for the rings and for Saturn
-
-PLANET_SUMMARY_COLUMNS  = PLANET_COLUMNS + PLANET_GRIDLESS_COLUMNS
-PLANET_DETAILED_COLUMNS = PLANET_COLUMNS
-
-# Create a dictionary for the columns of each moon
-
-MOON_SUMMARY_COLUMNS  = MOON_COLUMNS + MOON_GRIDLESS_COLUMNS
-MOON_DETAILED_COLUMNS = MOON_COLUMNS
-
-MOON_SUMMARY_DICT  = meta.replacement_dict(MOON_SUMMARY_COLUMNS,
-                                           MOONX, MOON_NAMES)
-MOON_DETAILED_DICT = meta.replacement_dict(MOON_DETAILED_COLUMNS,
-                                           MOONX, MOON_NAMES)
-
-# Treat the Sun as a moon for purposes of metadata
-
-SUN_SUMMARY_COLUMNS  = SUN_COLUMNS + SUN_GRIDLESS_COLUMNS
-SUN_DETAILED_COLUMNS = SUN_COLUMNS
-
-MOON_SUMMARY_DICT["SUN"]  = SUN_SUMMARY_COLUMNS
-MOON_DETAILED_DICT["SUN"] = SUN_DETAILED_COLUMNS
+BODY_SUMMARY_DICT = {}
+BODY_DETAILED_DICT = {}
+for body in BODIES:
+    BODY_SUMMARY_DICT.update(replacement_dict(BODY_SUMMARY_COLUMNS,
+                                                         BODYX, [body]))
+    BODY_DETAILED_DICT.update(replacement_dict(BODY_DETAILED_COLUMNS,
+                                                         BODYX, [body]))
 
 ################################################################################
 # Define the tiling for detailed listings
@@ -175,35 +86,40 @@ MOON_DETAILED_DICT["SUN"] = SUN_DETAILED_COLUMNS
 # count. The remaining items define a sequence of tiles to use in a
 # detailed tabulation.
 ################################################################################
-PLANET_TILES = [
-    ("where_sunward", PLANET),                      # mask over remaining tiles
-    ("where_below",   ("latitude", PLANET), -70. * oops.RPD),
-    ("where_between", ("latitude", PLANET), -70. * oops.RPD, -50. * oops.RPD),
-    ("where_between", ("latitude", PLANET), -50. * oops.RPD, -30. * oops.RPD),
-    ("where_between", ("latitude", PLANET), -30. * oops.RPD, -10. * oops.RPD),
-    ("where_between", ("latitude", PLANET), -10. * oops.RPD,  10. * oops.RPD),
-    ("where_between", ("latitude", PLANET),  10. * oops.RPD,  30. * oops.RPD),
-    ("where_between", ("latitude", PLANET),  30. * oops.RPD,  50. * oops.RPD),
-    ("where_between", ("latitude", PLANET),  50. * oops.RPD,  70. * oops.RPD),
-    ("where_above",   ("latitude", PLANET),  70. * oops.RPD)
-]
+PLANET_TILES = {}
+for planet in PLANET_NAMES:
+    PLANET_TILES[planet] = [
+        ("where_sunward", planet),                      # mask over remaining tiles
+        ("where_below",   ("latitude", planet), -70. * oops.RPD),
+        ("where_between", ("latitude", planet), -70. * oops.RPD, -50. * oops.RPD),
+        ("where_between", ("latitude", planet), -50. * oops.RPD, -30. * oops.RPD),
+        ("where_between", ("latitude", planet), -30. * oops.RPD, -10. * oops.RPD),
+        ("where_between", ("latitude", planet), -10. * oops.RPD,  10. * oops.RPD),
+        ("where_between", ("latitude", planet),  10. * oops.RPD,  30. * oops.RPD),
+        ("where_between", ("latitude", planet),  30. * oops.RPD,  50. * oops.RPD),
+        ("where_between", ("latitude", planet),  50. * oops.RPD,  70. * oops.RPD),
+        ("where_above",   ("latitude", planet),  70. * oops.RPD)
+    ]
 
-MOON_TILES = [
-    ("where_all", ("where_in_front", MOONX, PLANET), # mask over remaining tiles
-                  ("where_sunward",  MOONX)),
-    ("where_below",   ("latitude", MOONX), -70. * oops.RPD),
-    ("where_between", ("latitude", MOONX), -70. * oops.RPD, -50. * oops.RPD),
-    ("where_between", ("latitude", MOONX), -50. * oops.RPD, -30. * oops.RPD),
-    ("where_between", ("latitude", MOONX), -30. * oops.RPD, -10. * oops.RPD),
-    ("where_between", ("latitude", MOONX), -10. * oops.RPD,  10. * oops.RPD),
-    ("where_between", ("latitude", MOONX),  10. * oops.RPD,  30. * oops.RPD),
-    ("where_between", ("latitude", MOONX),  30. * oops.RPD,  50. * oops.RPD),
-    ("where_between", ("latitude", MOONX),  50. * oops.RPD,  70. * oops.RPD),
-    ("where_above",   ("latitude", MOONX),  70. * oops.RPD)
-]
+BODY_TILES = {}
+for planet in PLANET_NAMES:
+    BODY_TILES[planet] = [
+        ("where_all", ("where_in_front", BODYX, planet), # mask over remaining tiles
+                      ("where_sunward",  BODYX)),
+        ("where_below",   ("latitude", BODYX), -70. * oops.RPD),
+        ("where_between", ("latitude", BODYX), -70. * oops.RPD, -50. * oops.RPD),
+        ("where_between", ("latitude", BODYX), -50. * oops.RPD, -30. * oops.RPD),
+        ("where_between", ("latitude", BODYX), -30. * oops.RPD, -10. * oops.RPD),
+        ("where_between", ("latitude", BODYX), -10. * oops.RPD,  10. * oops.RPD),
+        ("where_between", ("latitude", BODYX),  10. * oops.RPD,  30. * oops.RPD),
+        ("where_between", ("latitude", BODYX),  30. * oops.RPD,  50. * oops.RPD),
+        ("where_between", ("latitude", BODYX),  50. * oops.RPD,  70. * oops.RPD),
+        ("where_above",   ("latitude", BODYX),  70. * oops.RPD)
+    ]
 
-MOON_TILE_DICT = {}
-for name in (MOON_NAMES + ["SUN"]):
-    MOON_TILE_DICT[name] = meta.replace(MOON_TILES, MOONX, name)
+BODY_TILE_DICT = {}
 
+for body in PLANET_NAMES:
+    BODY_TILE_DICT[body] = {}
+    BODY_TILE_DICT[body] = replace(BODY_TILES[body], BODYX, body)
 ################################################################################
