@@ -8,6 +8,7 @@ import warnings
 import fnmatch
 import pdstable, pdsparser
 from pdstemplate import PdsTemplate
+from pdslabelbot import PdsLabelBot
 
 import metadata as meta
 import config
@@ -112,7 +113,7 @@ ALT_FORMAT_DICT = {
 SYSTEMS_TABLE = meta.convert_systems_table(config.SYSTEMS_TABLE, config.SCLK_BASES)
 
 #===============================================================================
-def _write_table(filename, rows, system=None):
+def _write_table(filename, rows, system=None, qualifier=None):
     if rows == []:
         return
 
@@ -121,7 +122,10 @@ def _write_table(filename, rows, system=None):
     meta.write_txt_file(filename, rows)
 
     # Write label
-    _make_label(filename, system=system)
+    table_type = ''
+    if qualifier:
+        table_type = qualifier + '_geometry'
+    _make_label(filename, system=system, table_type=table_type)
 
 #===============================================================================
 def _write_tables(table, prefix, desc='summary', qualifier=None):
@@ -130,13 +134,13 @@ def _write_tables(table, prefix, desc='summary', qualifier=None):
         for system in table.keys():
             if qualifier:
                 filename = Path(prefix + "_%s.%s_%s.tab" % (system.lower(), qualifier, desc))
-                _write_table(filename, table[system], system=system)
+                _write_table(filename, table[system], system=system, qualifier=qualifier)
             else:
                 filename = Path(prefix + "_%s_%s.tab" % (system.lower(), desc))
-                _write_table(filename, table[system])
+                _write_table(filename, table[system], qualifier=qualifier)
     else:
             filename = Path(prefix + "_%s_%s.tab" % (qualifier, desc))
-            _write_table(filename, table)
+            _write_table(filename, table, qualifier=qualifier)
 
 #===============================================================================
 def _add_record(prefixes, backplane, column_descs, 
@@ -379,7 +383,8 @@ def _prep_rows(prefixes, backplane, blocker, column_descs,
         # Append the target and system name as needed
         if not no_body:
             _append_body_prefix(prefix_columns, system, name_length)
-            _append_body_prefix(prefix_columns, target, name_length)
+            if target is not None:
+                _append_body_prefix(prefix_columns, target, name_length)
 
         # Insert the subregion index
         if subregion_masks:
@@ -398,7 +403,6 @@ def _prep_rows(prefixes, backplane, blocker, column_descs,
             if event_key[1] == meta.NULL:
                 values = oops.Scalar(0., True)
             else:
-#@@@@@@@@@@@@@@@@@@@@@@@
                 values = backplane.evaluate(event_key)
 
             # Make a shallow copy and apply the new masks
@@ -627,7 +631,7 @@ def _formatted_column(values, format):
 #===============================================================================
 def _make_label(filepath, 
                 system=None, creation_time=None, preserve_time=False,
-                index_type='SINGLE'):
+                index_type='SINGLE', table_type=''):
     """Creates a label for a given geometry table.
 
     Args:
@@ -638,148 +642,43 @@ def _make_label(filepath,
             If True, the creation time is copied from any existing
             label before it is overwrittten.
         index_type (str, optional): Value for the INDEX_TYPE field.
+        
+    Returns:
+        None.
     """
 
     if not system:
         system = '' 
-
     filename = filepath.name
-
     dir = filepath.parent
     body = filepath.stem
     lblfile = dir / (body + '.lbl')
-
-    # Load the data file if it exists
-    if not filepath.is_file():
-        return
-    lines = meta.read_txt_file(filepath)
-    
-    if lines == []:
-        return
-    
-    recs = len(lines)
-    linelen = len(lines[0])
-
-    is_inventory = ('inventory' in body)
-    if not is_inventory:
-        for line in lines:
-            assert len(line) == linelen     # all lines have the same length
-
-
-    # Get the instrument and volume_id
     underscore = filename.index('_')
-    offset = 0 if not system else len(system) + 1
-    inst_id = filename[:underscore]
-    volume_id = filename[:underscore + 5]
 
     # Determine the creation time
     if preserve_time:
-        if lblfile.is_file():
-            lines = meta.read_txt_file(lblfile)
-
-            creation_time = 'missing'
-            for line in lines:
-                if line.startswith('PRODUCT_CREATION_TIME'):
-                    creation_time = line[-21:-2]
-                    assert creation_time[:2] == '20'
-                    break
-
-            assert creation_time != 'missing'
-
+        label = pdsparser.PdsLabel.from_file(lblfile)
+        creation_time = label.__getitem__('PRODUCT_CREATION_TIME')
     elif creation_time is None:
         creation_time = '%04d-%02d-%02dT%02d:00:00' % time.gmtime()[:4]
 
     # Read the template
+    offset = 0 if not system else len(system) + 1
     template = meta.TEMPLATES_DIR / Path('%s.lbl' % body[underscore+6+offset:])
-    if not template.is_file():
-        template = meta.TEMPLATES_DIR / Path('planet_summary.lbl')
-    try:
-        lines = meta.read_txt_file(template)
-        lines = meta.force_crlf(lines)
-    except:
-        return
 
-    # Preprocess the template
-    lines = meta.process_directives(lines)
+    # Populate the standard PdsTemplate field dictionary for inventory files
+    fields = None
+    if ('inventory' in body):
+        volume_id = filename[:underscore + 5]
+        fields = {'VOLUME_ID'           : volume_id,
+                  'INDEX_TYPE'          : index_type,
+                  'PUBLICATION_DATE'    : creation_time[:10]}
 
-    # Populate the standard PdsTemplate field dictionary
-    if is_inventory:
-        fields = {'FILENAME'         : filename,
-                  'VOLUME_ID'        : volume_id,
-                  'PUBLICATION_DATE' :  creation_time[:10]}
-    else:
-        fields = {'ROWS'       : str(recs),
-                  'FILENAME'   : filename,
-                  'INDEX_TYPE' : index_type,
-                  'VOLUME_ID'  : volume_id}
-
-    # Process the template
-    temp = PdsTemplate('', content=lines)
-    temp.write(fields, lblfile.as_posix())
-
-#===============================================================================
-def _update_cumulative_index(indir, cumulative_dir):
-    """Add geometry tables in current volume to cumulative indexes.
-
-    Args:
-        indir (Path): Directory containing the volume.
-        cumulative_dir (Path): Directory in which to place the cumulative
-                              indexes.
-    """
-
-    volume_id = config.get_volume_id(indir)
-    cumulative_id = config.get_volume_id(cumulative_dir)
-
-    # Find all table files in this volume
-    lbl_files = list(indir.glob('*.lbl'))
-
-    # Copy geometry tables to cumulative indexes
-    for lbl_file in lbl_files:
-    
-        # Read the label
-        label_dict = pdsparser.PdsLabel.from_file(lbl_file).as_dict()
-
-        # Determine whether this is a geometry table
-        objects = list(label_dict.keys())
-        geom = [object for object in objects if object.find('GEOMETRY') != -1]!= []
-
-        # If so, add to cumulative index
-        if geom:
-            tab_file = lbl_file.with_suffix('.tab')
-
-            tab_file_s = tab_file.as_posix()
-            cumulative_file_s = tab_file_s.replace(volume_id, cumulative_id)
-            cumulative_file = Path(cumulative_file_s)
-
-            lines = meta.read_txt_file(tab_file)
-            meta.write_txt_file(cumulative_file, lines, append=True)
-
-#===============================================================================
-def _clear_cumulative_index(cumulative_dir):
-    """Remove cumulative geometry files.
-
-    Args:
-        cumulative_dir (Path): Directory containing the cumulative indexes.
-    """
-
-    # Find all table files
-    lbl_files = list(cumulative_dir.glob('*.lbl'))
-
-    # Remove cumulative geometry files
-    for lbl_file in lbl_files:
-    
-        # Read the label
-        label_dict = pdsparser.PdsLabel.from_file(lbl_file).as_dict()
-
-        # Determine whether this is a geometry table
-        objects = list(label_dict.keys())
-        geom = [object for object in objects if object.find('GEOMETRY') != -1]!= []
-
-        # If so, delete the label and table
-        if geom:
-            tab_file = lbl_file.with_suffix('.tab')
-            lbl_file.unlink(missing_ok=True)
-            tab_file.unlink(missing_ok=True)
+    # Generate the label
+    bot = PdsLabelBot(template, filepath, 
+                                table_type=table_type,
+                                dictionary=fields)
+    bot.write(lblfile)
 
 #===============================================================================
 def _add_records(system, table, dicts, body_names, dat):
@@ -894,8 +793,9 @@ def _process_one_index(indir, outdir, logdir,
     }
 
     # Loop through the observations...
+    count = 0
     for i in range(records):
-#    for i in range(450, records):
+        if count >= 5: continue            ###################
         observation = observations[i]
 
         # Determine system, if any
@@ -986,6 +886,8 @@ def _process_one_index(indir, outdir, logdir,
             if "D" in selection:
                 _add_records(system, tables['detailed'], dicts['detailed'], body_names, dat)
 
+            count += 1
+
         # A RuntimeError is probably caused by missing spice data. There is
         # probably nothing we can do.
         except RuntimeError as e:
@@ -1007,17 +909,17 @@ def _process_one_index(indir, outdir, logdir,
     log_file.close()
     inventory_file.close()
 
-    # Write tables and Make labels 
+    # Write tables and make labels 
     _make_label(inventory_filename)
 
     if "S" in selection:
         _write_tables(tables['summary']['sky'], prefix, qualifier='sky')
         _write_tables(tables['summary']['ring'], prefix, qualifier='ring')
-        _write_table(body_summary_filename, tables['summary']['body'])
+        _write_tables(tables['summary']['body'], prefix, qualifier='body')
     if "D" in selection:
         _write_tables(tables['detailed']['sky'], prefix, desc='detailed', qualifier='sky')
         _write_tables(tables['detailed']['ring'], prefix, desc='detailed', qualifier='ring')
-        _write_table(body_detailed_filename, tables['detailed']['body'])
+        _write_tables(tables['detailed']['body'], prefix, qualifier='body')
 
     # Clean up
     config.cleanup() 
@@ -1098,50 +1000,4 @@ def process_index(input_tree, output_tree, *,
                                    exclude=exclude, 
                                    glob=glob)
 
-#===============================================================================
-def create_cumulative_index(output_tree, *,
-                            exclude=None, glob=None, volume=None):
-    """Creates the cumulative geometry files for a collection of volumes.
-
-    Args:
-        output_tree (Path): Root of the tree containing the volumes.
-        exclude (list, optional): List of volumes to exclude.
-        glob (str, optional): Glob pattern for index files.
-        volume (str, optional): If given, only this volume is processed.
-    """
-
-    output_tree = Path(output_tree)
-
-    # Set up cumulative index
-    cumulative_dir = meta.get_cumulative_dir(output_tree)
-    _clear_cumulative_index(cumulative_dir)
-
-    # Build volume glob
-    vol_glob = meta.get_volume_glob(output_tree.name)
-
-    # Walk the input tree, adding lines for each found volume
-    print('Building Cumulative tables...')
-    for root, dirs, files in output_tree.walk(top_down=True):
-        dirs.sort()
-        root = Path(root)
-
-        # Determine notional set and volume
-        parts = root.parts
-        set = parts[-2]
-        vol = parts[-1]
-
-        # Test whether this root is a volume
-        if fnmatch.filter([vol], vol_glob):
-            if not volume or vol == volume:
-                if vol != cumulative_dir.name:
-                    print(vol)
-                    _update_cumulative_index(root, cumulative_dir)
-
-    # make labels
-    print('Building Cumulative labels...')
-    tables = list(cumulative_dir.glob('*summary.tab'))
-    for table in tables:
-        _make_label(table, index_type='CUMULATIVE')
-    
-    
 ################################################################################

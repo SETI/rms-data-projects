@@ -46,7 +46,7 @@ class Test_Geometry_GOSSI(unittest.TestCase):
             print('Reading', file)
             table = pdstable.PdsTable(file) 
 
-            from IPython import embed; print('+++++++++++++'); embed()
+            file = '/home/spitale/SETI/RMS/metadata_test/GO_0xxx/GO_0017/GO_0017_body_summary.lbl'
 #            system, secondaries = meta.get_system(SYSTEMS_TABLE, sclk, config.SCLK_BASES)
 
             target = table.column_values['TARGET_NAME']
@@ -131,6 +131,7 @@ class Test_Geometry_GOSSI(unittest.TestCase):
             self.assertFalse(np.any(np.where(np.abs(test) > 30)))
             test = table.column_values['MAXIMUM_OBSERVER_RING_OPENING_ANGLE']
             self.assertFalse(np.any(np.where(np.abs(test) > 30)))
+
 
 #########################################
 if __name__ == '__main__':

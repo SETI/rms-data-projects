@@ -1,10 +1,11 @@
+#!/usr/bin/env python
 ################################################################################
 # unittester.py
 ################################################################################
 import unittest
 
 from unittester_index                           import *
-#from unittester_geometry                        import *
+from unittester_geometry                        import *
 
 #from hosts.GO_0xxx.test_index                   import *
 #from hosts.GO_0xxx.test_geometry                import *

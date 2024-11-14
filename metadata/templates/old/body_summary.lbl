@@ -1,7 +1,7 @@
 PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = FIXED_LENGTH
 FILE_RECORDS                    = $ROWS$
-RECORD_BYTES                    = 449
+RECORD_BYTES                    = 464
 ^BODY_GEOMETRY_TABLE            = "$FILENAME$"
 
 PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
@@ -14,8 +14,8 @@ OBJECT                          = BODY_GEOMETRY_TABLE
   INDEX_TYPE                    = $INDEX_TYPE$
   INTERCHANGE_FORMAT            = ASCII
   ROWS                          = $ROWS$
-  ROW_BYTES                     = 449
-  COLUMNS                       = 43
+  ROW_BYTES                     = 464
+  COLUMNS                       = 44
 
   DESCRIPTION                   = "This index describes the intercept geometry
     for the regular satellites and other targeted bodies within the field of
@@ -76,9 +76,20 @@ OBJECT                          = BODY_GEOMETRY_TABLE
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 3
-    NAME                        = TARGET_NAME
+    NAME                        = SYSTEM
     DATA_TYPE                   = CHARACTER
     START_BYTE                  = 47
+    BYTES                       = 12
+    FORMAT                      = "A12"
+    DESCRIPTION                 = "The system is the name of the central body
+      to which any ambiguous names, like rings, may refer."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    COLUMN_NUMBER               = 4
+    NAME                        = TARGET_NAME
+    DATA_TYPE                   = CHARACTER
+    START_BYTE                  = 62
     BYTES                       = 12
     FORMAT                      = "A12"
     DESCRIPTION                 = "The target name is the name of the body for
@@ -87,10 +98,10 @@ OBJECT                          = BODY_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 4
+    COLUMN_NUMBER               = 5
     NAME                        = MINIMUM_PLANETOCENTRIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 61
+    START_BYTE                  = 76
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -114,14 +125,14 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the minimum value of planetocentric latitude
-      within the field of view of the observation."
+      within the field of view occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 5
+    COLUMN_NUMBER               = 6
     NAME                        = MAXIMUM_PLANETOCENTRIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 70
+    START_BYTE                  = 85
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -145,14 +156,14 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the maximum value of planetocentric latitude
-      within the field of view of the observation."
+      within the field of view occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 6
+    COLUMN_NUMBER               = 7
     NAME                        = MINIMUM_PLANETOGRAPHIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 79
+    START_BYTE                  = 94
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -175,14 +186,14 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the minimum value of planetographic latitude
-      within the field of view of the observation."
+      within the field of view occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 7
+    COLUMN_NUMBER               = 8
     NAME                        = MAXIMUM_PLANETOGRAPHIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 88
+    START_BYTE                  = 103
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -205,14 +216,14 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the maximum value of planetographic latitude
-      within the field of view of the observation."
+      within the field of view occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 8
+    COLUMN_NUMBER               = 9
     NAME                        = MINIMUM_IAU_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 97
+    START_BYTE                  = 112
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -231,16 +242,16 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the minimum value of IAU longitude within the
-      field of view of the observation. For fields of view that cross the
-      prime meridian, the tabulated minimum value will be greater than the
-      maximum."
+      field of view occurring during the observation. For fields of view that 
+      cross the prime meridian, the tabulated minimum value will be greater 
+      than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 9
+    COLUMN_NUMBER               = 10
     NAME                        = MAXIMUM_IAU_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 106
+    START_BYTE                  = 121
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -259,16 +270,16 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the maximum value of IAU longitude within the
-      field of view of the observation. For fields of view that cross the
-      prime meridian, the tabulated minimum value will be greater than the
-      maximum."
+      field of view occurring during the observation. For fields of view that 
+      cross the prime meridian, the tabulated minimum value will be greater 
+      than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 10
+    COLUMN_NUMBER               = 11
     NAME                        = MINIMUM_LOCAL_HOUR_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 115
+    START_BYTE                  = 130
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -289,16 +300,16 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       ignored.
 
       This column tabulates the minimum value of local hour angle within the
-      field of view of the observation. For fields of view that cross the
-      midnight meridian, the tabulated minimum value will be greater than
-      the maximum."
+      field of view occurring during the observation. For fields of view that 
+      cross the midnight meridian, the tabulated minimum value will be greater 
+      than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 11
+    COLUMN_NUMBER               = 12
     NAME                        = MAXIMUM_LOCAL_HOUR_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 124
+    START_BYTE                  = 139
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -319,16 +330,16 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       ignored.
 
       This column tabulates the maximum value of local hour angle within the
-      field of view of the observation. For fields of view that cross the
-      midnight meridian, the tabulated minimum value will be greater than
-      the maximum."
+      field of view occurring during the observation. For fields of view that 
+      cross the midnight meridian, the tabulated minimum value will be greater 
+      than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 12
+    COLUMN_NUMBER               = 13
     NAME                        = MINIMUM_LONGITUDE_WRT_OBSERVER
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 133
+    START_BYTE                  = 148
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -347,14 +358,14 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the minimum value of this longitude within the
-      field of view of the observation."
+      field of view occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 13
+    COLUMN_NUMBER               = 14
     NAME                        = MAXIMUM_LONGITUDE_WRT_OBSERVER
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 142
+    START_BYTE                  = 157
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -373,14 +384,14 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the maximum value of this longitude within the
-      field of view of the observation."
+      field of view occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 14
+    COLUMN_NUMBER               = 15
     NAME                        = MINIMUM_FINEST_SURFACE_RESOLUTION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 151
+    START_BYTE                  = 166
     BYTES                       = 10
     FORMAT                      = "F10.5"
     UNIT                        = "KM"
@@ -389,7 +400,9 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       dimension of a pixel as projected onto the surface at the intercept
       point. In practice, it defines the approximate size of the smallest
       linear feature that can be resolved if that feature is oriented
-      optimally on the surface.
+      optimally on the surface. In other words, this is the smallest resolvable
+      feature that could be resolved anywhere in the field of view provided that
+      feature is oriented optimally on the surface.
 
       The surface has been modeled as an ellipsoid. Surface intercept points
       that are obscured by the planet or another moon within the observed
@@ -398,15 +411,14 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the minimum value of finest surface resolution
-      within the field of view of the observation. In other words, this is
-      the size of the smallest resolvable feature in the field of view."
+      within the field of view occurring during the observation. "
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 15
+    COLUMN_NUMBER               = 16
     NAME                        = MAXIMUM_FINEST_SURFACE_RESOLUTION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 162
+    START_BYTE                  = 177
     BYTES                       = 10
     FORMAT                      = "F10.5"
     UNIT                        = "KM"
@@ -415,7 +427,9 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       dimension of a pixel as projected onto the surface at the intercept
       point. In practice, it defines the approximate size of the smallest
       linear feature that can be resolved if that feature is oriented
-      optimally on the surface.
+      optimally on the surface. In other words, this is the smallest resolvable
+      feature that could be resolved anywhere in the field of view provided that
+      feature is oriented optimally on the surface.
 
       The surface has been modeled as an ellipsoid. Surface intercept points
       that are obscured by the planet or another moon within the observed
@@ -424,17 +438,14 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the maximum value of finest surface resolution
-      within the field of view of the observation. In other words, this is
-      the smallest resolvable feature that could be resolved anywhere in the
-      field of view provided that feature is oriented optimally on the
-      surface."
+      within the field of view occurring during the observation. "
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 16
+    COLUMN_NUMBER               = 17
     NAME                        = MINIMUM_COARSEST_SURFACE_RESOLUTION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 173
+    START_BYTE                  = 188
     BYTES                       = 10
     FORMAT                      = "F10.5"
     UNIT                        = "KM"
@@ -446,7 +457,9 @@ OBJECT                          = BODY_GEOMETRY_TABLE
           1/cos(emission angle).
       In practice, this defines the approximate size of a linear feature
       that can be resolved if that feature has its worst possible
-      orientation on the surface.
+      orientation on the surface. In other words, this is the size of the 
+      smallest feature that could be be resolved somewhere within the field of 
+      view, even if its orientation on the surface is the worst it can be.
 
       The surface has been modeled as an ellipsoid. Surface intercept points
       that are obscured by the planet or another moon within the observed
@@ -455,17 +468,14 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the minimum value of coarsest surface resolution
-      within the field of view of the observation. In other words, this is
-      the size of the smallest feature that could be be resolved somewhere
-      within the field of view, even if its orientation on the surface is
-      the worst it can be."
+      within the field of view occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 17
+    COLUMN_NUMBER               = 18
     NAME                        = MAXIMUM_COARSEST_SURFACE_RESOLUTION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 184
+    START_BYTE                  = 199
     BYTES                       = 10
     FORMAT                      = "F10.5"
     UNIT                        = "KM"
@@ -477,7 +487,9 @@ OBJECT                          = BODY_GEOMETRY_TABLE
           1/cos(emission angle).
       In practice, this defines the approximate size of a linear feature
       that can be resolved if that feature has its worst possible
-      orientation on the surface.
+      orientation on the surface. In other words, this is the size of the 
+      smallest feature that could be be resolved somewhere within the field of 
+      view, even if its orientation on the surface is the worst it can be.
 
       The surface has been modeled as an ellipsoid. Surface intercept points
       that are obscured by the planet or another moon within the observed
@@ -486,16 +498,14 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the maximum value of coarsest surface resolution
-      within the field of view of the observation. In other words, this is
-      the size of the smallest feature that could be be resolved anywhere in
-      the field of view and regardless of its orientation on the surface."
+      within the field of view occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 18
+    COLUMN_NUMBER               = 19
     NAME                        = MINIMUM_SURFACE_DISTANCE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 195
+    START_BYTE                  = 210
     BYTES                       = 12
     FORMAT                      = "F12.3"
     UNIT                        = "KM"
@@ -511,14 +521,14 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the minimum value of surface distance within the
-      field of view of the observation."
+      field of view occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 19
+    COLUMN_NUMBER               = 20
     NAME                        = MAXIMUM_SURFACE_DISTANCE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 208
+    START_BYTE                  = 223
     BYTES                       = 12
     FORMAT                      = "F12.3"
     UNIT                        = "KM"
@@ -534,14 +544,14 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the maximum value of surface distance within the
-      field of view of the observation."
+      field of view occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 20
+    COLUMN_NUMBER               = 21
     NAME                        = MINIMUM_PHASE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 221
+    START_BYTE                  = 236
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -558,14 +568,14 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       ignored.
 
       This column tabulates the minimum value of phase angle within the
-      field of view of the observation."
+      field of view occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 21
+    COLUMN_NUMBER               = 22
     NAME                        = MAXIMUM_PHASE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 230
+    START_BYTE                  = 245
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -582,14 +592,14 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       ignored.
 
       This column tabulates the maximum value of phase angle within the
-      field of view of the observation."
+      field of view occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 22
+    COLUMN_NUMBER               = 23
     NAME                        = MINIMUM_INCIDENCE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 239
+    START_BYTE                  = 254
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -606,14 +616,14 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       ignored; here the incidence angle is > 90 degrees.
 
       This column tabulates the minimum value of incidence angle within the
-      field of view of the observation."
+      field of view occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 23
+    COLUMN_NUMBER               = 24
     NAME                        = MAXIMUM_INCIDENCE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 248
+    START_BYTE                  = 263
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -630,14 +640,14 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       ignored; here the incidence angle is > 90 degrees.
 
       This column tabulates the maximum value of incidence angle within the
-      field of view of the observation."
+      field of view occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 24
+    COLUMN_NUMBER               = 25
     NAME                        = MINIMUM_EMISSION_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 257
+    START_BYTE                  = 272
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -654,14 +664,14 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       ignored.
 
       This column tabulates the minimum value of emission angle within the
-      field of view of the observation."
+      field of view occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 25
+    COLUMN_NUMBER               = 26
     NAME                        = MAXIMUM_EMISSION_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 266
+    START_BYTE                  = 281
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -678,36 +688,14 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       ignored.
 
       This column tabulates the maximum value of emission angle within the
-      field of view of the observation."
-  END_OBJECT                    = COLUMN
-
-  OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 26
-    NAME                        = MINIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 275
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
-    UNIT                        = "DEGREES"
-    VALID_MINIMUM               = -90.
-    VALID_MAXIMUM               = 90.
-    NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Planetocentric latitude of the sub-solar
-      point on the surface of the planet or specified target body. The
-      planetocentric value is defined by the angle from the body's equator
-      plane to a line defined by a vector from the body center to the
-      sub-solar point. Values are positive in the body's northern hemisphere
-      and negative in the southern hemisphere.
-
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      field of view occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 27
-    NAME                        = MAXIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE
+    NAME                        = MINIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 284
+    START_BYTE                  = 290
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -721,37 +709,39 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       sub-solar point. Values are positive in the body's northern hemisphere
       and negative in the southern hemisphere.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This value is defined by the ephemeris at the time of the observation; 
+      it is independent of the field of view. This is the minimum value 
+      occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 28
-    NAME                        = MINIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE
+    NAME                        = MAXIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 293
+    START_BYTE                  = 299
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Planetographic latitude of the sub-solar
+    DESCRIPTION                 = "Planetocentric latitude of the sub-solar
       point on the surface of the planet or specified target body. The
-      planetographic value is defined by the angle between the body's
-      equator plane and the local surface normal at the sub-solar point.
-      Values are positive in the body's northern hemisphere and negative in
-      the southern hemisphere.
+      planetocentric value is defined by the angle from the body's equator
+      plane to a line defined by a vector from the body center to the
+      sub-solar point. Values are positive in the body's northern hemisphere
+      and negative in the southern hemisphere.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This value is defined by the ephemeris at the time of the observation; 
+      it is independent of the field of view. This is the maximum value 
+      occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 29
-    NAME                        = MAXIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE
+    NAME                        = MINIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 302
+    START_BYTE                  = 308
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -765,37 +755,39 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       Values are positive in the body's northern hemisphere and negative in
       the southern hemisphere.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This value is defined by the ephemeris at the time of the observation; 
+      it is independent of the field of view. This is the minimum value 
+      occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 30
-    NAME                        = MINIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE
+    NAME                        = MAXIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 311
+    START_BYTE                  = 317
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Planetocentric latitude of the sub-observer
+    DESCRIPTION                 = "Planetographic latitude of the sub-solar
       point on the surface of the planet or specified target body. The
-      planetocentric value is defined by the angle from the body's equator
-      plane to a line defined by a vector from the body center to the
-      sub-observer point. Values are positive in the body's northern
-      hemisphere and negative in the southern hemisphere.
+      planetographic value is defined by the angle between the body's
+      equator plane and the local surface normal at the sub-solar point.
+      Values are positive in the body's northern hemisphere and negative in
+      the southern hemisphere.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This value is defined by the ephemeris at the time of the observation; 
+      it is independent of the field of view. This is the maximum value 
+      occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 31
-    NAME                        = MAXIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE
+    NAME                        = MINIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 320
+    START_BYTE                  = 326
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -809,37 +801,39 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       sub-observer point. Values are positive in the body's northern
       hemisphere and negative in the southern hemisphere.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This value is defined by the ephemeris at the time of the observation; 
+      it is independent of the field of view. This is the minimum value 
+      occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 32
-    NAME                        = MINIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE
+    NAME                        = MAXIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 329
+    START_BYTE                  = 335
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Planetographic latitude of the sub-observer
+    DESCRIPTION                 = "Planetocentric latitude of the sub-observer
       point on the surface of the planet or specified target body. The
-      planetographic value is defined by the angle between the body's
-      equator plane and the local surface normal at the sub-observer point.
-      Values are positive in the body's northern hemisphere and negative in
-      the southern hemisphere.
+      planetocentric value is defined by the angle from the body's equator
+      plane to a line defined by a vector from the body center to the
+      sub-observer point. Values are positive in the body's northern
+      hemisphere and negative in the southern hemisphere.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This value is defined by the ephemeris at the time of the observation; 
+      it is independent of the field of view. This is the maximum value 
+      occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 33
-    NAME                        = MAXIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE
+    NAME                        = MINIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 338
+    START_BYTE                  = 344
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -853,34 +847,39 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       Values are positive in the body's northern hemisphere and negative in
       the southern hemisphere.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This value is defined by the ephemeris at the time of the observation; 
+      it is independent of the field of view. This is the minimum value
+      occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 34
-    NAME                        = MINIMUM_SUB_SOLAR_IAU_LONGITUDE
+    NAME                        = MAXIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 347
+    START_BYTE                  = 353
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
-    VALID_MINIMUM               = 0.
-    VALID_MAXIMUM               = 360.
+    VALID_MINIMUM               = -90.
+    VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Longitude of the sub-solar point on the
-      surface of the planet or specified target body. Longitudes increase
-      toward the west from the IAU-defined prime meridian.
+    DESCRIPTION                 = "Planetographic latitude of the sub-observer
+      point on the surface of the planet or specified target body. The
+      planetographic value is defined by the angle between the body's
+      equator plane and the local surface normal at the sub-observer point.
+      Values are positive in the body's northern hemisphere and negative in
+      the southern hemisphere.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This value is defined by the ephemeris at the time of the observation; 
+      it is independent of the field of view. This is the maximum value 
+      occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 35
-    NAME                        = MAXIMUM_SUB_SOLAR_IAU_LONGITUDE
+    NAME                        = MINIMUM_SUB_SOLAR_IAU_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 356
+    START_BYTE                  = 362
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -891,34 +890,36 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       surface of the planet or specified target body. Longitudes increase
       toward the west from the IAU-defined prime meridian.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This value is defined by the ephemeris at the time of the observation; 
+      it is independent of the field of view. This is the minimum value 
+      occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 36
-    NAME                        = MINIMUM_SUB_OBSERVER_IAU_LONGITUDE
+    NAME                        = MAXIMUM_SUB_SOLAR_IAU_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 365
+    START_BYTE                  = 371
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Longitude of the sub-observer point on the
+    DESCRIPTION                 = "Longitude of the sub-solar point on the
       surface of the planet or specified target body. Longitudes increase
       toward the west from the IAU-defined prime meridian.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This value is defined by the ephemeris at the time of the observation; 
+      it is independent of the field of view. This is the maximum value
+      occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 37
-    NAME                        = MAXIMUM_SUB_OBSERVER_IAU_LONGITUDE
+    NAME                        = MINIMUM_SUB_OBSERVER_IAU_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 374
+    START_BYTE                  = 380
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -929,31 +930,36 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       surface of the planet or specified target body. Longitudes increase
       toward the west from the IAU-defined prime meridian.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This value is defined by the ephemeris at the time of the observation; 
+      it is independent of the field of view. This is the minimum value 
+      occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 38
-    NAME                        = MINIMUM_CENTER_RESOLUTION
+    NAME                        = MAXIMUM_SUB_OBSERVER_IAU_LONGITUDE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 383
-    BYTES                       = 10
-    FORMAT                      = "F10.5"
-    UNIT                        = "KM"
+    START_BYTE                  = 389
+    BYTES                       = 8
+    FORMAT                      = "F8.3"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "The linear size of a pixel as projected at
-      the distance of the planet or specified target body.
+    DESCRIPTION                 = "Longitude of the sub-observer point on the
+      surface of the planet or specified target body. Longitudes increase
+      toward the west from the IAU-defined prime meridian.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This value is defined by the ephemeris at the time of the observation; 
+      it is independent of the field of view. This is the maximum value 
+      occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 39
-    NAME                        = MAXIMUM_CENTER_RESOLUTION
+    NAME                        = MINIMUM_CENTER_RESOLUTION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 394
+    START_BYTE                  = 398
     BYTES                       = 10
     FORMAT                      = "F10.5"
     UNIT                        = "KM"
@@ -961,31 +967,33 @@ OBJECT                          = BODY_GEOMETRY_TABLE
     DESCRIPTION                 = "The linear size of a pixel as projected at
       the distance of the planet or specified target body.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This value is defined by the ephemeris at the time of the observation; 
+      it is independent of the field of view. This is the minimum value 
+      occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 40
-    NAME                        = MINIMUM_CENTER_DISTANCE
+    NAME                        = MAXIMUM_CENTER_RESOLUTION
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 405
-    BYTES                       = 12
-    FORMAT                      = "F12.3"
+    START_BYTE                  = 409
+    BYTES                       = 10
+    FORMAT                      = "F10.5"
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Distance from the observer to the center of
-      the planet or a specified target body.
+    DESCRIPTION                 = "The linear size of a pixel as projected at
+      the distance of the planet or specified target body.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This value is defined by the ephemeris at the time of the observation; 
+      it is independent of the field of view. This is the maximum value 
+      occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 41
-    NAME                        = MAXIMUM_CENTER_DISTANCE
+    NAME                        = MINIMUM_CENTER_DISTANCE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 418
+    START_BYTE                  = 420
     BYTES                       = 12
     FORMAT                      = "F12.3"
     UNIT                        = "KM"
@@ -993,38 +1001,33 @@ OBJECT                          = BODY_GEOMETRY_TABLE
     DESCRIPTION                 = "Distance from the observer to the center of
       the planet or a specified target body.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This value is defined by the ephemeris at the time of the observation; 
+      it is independent of the field of view. This is the minimum value 
+      occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 42
-    NAME                        = MINIMUM_CENTER_PHASE_ANGLE
+    NAME                        = MAXIMUM_CENTER_DISTANCE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 431
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
-    UNIT                        = "DEGREES"
-    VALID_MINIMUM               = 0.
-    VALID_MAXIMUM               = 180.
+    START_BYTE                  = 433
+    BYTES                       = 12
+    FORMAT                      = "F12.3"
+    UNIT                        = "KM"
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Phase angle at the center of the planet or
-      specified target body. This is the angle between the local direction
-      of in incoming photon from the Sun and the local direction of an
-      outgoing photon to the observer.
+    DESCRIPTION                 = "Distance from the observer to the center of
+      the planet or a specified target body.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view.
-
-      This column tabulates the minimum value of center phase angle
-      among all of the pixels observed in that direction."
+      This value is defined by the ephemeris at the time of the observation; 
+      it is independent of the field of view. This is the maximum value 
+      occurring during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     COLUMN_NUMBER               = 43
-    NAME                        = MAXIMUM_CENTER_PHASE_ANGLE
+    NAME                        = MINIMUM_CENTER_PHASE_ANGLE
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 440
+    START_BYTE                  = 446
     BYTES                       = 8
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
@@ -1036,11 +1039,36 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       of in incoming photon from the Sun and the local direction of an
       outgoing photon to the observer.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view.
+      This value is defined by the ephemeris at the time of the observation; 
+      it is independent of the field of view.
 
-      This column tabulates the minimum value of center phase angle
-      among all of the pixels observed in that direction."
+      This column tabulates the minimum value of center phase angle among 
+      all of the pixels observed in that direction. This is the minimum
+      value occurring during the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    COLUMN_NUMBER               = 44
+    NAME                        = MAXIMUM_CENTER_PHASE_ANGLE
+    DATA_TYPE                   = ASCII_REAL
+    START_BYTE                  = 455
+    BYTES                       = 8
+    FORMAT                      = "F8.3"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 180.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Phase angle at the center of the planet or
+      specified target body. This is the angle between the local direction
+      of in incoming photon from the Sun and the local direction of an
+      outgoing photon to the observer.
+
+      This value is defined by the ephemeris at the time of the observation; 
+      it is independent of the field of view.
+
+      This column tabulates the minimum value of center phase angle among 
+      all of the pixels observed in that direction. This is the maximum
+      value occurring during the observation."
   END_OBJECT                    = COLUMN
 
 END_OBJECT                      = BODY_GEOMETRY_TABLE

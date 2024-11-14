@@ -33,6 +33,20 @@ class Test_Geometry(unittest.TestCase):
             label = pdsparser.PdsLabel.from_file(file)
 
     #===========================================================================
+    # test cumulative geometry file
+    def test_geometry_cumulative(self):
+
+        # Get labels to test
+        files = unit.match(unit.METADATA, '*_summary.lbl')
+        files = unit.exclude(files, 'templates/', 'old/', '__skip/', '.ring_', '_sky_')
+
+        # Test labels
+#        print()
+#        from IPython import embed; print('++++++test_geometry_cumulative+++++++'); embed()
+#        print('Reading', file)
+#        table = pdstable.PdsTable(file) 
+
+    #===========================================================================
     # test geometry common fields
     def test_geometry_common(self):
 
@@ -60,7 +74,7 @@ class Test_Geometry(unittest.TestCase):
 
         # Get labels to test
         files = unit.match(unit.METADATA, '*_summary.lbl')
-        files = unit.exclude(files, 'templates/', 'old/', '__skip/', '.ring_', '_sky_')
+        files = unit.exclude(files, 'templates/', 'old/', '__skip/', '_ring_', '_sky_')
 
         # Test labels
         print()
@@ -116,7 +130,6 @@ class Test_Geometry(unittest.TestCase):
         print()
         for file in files:
             print('Reading', file)
-            from IPython import embed; print('+++++++++++++'); embed()
             table = pdstable.PdsTable(file)
 
             # validate bounded values
@@ -173,7 +186,6 @@ class Test_Geometry(unittest.TestCase):
         files = unit.match(unit.METADATA, '*sky_summary.lbl')
         files = unit.exclude(files, 'templates/', 'old/', '__skip/')
 
-#        from IPython import embed; print('++++++----+++++++'); embed()
         # Test labels
         print()
         for file in files:

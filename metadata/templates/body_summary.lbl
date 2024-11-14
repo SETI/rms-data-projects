@@ -1,22 +1,44 @@
+$NOTE 
+################################################################################
+# Geometry file template for bodies.  
+#
+#  This template controls the creation of body geometry files.  The procedure 
+#  for generating geometry files for a host is as follows.  Files referred to 
+#  below should be copied into the top directory for the collection, e.g., 
+#  GO_0xxx:
+#
+#  2. Copy and edit the <collection>_geometry.py script to reflect the 
+#     type of index and glob pattern for the table files.
+#  3. Copy and edit config.py to address any host-dependent processing.
+#  4. Run <collection>_geometry.py from the collection top directory.
+#
+#  In the host_defs files, replace all values describing the new host.  
+#  In this template, quantities enclosed in dollar signs are automatically 
+#  filled in and should not be edited.  Add a column for each quantity to be 
+#  copied from the product label into the index.  
+#
+################################################################################
+$END_NOTE
+$ONCE(_=COUNTER('COLUMN', reset=True))
+
 PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = FIXED_LENGTH
-FILE_RECORDS                    = $ROWS$
-RECORD_BYTES                    = 464
-^BODY_GEOMETRY_TABLE            = "$FILENAME$"
-
-PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
+RECORD_BYTES                    = $RECORD_BYTES$
+FILE_RECORDS                    = $FILE_RECORDS$
+^$TABLE_TYPE$_TABLE             = "$FILENAME$"
 
 $INSERT{./templates/host_defs.lbl}
 
-VOLUME_ID                       = "$VOLUME_ID$"
+PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
 
-OBJECT                          = BODY_GEOMETRY_TABLE
-  INDEX_TYPE                    = $INDEX_TYPE$
+VOLUME_ID                       = "{VOLUME_ID}"
+
+OBJECT                          = $TABLE_TYPE$_TABLE
   INTERCHANGE_FORMAT            = ASCII
   ROWS                          = $ROWS$
-  ROW_BYTES                     = 464
-  COLUMNS                       = 44
-
+  COLUMNS                       = $COLUMNS$
+  ROW_BYTES                     = $ROW_BYTES$
+  INDEX_TYPE                    = SINGLE
   DESCRIPTION                   = "This index describes the intercept geometry
     for the regular satellites and other targeted bodies within the field of
     view of the instrument. The table contains zero or more rows for each
@@ -51,23 +73,32 @@ OBJECT                          = BODY_GEOMETRY_TABLE
     independent of the field of view. These quantities are tabulated as single
     values rather than as minimum/maximum pairs."
 
+$NOTE 
+################################################################
+# Add a column below for each desired index quantity
+# Edit COLUMN NAME and any fields not enclosed in dollar signs
+################################################################
+$END_NOTE
+
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 1
-    NAME                        = VOLUME_ID
-    DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 2
-    BYTES                       = 7
-    FORMAT                      = "A7"
+  $ONCE(COLUMN_NAME                                  = 'VOLUME_ID')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     DESCRIPTION                 = "The volume ID provides a unique identifier
       for a PDS data volume."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 2
-    NAME                        = FILE_SPECIFICATION_NAME
-    DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 12
-    BYTES                       = 32
+  $ONCE(COLUMN_NAME                                  = 'FILE_SPECIFICATION_NAME')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A32"
     DESCRIPTION                 = "The file specification name provides the
       full name of a file, including a path name, relative to the root
@@ -75,22 +106,12 @@ OBJECT                          = BODY_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 3
-    NAME                        = SYSTEM
-    DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 47
-    BYTES                       = 12
-    FORMAT                      = "A12"
-    DESCRIPTION                 = "The system is the name of the central body
-      to which any ambiguous names, like rings, may refer."
-  END_OBJECT                    = COLUMN
-
-  OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 4
-    NAME                        = TARGET_NAME
-    DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 62
-    BYTES                       = 12
+  $ONCE(COLUMN_NAME                                  = 'SYSTEM')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A12"
     DESCRIPTION                 = "The target name is the name of the body for
       which the surface geometry parameters in this row of the table are
@@ -98,12 +119,26 @@ OBJECT                          = BODY_GEOMETRY_TABLE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 5
-    NAME                        = MINIMUM_PLANETOCENTRIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 76
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'TARGET_NAME')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = "A12"
+    DESCRIPTION                 = "The target name is the name of the body for
+      which the surface geometry parameters in this row of the table are
+      applicable."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_PLANETOCENTRIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -125,15 +160,16 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the minimum value of planetocentric latitude
-      within the field of view occurring during the observation."
+      within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 6
-    NAME                        = MAXIMUM_PLANETOCENTRIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 85
-    BYTES                       = 8
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_PLANETOCENTRIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
@@ -156,16 +192,17 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the maximum value of planetocentric latitude
-      within the field of view occurring during the observation."
+      within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 7
-    NAME                        = MINIMUM_PLANETOGRAPHIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 94
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_PLANETOGRAPHIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -186,15 +223,16 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the minimum value of planetographic latitude
-      within the field of view occurring during the observation."
+      within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 8
-    NAME                        = MAXIMUM_PLANETOGRAPHIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 103
-    BYTES                       = 8
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_PLANETOGRAPHIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
@@ -216,16 +254,17 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the maximum value of planetographic latitude
-      within the field of view occurring during the observation."
+      within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 9
-    NAME                        = MINIMUM_IAU_LONGITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 112
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_IAU_LONGITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
@@ -242,17 +281,18 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the minimum value of IAU longitude within the
-      field of view occurring during the observation. For fields of view that 
-      cross the prime meridian, the tabulated minimum value will be greater 
-      than the maximum."
+      field of view of the observation. For fields of view that cross the
+      prime meridian, the tabulated minimum value will be greater than the
+      maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 10
-    NAME                        = MAXIMUM_IAU_LONGITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 121
-    BYTES                       = 8
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_IAU_LONGITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
@@ -270,18 +310,19 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the maximum value of IAU longitude within the
-      field of view occurring during the observation. For fields of view that 
-      cross the prime meridian, the tabulated minimum value will be greater 
-      than the maximum."
+      field of view of the observation. For fields of view that cross the
+      prime meridian, the tabulated minimum value will be greater than the
+      maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 11
-    NAME                        = MINIMUM_LOCAL_HOUR_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 130
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_LOCAL_HOUR_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
@@ -300,18 +341,19 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       ignored.
 
       This column tabulates the minimum value of local hour angle within the
-      field of view occurring during the observation. For fields of view that 
-      cross the midnight meridian, the tabulated minimum value will be greater 
-      than the maximum."
+      field of view of the observation. For fields of view that cross the
+      midnight meridian, the tabulated minimum value will be greater than
+      the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 12
-    NAME                        = MAXIMUM_LOCAL_HOUR_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 139
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_LOCAL_HOUR_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
@@ -330,18 +372,19 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       ignored.
 
       This column tabulates the maximum value of local hour angle within the
-      field of view occurring during the observation. For fields of view that 
-      cross the midnight meridian, the tabulated minimum value will be greater 
-      than the maximum."
+      field of view of the observation. For fields of view that cross the
+      midnight meridian, the tabulated minimum value will be greater than
+      the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 13
-    NAME                        = MINIMUM_LONGITUDE_WRT_OBSERVER
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 148
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_LONGITUDE_WRT_OBSERVER')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -180.
     VALID_MAXIMUM               = 180.
@@ -358,16 +401,17 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the minimum value of this longitude within the
-      field of view occurring during the observation."
+      field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 14
-    NAME                        = MAXIMUM_LONGITUDE_WRT_OBSERVER
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 157
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_LONGITUDE_WRT_OBSERVER')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -180.
     VALID_MAXIMUM               = 180.
@@ -384,25 +428,24 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the maximum value of this longitude within the
-      field of view occurring during the observation."
+      field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 15
-    NAME                        = MINIMUM_FINEST_SURFACE_RESOLUTION
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 166
-    BYTES                       = 10
-    FORMAT                      = "F10.5"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_FINEST_SURFACE_RESOLUTION')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Finest surface resolution is the shorter
       dimension of a pixel as projected onto the surface at the intercept
       point. In practice, it defines the approximate size of the smallest
       linear feature that can be resolved if that feature is oriented
-      optimally on the surface. In other words, this is the smallest resolvable
-      feature that could be resolved anywhere in the field of view provided that
-      feature is oriented optimally on the surface.
+      optimally on the surface.
 
       The surface has been modeled as an ellipsoid. Surface intercept points
       that are obscured by the planet or another moon within the observed
@@ -411,25 +454,25 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the minimum value of finest surface resolution
-      within the field of view occurring during the observation. "
+      within the field of view of the observation. In other words, this is
+      the size of the smallest resolvable feature in the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 16
-    NAME                        = MAXIMUM_FINEST_SURFACE_RESOLUTION
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 177
-    BYTES                       = 10
-    FORMAT                      = "F10.5"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_FINEST_SURFACE_RESOLUTION')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Finest surface resolution is the shorter
       dimension of a pixel as projected onto the surface at the intercept
       point. In practice, it defines the approximate size of the smallest
       linear feature that can be resolved if that feature is oriented
-      optimally on the surface. In other words, this is the smallest resolvable
-      feature that could be resolved anywhere in the field of view provided that
-      feature is oriented optimally on the surface.
+      optimally on the surface.
 
       The surface has been modeled as an ellipsoid. Surface intercept points
       that are obscured by the planet or another moon within the observed
@@ -438,16 +481,20 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the maximum value of finest surface resolution
-      within the field of view occurring during the observation. "
+      within the field of view of the observation. In other words, this is
+      the smallest resolvable feature that could be resolved anywhere in the
+      field of view provided that feature is oriented optimally on the
+      surface."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 17
-    NAME                        = MINIMUM_COARSEST_SURFACE_RESOLUTION
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 188
-    BYTES                       = 10
-    FORMAT                      = "F10.5"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_COARSEST_SURFACE_RESOLUTION')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Coarsest surface resolution is the longer
@@ -457,9 +504,7 @@ OBJECT                          = BODY_GEOMETRY_TABLE
           1/cos(emission angle).
       In practice, this defines the approximate size of a linear feature
       that can be resolved if that feature has its worst possible
-      orientation on the surface. In other words, this is the size of the 
-      smallest feature that could be be resolved somewhere within the field of 
-      view, even if its orientation on the surface is the worst it can be.
+      orientation on the surface.
 
       The surface has been modeled as an ellipsoid. Surface intercept points
       that are obscured by the planet or another moon within the observed
@@ -468,16 +513,20 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the minimum value of coarsest surface resolution
-      within the field of view occurring during the observation."
+      within the field of view of the observation. In other words, this is
+      the size of the smallest feature that could be be resolved somewhere
+      within the field of view, even if its orientation on the surface is
+      the worst it can be."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 18
-    NAME                        = MAXIMUM_COARSEST_SURFACE_RESOLUTION
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 199
-    BYTES                       = 10
-    FORMAT                      = "F10.5"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_COARSEST_SURFACE_RESOLUTION')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Coarsest surface resolution is the longer
@@ -487,9 +536,7 @@ OBJECT                          = BODY_GEOMETRY_TABLE
           1/cos(emission angle).
       In practice, this defines the approximate size of a linear feature
       that can be resolved if that feature has its worst possible
-      orientation on the surface. In other words, this is the size of the 
-      smallest feature that could be be resolved somewhere within the field of 
-      view, even if its orientation on the surface is the worst it can be.
+      orientation on the surface.
 
       The surface has been modeled as an ellipsoid. Surface intercept points
       that are obscured by the planet or another moon within the observed
@@ -498,16 +545,19 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the maximum value of coarsest surface resolution
-      within the field of view occurring during the observation."
+      within the field of view of the observation. In other words, this is
+      the size of the smallest feature that could be be resolved anywhere in
+      the field of view and regardless of its orientation on the surface."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 19
-    NAME                        = MINIMUM_SURFACE_DISTANCE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 210
-    BYTES                       = 12
-    FORMAT                      = "F12.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SURFACE_DISTANCE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Surface distance is the separation between
@@ -521,16 +571,17 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the minimum value of surface distance within the
-      field of view occurring during the observation."
+      field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 20
-    NAME                        = MAXIMUM_SURFACE_DISTANCE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 223
-    BYTES                       = 12
-    FORMAT                      = "F12.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SURFACE_DISTANCE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Surface distance is the separation between
@@ -544,16 +595,17 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       night side of the target body is also ignored.
 
       This column tabulates the maximum value of surface distance within the
-      field of view occurring during the observation."
+      field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 21
-    NAME                        = MINIMUM_PHASE_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 236
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_PHASE_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
@@ -568,16 +620,17 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       ignored.
 
       This column tabulates the minimum value of phase angle within the
-      field of view occurring during the observation."
+      field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 22
-    NAME                        = MAXIMUM_PHASE_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 245
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_PHASE_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
@@ -592,16 +645,17 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       ignored.
 
       This column tabulates the maximum value of phase angle within the
-      field of view occurring during the observation."
+      field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 23
-    NAME                        = MINIMUM_INCIDENCE_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 254
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_INCIDENCE_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
@@ -616,16 +670,17 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       ignored; here the incidence angle is > 90 degrees.
 
       This column tabulates the minimum value of incidence angle within the
-      field of view occurring during the observation."
+      field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 24
-    NAME                        = MAXIMUM_INCIDENCE_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 263
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_INCIDENCE_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
@@ -640,16 +695,17 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       ignored; here the incidence angle is > 90 degrees.
 
       This column tabulates the maximum value of incidence angle within the
-      field of view occurring during the observation."
+      field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 25
-    NAME                        = MINIMUM_EMISSION_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 272
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_EMISSION_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 90.
@@ -664,16 +720,17 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       ignored.
 
       This column tabulates the minimum value of emission angle within the
-      field of view occurring during the observation."
+      field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 26
-    NAME                        = MAXIMUM_EMISSION_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 281
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_EMISSION_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 90.
@@ -688,16 +745,17 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       ignored.
 
       This column tabulates the maximum value of emission angle within the
-      field of view occurring during the observation."
+      field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 27
-    NAME                        = MINIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 290
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -709,18 +767,18 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       sub-solar point. Values are positive in the body's northern hemisphere
       and negative in the southern hemisphere.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the minimum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 28
-    NAME                        = MAXIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 299
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -732,18 +790,18 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       sub-solar point. Values are positive in the body's northern hemisphere
       and negative in the southern hemisphere.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the maximum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 29
-    NAME                        = MINIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 308
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -755,18 +813,18 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       Values are positive in the body's northern hemisphere and negative in
       the southern hemisphere.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the minimum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 30
-    NAME                        = MAXIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 317
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -778,18 +836,18 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       Values are positive in the body's northern hemisphere and negative in
       the southern hemisphere.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the maximum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 31
-    NAME                        = MINIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 326
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -801,18 +859,18 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       sub-observer point. Values are positive in the body's northern
       hemisphere and negative in the southern hemisphere.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the minimum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 32
-    NAME                        = MAXIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 335
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -824,18 +882,18 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       sub-observer point. Values are positive in the body's northern
       hemisphere and negative in the southern hemisphere.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the maximum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 33
-    NAME                        = MINIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 344
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -847,18 +905,18 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       Values are positive in the body's northern hemisphere and negative in
       the southern hemisphere.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the minimum value
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 34
-    NAME                        = MAXIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 353
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -870,18 +928,18 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       Values are positive in the body's northern hemisphere and negative in
       the southern hemisphere.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the maximum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 35
-    NAME                        = MINIMUM_SUB_SOLAR_IAU_LONGITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 362
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SUB_SOLAR_IAU_LONGITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
@@ -890,18 +948,18 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       surface of the planet or specified target body. Longitudes increase
       toward the west from the IAU-defined prime meridian.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the minimum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 36
-    NAME                        = MAXIMUM_SUB_SOLAR_IAU_LONGITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 371
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SUB_SOLAR_IAU_LONGITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
@@ -910,17 +968,17 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       surface of the planet or specified target body. Longitudes increase
       toward the west from the IAU-defined prime meridian.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the maximum value
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 37
-    NAME                        = MINIMUM_SUB_OBSERVER_IAU_LONGITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 380
-    BYTES                       = 8
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SUB_OBSERVER_IAU_LONGITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
@@ -930,17 +988,17 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       surface of the planet or specified target body. Longitudes increase
       toward the west from the IAU-defined prime meridian.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the minimum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 38
-    NAME                        = MAXIMUM_SUB_OBSERVER_IAU_LONGITUDE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 389
-    BYTES                       = 8
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SUB_OBSERVER_IAU_LONGITUDE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "F8.3"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
@@ -950,86 +1008,86 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       surface of the planet or specified target body. Longitudes increase
       toward the west from the IAU-defined prime meridian.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the maximum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 39
-    NAME                        = MINIMUM_CENTER_RESOLUTION
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 398
-    BYTES                       = 10
-    FORMAT                      = "F10.5"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_CENTER_RESOLUTION')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "The linear size of a pixel as projected at
       the distance of the planet or specified target body.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the minimum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 40
-    NAME                        = MAXIMUM_CENTER_RESOLUTION
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 409
-    BYTES                       = 10
-    FORMAT                      = "F10.5"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_CENTER_RESOLUTION')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "The linear size of a pixel as projected at
       the distance of the planet or specified target body.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the maximum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 41
-    NAME                        = MINIMUM_CENTER_DISTANCE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 420
-    BYTES                       = 12
-    FORMAT                      = "F12.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_CENTER_DISTANCE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Distance from the observer to the center of
       the planet or a specified target body.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the minimum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 42
-    NAME                        = MAXIMUM_CENTER_DISTANCE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 433
-    BYTES                       = 12
-    FORMAT                      = "F12.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_CENTER_DISTANCE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Distance from the observer to the center of
       the planet or a specified target body.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view. This is the maximum value 
-      occurring during the observation."
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 43
-    NAME                        = MINIMUM_CENTER_PHASE_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 446
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MINIMUM_CENTER_PHASE_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
@@ -1039,21 +1097,21 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       of in incoming photon from the Sun and the local direction of an
       outgoing photon to the observer.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view.
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view.
 
-      This column tabulates the minimum value of center phase angle among 
-      all of the pixels observed in that direction. This is the minimum
-      value occurring during the observation."
+      This column tabulates the minimum value of center phase angle
+      among all of the pixels observed in that direction."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    COLUMN_NUMBER               = 44
-    NAME                        = MAXIMUM_CENTER_PHASE_ANGLE
-    DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 455
-    BYTES                       = 8
-    FORMAT                      = "F8.3"
+  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_CENTER_PHASE_ANGLE')
+    NAME                        = $COLUMN_NAME$
+    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
+    COLUMN_NUMBER               = $COUNTER('COLUMN')$
+    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
+    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
@@ -1063,12 +1121,11 @@ OBJECT                          = BODY_GEOMETRY_TABLE
       of in incoming photon from the Sun and the local direction of an
       outgoing photon to the observer.
 
-      This value is defined by the ephemeris at the time of the observation; 
-      it is independent of the field of view.
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view.
 
-      This column tabulates the minimum value of center phase angle among 
-      all of the pixels observed in that direction. This is the maximum
-      value occurring during the observation."
+      This column tabulates the minimum value of center phase angle
+      among all of the pixels observed in that direction."
   END_OBJECT                    = COLUMN
 
 END_OBJECT                      = BODY_GEOMETRY_TABLE

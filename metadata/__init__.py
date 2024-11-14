@@ -91,12 +91,12 @@ import sys
 import config
 import argparse
 import numpy as np
-import fortranformat as ff
+import fnmatch
+import pdstable, pdsparser
 import oops
 
 from pathlib import Path
 from pdstemplate import PdsTemplate
-from .fancyindex import FancyIndex
 
 ###############################
 # Define constants
@@ -136,133 +136,8 @@ NAME_LENGTH = 12
 TRANSLATIONS = {}
 
 ################################################################################
-# Preprocessor Directive Functions
-#
-#  index_support.make_index() runs a preprocoessing step on the label templates
-#  to resolve the column names.  The preprocessor also parses directives of the
-#  form $<DIRECTIVE>{<arg>}, whose functionalities are defined here in 
-#  functions of the form _directive_<directive>(lines, lnum, <arg>).
-################################################################################
-
-#===============================================================================
-def _directive_insert(lines: list, lnum: int, filename: str):
-    """Defines the INSERT directive, which replaces the directive with the
-    contents of the named file.
-
-    Args:
-        lines   (list): Lines comprising the input label.
-        lnum     (int): Line number at which this directive was encountered.
-        filename (str): Name of file containing the lines to insert.
- 
-    Returns:
-        NamedTuple (lines (list), lnum (int)): 
-            lines   (list): Lines comprising the output label.
-            lnum     (int): Line number in output label at which processing 
-                            is to continue.
-            .
-    """
-
-    # Read file
-    insert_lines = read_txt_file(filename)       
-
-    # Insert into label
-    lines = lines[0:lnum] + insert_lines + lines[lnum+1:]
-    lnum += len(insert_lines)-1
-
-    return(lines, lnum)
-
-#===============================================================================
-def process_directives(lines: list):
-    """Parses label directives of the form $<DIRECTIVE>{<arg>}.  Directives must 
-    appear at the start of a line.
-
-    Args:
-        lines   (list): Lines comprising the input label.
- 
-    Returns:   
-        str: Lines comprising the output label.
-
-    """
-
-    # List of accepted directives.  Define new directivs by adding to this list
-    # and adding a directive function above.
-    directives = ['INSERT']
-
-    lnum = 0
-    for line in lines:
-        for directive in directives:
-        
-            # test for directive pattern at start of line: $<directive>{
-            pattern = '$' + directive + '{'
-            if line.startswith(pattern):
-                try:
-                    arg = line.split('{')[1].split('}')[0]
-                except:
-                    raise SyntaxError(line)
-
-                # call directive function
-                fn = globals()['_directive_' + directive.lower()]
-                (lines, lnum) = fn(lines, lnum, arg)
-        lnum += 1
-
-    return lines
-
-################################################################################
 # Utility functions
 ################################################################################
-
-#===============================================================================
-def download(outdir: str, url: str, patterns: str, first=False):
-    """Download remote tree to local machine.
-
-    Args:
-        outdir    (str): Top directory of local output tree.
-        url       (str): URL pointing to the top directry of the remote input 
-                         tree.
-        patterns (list): Glob patterns to match in remote tree.
-        first    (bool): If True, the function returns after the first 
-                         pattern that produces any matches.
-
-    Returns:
-        int: Index of succesful pattern if first==True, or -1.
-
-    Todo:
-        Detect whether a tar.gz files exists and download and untar in
-        local tree instead of walking the remote tree.  Would be much more
-        efficient.
-
-    """
-
-    outdir = Path(outdir)
-
-    # Determine instrument collection and instrument ids
-    p = Path('.') 
-    curdir = p.absolute()               # e.g., /rms-data-projects/metadata/hosts/GO_xxxx
-    collection = curdir.name            # e.g., GO_0XXX, COISS_XXXX
-
-    # Determine collection directory
-    coldir = outdir / collection
-    colurl = url + '/' + collection
-
-    # Copy tree from URL
-    print('Indexing...')
-    F = FancyIndex(colurl, recursive=True)
-
-    print('Transferring files...')
-    match = False
-    for i in range(len(patterns)):
-        try:
-            F.walk(pattern=patterns[i], dest=coldir)
-            match = True
-            from IPython import embed; print('++*+*+*+*+*+++++++'); embed()
-        except:
-            pass
-
-        if match:
-            if first:
-                return i
-
-    return -1
 
 #===============================================================================
 def get_index_name(dir, vol_id, type):
@@ -288,7 +163,6 @@ def get_index_name(dir, vol_id, type):
     name += '_index'
 
     return name
-
 
 #===============================================================================
 def force_crlf(lines):
@@ -348,6 +222,18 @@ def splitpath(path: str, string: str):
     parts = path.parts
     i = parts.index(string)
     return (Path('').joinpath(*parts[0:i]), Path('').joinpath(*parts[i+1:]))
+
+#===============================================================================
+def get_volume_subdir(path):
+    """Determine the Subdirectory of an input file relative to the volume dir.
+
+    Args:
+        path (str): Input path or directory.
+
+    Returns:
+        str: Final directory in tree.
+    """
+    return splitpath(path, config.get_volume_id(path))[1]
 
 #===============================================================================
 def replace(tree, placeholder, name):
@@ -419,19 +305,6 @@ def get_volume_glob(col):
     vol_glob = parts[0] + '_' + id_glob
 
     return vol_glob
-
-#===============================================================================
-def get_cumulative_dir(input_tree):
-    """Determine the cumulative index directory.
-
-    Args:
-        col (str): Collection name, e.g., GO_xxxx.
-
-    Returns:
-        Path: Cumulative index directory.
-
-    """
-    return input_tree / Path(input_tree.name.replace('x','9'))
 
 #===============================================================================
 def add_by_base(x_digits, y_digits, bases):           ### move to utilities
@@ -821,432 +694,133 @@ def get_geometry_args(host=None, selection=None, exclude=None):
     # Return parser
     return parser
 
-
 ################################################################################
-# Label functions
+# Cumulative functions
 ################################################################################
 
 #===============================================================================
-def parse_block(lines, head=0, *,
-                 start_token='OBJECT=COLUMN', end_token='END_OBJECT=COLUMN'):
-    """Extract a block of lines between two tokens.
+def _get_cumulative_dir(input_tree):
+    """Determine the cumulative index directory.
 
     Args:
-        lines (list): List of strings.
-        head (list, optional): Line at which to start search.  Default: 0.
-        start_token (str, optional): Block start token.  Default: 'OBJECT=COLUMN'.
-        end_token (str, optional): Block end token.  Default: END_OBJECT=COLUMN'.
+        col (str): Collection name, e.g., GO_xxxx.
 
     Returns:
-        NamedTuple (block (list), head (int), tail (int)):
-            block   (list): List of strings in the first detected block.
-            head     (int): Line number of the start of the block.
-            tail     (int): Line number of the end of the block.
-    """   
-
-    tail = -1
-    block = []
-    for i in range(head,len(lines)):
-        line = lines[i]
-        if line.replace(' ', '').startswith(start_token):
-            head = i
-            tail = head
-            for line in lines[i:]:
-                tail += 1
-                block.append(line)
-                if line.replace(' ', '').startswith(end_token):
-                    break
-            if block:
-                break
-
-    return (block, head, tail)
-
-#===============================================================================
-def format_value(value, format):
-    """Format a single value using a Fortran format code.
-
-    Args:
-        value (str): Value to format.
-        format (str): FORTRAN_style format code.
-
-    Returns:
-        str: formatted value.
-    """
-    
-    # format value
-    line = ff.FortranRecordWriter('(' + format + ')')
-    line = line.write([value])
-    result = line.strip().ljust(len(line))                 # Left justify
-
-    # add double quotes to string formats
-    if format[0] == 'A':
-        result = '"' + result + '"'
-    
-    return result
-
-#===============================================================================
-def format_parms(format):
-    """Determine len and type corresopnding to a given FORTRAN format code..
-
-    Args:
-        format (str): FORTRAN_style format code.
-        
-    Returns:
-        NamedTuple (width (int), data_type (str)): 
-            width     (int): Number of bytes required for a formatted value, 
-                      including any quotes.
-            data_type (str): Data type corresponding to the format code.
+        Path: Cumulative index directory.
 
     """
-    
-    data_types = {'A':'CHARACTER', 
-                  'E':'ASCII_REAL', 
-                  'F':'ASCII_REAL', 
-                  'I':'ASCII_INTEGER'}
-    try:
-        f = format_value('0', format)
-    except TypeError:
-        f = format_value(0, format)
-
-    width = len(f)
-    data_type = data_types[format[0]]
-    
-    return (width, data_type)
+    return input_tree / Path(input_tree.name.replace('x','9'))
 
 #===============================================================================
-def format_column(value, *, 
-                       name=None, 
-                       count=None, 
-                       nbytes=None, 
-                       width=None, 
-                       format=None, 
-                       nullval=None, 
-                       data_type=None, 
-                       description=None):
-    """Format a column.
+def _update_cumulative_index(indir, cumulative_dir):
+    """Add tables in current volume to cumulative indexes.
 
     Args:
-        value (str): Value to format.
-        name (str, optional): Column name. Default: None.
-        count (int, optional): Number of items, if array. Default: None.
-        nbytes (int, optional): Number of bytes in the value  Default: None.
-        width (int, optional):
-            Number of bytes required for a formatted value,
-            including any quotes. Default: None.
-        format (str, optional): FORTRAN format code. Default: None.
-        nullval (str, optional): Value to use for a null value. Default: None.
-        data_type (str, optional): Data type. Default: None.
-        description (str, optional): Column description. Default: None.
-
-    Returns:
-        str: Formatted value.
+        indir (Path): Directory containing the volume.
+        cumulative_dir (Path): Directory in which to place the cumulative
+                               indexes.
     """
 
-    # Split multiple elements into individual columns
-    if count > 1:
-        if not isinstance(value, (list,tuple)):
-            assert value == nullval
-            value = count * [nullval]
-        else:
-            assert len(value) == count
+    volume_id = config.get_volume_id(indir)
+    cumulative_id = config.get_volume_id(cumulative_dir)
 
-        fmt_list = []
-        for item in value:
-            result = format_column(item, name=name, 
-                                       count=1, 
-                                       nbytes=nbytes, 
-                                       width=width, 
-                                       format=format, 
-                                       nullval=nullval, 
-                                       data_type=None, 
-                                       description=description)
-            fmt_list.append(result)
-        return ','.join(fmt_list)
+    # Find all table files in this volume
+    lbl_files = list(indir.glob('*.lbl'))
 
-    # Clean up strings
-    if isinstance(value, str):
-        value = value.strip()
-        value = value.replace('\n', ' ')
-        while ('  ' in value):
-            value = value.replace('  ', ' ')
-        value = value.replace('"', '')
-
-    # Format the value
-    try:
-        result = format_value(value, format)
-    except TypeError:
-        print("**** WARNING: Invalid format: ", name, value, format)
-        result = width * "*"
-
-    if len(result) > width:
-        print("**** WARNING: No second format: ", name, value, format, result)
-
-    # Validate the formatted value
-    try:
-        test = eval(result)
-    except Exception:
-        print("**** WARNING: Eval failure: ", name, value, result)
-        test = nullval
-    else:
-        if isinstance(test, str):
-            test = test.rstrip()
-
-# Values change when reformatted to a larger width, which is desired behavior
-#    if test != value and test != nullval and test != str(value):
-#        print("**** WARNING: Value has changed: ", name, value, format, result)
-
-    return result
-
-#===============================================================================
-def process_columns(column_stubs):
-    """Convert column description info into more useful form.
+    # Copy geometry tables to cumulative indexes
+    for lbl_file in lbl_files:
     
-    Args:
-       column_stubs (list): Preprocessed column stubs. 
-        
-    Returns:
-        dict: Column descriptions.
-    """
-#xxx Unknown docstring format
- 
-    nullvals = ['NULL_CONSTANT', 'UNKNOWN_CONSTANT', 'NOT_APPLICABLE_CONSTANT']
+        # Read the label
+        label = pdsparser.PdsLabel.from_file(lbl_file)
 
-    # Convert each column
-    column_dicts = {}
-    for column_stub in column_stubs:
-        name = column_stub['NAME']
-        column_dict = {'name':name}
-        
-        column_dict['format'] = column_stub['FORMAT'].strip('"')
-        (width, data_type) =  format_parms(column_dict['format'])
+        # Determine whether this is a geometry table
+        objects = label.keys()
+        geom = [object for object in objects if object.find('GEOMETRY') != -1]!= []
 
-        column_dict['count'] = int(column_stub['ITEMS']) if 'ITEMS' in column_stub.keys() else 1
+        # If so, add to cumulative index
+        if geom:
+            tab_file = lbl_file.with_suffix('.tab')
 
-        column_dict['width'] = width
+            tab_file_s = tab_file.as_posix()
+            cumulative_file_s = tab_file_s.replace(volume_id, cumulative_id)
+            cumulative_file = Path(cumulative_file_s)
 
-        column_dict['data_type'] = data_type
-
-        column_dict['nullval'] = None
-        for nullval in nullvals:
-            if nullval in column_stub.keys():
-                column_dict['nullval'] = column_stub[nullval]
-            
-        if column_dict['nullval'] and not column_dict['nullval'].startswith('"'):
-            column_dict['nullval'] = float(column_dict['nullval'])
-
-        column_dict['description'] = column_stub['DESCRIPTION'] if 'DESCRIPTION' in column_stub.keys() else ''
-        
-        column_dict['nbytes'] = width-2 if data_type == 'CHARACTER' else width
-#        column_dict['nbytes'] = width-1 if data_type == 'CHARACTER' else width
-
-        column_dicts[name] = column_dict
-
-    return column_dicts
+            lines = read_txt_file(tab_file)
+            write_txt_file(cumulative_file, lines, append=True)
 
 #===============================================================================
-def parse_column(lines):
-    """Parse a column description into a dictionary.
+def _clear_cumulative_index(cumulative_dir):
+    """Remove cumulative geometry files.
 
     Args:
-        lines (list): Column description.
+        cumulative_dir (Path): Directory containing the cumulative indexes.
+    """
 
-    Returns:
-        dict: Column dictionary.
-    """   
+    # Find all table files
+    lbl_files = list(cumulative_dir.glob('*.lbl'))
+
+    # Remove cumulative geometry files
+    for lbl_file in lbl_files:
     
-    column_dict = {}
-    for line in lines:
-        line = line.replace(' ', '')
-        kv = line.split('=')
-        if len(kv) == 2:
-            column_dict[kv[0]] = kv[1].strip()
-    return column_dict
+        # Read the label
+        label = pdsparser.PdsLabel.from_file(lbl_file)
+
+        # Determine whether this is a geometry table
+        objects = label.keys()
+        geom = [object for object in objects if object.find('GEOMETRY') != -1]!= []
+
+        # If so, delete the label and table
+        if geom:
+            tab_file = lbl_file.with_suffix('.tab')
+            lbl_file.unlink(missing_ok=True)
+            tab_file.unlink(missing_ok=True)
 
 #===============================================================================
-def parse_columns(lines):
-    """Parse all column descriptions into a list of dictionaries.
+def create_cumulative_index(output_tree, *,
+                            exclude=None, glob=None, volume=None):
+    """Creates the cumulative geometry files for a collection of volumes.
 
     Args:
-        lines (list): PDS label.
-
-    Returns:
-        list: Column dictionaries.
+        output_tree (Path): Root of the tree containing the volumes.
+        exclude (list, optional): List of volumes to exclude.
+        glob (str, optional): Glob pattern for index files.
+        volume (str, optional): If given, only this volume is processed.
     """
 
-    column_stubs = []
-    head = 0
-    while(True):
+    output_tree = Path(output_tree)
+
+    # Set up cumulative index
+    cumulative_dir = _get_cumulative_dir(output_tree)
+    _clear_cumulative_index(cumulative_dir)
+
+    # Build volume glob
+    vol_glob = get_volume_glob(output_tree.name)
+
+    # Walk the input tree, adding lines for each found volume
+    print('Building Cumulative tables...')
+    for root, dirs, files in output_tree.walk(top_down=True):
+        dirs.sort()
+        root = Path(root)
+
+        # Determine notional set and volume
+        parts = root.parts
+        set = parts[-2]
+        vol = parts[-1]
+
+        # Test whether this root is a volume
+        if fnmatch.filter([vol], vol_glob):
+            if not volume or vol == volume:
+                if vol != cumulative_dir.name:
+                    print(vol)
+                    _update_cumulative_index(root, cumulative_dir)
+
+    # make labels
+    print('Building Cumulative labels...')
+    tables = list(cumulative_dir.glob('*summary.tab'))
+    for table in tables:
+        _make_label(table, index_type='CUMULATIVE')
     
-        # Get the current block
-        block, head, tail = parse_block(lines, head)
-        if block == []:
-            break
-            
-        # Append the column dictionary 
-        column_stubs.append(parse_column(block))
-
-        # Advance the read head
-        head += len(block)
-
-    return column_stubs
-
-#===============================================================================
-def parse_template(template_path):
-    """Create column descriptions from a label template.
-
-    Args:
-        template_path (str): Path to label template.
-
-    Returns:
-        NamedTuple (lines (list), lnum (int)): 
-            lines   (list): Lines comprising the label template.
-            dicts   (list): Column description dictionaries.
-    """
-
-    # Read template
-    template_lines = read_txt_file(template_path)
-    template_lines = force_crlf(template_lines)
-
-    # Parse any directives in the columns
-    template_lines = preprocess_template(template_lines)
-
-    # Parse into column dictionaries
-    column_stubs = parse_columns(template_lines)
-    column_dicts = process_columns(column_stubs)
-    return (template_lines, column_dicts)
-
-#===============================================================================
-def make_label(template_path, input_dir, output_dir, type=''):
-    """Creates a label for a given index table.
-
-    Args:
-        template_path (str): Path to label template.
-        input_dir (str): Directory containing the volume.
-        output_dir (str): Directory in which to write the label file.
-        type (str, optional):
-            Qualifying string identifying the type of index
-            file to create, e.g., 'supplemental'.
-
-    Returns:
-        None
-    """
-
-    # Get filenames
-    vol_id = config.get_volume_id(input_dir)
-    index_name = get_index_name(input_dir, vol_id, type) 
-
-    index_filename = Path(index_name + '.tab')
-    label_filename = Path(index_name + '.lbl')
-
-    index_path = output_dir/index_filename
-    label_path = output_dir/label_filename
-
-    # Read the data file
-    index_lines = read_txt_file(index_path)
-    index_lines = force_crlf(index_lines)
-
-    # Validate the data file
-    recs = len(index_lines)
-    linelen = len(index_lines[0])
-
-    # Get the volume_id
-    volume_id = config.get_volume_id(input_dir)
     
-    # Get the columns
-    (template_lines, column_dicts) = parse_template(template_path)
-
-    # Populate the standard PdsTemplate field dictionary
-    fields = {'TYPE'            : type.upper(),
-              'INDEX_FILENAME'  : index_filename,
-#              'RECORD_BYTES'    : linelen+1,
-              'RECORD_BYTES'    : linelen,
-              'FILE_RECORDS'    : recs,
-              'ROWS'            : recs,
-              'COLUMNS'         : len(column_dicts),
-#              'ROW_BYTES'       : linelen+1 }  
-              'ROW_BYTES'       : linelen }  
-
-    # Add column-specific fields
-    pos = 1
-    line = index_lines[0]
-    for name in column_dicts:
-        column_dict = column_dicts[name]
-        
-        count = column_dict['count']
-        nbytes = column_dict['nbytes']
-        width = column_dict['width']
-        data_type = column_dict['data_type']
-
-        item_bytes = nbytes
-
-        fields[name + '_START_BYTE'] = pos+1 if data_type == 'CHARACTER' else pos
-        fields[name + '_BYTES'] = item_bytes
-        fields[name + '_DATA_TYPE'] = data_type
-
-        total_width = width
-        if count>1:
-            total_width = nbytes*count + (count-1)
-            bytes = total_width
-            if data_type == 'CHARACTER':
-                total_width += 2*count
-                bytes = total_width - 2
-            fields[name + '_BYTES'] = bytes
-            fields[name + '_ITEM_BYTES'] = item_bytes
-            fields[name + '_ITEM_OFFSET'] = nbytes + 1
-            if data_type == 'CHARACTER':
-                fields[name + '_ITEM_OFFSET'] += 2
-
-        pos = pos + total_width + 1
-
-    # Add host-specific fields
-    fields['VOLUME_ID'] = volume_id
-
-    # Process the template
-    template = PdsTemplate('', content=template_lines)
-    template.write(fields, label_path.as_posix())
-
-#===============================================================================
-def preprocess_template(lines):
-    """Initial parse of the column descriptions handling preprocessor
-    directives and using PdsTemplate to create the directive names for
-    building the final label.
-
-    Args:
-        lines (list): Label template.
-
-    Returns:
-        list: Pre-processed label template.
-    """
-
-    # Handle preprocessor directives
-    lines = process_directives(lines)
-
-    # Parse each column description with PdsTemplate
-    head = 0
-    while(True):
-
-        # Get the current block
-        block, head, tail = parse_block(lines, head)
-        if block == []:
-            break
-
-        # Parse the block
-        T = PdsTemplate('_', content=block)
-        content = T.generate({})
-#        block = content.split('\n')[0:-1]
-#        block = [line + '\n' for line in block]
-        block = content.split('\n')[0:-1]
-        block = [line + '\n' for line in block]
-
-        # Re-insert into template
-        lines = lines[0:head] + block + lines[tail:]
-
-        # Advance the read head
-        head += len(block)
-
-    return lines
-
-################################################################################
 
 
 ############################################

@@ -31,13 +31,13 @@ PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = FIXED_LENGTH
 RECORD_BYTES                    = $RECORD_BYTES$
 FILE_RECORDS                    = $FILE_RECORDS$
-^$TYPE$_INDEX_TABLE    = "$INDEX_FILENAME$"
+^$TABLE_TYPE$_INDEX_TABLE       = "$FILENAME$"
 
-$INSERT{./templates/host_defs.lbl}
+$INSERT{./templates/host_defs.lbl}$
 
 PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
 
-OBJECT                          = $TYPE$_INDEX_TABLE
+OBJECT                          = $TABLE_TYPE$_INDEX_TABLE
   INTERCHANGE_FORMAT            = ASCII
   ROWS                          = $ROWS$
   COLUMNS                       = $COLUMNS$
@@ -99,6 +99,7 @@ E26/EUROPA/C0532836239R.LBL"
     DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A19"
+    NOT_APPLICABLE_CONSTANT     = "UNKNOWN"
     DESCRIPTION                 = "The product creation time in
 'YYYY-MM-DDThh:mm:ss' format."
   END_OBJECT                    = COLUMN
@@ -188,8 +189,9 @@ for an instrument."
     DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "A1"
+    NOT_APPLICABLE_CONSTANT     = "-"
     DESCRIPTION                 = "A flag indicating whether on-chip
-mosaicking was performed, 'YES' or 'NO'."
+mosaicking was performed, 'Y' or 'N'."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -243,6 +245,7 @@ efficiency."
     DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
     BYTES                       = $$$COLUMN_NAME$_BYTES$$
     FORMAT                      = "I3"
+    NOT_APPLICABLE_CONSTANT     = -1
     DESCRIPTION                 = "The version number of the individual
 product within this data set."
   END_OBJECT                    = COLUMN
@@ -356,5 +359,5 @@ open. The format is RIM:MOD91:MOD10:MOD8."
 close, rounded to the next tick. The format is RIM:MOD91:MOD10:MOD8."
   END_OBJECT                    = COLUMN
 
-END_OBJECT                      = $TYPE$_INDEX_TABLE
+END_OBJECT                      = $TABLE_TYPE$_INDEX_TABLE
 END
