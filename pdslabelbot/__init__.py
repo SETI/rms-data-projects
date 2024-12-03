@@ -134,7 +134,7 @@ class PdsLabelBot(object):
     PRE-DEFINED DIRECTIVE FUNCTIONS
 
         INSERT(filepath):
-            Replaces the directive with the contents of the filepath.  Example:
+            Replaces the entire line with the contents of the filepath.  Example:
             
             $INSERT{./templates/host_defs.lbl}
 

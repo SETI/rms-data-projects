@@ -91,12 +91,13 @@ import sys
 import config
 import argparse
 import numpy as np
+import time
 import fnmatch
 import pdstable, pdsparser
 import oops
 
 from pathlib import Path
-from pdstemplate import PdsTemplate
+from pdslabelbot import PdsLabelBot
 
 ###############################
 # Define constants
@@ -695,6 +696,63 @@ def get_geometry_args(host=None, selection=None, exclude=None):
     return parser
 
 ################################################################################
+# Label functions
+################################################################################
+
+#===============================================================================
+def _make_label(filepath, 
+                system=None, creation_time=None, preserve_time=False,
+                index_type='SINGLE', table_type=''):
+    """Creates a label for a given geometry table.
+
+    Args:
+        filepath (Path): Path to the geometry table.
+        system (str): Name of system, for rings and moons.
+        creation_time (xxx, optional): Creation time to use instead of the current time.
+        preserve_time (bool, optional):
+            If True, the creation time is copied from any existing
+            label before it is overwrittten.
+        index_type (str, optional): Value for the INDEX_TYPE field.
+        
+    Returns:
+        None.
+    """
+
+    if not system:
+        system = '' 
+    filename = filepath.name
+    dir = filepath.parent
+    body = filepath.stem
+    lblfile = dir / (body + '.lbl')
+    underscore = filename.index('_')
+
+    # Determine the creation time
+    if preserve_time:
+        label = pdsparser.PdsLabel.from_file(lblfile)
+        creation_time = label.__getitem__('PRODUCT_CREATION_TIME')
+    elif creation_time is None:
+        creation_time = '%04d-%02d-%02dT%02d:00:00' % time.gmtime()[:4]
+
+#    from IPython import embed; print('+++++++++++++'); embed()
+    # Read the template
+    offset = 0 if not system else len(system) + 1
+    template = TEMPLATES_DIR / Path('%s.lbl' % body[underscore+6+offset:])
+
+    # Populate the standard PdsTemplate field dictionary for inventory files
+    fields = None
+    if ('inventory' in body):
+        volume_id = filename[:underscore + 5]
+        fields = {'VOLUME_ID'           : volume_id,
+                  'INDEX_TYPE'          : index_type,
+                  'PUBLICATION_DATE'    : creation_time[:10]}
+
+    # Generate the label
+    bot = PdsLabelBot(template, filepath, 
+                                table_type=table_type,
+                                dictionary=fields)
+    bot.write(lblfile)
+
+################################################################################
 # Cumulative functions
 ################################################################################
 
@@ -776,9 +834,25 @@ def _clear_cumulative_index(cumulative_dir):
             tab_file.unlink(missing_ok=True)
 
 #===============================================================================
+def create_cumulative_label(template_path, index_path, table_type=''):
+    """Creates a label for a cumulative file.
+
+    Args:
+        template_path (str): Path to the template file.
+        index_path (str): Path to the cumulative index file.
+        table_type (str, optional): Table type to put in label.
+    """
+
+    bot = PdsLabelBot(template_path, index_path, 
+                      table_type=type, 
+                      dictionary={'INDEX_TYPE':'CUMULATIVE'})
+    bot.write(label_path)
+
+
+#===============================================================================
 def create_cumulative_index(output_tree, *,
                             exclude=None, glob=None, volume=None):
-    """Creates the cumulative geometry files for a collection of volumes.
+    """Creates the cumulative files for a collection of volumes.
 
     Args:
         output_tree (Path): Root of the tree containing the volumes.
@@ -819,8 +893,7 @@ def create_cumulative_index(output_tree, *,
     tables = list(cumulative_dir.glob('*summary.tab'))
     for table in tables:
         _make_label(table, index_type='CUMULATIVE')
-    
-    
+
 
 
 ############################################

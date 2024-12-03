@@ -7,7 +7,6 @@ import os, traceback, time
 import warnings
 import fnmatch
 import pdstable, pdsparser
-from pdstemplate import PdsTemplate
 from pdslabelbot import PdsLabelBot
 
 import metadata as meta
@@ -15,7 +14,6 @@ import config
 
 from pathlib import Path
 
-import time
 
 ################################################################################
 # FORMAT_DICT tuples are:
@@ -125,7 +123,7 @@ def _write_table(filename, rows, system=None, qualifier=None):
     table_type = ''
     if qualifier:
         table_type = qualifier + '_geometry'
-    _make_label(filename, system=system, table_type=table_type)
+    meta._make_label(filename, system=system, table_type=table_type)
 
 #===============================================================================
 def _write_tables(table, prefix, desc='summary', qualifier=None):
@@ -629,58 +627,6 @@ def _formatted_column(values, format):
     return ",".join(strings)
 
 #===============================================================================
-def _make_label(filepath, 
-                system=None, creation_time=None, preserve_time=False,
-                index_type='SINGLE', table_type=''):
-    """Creates a label for a given geometry table.
-
-    Args:
-        filepath (Path): Path to the geometry table.
-        system (str): Name of system, for rings and moons.
-        creation_time (xxx, optional): Creation time to use instead of the current time.
-        preserve_time (bool, optional):
-            If True, the creation time is copied from any existing
-            label before it is overwrittten.
-        index_type (str, optional): Value for the INDEX_TYPE field.
-        
-    Returns:
-        None.
-    """
-
-    if not system:
-        system = '' 
-    filename = filepath.name
-    dir = filepath.parent
-    body = filepath.stem
-    lblfile = dir / (body + '.lbl')
-    underscore = filename.index('_')
-
-    # Determine the creation time
-    if preserve_time:
-        label = pdsparser.PdsLabel.from_file(lblfile)
-        creation_time = label.__getitem__('PRODUCT_CREATION_TIME')
-    elif creation_time is None:
-        creation_time = '%04d-%02d-%02dT%02d:00:00' % time.gmtime()[:4]
-
-    # Read the template
-    offset = 0 if not system else len(system) + 1
-    template = meta.TEMPLATES_DIR / Path('%s.lbl' % body[underscore+6+offset:])
-
-    # Populate the standard PdsTemplate field dictionary for inventory files
-    fields = None
-    if ('inventory' in body):
-        volume_id = filename[:underscore + 5]
-        fields = {'VOLUME_ID'           : volume_id,
-                  'INDEX_TYPE'          : index_type,
-                  'PUBLICATION_DATE'    : creation_time[:10]}
-
-    # Generate the label
-    bot = PdsLabelBot(template, filepath, 
-                                table_type=table_type,
-                                dictionary=fields)
-    bot.write(lblfile)
-
-#===============================================================================
 def _add_records(system, table, dicts, body_names, dat):
 
     # Add sky columns
@@ -795,7 +741,7 @@ def _process_one_index(indir, outdir, logdir,
     # Loop through the observations...
     count = 0
     for i in range(records):
-        if count >= 5: continue            ###################
+        if count >= 5: continue            #####Remove Before Launch#######
         observation = observations[i]
 
         # Determine system, if any
@@ -910,7 +856,7 @@ def _process_one_index(indir, outdir, logdir,
     inventory_file.close()
 
     # Write tables and make labels 
-    _make_label(inventory_filename)
+    meta._make_label(inventory_filename)
 
     if "S" in selection:
         _write_tables(tables['summary']['sky'], prefix, qualifier='sky')
