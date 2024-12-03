@@ -134,7 +134,7 @@ class PdsLabelBot(object):
     PRE-DEFINED DIRECTIVE FUNCTIONS
 
         INSERT(filepath):
-            Replaces the entire line with the contents of the filepath.  Example:
+            Replaces the directive with the contents of the filepath.  Example:
             
             $INSERT{./templates/host_defs.lbl}
 
@@ -300,8 +300,10 @@ class PdsLabelBot(object):
     #---------------------------------------------------------------------------
     def regenerate(self, fields):
         """Regenerate the template."""
-        T = PdsTemplate('_', content=self.template_lines)
-        template = T.generate(fields, terminator=self.terminator+'[[]]')
+#        T = PdsTemplate('_', content=self.template_lines)
+#        template = T.generate(fields, terminator=self.terminator+'[[]]')
+        T = PdsTemplate('_', content=self.template_lines, terminator=self.terminator+'[[]]')
+        template = T.generate(fields)
         self.template_lines = template.split('[[]]')
 
     #---------------------------------------------------------------------------
