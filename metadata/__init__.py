@@ -87,7 +87,7 @@ Attributes:
 
 """
 ################################################################################
-import sys
+import sys, os
 import config
 import argparse
 import numpy as np
@@ -320,6 +320,9 @@ def add_by_base(x_digits, y_digits, bases):           ### move to utilities
 
 #===============================================================================
 def read_txt_file(filename):           ### move to utilities
+
+    filename = os.path.expandvars(filename)
+
     f = open(filename)
     lines = f.readlines()
     f.close()

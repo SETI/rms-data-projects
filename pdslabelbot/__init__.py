@@ -300,10 +300,8 @@ class PdsLabelBot(object):
     #---------------------------------------------------------------------------
     def regenerate(self, fields):
         """Regenerate the template."""
-#        T = PdsTemplate('_', content=self.template_lines)
-#        template = T.generate(fields, terminator=self.terminator+'[[]]')
-        T = PdsTemplate('_', content=self.template_lines, terminator=self.terminator+'[[]]')
-        template = T.generate(fields)
+        T = PdsTemplate('_', content=self.template_lines)
+        template = T.generate(fields, terminator=self.terminator+'[[]]')
         self.template_lines = template.split('[[]]')
 
     #---------------------------------------------------------------------------

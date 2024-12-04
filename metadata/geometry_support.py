@@ -741,7 +741,7 @@ def _process_one_index(indir, outdir, logdir,
     # Loop through the observations...
     count = 0
     for i in range(records):
-        if count >= 5: continue            #####Remove Before Launch#######
+#        if count >= 5: continue            #####Remove Before Launch#######
         observation = observations[i]
 
         # Determine system, if any

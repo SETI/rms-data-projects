@@ -19,25 +19,40 @@ $NOTE
 #
 ################################################################################
 $END_NOTE
-$ONCE(_=COUNTER('COLUMN', reset=True))
+$ONCE(TABLE_PATH = LABEL_PATH().replace(".lbl",".tab").replace(".LBL",".TAB"))
+$ONCE(ANALYZE_TABLE(TABLE_PATH, crlf=True))
+$ONCE(VALIDATE_PDS3_LABEL())
 
 PDS_VERSION_ID                  = PDS3
-RECORD_TYPE                     = FIXED_LENGTH
-RECORD_BYTES                    = $RECORD_BYTES$
-FILE_RECORDS                    = $FILE_RECORDS$
-^$TABLE_TYPE$_TABLE             = "$FILENAME$"
+RECORD_TYPE                     = $LABEL_VALUE("RECORD_TYPE")$
+RECORD_BYTES                    = $LABEL_VALUE("RECORD_BYTES")$
+FILE_RECORDS                    = $LABEL_VALUE("FILE_RECORDS")$
 
-$INSERT{./templates/host_defs.lbl}
+^$TABLE_TYPE$_TABLE             = "$TABLE_PATH.name$"  ### TABLE_TYPE provided by caller
+
+
+
+###$INCLUDE(GET_ENV("OOPS_TEST_DATA_PATH") / "pdslabelbot/templates/host_defs.lbl")$
+###            ##### INCLUDE and GETENV functions need to be defined.
+MISSION_NAME                    = "GALILEO"
+INSTRUMENT_HOST_NAME            = "GALILEO"
+INSTRUMENT_HOST_ID              = "GLL"
+INSTRUMENT_NAME                 = "SOLID STATE IMAGER"
+INSTRUMENT_ID                   = "SSI"
+DATA_SET_ID                     = "GO-J/JSA-SSI-2-REDR-V1.0"
+
+
+
 
 PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
 
-VOLUME_ID                       = "{VOLUME_ID}"
+VOLUME_ID                       = "TABLE_VALUE("VOLUME_ID")"
 
 OBJECT                          = $TABLE_TYPE$_TABLE
   INTERCHANGE_FORMAT            = ASCII
-  ROWS                          = $ROWS$
-  COLUMNS                       = $COLUMNS$
-  ROW_BYTES                     = $ROW_BYTES$
+  ROWS                          = $LABEL_VALUE("ROWS")$
+  COLUMNS                       = $LABEL_VALUE("COLUMNS")$
+  ROW_BYTES                     = $LABEL_VALUE("ROW_BYTES")$
   INDEX_TYPE                    = SINGLE
   DESCRIPTION                   = "This index describes the intercept geometry
     for the regular satellites and other targeted bodies within the field of
@@ -81,64 +96,64 @@ $NOTE
 $END_NOTE
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'VOLUME_ID')
+  $ONCE(COLUMN_NAME             = 'VOLUME_ID')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     DESCRIPTION                 = "The volume ID provides a unique identifier
       for a PDS data volume."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'FILE_SPECIFICATION_NAME')
+  $ONCE(COLUMN_NAME             = 'FILE_SPECIFICATION_NAME')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = "A32"
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     DESCRIPTION                 = "The file specification name provides the
       full name of a file, including a path name, relative to the root
       directory of the PDS volume."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'SYSTEM')
+  $ONCE(COLUMN_NAME             = 'SYSTEM')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = "A12"
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     DESCRIPTION                 = "The target name is the name of the body for
       which the surface geometry parameters in this row of the table are
       applicable."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'TARGET_NAME')
+  $ONCE(COLUMN_NAME             = 'TARGET_NAME')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = "A12"
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     DESCRIPTION                 = "The target name is the name of the body for
       which the surface geometry parameters in this row of the table are
       applicable."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_PLANETOCENTRIC_LATITUDE')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_PLANETOCENTRIC_LATITUDE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -164,13 +179,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_PLANETOCENTRIC_LATITUDE')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_PLANETOCENTRIC_LATITUDE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = "F8.3"
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -196,13 +211,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_PLANETOGRAPHIC_LATITUDE')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_PLANETOGRAPHIC_LATITUDE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -227,13 +242,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_PLANETOGRAPHIC_LATITUDE')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_PLANETOGRAPHIC_LATITUDE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = "F8.3"
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -258,13 +273,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_IAU_LONGITUDE')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_IAU_LONGITUDE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
@@ -287,13 +302,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_IAU_LONGITUDE')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_IAU_LONGITUDE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = "F8.3"
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
@@ -316,13 +331,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_LOCAL_HOUR_ANGLE')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_LOCAL_HOUR_ANGLE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
@@ -347,13 +362,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_LOCAL_HOUR_ANGLE')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_LOCAL_HOUR_ANGLE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
@@ -378,13 +393,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_LONGITUDE_WRT_OBSERVER')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_LONGITUDE_WRT_OBSERVER')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -180.
     VALID_MAXIMUM               = 180.
@@ -405,13 +420,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_LONGITUDE_WRT_OBSERVER')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_LONGITUDE_WRT_OBSERVER')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -180.
     VALID_MAXIMUM               = 180.
@@ -432,13 +447,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_FINEST_SURFACE_RESOLUTION')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_FINEST_SURFACE_RESOLUTION')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Finest surface resolution is the shorter
@@ -459,13 +474,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_FINEST_SURFACE_RESOLUTION')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_FINEST_SURFACE_RESOLUTION')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Finest surface resolution is the shorter
@@ -488,13 +503,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_COARSEST_SURFACE_RESOLUTION')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_COARSEST_SURFACE_RESOLUTION')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Coarsest surface resolution is the longer
@@ -520,13 +535,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_COARSEST_SURFACE_RESOLUTION')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_COARSEST_SURFACE_RESOLUTION')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Coarsest surface resolution is the longer
@@ -551,13 +566,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SURFACE_DISTANCE')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_SURFACE_DISTANCE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Surface distance is the separation between
@@ -575,13 +590,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SURFACE_DISTANCE')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_SURFACE_DISTANCE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Surface distance is the separation between
@@ -599,13 +614,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_PHASE_ANGLE')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_PHASE_ANGLE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
@@ -624,13 +639,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_PHASE_ANGLE')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_PHASE_ANGLE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
@@ -649,13 +664,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_INCIDENCE_ANGLE')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_INCIDENCE_ANGLE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
@@ -674,13 +689,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_INCIDENCE_ANGLE')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_INCIDENCE_ANGLE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
@@ -699,13 +714,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_EMISSION_ANGLE')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_EMISSION_ANGLE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 90.
@@ -724,13 +739,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_EMISSION_ANGLE')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_EMISSION_ANGLE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 90.
@@ -749,13 +764,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -772,13 +787,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -795,13 +810,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -818,13 +833,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -841,13 +856,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -864,13 +879,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -887,13 +902,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -910,13 +925,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
@@ -933,13 +948,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SUB_SOLAR_IAU_LONGITUDE')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_SUB_SOLAR_IAU_LONGITUDE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
@@ -953,13 +968,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SUB_SOLAR_IAU_LONGITUDE')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_SUB_SOLAR_IAU_LONGITUDE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
@@ -973,13 +988,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_SUB_OBSERVER_IAU_LONGITUDE')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_SUB_OBSERVER_IAU_LONGITUDE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = "F8.3"
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
@@ -993,13 +1008,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_SUB_OBSERVER_IAU_LONGITUDE')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_SUB_OBSERVER_IAU_LONGITUDE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = "F8.3"
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
@@ -1013,13 +1028,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_CENTER_RESOLUTION')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_CENTER_RESOLUTION')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "The linear size of a pixel as projected at
@@ -1030,13 +1045,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_CENTER_RESOLUTION')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_CENTER_RESOLUTION')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "The linear size of a pixel as projected at
@@ -1047,13 +1062,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_CENTER_DISTANCE')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_CENTER_DISTANCE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Distance from the observer to the center of
@@ -1064,13 +1079,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_CENTER_DISTANCE')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_CENTER_DISTANCE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Distance from the observer to the center of
@@ -1081,13 +1096,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MINIMUM_CENTER_PHASE_ANGLE')
+  $ONCE(COLUMN_NAME             = 'MINIMUM_CENTER_PHASE_ANGLE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
@@ -1105,13 +1120,13 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'MAXIMUM_CENTER_PHASE_ANGLE')
+  $ONCE(COLUMN_NAME             = 'MAXIMUM_CENTER_PHASE_ANGLE')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
-    FORMAT                      = $$$COLUMN_NAME$_FORMAT$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    FORMAT                      = $LABEL_VALUE("BYTESFORMAT COLUMN_NAME)$
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
@@ -1128,5 +1143,5 @@ $END_NOTE
       among all of the pixels observed in that direction."
   END_OBJECT                    = COLUMN
 
-END_OBJECT                      = BODY_GEOMETRY_TABLE
+END_OBJECT                      = $TABLE_TYPE$_TABLE
 END

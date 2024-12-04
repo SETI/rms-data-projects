@@ -1,7 +1,9 @@
+$ONCE(TABLE_PATH = LABEL_PATH().replace(".lbl",".tab").replace(".LBL",".TAB"))
+
 PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = STREAM
 
-^TEXT                           = "$FILENAME$"
+^TEXT                           = "$TABLE_PATH.name$" 
 
 VOLUME_ID                       = "$VOLUME_ID$"
 PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$

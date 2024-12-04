@@ -25,23 +25,27 @@ $NOTE
 #
 ################################################################################
 $END_NOTE
-$ONCE(_=COUNTER('COLUMN', reset=True))
+$ONCE(TABLE_PATH = LABEL_PATH().replace(".lbl",".tab").replace(".LBL",".TAB"))
+$ONCE(ANALYZE_TABLE(TABLE_PATH, crlf=True))
+$ONCE(VALIDATE_PDS3_LABEL())
 
 PDS_VERSION_ID                  = PDS3
-RECORD_TYPE                     = FIXED_LENGTH
-RECORD_BYTES                    = $RECORD_BYTES$
-FILE_RECORDS                    = $FILE_RECORDS$
-^$TABLE_TYPE$_INDEX_TABLE       = "$FILENAME$"
+RECORD_TYPE                     = $LABEL_VALUE("RECORD_TYPE")$
+RECORD_BYTES                    = $LABEL_VALUE("RECORD_BYTES")$
+FILE_RECORDS                    = $LABEL_VALUE("FILE_RECORDS")$
 
-$INSERT{./templates/host_defs.lbl}$
+^$TABLE_TYPE$_INDEX_TABLE       = "$TABLE_PATH.name$"  ### TABLE_TYPE provided by caller
+
+$INCLUDE(GET_ENV("OOPS_TEST_DATA_PATH") / "pdslabelbot/templates/host_defs.lbl")$
+            ##### INCLUDE and GETENV functions need to be defined.
 
 PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
 
 OBJECT                          = $TABLE_TYPE$_INDEX_TABLE
   INTERCHANGE_FORMAT            = ASCII
-  ROWS                          = $ROWS$
-  COLUMNS                       = $COLUMNS$
-  ROW_BYTES                     = $ROW_BYTES$
+  ROWS                          = $LABEL_VALUE("ROWS")$
+  COLUMNS                       = $LABEL_VALUE("COLUMNS")$
+  ROW_BYTES                     = $LABEL_VALUE("ROW_BYTES")$
   INDEX_TYPE                    = SINGLE
   DESCRIPTION                   = "This index supplements the file
 INDEX/INDEX.TAB found on each Galileo SSI archive volume in the PDS. It
@@ -56,15 +60,20 @@ $NOTE
 $END_NOTE
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'VOLUME_ID')
+  $ONCE(COLUMN_NAME             = 'VOLUME_ID')
     NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
+    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
+    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
+    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
     FORMAT                      = "A7"
     DESCRIPTION                 = "The unique identifier for a data volume."
   END_OBJECT                    = COLUMN
+
+
+
+
+
 
   OBJECT                        = COLUMN
   $ONCE(COLUMN_NAME                                  = 'FILE_SPECIFICATION_NAME')

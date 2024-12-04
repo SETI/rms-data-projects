@@ -356,7 +356,11 @@ def _make_one_index(input_dir, output_dir, *, type='', glob=None, no_table=False
             pass
 
     # Create the label
-    meta._make_label(index_path, table_type=type)
+#    meta._make_label(index_path, table_type=type)
+    label_name = meta.get_index_name(input_dir, vol_id, type) 
+    label_path = output_dir / Path(label_name + '.lbl')
+    bot = PdsLabelBot(template_path, index_path, table_type=type)
+    bot.write(label_path)
 
 ################################################################################
 # external functions
