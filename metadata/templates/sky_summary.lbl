@@ -21,5 +21,115 @@ $NOTE
 $END_NOTE
 $ONCE(TABLE_PATH = LABEL_PATH().replace(".lbl",".tab").replace(".LBL",".TAB"))
 $ONCE(ANALYZE_TABLE(TABLE_PATH, crlf=True))
-$ONCE(ANALYZE_PDS3_LABEL(LABEL_PATH()))
 
+PDS_VERSION_ID                  = PDS3
+RECORD_TYPE                     = $LABEL_VALUE("RECORD_TYPE")$
+RECORD_BYTES                    = $LABEL_VALUE("RECORD_BYTES")$
+FILE_RECORDS                    = $LABEL_VALUE("FILE_RECORDS")$
+
+^$TABLE_TYPE$_TABLE             = "$LABEL_VALUE("TABLE_BASENAME")$"
+
+
+
+
+MISSION_NAME                    = "GALILEO"
+INSTRUMENT_HOST_NAME            = "GALILEO"
+INSTRUMENT_HOST_ID              = "GLL"
+INSTRUMENT_NAME                 = "SOLID STATE IMAGER"
+INSTRUMENT_ID                   = "SSI"
+DATA_SET_ID                     = "GO-J/JSA-SSI-2-REDR-V1.0"
+
+
+
+
+PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
+VOLUME_ID                       = "$LABEL_VALUE('FIRST', 'VOLUME_ID')$"
+
+OBJECT                          = $TABLE_TYPE$_TABLE
+  INTERCHANGE_FORMAT            = ASCII
+  ROWS                          = $LABEL_VALUE("ROWS")$
+  COLUMNS                       = $LABEL_VALUE("COLUMNS")$
+  ROW_BYTES                     = $LABEL_VALUE("ROW_BYTES")$
+  INDEX_TYPE                    = SINGLE
+  DESCRIPTION                   = "This index describes the sky intercept
+    geometry of the field of view of the instrument. The table contains
+    one row for each image file found on the volume identified by the
+    VOLUME_ID keyword above.
+
+    Occasionally, SPICE pointing information is unavailable for the time at
+    which an image was exposed. When this situation occurs, no row has been
+    added to the file.
+
+    This geometry information has been constructed by uniformly sampling the
+    pixels that comprise each image. Pixels have been sampled on an 8x8 grid,
+    i.e., every 64th pixel. To accommodate pointing uncertainty, the image
+    boundary was expanded on every side by a distance equivalent to 25
+    narrow-angle pixels."
+
+$NOTE 
+################################################################
+# Add a column below for each desired index quantity
+# Edit COLUMN NAME and any fields not enclosed in dollar signs
+################################################################
+$END_NOTE
+
+  OBJECT                        = COLUMN
+    NAME                        = "VOLUME_ID"
+    DESCRIPTION                 = "The volume ID provides a unique 
+      for a PDS data volume."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "FILE_SPECIFICATION_NAME"
+    DESCRIPTION                 = "The file specification name provides the
+      full name of a file, including a path name, relative to the root
+      directory of the PDS volume."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_RIGHT_ASCENSION"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "This is the minimum value for J2000 right
+      ascension within the field of view sampled by this observation. For
+      fields of view that cross 360 degrees, the tabulated minimum value
+      will be greater than the maximum."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_RIGHT_ASCENSION"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "This is the maximum value for J2000 right
+      ascension within the field of view sampled by this observation. For
+      fields of view that cross 360 degrees, the tabulated minimum value
+      will be greater than the maximum."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_DECLINATION"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "This is the minimum value for J2000
+      declination within the field of view sampled by the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_DECLINATION"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "999.
+    DESCRIPTION                 = "This is the maximum value for J2000
+      declination within the field of view sampled by the observation."
+  END_OBJECT                    = COLUMN
+
+END_OBJECT                      = $TABLE_TYPE$_TABLE
+END
