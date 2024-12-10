@@ -4,4 +4,3 @@ INSTRUMENT_HOST_ID              = "GLL"
 INSTRUMENT_NAME                 = "SOLID STATE IMAGER"
 INSTRUMENT_ID                   = "SSI"
 DATA_SET_ID                     = "GO-J/JSA-SSI-2-REDR-V1.0"
-

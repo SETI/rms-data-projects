@@ -19,28 +19,13 @@ $NOTE
 #
 ################################################################################
 $END_NOTE
-$ONCE(TABLE_PATH = LABEL_PATH().replace(".lbl",".tab").replace(".LBL",".TAB"))
-$ONCE(ANALYZE_TABLE(TABLE_PATH, crlf=True))
-
 PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = $LABEL_VALUE("RECORD_TYPE")$
 RECORD_BYTES                    = $LABEL_VALUE("RECORD_BYTES")$
 FILE_RECORDS                    = $LABEL_VALUE("FILE_RECORDS")$
-
 ^$TABLE_TYPE$_TABLE             = "$LABEL_VALUE("TABLE_BASENAME")$"
 
-
-
-
-MISSION_NAME                    = "GALILEO"
-INSTRUMENT_HOST_NAME            = "GALILEO"
-INSTRUMENT_HOST_ID              = "GLL"
-INSTRUMENT_NAME                 = "SOLID STATE IMAGER"
-INSTRUMENT_ID                   = "SSI"
-DATA_SET_ID                     = "GO-J/JSA-SSI-2-REDR-V1.0"
-
-
-
+$INCLUDE("./templates/host_defs.lbl")
 
 PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
 VOLUME_ID                       = "$LABEL_VALUE('FIRST', 'VOLUME_ID')$"

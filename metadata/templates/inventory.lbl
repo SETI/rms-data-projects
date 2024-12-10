@@ -1,14 +1,14 @@
-$ONCE(TABLE_PATH = LABEL_PATH().replace(".lbl",".tab").replace(".LBL",".TAB"))
+$ONCE(TABLE_PATH = LABEL_PATH().replace(".lbl",".tab").replace(".LBL",".TAB").split('/')[-1])
 
 PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = STREAM
 
-^TEXT                           = "$TABLE_PATH.name$" 
+^TEXT                           = "$TABLE_PATH$" 
 
 VOLUME_ID                       = "$VOLUME_ID$"
 PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
 
-$INSERT{./templates/host_defs.lbl}
+$INCLUDE("./templates/host_defs.lbl")
 
 OBJECT                          = TEXT
   PUBLICATION_DATE              = $PUBLICATION_DATE$
