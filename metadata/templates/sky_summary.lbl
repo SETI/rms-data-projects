@@ -23,7 +23,7 @@ PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = $LABEL_VALUE("RECORD_TYPE")$
 RECORD_BYTES                    = $LABEL_VALUE("RECORD_BYTES")$
 FILE_RECORDS                    = $LABEL_VALUE("FILE_RECORDS")$
-^$TABLE_TYPE$_TABLE             = "$LABEL_VALUE("TABLE_BASENAME")$"
+^$TABLE_TYPE$_TABLE              = "$LABEL_VALUE("TABLE_BASENAME")$"
 
 $INCLUDE("./templates/host_defs.lbl")
 
@@ -111,7 +111,6 @@ $END_NOTE
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "999.
     DESCRIPTION                 = "This is the maximum value for J2000
       declination within the field of view sampled by the observation."
   END_OBJECT                    = COLUMN

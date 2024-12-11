@@ -397,6 +397,12 @@ def make_index(input_tree, output_tree, *, type='', glob=None, volume=None, no_t
 
     # Walk the input tree, making indexes for each found volume
     for root, dirs, files in input_tree.walk():
+        # __skip directory will not be scanned, so it's safe for test results
+        if '__skip' in root.as_posix():
+            continue
+
+        # Sort directories for convenience
+        dirs.sort()
         root = Path(root)
 
         # Determine notional set and volume

@@ -23,7 +23,7 @@ PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = $LABEL_VALUE("RECORD_TYPE")$
 RECORD_BYTES                    = $LABEL_VALUE("RECORD_BYTES")$
 FILE_RECORDS                    = $LABEL_VALUE("FILE_RECORDS")$
-^$TABLE_TYPE$_TABLE             = "$LABEL_VALUE("TABLE_BASENAME")$"
+^$TABLE_TYPE$_TABLE              = "$LABEL_VALUE("TABLE_BASENAME")$"
 
 $INCLUDE("./templates/host_defs.lbl")
 
@@ -389,7 +389,7 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    NAME                        = "MAXIMUM_FINEST_SURFACE_RESOLUTION"
+    NAME                        = "MINIMUM_COARSEST_SURFACE_RESOLUTION"
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Coarsest surface resolution is the longer
@@ -409,9 +409,8 @@ $END_NOTE
 
       This column tabulates the minimum value of coarsest surface resolution
       within the field of view of the observation. In other words, this is
-      the size of the smallest feature that could be be resolved somewhere
-      within the field of view, even if its orientation on the surface is
-      the worst it can be."
+      the size of the smallest feature that could be be resolved anywhere in
+      the field of view and regardless of its orientation on the surface."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN

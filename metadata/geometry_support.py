@@ -122,7 +122,8 @@ def _write_table(filename, rows, system=None, qualifier=None):
     # Write label
     table_type = ''
     if qualifier:
-        table_type = qualifier + '_geometry'
+#        table_type = qualifier + '_geometry'
+        table_type = qualifier + '_summary'
     meta._make_label(filename, system=system, table_type=table_type)
 
 #===============================================================================
@@ -220,9 +221,6 @@ def _add_record(prefixes, backplane, column_descs,
         for column in row[1:]:
             line += ','
             line += column
-
-        # Always use PDS-style line termination
-        line += '\r\n'
         lines.append(line)
 
     return lines
@@ -741,7 +739,7 @@ def _process_one_index(indir, outdir, logdir,
     # Loop through the observations...
     count = 0
     for i in range(records):
-#        if count >= 5: continue            #####Remove Before Launch#######
+        if count >= 5: continue            #####Remove Before Launch#######
         observation = observations[i]
 
         # Determine system, if any
@@ -838,18 +836,18 @@ def _process_one_index(indir, outdir, logdir,
         # probably nothing we can do.
         except RuntimeError as e:
             print(e)
-            log_file.write(40*"*" + "\n" + logstr + "\n")
+            log_file.write(40*"*" + "\r\n" + logstr + "\r\n")
             log_file.write(str(e))
-            log_file.write("\n\n")
+            log_file.write("\r\n\r\n")
 
         # Other kinds of errors are genuine bugs. For now, we just log the
         # problem, and jump over the image; we can deal with it later.
         except (AssertionError, AttributeError, IndexError, KeyError,
                 LookupError, TypeError, ValueError):
             traceback.print_exc()
-            log_file.write(40*"*" + "\n" + logstr + "\n")
+            log_file.write(40*"*" + "\r\n" + logstr + "\nr\n")
             log_file.write(traceback.format_exc())
-            log_file.write("\n\n")
+            log_file.write("\r\n\r\n")
 
     # Close all files
     log_file.close()
@@ -945,5 +943,8 @@ def process_index(input_tree, output_tree, *,
                                    selection=selection, 
                                    exclude=exclude, 
                                    glob=glob)
+
+    # Create the cumulative indexes
+#    meta.create_cumulative_indexes(output_tree, exclude=exclude, volume=volume)
 
 ################################################################################
