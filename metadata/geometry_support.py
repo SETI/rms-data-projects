@@ -945,6 +945,7 @@ def process_index(input_tree, output_tree, *,
                                    glob=glob)
 
     # Create the cumulative indexes
-#    meta.create_cumulative_indexes(output_tree, exclude=exclude, volume=volume)
+    meta.create_cumulative_indexes(output_tree, exclude=exclude, volume=volume)
+###    cumulative tables get written with /r/n, but read with /n
 
 ################################################################################

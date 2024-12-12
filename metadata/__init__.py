@@ -307,12 +307,11 @@ def add_by_base(x_digits, y_digits, bases):           ### move to utilities
     return list(reversed(result))
 
 #===============================================================================
-def read_txt_file(filename, as_string=False):           ### move to utilities
+def read_txt_file(filename, as_string=False, terminator='\r\n'):           ### move to utilities
 
     # Expand environment variables in filename
-    filename = os.path.expandvars(filename)
+    filename = Path(os.path.expandvars(filename))
 
-    from IPython import embed; print('+++++++read_txt_file++++++'); embed()
     # Read the file; use binary to preserve line terminators
     with filename.open('rb') as f:
         content = f.read()
@@ -322,13 +321,14 @@ def read_txt_file(filename, as_string=False):           ### move to utilities
         pass
 
     # Split into list of lines with no terminator
-    if not isinstance(content, list):
-        content = content.split('\n')
-    content = [c.rstrip('\r\n') for c in content] + ['']
+    content = content.split('\n')
+    if content[-1] == '':
+        content = content[:-1]
+    content = [c.rstrip('\r\n') for c in content]
     
-    # If as_string, reconstitute with \n terminator
+    # If as_string, reconstitute with terminator
     if as_string:
-        content = '\n'.join(content)
+        content = terminator.join(content) + terminator
 
     return content
 
@@ -870,6 +870,7 @@ def _cumulative_cat_rows(volume_tree, cumulative_dir, volume_glob, table_type,
 
     # Walk the input tree, adding lines for each found volume
     print('Building Cumulative table...')
+    content = []
     for root, dirs, files in volume_tree.walk(top_down=True):
         # __skip directory will not be scanned, so it's safe for test results
         if '__skip' in root.as_posix():
@@ -902,12 +903,14 @@ def _cumulative_cat_rows(volume_tree, cumulative_dir, volume_glob, table_type,
 
                     cumulative_file = Path(table_file.as_posix().replace(volume_id, cumulative_id))
                     lines = read_txt_file(table_file)
-                    write_txt_file(cumulative_file, lines, append=True, crlf=True)
- #                   from IPython import embed; print('++++++cumulative_cat_rows+++++++'); embed()
+                    content += lines
 
-                    # make label
-                    print('Building Cumulative labels...')
-                    _make_label(cumulative_file, table_type=table_type)
+    # Write table
+    write_txt_file(cumulative_file, content)
+
+    # Create label
+    print('Building Cumulative labels...')
+    _make_label(cumulative_file, table_type=table_type)
 
 """
         # Get table type
