@@ -123,7 +123,7 @@ def _write_table(filename, rows, system=None, qualifier=None):
     if qualifier:
 #        table_type = qualifier + '_geometry'
         table_type = qualifier + '_summary'
-    meta._make_label(filename, system=system, table_type=table_type)
+    meta.make_label(filename, system=system, table_type=table_type)
 
 #===============================================================================
 def _write_tables(table, prefix, desc='summary', qualifier=None):
@@ -853,7 +853,7 @@ def _process_one_index(indir, outdir, logdir,
     inventory_file.close()
 
     # Write tables and make labels 
-    meta._make_label(inventory_filename)
+    meta.make_label(inventory_filename)
 
     if "S" in selection:
         _write_tables(tables['summary']['sky'], prefix, qualifier='sky')

@@ -81,7 +81,7 @@ The procedure for generating metadata table is as follows:
 Attributes:
     COLUMNS_DIR (str): Directory containing the columns definitions files.
 
-    TEMPLATES_DIR (str): Directory containing the geometry templates.
+    GLOBAL_TEMPLATE_PATH (str): Directory containing the geometry templates.
 
     NULL (str): Backplane key NULL value.
 
@@ -105,7 +105,7 @@ from pdstemplate.pds3table import pds3_table_preprocessor
 ###############################
 _metadata = sys.modules[__name__]
 BODY_DIR = Path(_metadata.__file__).parent / 'body'
-TEMPLATES_DIR = Path(_metadata.__file__).parent / 'templates'
+GLOBAL_TEMPLATE_PATH = Path(_metadata.__file__).parent / 'templates'
 NULL = "null"
 BODYX = "bodyx"                     # Placeholder for an arbitrary body to be 
                                     # filled in by replacement_dict()
@@ -313,6 +313,8 @@ def read_txt_file(filename, as_string=False, terminator='\r\n'):           ### m
     filename = Path(os.path.expandvars(filename))
 
     # Read the file; use binary to preserve line terminators
+    ### TODO: consider using pathlib.read_text() in the future.  Note the 
+    ### newline arg is not available prior to 3.13.
     with filename.open('rb') as f:
         content = f.read()
     try:
@@ -331,6 +333,7 @@ def read_txt_file(filename, as_string=False, terminator='\r\n'):           ### m
         content = terminator.join(content) + terminator
 
     return content
+
 
 #===============================================================================
 def write_txt_file(filename, content, append=False, terminator='\r\n'):        ### move to utilities
@@ -352,8 +355,11 @@ def write_txt_file(filename, content, append=False, terminator='\r\n'):        #
     content = terminator.join(content) + terminator
 
     # Write file
+    ### TODO: consider using pathlib.write_text() in the future.  Note the 
+    ### newline arg is not available prior to 3.13.
     mode = ('a' if append else 'w') + 'b' 
     with filename.open(mode) as f:
+#    with filename.open('wb') as f:     ### and delete append argument
         f.write(content.encode('utf-8'))
 
 #===============================================================================
@@ -772,6 +778,23 @@ def _make_label_geometry(label_path, template_path, table_type):
     T.write({'TABLE_TYPE': table_type}, label_path=label_path, mode='repair',)
 
 #===============================================================================
+def _make_label_index(label_path, template_path):
+    """Creates a label for a given geometry table.
+
+    Args:
+        label_path (Path): Path to the output label.
+        template_path (Path): Path to the label template.
+
+    Returns:
+        None.
+    """
+
+    T = PdsTemplate(template_path, crlf=True, 
+                    preprocess=pds3_table_preprocessor, 
+                    kwargs={'formats':False, 'numbers':True, 'validate':False})
+    T.write({}, label_path=label_path, mode='repair',)
+
+#===============================================================================
 def _make_label_cumulative(label_path, template_path, table_type):
     """Creates a label for a given geometry table.
 
@@ -784,7 +807,6 @@ def _make_label_cumulative(label_path, template_path, table_type):
         None.
     """
 
-#    from IPython import embed; print('++++++_make_label_cumulative+++++++'); embed()
     T = PdsTemplate(template_path, crlf=True, 
                     preprocess=pds3_table_preprocessor, 
                     kwargs={'formats':True, 'numbers':True, 'validate':False})
@@ -792,8 +814,9 @@ def _make_label_cumulative(label_path, template_path, table_type):
              'INDEX_TYPE':'CUMULATIVE'}, label_path=label_path, mode='repair',)
 
 #===============================================================================
-def _make_label(filepath, 
-                system=None, creation_time=None, preserve_time=False, table_type=''):
+def make_label(filepath, 
+               system=None, creation_time=None, preserve_time=False, 
+               table_type='', template_path=None):
     """Creates a label for a given geometry table.
 
     Args:
@@ -804,6 +827,8 @@ def _make_label(filepath,
             If True, the creation time is copied from any existing
             label before it is overwrittten.
         table_type (str, optional): BODY, RING, SKY.
+        template_path (str, optional): Path to template directory.  Default is 
+                                       GLOBAL_TEMPLATE_PATH.
 
     Returns:
         None.
@@ -819,9 +844,10 @@ def _make_label(filepath,
     label_path = dir / (body + '.lbl')
 
     # Get the template path
-    offset = 0 if not system else len(system) + 1
     underscore = filename.index('_')
-    template_path = TEMPLATES_DIR / Path('%s.lbl' % body[underscore+6+offset:])
+    if not template_path:
+        offset = 0 if not system else len(system) + 1
+        template_path = GLOBAL_TEMPLATE_PATH / Path('%s.lbl' % body[underscore+6+offset:])
 
     # Get the volume id
     volume_id = filename[:underscore + 5]
@@ -835,6 +861,11 @@ def _make_label(filepath,
     # Create a cumulative label
     if '999' in volume_id:      ## is this a safe assumption?
         _make_label_cumulative(label_path, template_path, table_type)
+        return
+
+    # Create an index label
+    if ('index' in body):
+        _make_label_index(label_path, template_path)
         return
 
     # Create a geometry label
@@ -910,7 +941,7 @@ def _cumulative_cat_rows(volume_tree, cumulative_dir, volume_glob, table_type,
 
     # Create label
     print('Building Cumulative labels...')
-    _make_label(cumulative_file, table_type=table_type)
+    make_label(cumulative_file, table_type=table_type)
 
 #===============================================================================
 def create_cumulative_indexes(volume_tree,

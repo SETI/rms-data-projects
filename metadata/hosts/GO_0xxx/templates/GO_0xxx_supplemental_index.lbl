@@ -35,7 +35,7 @@ $INCLUDE("./templates/host_defs.lbl")
 
 PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
 
-OBJECT                          = SUPPLEMENTAL_INDEX_INDEX_TABLE
+OBJECT                          = SUPPLEMENTAL_INDEX_TABLE
   INTERCHANGE_FORMAT            = ASCII
   ROWS                          = $LABEL_VALUE("ROWS")$
   COLUMNS                       = $LABEL_VALUE("COLUMNS")$
@@ -244,5 +244,5 @@ open. The format is RIM:MOD91:MOD10:MOD8."
 close, rounded to the next tick. The format is RIM:MOD91:MOD10:MOD8."
   END_OBJECT                    = COLUMN
 
-END_OBJECT                      = SUPPLEMENTAL_INDEX_INDEX_TABLE
+END_OBJECT                      = SUPPLEMENTAL_INDEX_TABLE
 END

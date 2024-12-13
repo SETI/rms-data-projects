@@ -17,8 +17,6 @@ from pathlib     import Path
 from pdstemplate import PdsTemplate
 from pdstemplate.pds3table import Pds3Table, pds3_table_preprocessor
 
-from pdslabelbot import PdsLabelBot
-
 ################################################################################
 # Built-in key functions
 ################################################################################
@@ -126,7 +124,7 @@ def _format_column(column_stub, value, count=None):
     format = column_stub['FORMAT'].strip('"')
     (width, data_type) =  _format_parms(format)
     if not count:
-        count = int(column_stub['ITEMS']) if 'ITEMS' in column_stub.keys() else 1
+        count = column_stub['ITEMS'] if column_stub['ITEMS'] else 1
 
     # Split multiple elements into individual columns and process recursively
     if count > 1:
@@ -178,18 +176,18 @@ def _get_null_value(column_stub):
     """
 
     # List of accepted Null keywords
-    nullkeys = ['NULL_CONSTANT', 'UNKNOWN_CONSTANT', 'NOT_APPLICABLE_CONSTANT']
+    nullkeys = ['NULL_CONSTANT', 
+                'UNKNOWN_CONSTANT', 
+                'INVALID_CONSTANT', 
+                'MISSING_CONSTANT', 
+                'NOT_APPLICABLE_CONSTANT']
 
     # Check for a known null key in column stub
     nullval = None
     for key in nullkeys:
-        if key in column_stub.keys():
+        if column_stub[key]:
             nullval = column_stub[key]
         
-    # Convert to numeric type if no quotes
-    if nullval and not nullval.startswith('"'):
-        nullval = float(nullval)
-
     return nullval
 
 #===============================================================================
@@ -239,7 +237,7 @@ def _index_one_file(root, name, index, column_stubs):
     Args:
         root (str): Top of the directory tree containing the volume.
         name (str): Name of PDS label.
-        index ([[]]): Open descriptor for the index file.
+###        index ([[]]): Open descriptor for the index file.
         column_stubs (list): List of preprocessed column stubs.
 
     Returns:
@@ -253,6 +251,8 @@ def _index_one_file(root, name, index, column_stubs):
     # Write columns
     first = True
     for column_stub in column_stubs:
+        if not column_stub:
+            continue
 
         # Get the value
         value = _index_one_value(column_stub, path, label)
@@ -260,13 +260,15 @@ def _index_one_file(root, name, index, column_stubs):
         # Write the value into the index
         if not first:
             index.write(",")
+######        index += ","
 
         fvalue = _format_column(column_stub, value)
         index.write(fvalue)
+######        index += fvalue
 
         first = False
 
-    index.write('\r\n')
+    index.write('\r\n')###################
 
 #===============================================================================
 def _make_one_index(input_dir, output_dir, *, type='', glob=None, no_table=False):
@@ -312,41 +314,17 @@ def _make_one_index(input_dir, output_dir, *, type='', glob=None, no_table=False
         label_name = meta.get_index_name(input_dir, vol_id, type) 
         label_path = output_dir / Path(label_name + '.lbl')
 
-        # Process the template
-        from IPython import embed; print('+++++++_make_one_index++++++'); embed()
-## all that's needed here is to parse the raw template to get the values for 
-## FORMAT, COLUMN_NAME, and the null value if any
-## i.e., parse the raw template into column_stubs
+        # Analyze the template
         template = meta.read_txt_file(template_path, as_string=True)
-        pds3_label = Pds3Table(label_path, template, validate=False, numbers=True,formats=False)
+        pds3_label = Pds3Table(label_path, template, validate=False, numbers=True, formats=True)
         column_stubs = pds3_label._column_values
-
-#        T = PdsTemplate(template_path, crlf=True, 
-#                        preprocess=pds3_table_preprocessor, 
-#                        kwargs={'formats':False, 'numbers':True, 'validate':False})
-
-
-#self._column_values
-#        TT = Pds3Table._get_value(template, "FORMAT")
-#        T.content = T.content[1:]
-# T.content.split("\n")
-#        T.generate({}, label_path=label_path)#, mode='validate')
-
-
-
-
-
-
-
-        T = PdsLabelBot(template_path)
-        T.generate() 
-        column_stubs = T.column_stubs
 
         # Walk the directory tree...
 
         # Open the output file; create dir if necessary
         output_dir.mkdir(exist_ok=True)
-        index = open(index_path, 'w')
+        index = open(index_path, 'w')###############
+####        index = []
 
         # If there is a primary file, read it and build the file list
         if not create_primary:
@@ -382,16 +360,16 @@ def _make_one_index(input_dir, output_dir, *, type='', glob=None, no_table=False
 
         # Close index file and make label if the index exists
         try:
-            index.close()
+            index.close()#################
         except:
             pass
 
+    # Write index 
+#    if index:
+#        meta.write_txt_file(index_path, index)
+
     # Create the label
-#    meta._make_label(index_path, table_type=type)
-    label_name = meta.get_index_name(input_dir, vol_id, type) 
-    label_path = output_dir / Path(label_name + '.lbl')
-    bot = PdsLabelBot(template_path, index_path, table_type=type)
-    bot.write(label_path)
+    meta.make_label(index_path, table_type=type, template_path=template_path)
 
 ################################################################################
 # external functions
