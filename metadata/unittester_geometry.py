@@ -41,7 +41,7 @@ class Test_Geometry(unittest.TestCase):
         files = unit.exclude(files, 'templates/', 'old/', '__skip/', '.ring_', '_sky_')
 
         # Test labels
-#        print()
+        print()
 #        from IPython import embed; print('++++++test_geometry_cumulative+++++++'); embed()
 #        print('Reading', file)
 #        table = pdstable.PdsTable(file) 

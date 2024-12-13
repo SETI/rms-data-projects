@@ -912,21 +912,6 @@ def _cumulative_cat_rows(volume_tree, cumulative_dir, volume_glob, table_type,
     print('Building Cumulative labels...')
     _make_label(cumulative_file, table_type=table_type)
 
-"""
-        # Get table type
-
-
-        label_file = table_file.with_suffix('.lbl')
-        label = pdsparser.PdsLabel.from_file(label_file)
-        objects = label.keys()
-
-
-
-        from IPython import embed; print('+++++++++++++'); embed()
-        table_type = table.name.split('_summary')[0]
-        _make_label(table, table_type=table_type)
-"""
-
 #===============================================================================
 def create_cumulative_indexes(volume_tree,
                               exclude=None, volume=None):

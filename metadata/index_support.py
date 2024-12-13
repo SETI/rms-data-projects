@@ -14,6 +14,9 @@ import config
 import pdstable
 
 from pathlib     import Path
+from pdstemplate import PdsTemplate
+from pdstemplate.pds3table import Pds3Table, pds3_table_preprocessor
+
 from pdslabelbot import PdsLabelBot
 
 ################################################################################
@@ -306,7 +309,35 @@ def _make_one_index(input_dir, output_dir, *, type='', glob=None, no_table=False
         index_path = output_dir/(index_name + '.tab')
         template_path = Path('./templates/')/(template_name + '.lbl')
 
+        label_name = meta.get_index_name(input_dir, vol_id, type) 
+        label_path = output_dir / Path(label_name + '.lbl')
+
         # Process the template
+        from IPython import embed; print('+++++++_make_one_index++++++'); embed()
+## all that's needed here is to parse the raw template to get the values for 
+## FORMAT, COLUMN_NAME, and the null value if any
+## i.e., parse the raw template into column_stubs
+        template = meta.read_txt_file(template_path, as_string=True)
+        pds3_label = Pds3Table(label_path, template, validate=False, numbers=True,formats=False)
+        column_stubs = pds3_label._column_values
+
+#        T = PdsTemplate(template_path, crlf=True, 
+#                        preprocess=pds3_table_preprocessor, 
+#                        kwargs={'formats':False, 'numbers':True, 'validate':False})
+
+
+#self._column_values
+#        TT = Pds3Table._get_value(template, "FORMAT")
+#        T.content = T.content[1:]
+# T.content.split("\n")
+#        T.generate({}, label_path=label_path)#, mode='validate')
+
+
+
+
+
+
+
         T = PdsLabelBot(template_path)
         T.generate() 
         column_stubs = T.column_stubs

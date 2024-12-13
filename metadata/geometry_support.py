@@ -7,7 +7,6 @@ import os, traceback, time
 import warnings
 import fnmatch
 import pdstable, pdsparser
-from pdslabelbot import PdsLabelBot
 
 import metadata as meta
 import config

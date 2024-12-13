@@ -25,23 +25,17 @@ $NOTE
 #
 ################################################################################
 $END_NOTE
-$ONCE(TABLE_PATH = LABEL_PATH().replace(".lbl",".tab").replace(".LBL",".TAB"))
-$ONCE(ANALYZE_TABLE(TABLE_PATH, crlf=True))
-$ONCE(VALIDATE_PDS3_LABEL())
-
 PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = $LABEL_VALUE("RECORD_TYPE")$
 RECORD_BYTES                    = $LABEL_VALUE("RECORD_BYTES")$
 FILE_RECORDS                    = $LABEL_VALUE("FILE_RECORDS")$
+^SUPPLEMENTAL_INDEX_TABLE       = "$LABEL_VALUE("TABLE_BASENAME")$"
 
-^$TABLE_TYPE$_INDEX_TABLE       = "$TABLE_PATH.name$"  ### TABLE_TYPE provided by caller
-
-$INCLUDE(GET_ENV("OOPS_TEST_DATA_PATH") / "pdslabelbot/templates/host_defs.lbl")$
-            ##### INCLUDE and GETENV functions need to be defined.
+$INCLUDE("./templates/host_defs.lbl")
 
 PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
 
-OBJECT                          = $TABLE_TYPE$_INDEX_TABLE
+OBJECT                          = SUPPLEMENTAL_INDEX_INDEX_TABLE
   INTERCHANGE_FORMAT            = ASCII
   ROWS                          = $LABEL_VALUE("ROWS")$
   COLUMNS                       = $LABEL_VALUE("COLUMNS")$
@@ -60,28 +54,14 @@ $NOTE
 $END_NOTE
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME             = 'VOLUME_ID')
-    NAME                        = $COLUMN_NAME$
-    COLUMN_NUMBER               = $LABEL_VALUE("COLUMN_NUMBER", COLUMN_NAME)$
-    DATA_TYPE                   = $LABEL_VALUE("DATA_TYPE", COLUMN_NAME)$
-    START_BYTE                  = $LABEL_VALUE("START_BYTE", COLUMN_NAME)$
-    BYTES                       = $LABEL_VALUE("BYTES", COLUMN_NAME)$
+    NAME                        = "VOLUME_ID"
     FORMAT                      = "A7"
-    DESCRIPTION                 = "The unique identifier for a data volume."
+    DESCRIPTION                 = "The volume ID provides a unique 
+      for a PDS data volume."
   END_OBJECT                    = COLUMN
 
-
-
-
-
-
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'FILE_SPECIFICATION_NAME')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "FILE_SPECIFICATION_NAME"
     FORMAT                      = "A32"
     DESCRIPTION                 = "The full name of a file, including a path
 name, relative to a PDS volume. It excludes node or volume location. Example:
@@ -89,24 +69,14 @@ E26/EUROPA/C0532836239R.LBL"
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'TELEMETRY_FORMAT_ID')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "TELEMETRY_FORMAT_ID"
     FORMAT                      = "A3"
     DESCRIPTION                 = "Telemetry format, one of 'HCJ', 'HIM',
 'HIS', 'HMA', 'IM4', or 'IM8'."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'PRODUCT_CREATION_TIME')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "PRODUCT_CREATION_TIME"
     FORMAT                      = "A19"
     NOT_APPLICABLE_CONSTANT     = "UNKNOWN"
     DESCRIPTION                 = "The product creation time in
@@ -114,16 +84,9 @@ E26/EUROPA/C0532836239R.LBL"
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'CUT_OUT_WINDOW')
-    NAME                        = $COLUMN_NAME$
+    NAME                        = "CUT_OUT_WINDOW"
     ITEMS                       = 4
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    ITEM_BYTES                  = $$$COLUMN_NAME$_ITEM_BYTES$$
     FORMAT                      = "I3"
-    ITEM_OFFSET                 = $$$COLUMN_NAME$_ITEM_OFFSET$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
     NOT_APPLICABLE_CONSTANT     = -1
     DESCRIPTION                 = "Galileo SSI images can be edited so that
 only an image area or CUT OUT WINDOW is compressed using Integer Cosine
@@ -136,16 +99,9 @@ increasing down)."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'TRUTH_WINDOW')
-    NAME                        = $COLUMN_NAME$
+    NAME                        = "TRUTH_WINDOW"
     ITEMS                       = 4
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    ITEM_BYTES                  = $$$COLUMN_NAME$_ITEM_BYTES$$
     FORMAT                      = "I3"
-    ITEM_OFFSET                 = $$$COLUMN_NAME$_ITEM_OFFSET$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
     NOT_APPLICABLE_CONSTANT     = -1
     DESCRIPTION                 = "The position of an up to 96x96 truth
 window defined as four numbers: starting line, starting sample, number of
@@ -155,48 +111,28 @@ right and lines increasing down)."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'LIGHT_FLOOD_STATE_FLAG')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "LIGHT_FLOOD_STATE_FLAG"
     FORMAT                      = "A3"
     DESCRIPTION                 = "The mode ('ON' or 'OFF') of light flooding
 for an instrument."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'EXPOSURE_TYPE')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "EXPOSURE_TYPE"
     FORMAT                      = "A8"
     DESCRIPTION                 = "The exposure setting on the camera,
 'NORMAL' or 'EXTENDED'."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'INVERTED_CLOCK_STATE_FLAG')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "INVERTED_CLOCK_STATE_FLAG"
     FORMAT                      = "A12"
     DESCRIPTION                 = "The parallel clock state, 'INVERTED' or
 'NOT INVERTED'."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'ON_CHIP_MOSAIC_FLAG')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "ON_CHIP_MOSAIC_FLAG"
     FORMAT                      = "A1"
     NOT_APPLICABLE_CONSTANT     = "-"
     DESCRIPTION                 = "A flag indicating whether on-chip
@@ -204,12 +140,7 @@ mosaicking was performed, 'Y' or 'N'."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'INSTRUMENT_MODE_ID')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "INSTRUMENT_MODE_ID"
     FORMAT                      = "A18"
     NOT_APPLICABLE_CONSTANT     = "N/A"
     DESCRIPTION                 = "The instrument readout mode,
@@ -218,12 +149,7 @@ constant 'N/A'."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'HUFFMAN_TABLE_TYPE')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "HUFFMAN_TABLE_TYPE"
     FORMAT                      = "A6"
     NOT_APPLICABLE_CONSTANT     = "N/A"
     DESCRIPTION                 = "The table type used for Huffman
@@ -232,12 +158,7 @@ compression, 'SKEWED' or 'UNIFORM'. If Huffman compression was not used, the
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'ICT_DESPIKE_THRESHOLD')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "ICT_DESPIKE_THRESHOLD"
     FORMAT                      = "I3"
     NOT_APPLICABLE_CONSTANT     = -1
     DESCRIPTION                 = "Despike threshold for the Integer Cosine
@@ -247,12 +168,7 @@ efficiency."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'PRODUCT_VERSION_ID')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "PRODUCT_VERSION_ID"
     FORMAT                      = "I3"
     NOT_APPLICABLE_CONSTANT     = -1
     DESCRIPTION                 = "The version number of the individual
@@ -260,12 +176,7 @@ product within this data set."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'ICT_QUANTIZATION_STEP_SIZE')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "ICT_QUANTIZATION_STEP_SIZE"
     FORMAT                      = "I3"
     NOT_APPLICABLE_CONSTANT     = -1
     DESCRIPTION                 = "The compression step size for the Integer
@@ -274,12 +185,7 @@ divided. The greater the step-size, the greater the data loss."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'ICT_ZIGZAG_PATTERN')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "ICT_ZIGZAG_PATTERN"
     FORMAT                      = "A6"
     NOT_APPLICABLE_CONSTANT     = "N/A"
     DESCRIPTION                 = "The zigzag pattern used to rearrange the
@@ -288,12 +194,7 @@ was not used, the 'not applicable' constant 'N/A'."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'COMPRESSION_QUANTIZATION_TABLE_ID')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "COMPRESSION_QUANTIZATION_TABLE_ID"
     FORMAT                      = "A7"
     NOT_APPLICABLE_CONSTANT     = "N/A"
     DESCRIPTION                 = "The 8X8 quantization matrix identifier
@@ -302,12 +203,7 @@ for the Integer Cosine Transform. Valid values are 'UNIFORM', 'VG2', and
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'ENTROPY')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "ENTROPY"
     FORMAT                      = "F7.3"
     DESCRIPTION                 = "The average entropy level (bits/pixel).
 Entropy is a measure of scene activity and it applies to the entire image. For
@@ -317,26 +213,16 @@ horizontally adjacent pixels have a different j, where - 255 <= j <= 255."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'START_TIME')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "START_TIME"
     FORMAT                      = "A26"
     UNKNOWN_CONSTANT            = "UNK"
-    DESCRIPTION                 = "TThe start time of the image exposure as
+    DESCRIPTION                 = "The start time of the image exposure as
 derived from the IMAGE_TIME (midtime) and exposure duration in the label. The
 format is YYYY-MM-DDThh:mm:ss.ffffff."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'STOP_TIME')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "STOP_TIME"
     FORMAT                      = "A26"
     UNKNOWN_CONSTANT            = "UNK"
     DESCRIPTION                 = "The stop time of the image exposure as
@@ -345,28 +231,18 @@ format is YYYY-MM-DDThh:mm:ss.ffffff."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'SPACECRAFT_CLOCK_START_COUNT')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "SPACECRAFT_CLOCK_START_COUNT"
     FORMAT                      = "A15"
-    DESCRIPTION                 = "TThe spacecraft clock at the time of shutter
+    DESCRIPTION                 = "The spacecraft clock at the time of shutter
 open. The format is RIM:MOD91:MOD10:MOD8."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-  $ONCE(COLUMN_NAME                                  = 'SPACECRAFT_CLOCK_STOP_COUNT')
-    NAME                        = $COLUMN_NAME$
-    START_BYTE                  = $$$COLUMN_NAME$_START_BYTE$$
-    COLUMN_NUMBER               = $COUNTER('COLUMN')$
-    DATA_TYPE                   = $$$COLUMN_NAME$_DATA_TYPE$$
-    BYTES                       = $$$COLUMN_NAME$_BYTES$$
+    NAME                        = "SPACECRAFT_CLOCK_STOP_COUNT"
     FORMAT                      = "A15"
-    DESCRIPTION                 = "TThe spacecraft clock at the time of shutter
+    DESCRIPTION                 = "The spacecraft clock at the time of shutter
 close, rounded to the next tick. The format is RIM:MOD91:MOD10:MOD8."
   END_OBJECT                    = COLUMN
 
-END_OBJECT                      = $TABLE_TYPE$_INDEX_TABLE
+END_OBJECT                      = SUPPLEMENTAL_INDEX_INDEX_TABLE
 END
