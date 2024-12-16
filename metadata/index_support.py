@@ -237,7 +237,7 @@ def _index_one_file(root, name, index, column_stubs):
     Args:
         root (str): Top of the directory tree containing the volume.
         name (str): Name of PDS label.
-###        index ([[]]): Open descriptor for the index file.
+        index (list): Current lines in the index; updated in place.
         column_stubs (list): List of preprocessed column stubs.
 
     Returns:
@@ -250,6 +250,7 @@ def _index_one_file(root, name, index, column_stubs):
 
     # Write columns
     first = True
+    line = ''
     for column_stub in column_stubs:
         if not column_stub:
             continue
@@ -259,16 +260,14 @@ def _index_one_file(root, name, index, column_stubs):
 
         # Write the value into the index
         if not first:
-            index.write(",")
-######        index += ","
+            line += ","
 
         fvalue = _format_column(column_stub, value)
-        index.write(fvalue)
-######        index += fvalue
+        line += fvalue
 
         first = False
 
-    index.write('\r\n')###################
+    index += [line]
 
 #===============================================================================
 def _make_one_index(input_dir, output_dir, *, type='', glob=None, no_table=False):
@@ -323,8 +322,7 @@ def _make_one_index(input_dir, output_dir, *, type='', glob=None, no_table=False
 
         # Open the output file; create dir if necessary
         output_dir.mkdir(exist_ok=True)
-        index = open(index_path, 'w')###############
-####        index = []
+        index = []
 
         # If there is a primary file, read it and build the file list
         if not create_primary:
@@ -358,18 +356,12 @@ def _make_one_index(input_dir, output_dir, *, type='', glob=None, no_table=False
             # Make the index for this file
             _index_one_file(root, file, index, column_stubs)
 
-        # Close index file and make label if the index exists
-        try:
-            index.close()#################
-        except:
-            pass
-
-    # Write index 
-#    if index:
-#        meta.write_txt_file(index_path, index)
+        # Write index 
+        if index:
+            meta.write_txt_file(index_path, index)
 
     # Create the label
-    meta.make_label(index_path, table_type=type, template_path=template_path)
+    meta.make_label(index_path, table_type=type)
 
 ################################################################################
 # external functions

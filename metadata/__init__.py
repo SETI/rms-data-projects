@@ -336,7 +336,7 @@ def read_txt_file(filename, as_string=False, terminator='\r\n'):           ### m
 
 
 #===============================================================================
-def write_txt_file(filename, content, append=False, terminator='\r\n'):        ### move to utilities
+def write_txt_file(filename, content, terminator='\r\n'):        ### move to utilities
 
     # Determine terminator
     if terminator is None:
@@ -357,9 +357,7 @@ def write_txt_file(filename, content, append=False, terminator='\r\n'):        #
     # Write file
     ### TODO: consider using pathlib.write_text() in the future.  Note the 
     ### newline arg is not available prior to 3.13.
-    mode = ('a' if append else 'w') + 'b' 
-    with filename.open(mode) as f:
-#    with filename.open('wb') as f:     ### and delete append argument
+    with filename.open('wb') as f:
         f.write(content.encode('utf-8'))
 
 #===============================================================================
@@ -723,6 +721,21 @@ def get_geometry_args(host=None, selection=None, exclude=None):
     # Return parser
     return parser
 
+#===============================================================================
+def get_cumulative_args(host=None, selection=None, exclude=None):
+
+    # Get parser with common args
+    parser = get_common_args(host=host)
+
+    # Add parser for index args
+    gr = parser.add_argument_group('Cumulative Arguments')
+    gr.add_argument('--exclude', '-e', nargs='*', type=str, metavar='exclude',
+                    default=exclude, 
+                    help='''List of volumes to exclude.''')
+
+    # Return parser
+    return parser
+
 ################################################################################
 # Label functions
 ################################################################################
@@ -826,7 +839,7 @@ def make_label(filepath,
         preserve_time (bool, optional):
             If True, the creation time is copied from any existing
             label before it is overwrittten.
-        table_type (str, optional): BODY, RING, SKY.
+        table_type (str, optional): BODY, RING, SKY, SUPPLEMENTAL.
         template_path (str, optional): Path to template directory.  Default is 
                                        GLOBAL_TEMPLATE_PATH.
 
@@ -852,6 +865,13 @@ def make_label(filepath,
     # Get the volume id
     volume_id = filename[:underscore + 5]
     
+    # Create an index label
+    if ('index' in body):
+        template_name = get_template_name('supplemental')
+        template_path = Path('./templates/') / (template_name + '.lbl')
+        _make_label_index(label_path, template_path)
+        return
+
     # Create an inventory label
     if ('inventory' in body):
         _make_label_inventory(label_path, template_path, 
@@ -861,11 +881,6 @@ def make_label(filepath,
     # Create a cumulative label
     if '999' in volume_id:      ## is this a safe assumption?
         _make_label_cumulative(label_path, template_path, table_type)
-        return
-
-    # Create an index label
-    if ('index' in body):
-        _make_label_index(label_path, template_path)
         return
 
     # Create a geometry label
@@ -929,9 +944,13 @@ def _cumulative_cat_rows(volume_tree, cumulative_dir, volume_glob, table_type,
                     volume_id = config.get_volume_id(root)
                     cumulative_id = config.get_volume_id(cumulative_dir)
 
-                    # Copy table file to cumulative index
-                    table_file = list(root.glob('*%s.tab' % table_type.lower()))[0]
+                    # Check existence of table
+                    try:
+                        table_file = list(root.glob('*%s.tab' % table_type.lower()))[0]
+                    except IndexError:
+                        continue
 
+                    # Copy table file to cumulative index
                     cumulative_file = Path(table_file.as_posix().replace(volume_id, cumulative_id))
                     lines = read_txt_file(table_file)
                     content += lines
@@ -944,26 +963,31 @@ def _cumulative_cat_rows(volume_tree, cumulative_dir, volume_glob, table_type,
     make_label(cumulative_file, table_type=table_type)
 
 #===============================================================================
-def create_cumulative_indexes(volume_tree,
+def create_cumulative_indexes(volume_tree, cumulative_dir,
                               exclude=None, volume=None):
     """Creates the cumulative files for a collection of volumes.
 
     Args:
         volume_tree (Path): Root of the tree containing the volumes.
+        cumulative_dir (Path): Directory in which to place the cumulative files.
         exclude (list, optional): List of volumes to exclude.
         glob (str, optional): Glob pattern for index files.
         volume (str, optional): If given, only this volume is processed.
     """
     volume_tree = Path(volume_tree)
-
-    # Set up cumulative index
-    cumulative_dir = _get_cumulative_dir(volume_tree)
+    cumulative_dir = Path(cumulative_dir)
 
     # Build volume glob
     volume_glob = get_volume_glob(volume_tree.name)
 
     # Build the cumulative tables
     _cumulative_cat_rows(volume_tree, cumulative_dir, volume_glob, 'SKY_SUMMARY',
+                         exclude=exclude, volume=volume)
+    _cumulative_cat_rows(volume_tree, cumulative_dir, volume_glob, 'BODY_SUMMARY',
+                         exclude=exclude, volume=volume)
+    _cumulative_cat_rows(volume_tree, cumulative_dir, volume_glob, 'RING_SUMMARY',
+                         exclude=exclude, volume=volume)
+    _cumulative_cat_rows(volume_tree, cumulative_dir, volume_glob, 'SUPPLEMENTAL_INDEX',
                          exclude=exclude, volume=volume)
 
 

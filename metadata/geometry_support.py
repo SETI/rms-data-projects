@@ -738,7 +738,7 @@ def _process_one_index(indir, outdir, logdir,
     # Loop through the observations...
     count = 0
     for i in range(records):
-        if count >= 5: continue            #####Remove Before Launch#######
+#        if count >= 5: continue            #####Remove Before Launch#######
         observation = observations[i]
 
         # Determine system, if any
@@ -942,9 +942,5 @@ def process_index(input_tree, output_tree, *,
                                    selection=selection, 
                                    exclude=exclude, 
                                    glob=glob)
-
-    # Create the cumulative indexes
-    meta.create_cumulative_indexes(output_tree, exclude=exclude, volume=volume)
-###    cumulative tables get written with /r/n, but read with /n
 
 ################################################################################

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ################################################################################
-# GO_0xxx_index.py: Generate sypplemental index files and labels for Galileo SSI.
+# GO_0xxx_index.py: Generate supplemental index files and labels for Galileo SSI.
 #
 # Usage:
 #   python GO_0xxx_index.py input_tree output_tree [volume]

@@ -42,9 +42,9 @@ class Test_Geometry(unittest.TestCase):
 
         # Test labels
         print()
-#        from IPython import embed; print('++++++test_geometry_cumulative+++++++'); embed()
-#        print('Reading', file)
-#        table = pdstable.PdsTable(file) 
+        for file in files:
+            print('Reading', file)
+            table = pdstable.PdsTable(file) 
 
     #===========================================================================
     # test geometry common fields
