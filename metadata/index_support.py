@@ -165,11 +165,40 @@ def _format_column(column_stub, value, count=None):
     return result
 
 #===============================================================================
-def _get_null_value(column_stub):
+def _get_column_values(pds3_table):
+    """Build a list of column stubs.
+
+    Args:
+        pds3_table (Pds3Tabel): Object defining the table.
+
+    Returns:
+        list: Dictionaries containing relevant keyword values for each column.
+    """
+    column_stubs = []
+    colnum = 1
+    while True:
+        try:
+            name = pds3_table.old_lookup('NAME', colnum)
+        except IndexError:
+            break
+
+        column_stubs += [ 
+            {'NAME'          : name, 
+             'FORMAT'        : pds3_table.old_lookup('FORMAT', colnum),
+             'ITEMS'         : pds3_table.old_lookup('ITEMS', colnum),
+             'NULL_CONSTANT' : _get_null_value(pds3_table, colnum)} ]
+
+        colnum += 1
+
+    return column_stubs
+
+#===============================================================================
+def _get_null_value(pds3_table, colnum):
     """Determine the null value for a column.
 
     Args:
-        column_stub (dict): Column stub dictionary.
+        pds3_table (Pds3Tabel): Object defining the table.
+        column (int): Column number.
 
     Returns:
         str|float: Null value.
@@ -185,8 +214,8 @@ def _get_null_value(column_stub):
     # Check for a known null key in column stub
     nullval = None
     for key in nullkeys:
-        if column_stub[key]:
-            nullval = column_stub[key]
+        if nullval := pds3_table.old_lookup(key, colnum):
+            continue
         
     return nullval
 
@@ -202,9 +231,7 @@ def _index_one_value(column_stub, label_path, label_dict):
     Returns:
         str: Determined value.
     """
-
-    # Determine null value
-    nullval = _get_null_value(column_stub)
+    nullval = column_stub['NULL_CONSTANT']
 
     # Check for built-in key function
     key = column_stub['NAME']
@@ -315,8 +342,8 @@ def _make_one_index(input_dir, output_dir, *, type='', glob=None, no_table=False
 
         # Analyze the template
         template = meta.read_txt_file(template_path, as_string=True)
-        pds3_label = Pds3Table(label_path, template, validate=False, numbers=True, formats=True)
-        column_stubs = pds3_label._column_values
+        pds3_table = Pds3Table(label_path, template, validate=False, numbers=True, formats=True)
+        column_stubs = _get_column_values(pds3_table)
 
         # Walk the directory tree...
 
