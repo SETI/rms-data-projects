@@ -7,7 +7,6 @@
 import os, sys, traceback
 import julian
 import vicar
-import cspyce
 import warnings
 
 from pathlib import Path
@@ -16,8 +15,6 @@ import oops
 import hosts.galileo.ssi as ssi
 import metadata as meta
 
-cspyce.furnsh('leapseconds.ker')
-cspyce.furnsh('mk00062a.tsc')
 
 SCLK_BASES = [16777215,91,10,8]
 SAMPLING = 8                        # pixel sampling density
@@ -102,45 +99,6 @@ def get_volume_id(label_path):
     return meta.splitpath(label_path, top)[1].parts[0]
 
 #===============================================================================
-def _spacecraft_clock_count(label_path, label_dict, stop=False):
-    """Utility function for SCLK times.
-
-    Inputs:
-        label_path        path to the PDS label.
-        label_dict        dictionary containing the PDS label fields.
-        stop              If False, the start count is returned.
-
-    Output: the requested clock count.
-    """
-    tai = _event_tai(label_path, label_dict, stop=stop)
-    if tai == 'UNK':
-        return tai
-
-    et = julian.tdb_from_tai(tai)
-
-    dp =  cspyce.sce2c(-77, et)
-    return cspyce.scdecd(-77, dp)
-
-#===============================================================================
-def _spacecraft_time(label_path, label_dict, stop=False):
-    """Utility function for start/stop times.
-
-    Inputs:
-        label_path        path to the PDS label.
-        label_dict        dictionary containing the PDS label fields.
-        stop              If False, the start time is returned.
-
-    Output: the requested clock count.
-    """
-    tai = _event_tai(label_path, label_dict, stop=stop)
-    if tai == 'UNK':
-        return tai
-
-    et = julian.tdb_from_tai(tai)
-
-    return cspyce.scdecd(-77, et)
-
-#===============================================================================
 def _event_tai(label_path, label_dict, stop=False):
     """Utility function for start/stop times.  FOR GOSSI, IMAGE_TIME refers to
     the center of the exposure.
@@ -164,30 +122,6 @@ def _event_tai(label_path, label_dict, stop=False):
 
     # offset to requested time
     return image_tai + sign*0.5*exposure
-
-#===============================================================================
-def _spacecraft_clock_start_count_from_image_time(label_path, label_dict):
-    """Function for SPACECRAFT_CLOCK_START_COUNT using the IMAGE_TIME field.
-
-    Inputs:
-        label_path        path to the PDS label.
-        label_dict        dictionary containing the PDS label fields.
-
-    The return value will appear in the index file under SPACECRAFT_CLOCK_START_COUNT.
-    """
-    return _spacecraft_clock_count(label_path, label_dict, stop=False)
-
-#===============================================================================
-def _spacecraft_clock_stop_count_from_image_time(label_path, label_dict):
-    """Function for SPACECRAFT_CLOCK_STOP_COUNT using the IMAGE_TIME field.
-
-    Inputs:
-        label_path        path to the PDS label.
-        label_dict        dictionary containing the PDS label fields.
-
-    The return value will appear in the index file under SPACECRAFT_CLOCK_STOP_COUNT.
-    """
-    return _spacecraft_clock_count(label_path, label_dict, stop=True)
 
 #===============================================================================
 def _spacecraft_clock_start_count_from_label(label_path, label_dict):
@@ -218,7 +152,6 @@ def _spacecraft_clock_stop_count_from_label(label_path, label_dict):
 
     The return value will appear in the index file under SPACECRAFT_CLOCK_STOP_COUNT.
     """
-
     start_count = label_dict['SPACECRAFT_CLOCK_START_COUNT']
     start_fields = meta.sclk_split_count(start_count)
 
@@ -313,7 +246,6 @@ def key__spacecraft_clock_start_count(label_path, label_dict):
 
     The return value will appear in the index file under SPACECRAFT_CLOCK_START_COUNT.
     """
-#    return _spacecraft_clock_start_count_from_image_time(label_path, label_dict)
     return _spacecraft_clock_start_count_from_label(label_path, label_dict)
 
 #===============================================================================
@@ -326,7 +258,6 @@ def key__spacecraft_clock_stop_count(label_path, label_dict):
 
     The return value will appear in the index file under SPACECRAFT_CLOCK_STOP_COUNT.
     """
-#    return _spacecraft_clock_stop_count_from_image_time(label_path, label_dict)
     return _spacecraft_clock_stop_count_from_label(label_path, label_dict)
 
 #===============================================================================
