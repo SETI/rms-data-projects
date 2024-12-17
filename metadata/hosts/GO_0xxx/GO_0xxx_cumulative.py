@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ################################################################################
-# GO_0xxx_cumulative.py: Generate cumulativ files and labels for Galileo SSI.
+# GO_0xxx_cumulative.py: Generate cumulative files and labels for Galileo SSI.
 #
 # Usage:
 #   python GO_0xxx_cumulative.py input_tree output_dir [volume]
@@ -10,11 +10,12 @@
 #
 ################################################################################
 import metadata as meta
+import metadata.cumulative_support as cml
 
 parser = meta.get_cumulative_args(host='GOISS', exclude=['GO_0999'])
 args = parser.parse_args()
 
-meta.create_cumulative_indexes(args.input_tree, args.output_tree, 
-                               volume=args.volume,
-                               exclude=args.exclude)
+cml.create_cumulative_indexes(args.input_tree, args.output_tree, 
+                              volume=args.volume,
+                              exclude=args.exclude)
 ################################################################################

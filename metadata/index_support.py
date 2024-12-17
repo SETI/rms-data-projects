@@ -1,10 +1,8 @@
 ################################################################################
 # index_support.py - Tools for generating geometric index files
 ################################################################################
-import os, time
 import glob as glb
 import fortranformat as ff
-import pdsparser
 import fnmatch
 import warnings
 import hosts.pds3 as pds3
@@ -13,42 +11,9 @@ import metadata as meta
 import config
 import pdstable
 
-from pathlib     import Path
-from pdstemplate import PdsTemplate
-from pdstemplate.pds3table import Pds3Table, pds3_table_preprocessor
-
-################################################################################
-# Built-in key functions
-################################################################################
-
-#===============================================================================
-def key__volume_id(label_path, label_dict):
-    """Key function for VOLUME_ID.   The return value will appear in the index
-    file under VOLUME_ID.
-
-    Args:
-        label_path (str): Path to the PDS label.
-        label_dict (dict): Dictionary containing the PDS label fields.
-
-    Returns:
-        str: Volume ID
-    """
-    return config.get_volume_id(label_path)
-
-#===============================================================================
-def key__file_specification_name(label_path, label_dict):
-    """Key function for FILE_SPECIFICATION_NAME.  The return value will appear in
-    the index file under FILE_SPECIFICATION_NAME.
-
-    Args:
-        label_path (str): Path to the PDS label.
-        label_dict (dict): Dictionary containing the PDS label fields.
-
-    Returns:
-        str: File Specification name.
-    """
-    return meta.get_volume_subdir(label_path)
-    
+from pathlib                import Path
+from pdstemplate            import PdsTemplate
+from pdstemplate.pds3table  import Pds3Table
 
 ################################################################################
 # Index class
@@ -60,7 +25,7 @@ class Index():
     #===========================================================================
     def __init__(self, input_dir, output_dir, *, 
                     type='', glob=None):
-        """Constructor for a Index object.
+        """Constructor for an Index object.
 
         Args:
             input_dir (str):
@@ -84,6 +49,10 @@ class Index():
 
         # Get volume id from label
         self.volume_id = config.get_volume_id(self.input_dir)
+
+        logger = meta.get_logger()
+        s = ' '+type if type else ' primary'
+        logger.info('New%s index for %s.' % (s, self.volume_id))
 
         # Get relevant filenames and paths
         primary_index_name = meta.get_index_name(self.input_dir, self.volume_id, None)
@@ -130,17 +99,20 @@ class Index():
 
     #===========================================================================
     def _create(self):
-        """Creates the index file for a single volume.
+        """Create the index file for a single volume.
 
         Args: None
         Returns: None.
         """
+        logger = meta.get_logger()
 
         # Open the output file; create dir if necessary
         self.output_dir.mkdir(exist_ok=True)
 
         # Build the index
-        for file in self.files:
+        n = len(self.files)
+        for i in range(n):
+            file = self.files[i]
             name = file.name
             root = file.parent
 
@@ -149,9 +121,9 @@ class Index():
             if file == []:
              continue
 
-            # Print volume ID and subpath
+            # Log volume ID and subpath
             subdir = meta.get_volume_subdir(root)
-            print('    ', self.volume_id, subdir/name)
+            logger.info('%s %4d/%4d  %s' % (self.volume_id, i+1, n, subdir/name))
 
             # Make the index for this file
             self._index_one_file(root, file)
@@ -362,6 +334,7 @@ class Index():
         Returns:
             str: Formatted value.
         """
+        logger = meta.get_logger()
 
         # Get value parameters
         name = column_stub['NAME']
@@ -394,19 +367,53 @@ class Index():
         try:
             result = Index._format_value(value, format)
         except TypeError:
-            print("**** WARNING: Invalid format: ", name, value, format)
+            logger.warn("Invalid format: %s %s %s" % (name, value, format))
             result = width * "*"
 
         if len(result) > width:
-            print("**** WARNING: No second format: ", name, value, format, result)
+            logger.warn("No second format: %s %s %s %s" % (name, value, format, result))
 
         # Validate the formatted value
         try:
             test = eval(result)
         except Exception:
-            print('Format error for %s: %s' % (name, value))
+            logger.warn('Format error for %s: %s' % (name, value))
 
         return result
+
+
+################################################################################
+# Built-in key functions
+################################################################################
+
+#===============================================================================
+def key__volume_id(label_path, label_dict):
+    """Key function for VOLUME_ID.   The return value will appear in the index
+    file under VOLUME_ID.
+
+    Args:
+        label_path (str): Path to the PDS label.
+        label_dict (dict): Dictionary containing the PDS label fields.
+
+    Returns:
+        str: Volume ID
+    """
+    return config.get_volume_id(label_path)
+
+#===============================================================================
+def key__file_specification_name(label_path, label_dict):
+    """Key function for FILE_SPECIFICATION_NAME.  The return value will appear in
+    the index file under FILE_SPECIFICATION_NAME.
+
+    Args:
+        label_path (str): Path to the PDS label.
+        label_dict (dict): Dictionary containing the PDS label fields.
+
+    Returns:
+        str: File Specification name.
+    """
+    return meta.get_volume_subdir(label_path)
+    
 
 ################################################################################
 # external functions
@@ -463,6 +470,7 @@ def make_index(input_tree, output_tree, *, type='', glob=None, volume=None):
                     outdir = output_tree/set
                 outdir = output_tree/vol
 
+                # Process this volumne
                 index = Index(indir, outdir, 
                               type=type, 
                               glob=glob)

@@ -99,6 +99,7 @@ import oops
 from pathlib import Path
 from pdstemplate import PdsTemplate
 from pdstemplate.pds3table import pds3_table_preprocessor
+from pdslogger import PdsLogger, LoggerError
 
 ###############################
 # Define constants
@@ -136,6 +137,77 @@ NAME_LENGTH = 12
 
 # Maintain a list of translations for target names
 TRANSLATIONS = {}
+
+##########################################################################################
+# Logger management
+##########################################################################################
+
+# Define the global logger with streamlined output, no handlers so printing to stdout
+_LOGGER = PdsLogger.get_logger('metadata', timestamps=False, digits=0, lognames=False,
+                               pid=False, indent=True, blanklines=False, level='info')
+
+#===============================================================================
+def set_logger(logger):
+    """Define the global PdsLogger for the metadata tools.
+
+    Parameters:
+        logger (PdsLogger): Logger to use, replacing the default.
+
+    Returns:
+        PdsLogger: The new PdsLogger.
+    """
+    global _LOGGER
+
+    _LOGGER = logger
+    return _LOGGER
+
+
+#===============================================================================
+def get_logger():
+    """The global PdsLogger for PdsTemplate and associated tools."""
+    return _LOGGER
+
+
+#===============================================================================
+def set_log_level(level):
+    """Set the minimum level for messages to be logged.
+
+    Parameters:
+        level (int or str, optional):
+            The minimum level of level name for a record to enter the log.
+    """
+    _LOGGER.set_level(level)
+
+#===============================================================================
+def set_log_format(**kwargs):
+    """Set the formatting and other properties of the logger.
+
+    Parameters:
+        level (int or str, optional):
+            The minimum level of level name for a record to enter the log.
+        timestamps (bool, optional):
+            True or False, defining whether to include a timestamp in each log record.
+        digits (int, optional):
+            Number of fractional digits in the seconds field of the timestamp.
+        lognames (bool, optional):
+            True or False, defining whether to include the name of the logger in each log
+            record.
+        pid (bool, optional):
+            True or False, defining whether to include the process ID in each log record.
+        indent (bool, optional):
+            True or False, defining whether to include a sequence of dashes in each log
+            record to provide a visual indication of the tier in a logging hierarchy.
+        blanklines (bool, optional):
+            True or False, defining whether to include a blank line in log files when a
+            tier in the hierarchy is closed.
+        colors (bool, optional):
+            True or False, defining whether to color-code the log files generated, for
+            Macintosh only.
+        maxdepth (int, optional):
+            Maximum depth of the logging hierarchy, needed to prevent unlimited recursion.
+    """
+    _LOGGER.set_format(**kwargs)
+
 
 ################################################################################
 # Utility functions
@@ -333,7 +405,6 @@ def read_txt_file(filename, as_string=False, terminator='\r\n'):           ### m
         content = terminator.join(content) + terminator
 
     return content
-
 
 #===============================================================================
 def write_txt_file(filename, content, terminator='\r\n'):        ### move to utilities
@@ -784,7 +855,6 @@ def _make_label_geometry(label_path, template_path, table_type):
     Returns:
         None.
     """
-
     T = PdsTemplate(template_path, crlf=True, 
                     preprocess=pds3_table_preprocessor, 
                     kwargs={'formats':True, 'numbers':True, 'validate':False})
@@ -801,7 +871,6 @@ def _make_label_index(label_path, template_path):
     Returns:
         None.
     """
-
     T = PdsTemplate(template_path, crlf=True, 
                     preprocess=pds3_table_preprocessor, 
                     kwargs={'formats':False, 'numbers':True, 'validate':False})
@@ -885,110 +954,6 @@ def make_label(filepath,
 
     # Create a geometry label
     _make_label_geometry(label_path, template_path, table_type)
-
-################################################################################
-# Cumulative functions
-################################################################################
-
-#===============================================================================
-def _get_cumulative_dir(input_tree):
-    """Determine the cumulative index directory.
-
-    Args:
-        col (str): Collection name, e.g., GO_xxxx.
-
-    Returns:
-        Path: Cumulative index directory.
-
-    """
-    return input_tree / Path(input_tree.name.replace('x','9'))
-
-#===============================================================================
-def _cumulative_cat_rows(volume_tree, cumulative_dir, volume_glob, table_type,
-                         exclude=None, volume=None):
-    """Creates the cumulative files for a collection of volumes.
-
-    Args:
-        volume_tree (Path): Root of the tree containing the volumes.
-        exclude (list, optional): List of volumes to exclude.
-        volume (str, optional): If given, only this volume is processed.
-    """
-
-    # Walk the input tree, adding lines for each found volume
-    print('Building Cumulative table...')
-    content = []
-    for root, dirs, files in volume_tree.walk(top_down=True):
-        # __skip directory will not be scanned, so it's safe for test results
-        if '__skip' in root.as_posix():
-            continue
-
-        # Ignore cumulative directory
-        if cumulative_dir.name in root.as_posix():
-            continue
-
-        # Sort directories 
-        dirs.sort()
-        root = Path(root)
-
-        # Determine notional set and volume
-        parts = root.parts
-        set = parts[-2]
-        vol = parts[-1]
-
-        # Test whether this root is a volume
-        if fnmatch.filter([vol], volume_glob):
-            if not volume or vol == volume:
-                if vol != cumulative_dir.name:
-                    print(vol)
-
-                    volume_id = config.get_volume_id(root)
-                    cumulative_id = config.get_volume_id(cumulative_dir)
-
-                    # Check existence of table
-                    try:
-                        table_file = list(root.glob('*%s.tab' % table_type.lower()))[0]
-                    except IndexError:
-                        continue
-
-                    # Copy table file to cumulative index
-                    cumulative_file = Path(table_file.as_posix().replace(volume_id, cumulative_id))
-                    lines = read_txt_file(table_file)
-                    content += lines
-
-    # Write table
-    write_txt_file(cumulative_file, content)
-
-    # Create label
-    print('Building Cumulative labels...')
-    make_label(cumulative_file, table_type=table_type)
-
-#===============================================================================
-def create_cumulative_indexes(volume_tree, cumulative_dir,
-                              exclude=None, volume=None):
-    """Creates the cumulative files for a collection of volumes.
-
-    Args:
-        volume_tree (Path): Root of the tree containing the volumes.
-        cumulative_dir (Path): Directory in which to place the cumulative files.
-        exclude (list, optional): List of volumes to exclude.
-        glob (str, optional): Glob pattern for index files.
-        volume (str, optional): If given, only this volume is processed.
-    """
-    volume_tree = Path(volume_tree)
-    cumulative_dir = Path(cumulative_dir)
-
-    # Build volume glob
-    volume_glob = get_volume_glob(volume_tree.name)
-
-    # Build the cumulative tables
-    _cumulative_cat_rows(volume_tree, cumulative_dir, volume_glob, 'SKY_SUMMARY',
-                         exclude=exclude, volume=volume)
-    _cumulative_cat_rows(volume_tree, cumulative_dir, volume_glob, 'BODY_SUMMARY',
-                         exclude=exclude, volume=volume)
-    _cumulative_cat_rows(volume_tree, cumulative_dir, volume_glob, 'RING_SUMMARY',
-                         exclude=exclude, volume=volume)
-    _cumulative_cat_rows(volume_tree, cumulative_dir, volume_glob, 'SUPPLEMENTAL_INDEX',
-                         exclude=exclude, volume=volume)
 
 
 ############################################
