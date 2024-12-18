@@ -96,10 +96,11 @@ import fnmatch
 import pdstable, pdsparser
 import oops
 
-from pathlib import Path
-from pdstemplate import PdsTemplate
-from pdstemplate.pds3table import pds3_table_preprocessor
-from pdslogger import PdsLogger, LoggerError
+from pathlib                import Path
+from filecache              import FCPath
+from pdstemplate            import PdsTemplate
+from pdstemplate.pds3table  import pds3_table_preprocessor
+from pdslogger              import PdsLogger, LoggerError
 
 ###############################
 # Define constants
@@ -164,7 +165,7 @@ def set_logger(logger):
 
 #===============================================================================
 def get_logger():
-    """The global PdsLogger for PdsTemplate and associated tools."""
+    """The global PdsLogger for the metadata tools."""
     return _LOGGER
 
 
@@ -379,20 +380,16 @@ def add_by_base(x_digits, y_digits, bases):           ### move to utilities
     return list(reversed(result))
 
 #===============================================================================
-def read_txt_file(filename, as_string=False, terminator='\r\n'):           ### move to utilities
+def read_txt_file(filespec, as_string=False, terminator='\r\n'):           ### move to utilities
 
-    # Expand environment variables in filename
-    filename = Path(os.path.expandvars(filename))
+    # Expand environment variables and resolve to absolute path
+    filespec = Path(os.path.expandvars(filespec)).resolve()
+    filespec = FCPath(filespec)
 
-    # Read the file; use binary to preserve line terminators
-    ### TODO: consider using pathlib.read_text() in the future.  Note the 
-    ### newline arg is not available prior to 3.13.
-    with filename.open('rb') as f:
-        content = f.read()
-    try:
-        content = content.decode('utf-8')
-    except AttributeError:
-        pass
+    # Read the file
+    content = filespec.read_text(encoding='utf-8', newline=terminator)    
+    if as_string:
+        return content
 
     # Split into list of lines with no terminator
     content = content.split('\n')
@@ -400,14 +397,14 @@ def read_txt_file(filename, as_string=False, terminator='\r\n'):           ### m
         content = content[:-1]
     content = [c.rstrip('\r\n') for c in content]
     
-    # If as_string, reconstitute with terminator
-    if as_string:
-        content = terminator.join(content) + terminator
-
     return content
 
 #===============================================================================
-def write_txt_file(filename, content, terminator='\r\n'):        ### move to utilities
+def write_txt_file(filespec, content, terminator='\r\n'):        ### move to utilities
+
+    # Expand environment variables and resolve to absolute path
+    filespec = Path(os.path.expandvars(filespec)).resolve()
+    filespec = FCPath(filespec)
 
     # Determine terminator
     if terminator is None:
@@ -426,10 +423,7 @@ def write_txt_file(filename, content, terminator='\r\n'):        ### move to uti
     content = terminator.join(content) + terminator
 
     # Write file
-    ### TODO: consider using pathlib.write_text() in the future.  Note the 
-    ### newline arg is not available prior to 3.13.
-    with filename.open('wb') as f:
-        f.write(content.encode('utf-8'))
+    filespec.write_text(content, encoding='utf-8')
 
 #===============================================================================
 def rebase(x, bases, ceil=False):           ### move to utilities
@@ -828,6 +822,7 @@ def _make_label_inventory(label_path, template_path,
     Returns:
         None.
     """
+    template_path = FCPath(template_path).retrieve()
 
     # Determine the creation time
     if preserve_time:
@@ -855,6 +850,8 @@ def _make_label_geometry(label_path, template_path, table_type):
     Returns:
         None.
     """
+    template_path = FCPath(template_path).retrieve()
+
     T = PdsTemplate(template_path, crlf=True, 
                     preprocess=pds3_table_preprocessor, 
                     kwargs={'formats':True, 'numbers':True, 'validate':False})
@@ -871,6 +868,8 @@ def _make_label_index(label_path, template_path):
     Returns:
         None.
     """
+    template_path = FCPath(template_path).retrieve()
+
     T = PdsTemplate(template_path, crlf=True, 
                     preprocess=pds3_table_preprocessor, 
                     kwargs={'formats':False, 'numbers':True, 'validate':False})
@@ -888,6 +887,7 @@ def _make_label_cumulative(label_path, template_path, table_type):
     Returns:
         None.
     """
+    template_path = FCPath(template_path).retrieve()
 
     T = PdsTemplate(template_path, crlf=True, 
                     preprocess=pds3_table_preprocessor, 
@@ -898,24 +898,23 @@ def _make_label_cumulative(label_path, template_path, table_type):
 #===============================================================================
 def make_label(filepath, 
                system=None, creation_time=None, preserve_time=False, 
-               table_type='', template_path=None):
+               table_type=''):
     """Creates a label for a given geometry table.
 
     Args:
-        filepath (Path): Path to the geometry table.
+        filepath (str|Path|FCPath): Path to the local or remote geometry table.
         system (str): Name of system, for rings and moons.
         creation_time (xxx, optional): Creation time to use instead of the current time.
         preserve_time (bool, optional):
             If True, the creation time is copied from any existing
             label before it is overwrittten.
         table_type (str, optional): BODY, RING, SKY, SUPPLEMENTAL.
-        template_path (str, optional): Path to template directory.  Default is 
-                                       GLOBAL_TEMPLATE_PATH.
 
     Returns:
         None.
     """
     table_type = table_type.upper()
+    filepath = FCPath(filepath).retrieve()
 
     # Get the file path
     if not system:
@@ -925,21 +924,20 @@ def make_label(filepath,
     body = filepath.stem
     label_path = dir / (body + '.lbl')
 
-    # Get the template path
-    underscore = filename.index('_')
-    if not template_path:
-        offset = 0 if not system else len(system) + 1
-        template_path = GLOBAL_TEMPLATE_PATH / Path('%s.lbl' % body[underscore+6+offset:])
-
     # Get the volume id
+    underscore = filename.index('_')
     volume_id = filename[:underscore + 5]
     
-    # Create an index label
+    # Create an index label using the local template path
     if ('index' in body):
         template_name = get_template_name('supplemental')
-        template_path = Path('./templates/') / (template_name + '.lbl')
+        template_path = Path('./templates/').resolve() / (template_name + '.lbl')
         _make_label_index(label_path, template_path)
         return
+
+    # Use the global template path for all other labels
+    offset = 0 if not system else len(system) + 1
+    template_path = Path(GLOBAL_TEMPLATE_PATH) / Path('%s.lbl' % body[underscore+6+offset:])
 
     # Create an inventory label
     if ('inventory' in body):

@@ -896,7 +896,7 @@ def process_index(input_tree, output_tree, *,
         if '__skip' in root.as_posix():
             continue
 
-        # Sort directories for convenience
+        # Sort directories for progress monitoring
         dirs.sort()
         root = Path(root)
 

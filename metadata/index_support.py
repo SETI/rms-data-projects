@@ -12,6 +12,7 @@ import config
 import pdstable
 
 from pathlib                import Path
+from filecache              import FCPath
 from pdstemplate            import PdsTemplate
 from pdstemplate.pds3table  import Pds3Table
 
@@ -23,8 +24,7 @@ class Index():
     """
 
     #===========================================================================
-    def __init__(self, input_dir, output_dir, *, 
-                    type='', glob=None):
+    def __init__(self, input_dir, output_dir, *, type='', glob=None):
         """Constructor for an Index object.
 
         Args:
@@ -68,13 +68,14 @@ class Index():
         if not create_primary:
             self.primary_index_path = self.output_dir/(primary_index_name + '.lbl')
             if not self.primary_index_path.exists():
-                warnings.warn('Primary index file not found: %s.  Skipping' % primary_index_path)
+                warnings.warn('Primary index file not found: %s.  Skipping' % self.primary_index_path)
                 return
 
         # Extract relevent fields from the template
         template_path = Path('./templates/')/(template_name + '.lbl')
         label_name = meta.get_index_name(self.input_dir, self.volume_id, self.type) 
         label_path = self.output_dir / Path(label_name + '.lbl')
+        label_path = FCPath(label_path).retrieve()
 
         template = meta.read_txt_file(template_path, as_string=True)
         pds3_table = Pds3Table(label_path, template, validate=False, numbers=True, formats=True)
@@ -104,6 +105,9 @@ class Index():
         Args: None
         Returns: None.
         """
+        if not hasattr(self, 'files'):
+            return
+
         logger = meta.get_logger()
 
         # Open the output file; create dir if necessary
@@ -453,7 +457,7 @@ def make_index(input_tree, output_tree, *, type='', glob=None, volume=None):
         if '__skip' in root.as_posix():
             continue
 
-        # Sort directories for convenience
+        # Sort directories for progress monitoring
         dirs.sort()
         root = Path(root)
 
