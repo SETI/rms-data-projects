@@ -5,6 +5,7 @@ import config
 import fnmatch
 
 import metadata as meta
+import metadata.label_support as lab
 
 from pathlib import Path
 
@@ -65,7 +66,22 @@ def _cat_rows(volume_tree, cumulative_dir, volume_glob, table_type,
         meta.write_txt_file(cumulative_file, content)
 
         logger.info('Writing cumulative label.')
-        meta.make_label(cumulative_file, table_type=table_type)
+        lab.create(cumulative_file, table_type=table_type)
+
+#===============================================================================
+def get_args(host=None, selection=None, exclude=None):
+
+    # Get parser with common args
+    parser = meta.get_common_args(host=host)
+
+    # Add parser for index args
+    gr = parser.add_argument_group('Cumulative Arguments')
+    gr.add_argument('--exclude', '-e', nargs='*', type=str, metavar='exclude',
+                    default=exclude, 
+                    help='''List of volumes to exclude.''')
+
+    # Return parser
+    return parser
 
 #===============================================================================
 def create_cumulative_indexes(volume_tree, cumulative_dir,

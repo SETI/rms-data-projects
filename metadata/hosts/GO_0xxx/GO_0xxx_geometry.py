@@ -17,11 +17,14 @@
 import metadata as meta
 import metadata.geometry_support as geom
 
-parser = meta.get_geometry_args(host='GOISS', 
-                                selection="S", exclude=['GO_0999'])
+parser = geom.get_args(host='GOISS', selection="S", exclude=['GO_0999'])
 args = parser.parse_args()
 
-geom.process_index(args.input_tree, args.output_tree, volume=args.volume,
-                   selection=args.selection, exclude=args.exclude, 
+geom.process_index(args.input_tree, args.output_tree, 
+                   volume=args.volume,
+                   selection=args.selection, 
+                   exclude=args.exclude, 
+                   first=args.first, 
+                   new_only=args.new_only, 
                    glob='GO_????_index.lbl')
 ################################################################################

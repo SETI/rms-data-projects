@@ -12,7 +12,7 @@
 import metadata as meta
 import metadata.cumulative_support as cml
 
-parser = meta.get_cumulative_args(host='GOISS', exclude=['GO_0999'])
+parser = cml.get_args(host='GOISS', exclude=['GO_0999'])
 args = parser.parse_args()
 
 cml.create_cumulative_indexes(args.input_tree, args.output_tree, 

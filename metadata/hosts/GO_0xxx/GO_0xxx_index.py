@@ -32,9 +32,11 @@
 import metadata as meta
 import metadata.index_support as idx
 
-parser = meta.get_index_args(host='GOISS', type='supplemental')
+parser = idx.get_args(host='GOISS', type='supplemental')
 args = parser.parse_args()
 
-idx.make_index(args.input_tree, args.output_tree, volume=args.volume,
-               type=args.type, glob='C0*')
+idx.process_index(args.input_tree, args.output_tree, 
+                 volume=args.volume,
+                 type=args.type, 
+                 glob='C0*')
 ################################################################################

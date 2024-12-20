@@ -1,5 +1,5 @@
 ################################################################################
-# geometry_support.py - Tools for generating geometric geometry files
+# geometry_support.py - Tools for generating geometry tables.
 ################################################################################
 import oops
 import numpy as np
@@ -8,10 +8,10 @@ import warnings
 import fnmatch
 
 import metadata as meta
+import metadata.label_support as lab
 import config
 
 from pathlib import Path
-
 
 ################################################################################
 # FORMAT_DICT tuples are:
@@ -106,16 +106,16 @@ ALT_FORMAT_DICT = {
 SYSTEMS_TABLE = meta.convert_systems_table(config.SYSTEMS_TABLE, config.SCLK_BASES)
 
 ################################################################################
-# Index class
+# Table class
 ################################################################################
-class Index():
+class Table():
     """Class describing a geometry index for a single volume.
     """
 
     #===========================================================================
     def __init__(self, input_dir, output_dir,
-                       selection='', glob=None):
-        """Constructor for a geometry Index object.
+                       selection='', glob=None, first=None):
+        """Constructor for a geometry Table object.
 
         Args:
             input_dir (Path): Directory containing the volume.
@@ -125,6 +125,8 @@ class Index():
                 "S" to generate summary files;
                 "D" to generate detailed files.
             glob (str, optional): Glob pattern for index files.
+            first (bool, optional): 
+                If given, at most this many files are processed in each volume.
         """
         logger = meta.get_logger()
 
@@ -132,6 +134,7 @@ class Index():
         self.input_dir = Path(input_dir)
         self.output_dir = Path(output_dir)
         self.glob = glob
+        self.first = first
  
         self.selection = 'summary' if 'S' in selection else 'detailed'
 
@@ -147,14 +150,16 @@ class Index():
         self.volume_id = config.get_volume_id(self.input_dir)
         supplemental_index_name = meta.get_index_name(self.input_dir, self.volume_id, 'supplemental')
         supplemental_index_filename = self.input_dir.joinpath(supplemental_index_name+ext)
-        if not supplemental_index_filename.exists():
-            supplemental_index_filename = None
 
         logger = meta.get_logger()
         logger.info('New geometry index for %s.' % self.volume_id)
+        print(supplemental_index_filename)
 
         # Get observations
-        self.observations = config.from_index(index_filename, supplemental_index_filename)
+        try:
+            self.observations = config.from_index(index_filename, supplemental_index_filename)
+        except FileNotFoundError:
+            pass
 
         # Set file prefix
         self.prefix = self.output_dir.joinpath(self.volume_id).as_posix()
@@ -184,26 +189,27 @@ class Index():
         """Process the volume and write a selection of geometry files.
 
         Args: None
-        Return: None
+        Returns: None
         """
         logger = meta.get_logger()
+        if not hasattr(self, 'observations'):
+            return
 
         # Loop through the observations...
         records = len(self.observations)
         count = 0
         for i in range(records):
-            if count >= 5: continue            #####Remove Before Launch#######
+            print(count)
+            if self.first and count >= self.first:
+                continue
+
+
+################## class record
             observation = self.observations[i]
 
             # Determine system, if any
             sclk = observation.dict["SPACECRAFT_CLOCK_START_COUNT"] + '' 
             system, secondaries = meta.get_system(SYSTEMS_TABLE, sclk, config.SCLK_BASES)
-
-            # Set up planet-based geometry
-            dat = {
-                'rings_present' : None,
-                'blocker'       : None
-            }
 
             dicts = {
                 'summary' : {
@@ -218,10 +224,19 @@ class Index():
                 }
             }
 
-            if system:
-                dat['rings_present'] = meta.BODIES[system].ring_frame is not None    
-                ring_tile_dict = meta.RING_TILE_DICT[system]
-                body_tile_dict = meta.BODY_TILE_DICT[system]
+            # Set up planet-based geometry
+            record = {
+                      'system'        : system,
+                      'dicts'         : dicts,
+                      'bodies'        : [],
+                      'rings_present' : None,
+                      'blocker'       : None
+            }
+
+            if record['system']:
+                record['rings_present'] = meta.BODIES[record['system']].ring_frame is not None    
+                ring_tile_dict = meta.RING_TILE_DICT[record['system']]
+                body_tile_dict = meta.BODY_TILE_DICT[record['system']]
 
             # Determine target
             target = config.target_name(observation.dict)
@@ -230,12 +245,15 @@ class Index():
 
             # Create the record prefix
             filespec = observation.dict["FILE_SPECIFICATION_NAME"]
-            dat['prefixes'] = ['"' + self.volume_id + '"',
-                               '"%-32s"' % filespec.replace(".IMG", ".LBL")]
+            record['prefixes'] = ['"' + self.volume_id + '"',
+                                  '"%-32s"' % filespec.replace(".IMG", ".LBL")]
+
+ ####record.process...
+
 
             # Create the backplane
             meshgrid = config.meshgrid(observation)
-            dat['backplane'] = oops.backplane.Backplane(observation, meshgrid)
+            record['backplane'] = oops.backplane.Backplane(observation, meshgrid)
 
             # Print a log of progress
             logger.info("%s  %4d/%4d  %s" % (self.volume_id, i+1, records, target))
@@ -254,32 +272,29 @@ class Index():
                 if secondaries:
                     body_names += secondaries
 
+                record['bodies'] = body_names
+
                 # Write a record into the inventory file
-                self.inventory += ",".join(dat['prefixes'])
-                for name in body_names:
+                self.inventory += ",".join(record['prefixes'])
+                for name in record['bodies']:
                     self.inventory += ',"' + name + '"'
                 self.inventory += "\r\n"             # Use <CR><LF> line termination
 
-                if system:
+                if record['system']:
                     # Define a blocker body, if any
-                    if target in body_names:
-                        dat['blocker'] = target
+                    if target in record['bodies']:
+                        record['blocker'] = target
 
                     # Add an irregular moon to the dictionaries if necessary
-                    if target in body_names and target not in dicts['summary']['body'].keys():
-                        dicts['summary']['body'][target] = meta.replace(meta.BODY_SUMMARY_COLUMNS,
+                    if target in record['bodies'] and target not in record['dicts']['summary']['body'].keys():
+                        record['dicts']['summary']['body'][target] = meta.replace(meta.BODY_SUMMARY_COLUMNS,
                                                                  meta.BODYX, target)
-                        dicts['detailed']['body'][target] = meta.replace(meta.BODY_DETAILED_COLUMNS,
+                        record['dicts']['detailed']['body'][target] = meta.replace(meta.BODY_DETAILED_COLUMNS,
                                                                   meta.BODYX, target)
                         body_tile_dict[target] = meta.replace(meta.BODY_TILES, meta.BODYX, target)
 
-                # Update the summary tables
-                if self.selection == 'summary':
-                    Index._add_records(system, self.tables['summary'], dicts['summary'], body_names, dat)
-
-                # Update the detailed tables
-                if self.selection == 'detailed':
-                    Index._add_records(system, self.tables['detailed'], dicts['detailed'], body_names, dat)
+                # Update the tables
+                self._add_records(record)
 
                 count += 1
 
@@ -302,21 +317,40 @@ class Index():
 
     #===============================================================================
     def _write(self):
+        """Write all tables and their labels.
+
+        Args: None
+        Returns: None
+        """
         meta.write_txt_file, self.inventory_filename, self.inventory
-        meta.make_label(self.inventory_filename)
+        lab.create(self.inventory_filename)
 
         for qualifier in self.tables[self.selection].keys():
-            Index._write_table(self.tables[self.selection][qualifier], self.prefix, 
+            Table._write_table(self.tables[self.selection][qualifier], self.prefix, 
                                 selection=self.selection, qualifier=qualifier)
 
     #===============================================================================
     @staticmethod
-    def _write_table(table, prefix, selection=None, qualifier=None):
+    def _write_table(table, dir, selection, qualifier=None):
+        """Write a single summary table and its label.
+
+        Args:
+            table (list): List of strings comprising the table to write.
+            dir (str): Directory in which to write the table and its label.
+            selection (str):
+                A string containing...
+                "summary" to generate summary files;
+                "detailed" to generate detailed files.
+            qualifier (str, optional): Type of table to write, e.g. 'sky'. 'body'. 'ring'.
+
+        Returns:
+            None.
+        """
         if table == []:
             return
 
         logger = meta.get_logger()
-        filename = Path(prefix + "_%s_%s.tab" % (qualifier, selection))
+        filename = Path(dir + "_%s_%s.tab" % (qualifier, selection))
 
         # Write table
         logger.info("Writing:", filename)
@@ -325,42 +359,54 @@ class Index():
         # Write label
         table_type = ''
         if qualifier:
-            table_type = qualifier + '_summary'
-        meta.make_label(filename, table_type=table_type)
+            table_type = qualifier + '_' + selection
+        lab.create(filename, table_type=table_type)
 
     #===============================================================================
-    @staticmethod
-    def _add_records(system, table, dicts, body_names, dat):
+    def _add_records(self, record):
+        """Write a single summary table and its label.
+
+        Args:
+            selection (str):
+                A string containing...
+                "summary" to generate summary files;
+                "detailed" to generate detailed files.
+            record (dict): xxx.
+
+        Returns:
+            None.
+        """
 
         # Add sky columns
-        table['sky'] += Index._add_record(dat['prefixes'], dat['backplane'], dicts['sky'],
-                                    blocker=dat['blocker'], system=system, 
-                                    name_length=meta.NAME_LENGTH, no_body=True)
+        self.tables[self.selection]['sky'] += \
+            Table._add_record(record['prefixes'], record['backplane'], record['dicts'][self.selection]['sky'],
+                              blocker=record['blocker'], system=record['system'], 
+                              name_length=meta.NAME_LENGTH, no_body=True)
 
         # Add rings and system primary body
-        if system:
-            if dat['rings_present']:
-                table['ring'] += \
-                    Index._add_record(dat['prefixes'], dat['backplane'],
-                                dicts['ring'][system], blocker=dat['blocker'], 
-                                system=system, name_length=meta.NAME_LENGTH)
+        if record['system']:
+            if record['rings_present']:
+                self.tables[self.selection]['ring'] += \
+                    Table._add_record(record['prefixes'], record['backplane'],
+                                      record['dicts'][self.selection]['ring'][record['system']], blocker=record['blocker'], 
+                                      system=record['system'], name_length=meta.NAME_LENGTH)
 
-            table['body'] += \
-                Index._add_record(dat['prefixes'], dat['backplane'],
-                            dicts['body'][system], blocker=dat['blocker'], 
-                            system=system, target=system, name_length=meta.NAME_LENGTH)
+            self.tables[self.selection]['body'] += \
+                Table._add_record(record['prefixes'], record['backplane'],
+                                  record['dicts'][self.selection]['body'][record['system']], blocker=record['blocker'], 
+                                  system=record['system'], target=record['system'], name_length=meta.NAME_LENGTH)
 
         # Add other bodies
-        for name in body_names:
-            if name != system:
-                table['body'] += \
-                    Index._add_record(dat['prefixes'], dat['backplane'], 
-                                dicts['body'][name], 
-                                blocker=dat['blocker'], system=system, 
-                                target=name, name_length=meta.NAME_LENGTH)
-    #        if dat['rings_present']:
-    #            table['ring'][name] += Index._add_record(dat['prefixes'], dat['backplane'], 
-    #                                                dicts['ring'][name], 
+        for name in record['bodies']:
+            if name != record['system']:
+                self.tables[self.selection]['body'] += \
+                    Table._add_record(record['prefixes'], record['backplane'], 
+                                      record['dicts'][self.selection]['body'][name], 
+                                      blocker=record['blocker'], system=record['system'], 
+                                      target=name, name_length=meta.NAME_LENGTH)
+    #        if record['rings_present']:
+    #            self.table[self.selection]['ring'][name] += Table._add_record(record['prefixes'], record['backplane'], 
+    #                                                record['dicts'][self.selection]['ring'][name], 
     #                                                    target=name+'-ring', name_length=meta.NAME_LENGTH,
     #                                                    no_mask=True)
 
@@ -432,7 +478,7 @@ class Index():
     #xxx Insert "*"?
 
         # Prepare the rows
-        rows = Index._prep_rows(prefixes, backplane, blocker, column_descs,
+        rows = Table._prep_rows(prefixes, backplane, blocker, column_descs,
                                 system, target, name_length,
                                 tiles, tiling_min, ignore_shadows,
                                 start_index, allow_zero_rows, no_mask=no_mask, 
@@ -539,7 +585,7 @@ class Index():
             rows = []
             local_index = start_index
             for tile in tiles:
-                new_rows = Index._prep_rows(prefixes, backplane, blocker, column_descs,
+                new_rows = Table._prep_rows(prefixes, backplane, blocker, column_descs,
                                             system, target, name_length,
                                             tile, tiling_min, ignore_shadows,
                                             local_index, allow_zero_rows=True)
@@ -549,7 +595,7 @@ class Index():
             if rows or allow_zero_rows:
                 return rows
 
-            return Index._prep_rows(prefixes, backplane, blocker, column_descs,
+            return Table._prep_rows(prefixes, backplane, blocker, column_descs,
                                     system, target, name_length,
                                     [], tiling_min, ignore_shadows,
                                     start_index, allow_zero_rows=False)
@@ -583,7 +629,7 @@ class Index():
                 if key in excluded_mask_dict: continue
 
                 excluded_mask_dict[key] = \
-                    Index._construct_excluded_mask(backplane, mask_target, system, mask_desc,
+                    Table._construct_excluded_mask(backplane, mask_target, system, mask_desc,
                                             blocker, ignore_shadows)
         # Initialize the list of rows
 
@@ -604,9 +650,9 @@ class Index():
 
             # Append the target and system name as needed
             if not no_body:
-                Index._append_body_prefix(prefix_columns, system, name_length)
+                Table._append_body_prefix(prefix_columns, system, name_length)
                 if target is not None:
-                    Index._append_body_prefix(prefix_columns, target, name_length)
+                    Table._append_body_prefix(prefix_columns, target, name_length)
 
             # Insert the subregion index
             if subregion_masks:
@@ -646,7 +692,7 @@ class Index():
                 else:
                     format = FORMAT_DICT[event_key[0]]
 
-                data_columns.append(Index._formatted_column(values, format))
+                data_columns.append(Table._formatted_column(values, format))
 
             # Save the row if it was completed
             if len(data_columns) < len(column_descs): continue # hopeless error
@@ -657,7 +703,7 @@ class Index():
         if rows or allow_zero_rows:
             return rows
 
-        return Index._prep_rows(prefixes, backplane, blocker, column_descs,
+        return Table._prep_rows(prefixes, backplane, blocker, column_descs,
                                 system, target, name_length,
                                 [], 0, ignore_shadows, start_index,
                                 allow_zero_rows=False)
@@ -859,9 +905,51 @@ class Index():
 ################################################################################
 
 #===============================================================================
+def get_args(host=None, selection=None, exclude=None):
+    """Argument parser for geometric metadata.
+
+        Args:
+            host (str): Host name e.g. 'GOISS'.
+            selection (str, optional):
+                A string containing...
+                "S" to generate summary files;
+                "D" to generate detailed files.
+            glob (str, optional): Glob pattern for index files.
+            first (bool, optional): 
+                If given, at most this many files are processed in each volume.
+
+         Returns:
+            argparser.ArgumentParser : 
+                Parser containing the common argument specifications.
+   """
+
+    # Get parser with common args
+    parser = meta.get_common_args(host=host)
+
+    # Add parser for index args
+    gr = parser.add_argument_group('Geometry Arguments')
+    gr.add_argument('--selection', '-s', type=str, metavar='selection',
+                    default=selection, 
+                    help=''' A string containing:
+                             "S" to generate summary files;
+                             "D" to generate detailed files.''')
+    gr.add_argument('--exclude', '-e', nargs='*', type=str, metavar='exclude',
+                    default=exclude, 
+                    help='''List of volumes to exclude.''')
+    gr.add_argument('--new_only', '-n', nargs='*', type=str, metavar='new_only',
+                    default=False, 
+                    help='''Only volumes that contain no output files are processed.''')
+    gr.add_argument('--first', '-f',type=int, metavar='first',
+                    help='''If given, at most this many input files are processed
+                            in each volume.''')
+
+    # Return parser
+    return parser
+
+#===============================================================================
 def process_index(input_tree, output_tree, *,
                   selection='', exclude=None, glob=None, 
-                  volume=None, new_only=False):
+                  volume=None, new_only=False, first=None):
     """Creates geometry files for a collection of volumes.
 
     Args:
@@ -872,15 +960,15 @@ def process_index(input_tree, output_tree, *,
             A string containing...
             "S" to generate summary files;
             "D" to generate detailed files;
-            "T" to generate a test file (which matches the
             set of columns in the old geometry files).
         exclude (list, optional): List of volumes to exclude.
         glob (str, optional): Glob pattern for index files.
         volume (str, optional): If given, only this volume is processed.
         new_only (bool): If True, only volumes that contain no output files are 
-                         processed.  Overridden if volumeinput provided.
-    """
-
+                         processed.  Overridden if volume input provided.
+        first (bool, optional): 
+            If given, at most this many files are processed in each volume.
+   """
     if volume:
         new_only = False
 
@@ -915,19 +1003,20 @@ def process_index(input_tree, output_tree, *,
                 outdir = output_tree.joinpath(vol)
 
                 # Do not continue if this volume is excluded
+                skip = False
                 if exclude is not None:
                     for item in exclude:
                         if item in indir.parts:
-                            break
+                            skip = True
+                if skip:
+                    continue
 
                 # Check whether this volume has already been processed
                 if new_only & (list(outdir.glob('*_inventory.csv')) != []):
                     continue
 
                 # Process this volumne
-                index = Index(indir, outdir,
-                              selection=selection, 
-                              glob=glob)
-                index._create()
+                table = Table(indir, outdir, selection=selection, glob=glob, first=first)
+                table._create()
 
 ################################################################################

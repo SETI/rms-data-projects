@@ -1,5 +1,5 @@
 ################################################################################
-# index_support.py - Tools for generating geometric index files
+# index_support.py - Tools for generating index files
 ################################################################################
 import glob as glb
 import fortranformat as ff
@@ -8,6 +8,7 @@ import warnings
 import hosts.pds3 as pds3
 
 import metadata as meta
+import metadata.label_support as lab
 import config
 import pdstable
 
@@ -64,26 +65,16 @@ class Index():
         # then this is the primary index.
         create_primary = index_name == primary_index_name
 
-        # This assumes that the primary index file has been copied from viewmaster 
+        # If there is a primary file, read it and build the file list
         if not create_primary:
             self.primary_index_path = self.output_dir/(primary_index_name + '.lbl')
-            if not self.primary_index_path.exists():
+
+            try:
+                table = pdstable.PdsTable(self.primary_index_path)
+            except FileNotFoundError:
                 warnings.warn('Primary index file not found: %s.  Skipping' % self.primary_index_path)
                 return
 
-        # Extract relevent fields from the template
-        template_path = Path('./templates/')/(template_name + '.lbl')
-        label_name = meta.get_index_name(self.input_dir, self.volume_id, self.type) 
-        label_path = self.output_dir / Path(label_name + '.lbl')
-        label_path = FCPath(label_path).retrieve()
-
-        template = meta.read_txt_file(template_path, as_string=True)
-        pds3_table = Pds3Table(label_path, template, validate=False, numbers=True, formats=True)
-        self.column_stubs = Index._get_column_values(pds3_table)
-
-        # If there is a primary file, read it and build the file list
-        if not create_primary:
-            table = pdstable.PdsTable(self.primary_index_path)
             primary_row_dicts = table.dicts_by_row()
             self.files = [Path(primary_row_dict['FILE_SPECIFICATION_NAME']) \
                                    for primary_row_dict in primary_row_dicts]
@@ -94,6 +85,16 @@ class Index():
         # Otherwise, build the file list from the directory tree
         else:
             self.files = [f for f in input_dir.rglob('*.LBL')]
+
+        # Extract relevent fields from the template
+        template_path = Path('./templates/')/(template_name + '.lbl')
+        label_name = meta.get_index_name(self.input_dir, self.volume_id, self.type) 
+        label_path = self.output_dir / Path(label_name + '.lbl')
+        label_path = FCPath(label_path).retrieve()
+
+        template = meta.read_txt_file(template_path, as_string=True)
+        pds3_table = Pds3Table(label_path, template, validate=False, numbers=True, formats=True)
+        self.column_stubs = Index._get_column_values(pds3_table)
 
         # Initialize the index
         self.content = []
@@ -137,7 +138,7 @@ class Index():
             meta.write_txt_file(self.index_path, self.content)
 
         # Create the label
-        meta.make_label(self.index_path, table_type=self.type)
+        lab.create(self.index_path, table_type=self.type)
  
     #===============================================================================
     def _index_one_file(self, root, name):
@@ -279,7 +280,7 @@ class Index():
 
         Args:
             value (str): Value to format.
-            format (str): FORTRAN_style format code.
+            format (str): FORTRAN-style format code.
 
         Returns:
             str: formatted value.
@@ -332,8 +333,9 @@ class Index():
 
         Args:
             column_stub (list): Preprocessed column stub. 
-            value 
-            count
+            value (str): Value to format.
+            count (int): Number of items to process.  If not given, the 'ITEMS'
+                         entry is used.
 
         Returns:
             str: Formatted value.
@@ -424,7 +426,36 @@ def key__file_specification_name(label_path, label_dict):
 ################################################################################
 
 #===============================================================================
-def make_index(input_tree, output_tree, *, type='', glob=None, volume=None):
+def get_args(host=None, type=None):
+    """Argument parser for index files.
+
+        Args:
+            host (str): Host name e.g. 'GOISS'.
+            type (str, optional):
+                Qualifying string identifying the type of index file
+                to create, e.g., 'supplemental'.
+
+         Returns:
+            argparser.ArgumentParser : 
+                Parser containing the common argument specifications.
+   """
+
+    # Get parser with common args
+    parser = meta.get_common_args(host=host)
+
+    # Add parser for index args
+    gr = parser.add_argument_group('Index Arguments')
+    gr.add_argument('--type', '-t', type=str, metavar='type', 
+                    default=type, 
+                    help='''Type of index file to create, e.g., 
+                            "supplemental".''')
+
+    # Return parser
+    return parser
+
+#===============================================================================
+def process_index(input_tree, output_tree, *, 
+                  type='', glob=None, volume=None):
     """Creates index files for a collection of volumes.
 
     Args:
@@ -440,11 +471,8 @@ def make_index(input_tree, output_tree, *, type='', glob=None, volume=None):
         volume (str, optional): If given, only this volume is processed.
 
     Returns:
-    : None.
+        None.
     """
-#xxx Unknown arg name: input
-#xxx Unknown arg name: output
-
     input_tree = Path(input_tree) 
     output_tree = Path(output_tree) 
 
@@ -452,6 +480,7 @@ def make_index(input_tree, output_tree, *, type='', glob=None, volume=None):
     vol_glob = meta.get_volume_glob(input_tree.name)
 
     # Walk the input tree, making indexes for each found volume
+    #### need FCPath.walk() method
     for root, dirs, files in input_tree.walk():
         # __skip directory will not be scanned, so it's safe for test results
         if '__skip' in root.as_posix():
@@ -475,9 +504,7 @@ def make_index(input_tree, output_tree, *, type='', glob=None, volume=None):
                 outdir = output_tree/vol
 
                 # Process this volumne
-                index = Index(indir, outdir, 
-                              type=type, 
-                              glob=glob)
+                index = Index(indir, outdir, type=type, glob=glob)
                 index._create()
 
 ################################################################################
