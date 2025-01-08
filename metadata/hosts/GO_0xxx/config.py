@@ -4,7 +4,6 @@
 #  Host-specific utilites and key functions.
 #
 ################################################################################
-import os, sys, traceback
 import julian
 import vicar
 import warnings
@@ -16,13 +15,13 @@ import hosts.galileo.ssi as ssi
 import metadata as meta
 
 
-SCLK_BASES = [16777215,91,10,8]
-SAMPLING = 8                        # pixel sampling density
-
 ssi.initialize()
+
 ################################################################################
 # SCLK-dependent mission-specific data.
 ################################################################################
+SCLK_BASES = [16777215,91,10,8]
+
 SYSTEMS_TABLE = [
 #      SCLK_START range (inclusive)   SYSTEM      SECONDARIES
     (('00180626.00', '00190641.00'), 'VENUS',     []),
@@ -34,53 +33,59 @@ SYSTEMS_TABLE = [
     (('03464059.00', '06475387.00'), 'JUPITER',   []) ]
 
 
-############################################
-# Construct the meshgrids
-############################################
-## TODO: this should be obtainable from the host module
-MODE_SIZES  = {"FULL":1,
-               "HMA": 1,
-               "HIM": 1,
-               "IM8": 1,
-               "HCA": 1,
-               "IM4": 1,
-               "XCM": 1,
-               "HCM": 1,
-               "HCJ": 1,
-               "HIS": 2,
-               "AI8": 2}
 
 BORDER = 25         # in units of full-size SSI pixels
 NAC_PIXEL = 6.0e-6  # approximate full-size SSI pixel in units of radians
 EXPAND = BORDER * NAC_PIXEL
 
-MESHGRIDS = {}
-for mode in MODE_SIZES.keys():
-    pixel_wrt_full = MODE_SIZES[mode]
-    pixels = 800 / MODE_SIZES[mode]
+#===============================================================================
+def meshgrids(sampling):
 
-    # Define sampling of FOV
-    origin = -float(BORDER) / pixel_wrt_full
-    limit = pixels - origin
+    MODE_SIZES  = {"FULL":1,
+                   "HMA": 1,
+                   "HIM": 1,
+                   "IM8": 1,
+                   "HCA": 1,
+                   "IM4": 1,
+                   "XCM": 1,
+                   "HCM": 1,
+                   "HCJ": 1,
+                   "HIS": 2,
+                   "AI8": 2}
 
-    # Revise the sampling to be exact
-    samples = int((limit - origin) / SAMPLING + 0.999)
-    under = (limit - origin) / samples
+    meshgrids = {}
+    for mode in MODE_SIZES.keys():
+        pixel_wrt_full = MODE_SIZES[mode]
+        pixels = 800 / MODE_SIZES[mode]
 
-    # Construct the meshgrid
-    limit += 0.0001
-    meshgrid = oops.Meshgrid.for_fov(ssi.SSI.fovs[mode], origin,
-                                     undersample=under, limit=limit, swap=True)
-    MESHGRIDS[mode] = meshgrid
+        # Define sampling of FOV
+        origin = -float(BORDER) / pixel_wrt_full
+        limit = pixels - origin
 
-MESHGRID_KEY = 'TELEMETRY_FORMAT_ID'
+        # Revise the sampling to be exact
+        samples = int((limit - origin) / sampling + 0.999)
+        under = (limit - origin) / samples
+
+        # Construct the meshgrid
+        limit += 0.0001
+        meshgrid = oops.Meshgrid.for_fov(ssi.SSI.fovs[mode], origin,
+                                         undersample=under, limit=limit, swap=True)
+        meshgrids[mode] = meshgrid
+
+    return meshgrids
 
 #===============================================================================
-def meshgrid(snapshot):
-    """Returns the meshgrid given the dictionary derived from the
-    SSI index file.
+def meshgrid(meshgrids, snapshot):
+    """Determines the meshgrid given the dictionary derived from the SSI index file.
+
+    Args: 
+        snapshot (oops.Observation): Observation object a GOSSI image.
+        meshgrids (oops.Meshgrid): Meshgrid objects to choose from.
+
+    Returns: 
+        None.
     """
-    return MESHGRIDS[snapshot.dict['TELEMETRY_FORMAT_ID']]
+    return meshgrids[snapshot.dict['TELEMETRY_FORMAT_ID']]
 
 
 ################################################################################
@@ -89,11 +94,14 @@ def meshgrid(snapshot):
 
 #===============================================================================
 def get_volume_id(label_path):
-    """Edit this function to determine the volume ID for this collection
+    """Utility function to determine the volume ID for this collection
        using the label path when there is no observation or label available.
 
-    Inputs:
-        label_path      Path to the PDS label.
+    Args:
+        label_path (str): Path to the PDS label.
+
+    Returns: 
+        None.
     """
     top = 'GO_0xxx'
     return meta.splitpath(label_path, top)[1].parts[0]
@@ -103,12 +111,13 @@ def _event_tai(label_path, label_dict, stop=False):
     """Utility function for start/stop times.  FOR GOSSI, IMAGE_TIME refers to
     the center of the exposure.
 
-    Inputs:
+    Args:
         label_path        path to the PDS label.
         label_dict        dictionary containing the PDS label fields.
         stop              If False, the start time is returned.
 
-    Output: the requested TAI time.
+    Returns: 
+        float: The requested TAI time.
     """
     # get IMAGE_TIME; pass though any NULL value
     image_time = label_dict['IMAGE_TIME']
@@ -124,33 +133,33 @@ def _event_tai(label_path, label_dict, stop=False):
     return image_tai + sign*0.5*exposure
 
 #===============================================================================
-def _spacecraft_clock_start_count_from_label(label_path, label_dict):
+def _spacecraft_clock_start_count_from_label(label_dict):
     """Function for SPACECRAFT_CLOCK_START_COUNT using the SPACECRAFT_CLOCK_START_COUNT
        field.
 
-    Inputs:
-        label_path        path to the PDS label.
-        label_dict        dictionary containing the PDS label fields.
+    Args:
+        label_dict (dict):  Dictionary containing the PDS label fields.
 
-    The return value will appear in the index file under SPACECRAFT_CLOCK_START_COUNT.
+    Returns: 
+        str: SCLK start count.
     """
     start_count = label_dict['SPACECRAFT_CLOCK_START_COUNT']
     start_fields = meta.sclk_split_count(start_count)
     return meta.sclk_format_count(start_fields, 'nnnnnnnn:nn:n:n')
 
 #===============================================================================
-def _spacecraft_clock_stop_count_from_label(label_path, label_dict):
+def _spacecraft_clock_stop_count_from_label(label_dict):
     """Function for SPACECRAFT_CLOCK_STOP_COUNT using the SPACECRAFT_CLOCK_START_COUNT
 
        The stop count is computed by adding the exposure time (in ticks)
        to the SPACECRAFT_CLOCK_START_COUNT field.  THe exposure time is rounded
        up to the next tick.
 
-    Inputs:
-        label_path        path to the PDS label.
+    Args:
         label_dict        dictionary containing the PDS label fields.
 
-    The return value will appear in the index file under SPACECRAFT_CLOCK_STOP_COUNT.
+    Returns: 
+        str: SCLK start count.
     """
     start_count = label_dict['SPACECRAFT_CLOCK_START_COUNT']
     start_fields = meta.sclk_split_count(start_count)
@@ -171,11 +180,12 @@ def _spacecraft_clock_stop_count_from_label(label_path, label_dict):
 def key__product_creation_time(label_path, label_dict):
     """Key function for PRODUCT_CREATION_TIME.  
 
-    Inputs:
-        label_path        path to the PDS label.
-        label_dict        dictionary containing the PDS label fields.
+    Args:
+        label_path  (str): Path to the PDS label.
+        label_dict (dict): Dictionary containing the PDS label fields.
 
-    The return value will appear in the index file under PRODUCT_CREATION_TIME.
+    Returns: 
+        str: Value to write in the index file under PRODUCT_CREATION_TIME.
     """
     # Get path for VICAR image
     image_path = label_path.with_suffix('.IMG') 
@@ -203,11 +213,12 @@ def key__start_time(label_path, label_dict):
     """Key function for START_TIME.  For GOSSI, IMAGE_TIME refers to
     the center of the exposure.
 
-    Inputs:
-        label_path        path to the PDS label.
-        label_dict        dictionary containing the PDS label fields.
+    Args:
+        label_path  (str): Path to the PDS label.
+        label_dict (dict): Dictionary containing the PDS label fields.
 
-    The return value will appear in the index file under START_TIME.
+    Returns: 
+        str: Value to write in the index file under START_TIME.
     """
     # get start tai; pass though any NULL value
     start_tai = _event_tai(label_path, label_dict)
@@ -222,11 +233,12 @@ def key__stop_time(label_path, label_dict):
     """Key function for STOP_TIME.  For GOSSI, IMAGE_TIME refers to
     the center of the exposure.
 
-    Inputs:
-        label_path        path to the PDS label.
-        label_dict        dictionary containing the PDS label fields.
+    Args:
+        label_path  (str): Path to the PDS label.
+        label_dict (dict): Dictionary containing the PDS label fields.
 
-    The return value will appear in the index file under STOP_TIME.
+    Returns: 
+        str: Value to write in the index file under STOP_TIME.
     """
     stop_tai = _event_tai(label_path, label_dict, stop=True)
     if stop_tai == 'UNK':
@@ -240,35 +252,38 @@ def key__spacecraft_clock_start_count(label_path, label_dict):
     """Key function for SPACECRAFT_CLOCK_START_COUNT.  Note this
        definition supercedes that in the default index file.
 
-    Inputs:
-        label_path        path to the PDS label.
-        label_dict        dictionary containing the PDS label fields.
+    Args:
+        label_path  (str): Path to the PDS label.
+        label_dict (dict): Dictionary containing the PDS label fields.
 
-    The return value will appear in the index file under SPACECRAFT_CLOCK_START_COUNT.
+    Returns: 
+        str: Value to write in the index file under SPACECRAFT_CLOCK_START_COUNT.
     """
-    return _spacecraft_clock_start_count_from_label(label_path, label_dict)
+    return _spacecraft_clock_start_count_from_label(label_dict)
 
 #===============================================================================
 def key__spacecraft_clock_stop_count(label_path, label_dict):
     """Key function for SPACECRAFT_CLOCK_STOP_COUNT.  
 
-    Inputs:
-        label_path        path to the PDS label.
-        label_dict        dictionary containing the PDS label fields.
+    Args:
+        label_path  (str): Path to the PDS label.
+        label_dict (dict): Dictionary containing the PDS label fields.
 
-    The return value will appear in the index file under SPACECRAFT_CLOCK_STOP_COUNT.
+    Returns: 
+        str: Value to write in the index file under SPACECRAFT_CLOCK_STOP_COUNT.
     """
-    return _spacecraft_clock_stop_count_from_label(label_path, label_dict)
+    return _spacecraft_clock_stop_count_from_label(label_dict)
 
 #===============================================================================
 def key__image_start_time(label_path, label_dict):
     """Key function for IMAGE_START_TIME.  
 
-    Inputs:
-        label_path        path to the PDS label.
-        label_dict        dictionary containing the PDS label fields.
+    Args:
+        label_path  (str): Path to the PDS label.
+        label_dict (dict): Dictionary containing the PDS label fields.
 
-    The return value will appear in the index file under SPACECRAFT_CLOCK_START_COUNT.
+    Returns: 
+        str: Value to write in the index file under IMAGE_START_TIME.
     """
     return _spacecraft_time(label_path, label_dict, stop=False)
 
@@ -276,11 +291,12 @@ def key__image_start_time(label_path, label_dict):
 def key__image_stop_time(label_path, label_dict):
     """Key function for IMAGE_STOP_TIME.  
 
-    Inputs:
-        label_path        path to the PDS label.
-        label_dict        dictionary containing the PDS label fields.
+    Args:
+        label_path  (str): Path to the PDS label.
+        label_dict (dict): Dictionary containing the PDS label fields.
 
-    The return value will appear in the index file under SPACECRAFT_CLOCK_START_COUNT.
+    Returns: 
+        str: Value to writer in the index file under IMAGE_STOP_TIME.
     """
     return _spacecraft_time(label_path, label_dict, stop=True)
 
@@ -295,9 +311,16 @@ from_index = ssi.from_index
 
 #===============================================================================
 def target_name(dict):
-    """Returns the target name from the snapshot's dictionary. If the given
+    """Determines the target name from the snapshot's dictionary. If the given
     name is "SKY", it checks the CIMS ID and the TARGET_DESC for something
-    different."""
+    different.
+
+    Args:
+        dict (dict): Snapshot observation dictionary.
+
+    Returns: 
+        str: Target name.
+    """
 
     return  dict["TARGET_NAME"]
 
@@ -320,7 +343,11 @@ def target_name(dict):
 #===============================================================================
 def cleanup():
     """Cleanup function for geometry code.  This function is called after
-       the geometry table and labels are written, before exiting."""
+       the geometry table and labels are written, before exiting.
+
+        Args: None
+        Returns: None.
+    """
     pass
 ################################################################################
 

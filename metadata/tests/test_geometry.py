@@ -1,5 +1,5 @@
 ################################################################################
-# Global metadata geometry unit tests
+# tests/test_geometry.py
 ################################################################################
 import unittest
 import pdstable, pdsparser

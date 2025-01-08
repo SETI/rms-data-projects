@@ -69,7 +69,17 @@ def _cat_rows(volume_tree, cumulative_dir, volume_glob, table_type,
         lab.create(cumulative_file, table_type=table_type)
 
 #===============================================================================
-def get_args(host=None, selection=None, exclude=None):
+def get_args(host=None, exclude=None):
+    """Argument parser for cumulative metadata.
+
+    Args:
+        host (str): Host name, e.g. 'GOISS'.
+        exclude (list, optional): List of volumes to exclude.
+
+     Returns:
+        argparser.ArgumentParser : 
+            Parser containing the argument specifications.
+    """
 
     # Get parser with common args
     parser = meta.get_common_args(host=host)
@@ -84,20 +94,22 @@ def get_args(host=None, selection=None, exclude=None):
     return parser
 
 #===============================================================================
-def create_cumulative_indexes(volume_tree, cumulative_dir,
-                              exclude=None, volume=None):
+def create_cumulative_indexes(host=None, exclude=None):
     """Creates the cumulative files for a collection of volumes.
 
     Args:
-        volume_tree (Path): Root of the tree containing the volumes.
-        cumulative_dir (Path): Directory in which to place the cumulative files.
+        host (str): Host name e.g. 'GOISS'.
         exclude (list, optional): List of volumes to exclude.
-        glob (str, optional): Glob pattern for index files.
-        volume (str, optional): If given, only this volume is processed.
     """
-    volume_tree = Path(volume_tree)
-    cumulative_dir = Path(cumulative_dir)
+    # Parse arguments
+    parser = get_args(host=host, exclude=exclude)
+    args = parser.parse_args()
 
+    volume_tree = Path(args.input_tree) 
+    cumulative_dir = Path(args.output_tree) 
+    volume = args.volume
+
+    # Set logger
     logger = meta.get_logger()
     logger.info('New cumulative indexes for %s.' % volume_tree.name)
 
@@ -114,3 +126,4 @@ def create_cumulative_indexes(volume_tree, cumulative_dir,
     _cat_rows(volume_tree, cumulative_dir, volume_glob, 'SUPPLEMENTAL_INDEX',
               exclude=exclude, volume=volume)
 
+################################################################################

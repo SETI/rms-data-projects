@@ -106,7 +106,7 @@ from pdslogger              import PdsLogger, LoggerError
 # Define constants
 ###############################
 _metadata = sys.modules[__name__]
-BODY_DIR = Path(_metadata.__file__).parent / 'body'
+COLUMN_DIR = Path(_metadata.__file__).parent / 'column'
 GLOBAL_TEMPLATE_PATH = Path(_metadata.__file__).parent / 'templates'
 NULL = "null"
 BODYX = "bodyx"                     # Placeholder for an arbitrary body to be 
@@ -151,7 +151,7 @@ _LOGGER = PdsLogger.get_logger('metadata', timestamps=False, digits=0, lognames=
 def set_logger(logger):
     """Define the global PdsLogger for the metadata tools.
 
-    Parameters:
+    Args:
         logger (PdsLogger): Logger to use, replacing the default.
 
     Returns:
@@ -267,15 +267,16 @@ def splitpath(path: str, string: str):
     """Split a path at a given string.
 
     Args:
-        path   (str): Path to split.
-        string (str): Search string.  The path is split at the first occurrence
-                      and the search string is omitted.
+        path (str): Path to split.
+        string (str): 
+            Search string. The path is split at the first occurrence and the search 
+            string is omitted.
 
     Returns:
-        NamedTuple (lines (str), lnum (int)): 
-            lines   (list): Lines comprising the output label.
-            lnum     (int): Line number in output label at which processing 
-                            is to continue.
+        NamedTuple (lines (list), lnum (int)): 
+            lines: Lines comprising the output label.
+            lnum: Line number in output label at which processing 
+                        is to continue.
 
     Todo:
         Place this function in a general utility package.
@@ -303,9 +304,9 @@ def replace(tree, placeholder, name):
     placeholder string replaced by the given name.
 
     Args:
-        tree        (list): List contining the tree. 
-        placeholder  (str): Placeholder to replace
-        name         (str): Replacement string.
+        tree (list): List contining the tree. 
+        placeholder (str): Placeholder to replace
+        name (str): Replacement string.
 
     Returns:
         list: New tree with placeholder replaced by name.
@@ -330,14 +331,14 @@ def replace(tree, placeholder, name):
 
 #===============================================================================
 def replacement_dict(tree, placeholder, names):
-    """Return a dictionary of copies of the tree of objects, where each
+    """Create a dictionary of copies of the tree of objects, where each
     dictionary entry is keyed by a name in the list and returns a copy of the 
     tree using that name as the replacement.
 
     Args:
-        tree        (list): List contining the tree. 
-        placeholder  (str): Placeholder to replace
-        name        (list): List of replacement strings.
+        tree (list): List contining the tree. 
+        placeholder (str): Placeholder to replace
+        name (list): List of replacement strings.
 
     Returns:
         dict: New dictionary.
@@ -370,6 +371,17 @@ def get_volume_glob(col):
 
 #===============================================================================
 def add_by_base(x_digits, y_digits, bases):           ### move to utilities
+    """Add numbers represented using the specified bases.
+
+    Args:
+        x_digits (list): Digits (int) representing the first operand.
+        y_digits (list): Digits (int) representing the second operand.
+        bases (list): Bases (int) for each position.
+
+    Returns:
+        list: Digits (int) representing the result.
+
+    """
     import math
 
     result = [0]*(len(bases)+1)
@@ -381,6 +393,19 @@ def add_by_base(x_digits, y_digits, bases):           ### move to utilities
 
 #===============================================================================
 def read_txt_file(filespec, as_string=False, terminator='\r\n'):           ### move to utilities
+    """Read a text file.
+
+    Args:
+        filespec (str or Path): Path to the file to read.  Environment variables are expanded.
+        as_string (bool, optional): 
+            If True, the result is return as a string using the specified terminator.
+        terminator (str): Terminator to use for string return.
+
+    Returns:
+        list (as_string==False): Lines of the file with no terminators.
+        str (as_string==True): Lines of the file concatenated using the specified terminator. 
+
+    """
 
     # Expand environment variables and resolve to absolute path
     filespec = Path(os.path.expandvars(filespec)).resolve()
@@ -401,6 +426,19 @@ def read_txt_file(filespec, as_string=False, terminator='\r\n'):           ### m
 
 #===============================================================================
 def write_txt_file(filespec, content, terminator='\r\n'):        ### move to utilities
+    """Write a text file.
+
+    Args:
+        filespec (str or Path): Path to the file to write.
+        content (str or list): 
+            Text to write.  If list, each element is a line that will be terminated
+            using the specified terminator.  If string, existing terminators are 
+            replaced with the specified terminator.
+        terminator (str): Desired line terminator.
+
+    Returns:
+        None
+    """
 
     # Expand environment variables and resolve to absolute path
     filespec = Path(os.path.expandvars(filespec)).resolve()
@@ -427,6 +465,19 @@ def write_txt_file(filespec, content, terminator='\r\n'):        ### move to uti
 
 #===============================================================================
 def rebase(x, bases, ceil=False):           ### move to utilities
+    """Convert a decimal number to a different base.
+
+    Args:
+        x (int): Number to convert.
+        bases (list): Base (int) to use for each decimal place.
+
+    Returns:
+        NamedTuple (digits (list), over (int)): 
+            digits: Digits (int) in the new base.
+            overflow: 
+                Remaining quantity, if any, exceeding the maximum value that can be
+                represented by the given bases.
+    """
     import math
 
     digits = []
@@ -443,6 +494,18 @@ def rebase(x, bases, ceil=False):           ### move to utilities
 
 #===============================================================================
 def sclk_split_count(count, delim=None):
+    """Parse a spacecraft clock count into a list.
+
+    Args:
+        count (str): Number to convert.
+        delim (str): 
+            Field delimiter to use. If None, all non-alphanumeric characters are
+            treated as delimiters.
+        
+
+    Returns:
+        list: Fields (int) of the given spacecraft clock count.
+    """
 
     # Replace all non-alphanumerics with default delimiter if non given
     if delim is None:
@@ -459,6 +522,19 @@ def sclk_split_count(count, delim=None):
 
 #===============================================================================
 def sclk_format_count(fields, format):
+    """Construct a spacecraft clock count from a list of fields.
+
+    Args:
+        fields (list): Fields (int) the spacecraft clock count.
+        format (str): 
+            Template indicating the fields widths and delimiters.  Alphanumeric 
+            characters indicate field digits, non-alphanumeric characters indicate
+            field delimiters. Example: 'nnnnnnnn:nn:n.n'.
+
+    Returns:
+        int: Spacecraft clock count.
+    """
+
     # Get delimiters
     delims = [c for c in format if not c.isalnum()] + ['']
 
@@ -476,9 +552,19 @@ def sclk_format_count(fields, format):
     return count
 
 #===============================================================================
-def sclk_to_ticks(count, bases):
+def sclk_to_ticks(sclk, bases):
+    """Convert spacecraft clock count string to ticks.
+
+    Args:
+        sclk (list): Spacecraft clock count string.
+        bases (list): Base (int) to use for each decimal place.
+
+    Returns:
+        int: Spacecraft clock ticks.
+    """
+
     # Get fields
-    fields = sclk_split_count(count)
+    fields = sclk_split_count(sclk)
 
     # Compute ticks
     ticks = fields[-1]
@@ -489,7 +575,15 @@ def sclk_to_ticks(count, bases):
     
 #===============================================================================
 def convert_systems_table(table, bases):
+    """Convert systems tables SCLK count string to ticks.
 
+    Args:
+        table (list): Systems table.
+        bases (list): Base (int) to use for each decimal place.
+
+    Returns:
+        list: Converted Systems table containing ticks instead of strings.
+    """
     new_table = []
     for item in table:
         new_table.append(
@@ -501,9 +595,20 @@ def convert_systems_table(table, bases):
 
 #===============================================================================
 def get_system(table, sclk, bases):
-    # Could default to using checking Hill radii of each planet with the table 
-    # as an override.
+    """Use converted systems table to determine the system for a given spacecraft 
+    clock count.
 
+    Args:
+        table (list): Converted systems table containing sclk ticks instead of strings.
+        sclk (str): Spacecraft clock string corresponding to the observation time.
+        bases (list): Base (int) to use for each decimal place.
+
+    Returns:
+        NamedTuple (system (str), secondaries (list)): 
+            system: Name of the system corresponding to the given SCLK value.
+            secondaries: 
+                Names of any secondaries for this system.
+    """
     sclk_ticks = sclk_to_ticks(sclk, bases)
     for row in table:
         sclks = row[0]
@@ -513,7 +618,7 @@ def get_system(table, sclk, bases):
 
 #===============================================================================
 def _ninety_percent_gap_degrees(n):
-    """For n samples, return the approximate number of degrees for the largest
+    """For n samples, determine the approximate number of degrees for the largest
     gap in coverage providing 90% confidence that the angular coverage is not
     actually complete.
 
@@ -521,7 +626,7 @@ def _ninety_percent_gap_degrees(n):
         n (int): Number of samples.
 
     Returns:
-        xxx: xxx
+        float: Estimated number of degrees.
     """
 
     # Below 1000, use the tabulation
@@ -533,17 +638,17 @@ def _ninety_percent_gap_degrees(n):
 
 #===============================================================================
 def _get_range_mod360(values, alt_format=None):
-    """Returns the minimum and maximum values in the array, allowing for the
+    """Determines the minimum and maximum values in the array, allowing for the
     possibility that the numeric range wraps around from 360 to 0.
 
     Args:
-        values (xxx): The set of values for which to determine the range.
+        values (list or np.array): The set of values for which to determine the range.
         alt_format (str, optional):
             "-180" to return values in the range (-180,180) rather
             than (0,360).
 
     Returns:
-        xxx: xxx
+        list: Minimum and maximum values in the cyclic array.
     """
 
     # Check for use of negative values
@@ -618,7 +723,7 @@ def get_common_args(host=None):
 ############################################
 # Define geometry parameters
 ############################################
-column_files = list(BODY_DIR.glob('COLUMNS_*.py'))
+column_files = list(COLUMN_DIR.glob('COLUMNS_*.py'))
 for file in column_files:
     exec(open(file).read())
 

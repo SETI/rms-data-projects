@@ -429,15 +429,15 @@ def key__file_specification_name(label_path, label_dict):
 def get_args(host=None, type=None):
     """Argument parser for index files.
 
-        Args:
-            host (str): Host name e.g. 'GOISS'.
-            type (str, optional):
-                Qualifying string identifying the type of index file
-                to create, e.g., 'supplemental'.
+    Args:
+        host (str): Host name e.g. 'GOISS'.
+        type (str, optional):
+            Qualifying string identifying the type of index file
+            to create, e.g., 'supplemental'.
 
-         Returns:
-            argparser.ArgumentParser : 
-                Parser containing the common argument specifications.
+     Returns:
+        argparser.ArgumentParser : 
+            Parser containing the argument specifications.
    """
 
     # Get parser with common args
@@ -454,27 +454,26 @@ def get_args(host=None, type=None):
     return parser
 
 #===============================================================================
-def process_index(input_tree, output_tree, *, 
-                  type='', glob=None, volume=None):
+def process_index(host=None, type='', glob=None):
     """Creates index files for a collection of volumes.
 
     Args:
-        input_tree (str): Root of the tree containing the volumes.
-        output_tree (str):
-            Root of the tree in which the output files are
-            written in the same directory structure as in the
-            input tree.
+        host (str): Host name e.g. 'GOISS'.
         type (str, optional):
             Qualifying string identifying the type of index file
             to create, e.g., 'supplemental'.
         glob (str, optional): Glob pattern for index files.
-        volume (str, optional): If given, only this volume is processed.
 
     Returns:
         None.
     """
-    input_tree = Path(input_tree) 
-    output_tree = Path(output_tree) 
+    # Parse arguments
+    parser = get_args(host=host, type=type)
+    args = parser.parse_args()
+
+    input_tree = Path(args.input_tree) 
+    output_tree = Path(args.output_tree) 
+    volume = args.volume
 
     # Build volume glob
     vol_glob = meta.get_volume_glob(input_tree.name)
@@ -504,8 +503,7 @@ def process_index(input_tree, output_tree, *,
                 outdir = output_tree/vol
 
                 # Process this volumne
-                index = Index(indir, outdir, type=type, glob=glob)
+                index = Index(indir, outdir, type=args.type, glob=glob)
                 index._create()
 
 ################################################################################
-

@@ -9,13 +9,8 @@
 #         python GO_0xxx_cumulative.py $RMS_METADATA/GO_0xxx/ $RMS_METADATA/GO_0xxx/GO_0999/ GO_0017
 #
 ################################################################################
-import metadata as meta
 import metadata.cumulative_support as cml
 
-parser = cml.get_args(host='GOISS', exclude=['GO_0999'])
-args = parser.parse_args()
-
-cml.create_cumulative_indexes(args.input_tree, args.output_tree, 
-                              volume=args.volume,
-                              exclude=args.exclude)
+cml.create_cumulative_indexes(host='GOISS', 
+                              exclude=['GO_0999'])
 ################################################################################

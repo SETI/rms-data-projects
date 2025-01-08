@@ -29,14 +29,9 @@
 #  5) Run this script to generate the supplemental files in that tree.
 #
 ################################################################################
-import metadata as meta
 import metadata.index_support as idx
 
-parser = idx.get_args(host='GOISS', type='supplemental')
-args = parser.parse_args()
-
-idx.process_index(args.input_tree, args.output_tree, 
-                 volume=args.volume,
-                 type=args.type, 
-                 glob='C0*')
+idx.process_index(host='GOISS', 
+                  type='supplemental', 
+                  glob='C0*')
 ################################################################################
