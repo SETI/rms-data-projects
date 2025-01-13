@@ -148,67 +148,9 @@ _LOGGER = PdsLogger.get_logger('metadata', timestamps=False, digits=0, lognames=
                                pid=False, indent=True, blanklines=False, level='info')
 
 #===============================================================================
-def set_logger(logger):
-    """Define the global PdsLogger for the metadata tools.
-
-    Args:
-        logger (PdsLogger): Logger to use, replacing the default.
-
-    Returns:
-        PdsLogger: The new PdsLogger.
-    """
-    global _LOGGER
-
-    _LOGGER = logger
-    return _LOGGER
-
-
-#===============================================================================
 def get_logger():
     """The global PdsLogger for the metadata tools."""
     return _LOGGER
-
-
-#===============================================================================
-def set_log_level(level):
-    """Set the minimum level for messages to be logged.
-
-    Parameters:
-        level (int or str, optional):
-            The minimum level of level name for a record to enter the log.
-    """
-    _LOGGER.set_level(level)
-
-#===============================================================================
-def set_log_format(**kwargs):
-    """Set the formatting and other properties of the logger.
-
-    Parameters:
-        level (int or str, optional):
-            The minimum level of level name for a record to enter the log.
-        timestamps (bool, optional):
-            True or False, defining whether to include a timestamp in each log record.
-        digits (int, optional):
-            Number of fractional digits in the seconds field of the timestamp.
-        lognames (bool, optional):
-            True or False, defining whether to include the name of the logger in each log
-            record.
-        pid (bool, optional):
-            True or False, defining whether to include the process ID in each log record.
-        indent (bool, optional):
-            True or False, defining whether to include a sequence of dashes in each log
-            record to provide a visual indication of the tier in a logging hierarchy.
-        blanklines (bool, optional):
-            True or False, defining whether to include a blank line in log files when a
-            tier in the hierarchy is closed.
-        colors (bool, optional):
-            True or False, defining whether to color-code the log files generated, for
-            Macintosh only.
-        maxdepth (int, optional):
-            Maximum depth of the logging hierarchy, needed to prevent unlimited recursion.
-    """
-    _LOGGER.set_format(**kwargs)
-
 
 ################################################################################
 # Utility functions
@@ -727,3 +669,4 @@ column_files = list(COLUMN_DIR.glob('COLUMNS_*.py'))
 for file in column_files:
     exec(open(file).read())
 
+################################################################################

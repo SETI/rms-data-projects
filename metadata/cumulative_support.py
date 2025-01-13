@@ -10,7 +10,7 @@ import metadata.label_support as lab
 from pathlib import Path
 
 #===============================================================================
-def _cat_rows(volume_tree, cumulative_dir, volume_glob, table_type,
+def _cat_rows(volume_tree, cumulative_dir, volume_glob, table_type, *,
               exclude=None, volume=None):
     """Creates the cumulative files for a collection of volumes.
 

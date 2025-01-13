@@ -117,7 +117,7 @@ class Record(object):
         """Constructor for a geometry record.
 
         Args:
-            observation (oops.observation): Observation object.
+            observation (oops.Observation): OOPS Observation object.
             volume_id (str): Volume ID.
             meshgrids (dict): All meshgrids associated with this host.
             level (str, optional): Processing level: 'summary' or 'detailed'.
@@ -196,7 +196,7 @@ class Record(object):
         """Looks up the meshgrid for an observation.
 
         Args: 
-            observation (oops.observation): Observation object.
+            observation (oops.Observation): OOPS Observation object.
             meshgrids (dict): All meshgrids associated with this host.
 
         Returns: 
@@ -205,12 +205,10 @@ class Record(object):
         return config.meshgrid(meshgrids, observation)
 
     #===============================================================================
-    def add(self, qualifier, name=None, 
-                  target=None,
-                  tiles=[], tiling_min=100,
-                  ignore_shadows=False, 
-                  start_index=1, allow_zero_rows=False, no_mask=False, 
-                  no_body=False):
+    def add(self, qualifier, *,
+                  name=None,target=None, tiles=[], tiling_min=100,
+                  ignore_shadows=False, start_index=1, allow_zero_rows=False, 
+                  no_mask=False, no_body=False):
         """Generates the geometry for one row, given a list of column descriptions.
 
         The tiles argument supports detailed listings where a geometric region is
@@ -235,7 +233,7 @@ class Record(object):
         non-empty regions of the meshgrid are written.
 
         Args:
-            qualifier: ‘sky’, ‘ring’, or ‘body’.
+            qualifier: 'sky', 'ring', or 'body'.
             name (str, optional): Name identifying a specific column description.
             target (str, optional): Optionally, the target name to write into the record.
             tiles (list, optional):
@@ -256,7 +254,6 @@ class Record(object):
             no_mask (bool, optional): True to suppress the use of a mask.
             no_body (bool, optional): True to suppress body prefixes.
         """
-    #xxx Insert "*"?
     
         # Get the column decsriptions
         column_descs = self.dicts[qualifier]
@@ -283,11 +280,11 @@ class Record(object):
     
     #===============================================================================
     @staticmethod
-    def _prep_row(prefixes, backplane, blocker, column_descs,
-                system=None, target=None, name_length=meta.NAME_LENGTH,
-                tiles=[], tiling_min=100, ignore_shadows=False,
-                start_index=1, allow_zero_rows=False, no_mask=False, 
-                no_body=False):
+    def _prep_row(prefixes, backplane, blocker, column_descs, *,
+                  system=None, target=None, name_length=meta.NAME_LENGTH,
+                  tiles=[], tiling_min=100, ignore_shadows=False,
+                  start_index=1, allow_zero_rows=False, no_mask=False, 
+                  no_body=False):
         """Generates the geometry and returns a list of lists of strings. The inner
         list contains string representations for each column in one row of the
         output file. These will be concatenated with commas between them and written
@@ -317,7 +314,7 @@ class Record(object):
                 A list of the strings to appear at the beginning of the
                 line, up to and including the file specification name. Each
                 individual string should already be enclosed in quotes.
-            backplane (xxx): Backplane for the observation.
+            backplane (oops.Backplane): Backplane for the observation.
             blocker (str):
                 The name of one body that may be able to block or shadow
                 other bodies.
@@ -349,7 +346,6 @@ class Record(object):
         Returns:
            list: String comprising the resulting rows.
         """
-    #xxx Insert "*"?
 
         # Handle option for multiple tile sets
         if type(tiles) == tuple:
@@ -400,8 +396,9 @@ class Record(object):
                 if key in excluded_mask_dict: continue
 
                 excluded_mask_dict[key] = \
-                    Record._construct_excluded_mask(backplane, mask_target, system, mask_desc,
-                                            blocker, ignore_shadows)
+                    Record._construct_excluded_mask(
+                                backplane, mask_target, system, mask_desc,
+                                blocker=blocker, ignore_shadows=ignore_shadows)
         # Initialize the list of rows
 
         # Interpret the subregion list
@@ -509,8 +506,8 @@ class Record(object):
 
     #===============================================================================
     @staticmethod
-    def _construct_excluded_mask(backplane, target, system, mask_desc,
-                                blocker=None, ignore_shadows=True):
+    def _construct_excluded_mask(backplane, target, system, mask_desc, *,
+                                 blocker=None, ignore_shadows=True):
         """Return a mask using the specified target, maskers and shadowers to
         indicate excluded pixels.
 
@@ -544,7 +541,6 @@ class Record(object):
         Returns:
             numpy.array: Boolean bitmask containing the mask.
         """
-    #xxx Insert "*"?
 
         # Do not let a body block itself
         if target == blocker:
@@ -730,8 +726,8 @@ class Table(object):
         Args:
             prefix (str): Filename prefix including the full path.
             filename (str or Path, optional):
-                Name of file to write instead of creating one using the prefix, 
-                qualifier, and level.
+                Name of file to write instead of creating one using the given prefix, 
+                and the suffix attribute.
 
         Returns:
             None.

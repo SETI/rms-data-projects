@@ -100,7 +100,7 @@ class Index():
         self.content = []
 
     #===========================================================================
-    def _create(self):
+    def create(self):
         """Create the index file for a single volume.
 
         Args: None
@@ -504,6 +504,6 @@ def process_index(host=None, type='', glob=None):
 
                 # Process this volumne
                 index = Index(indir, outdir, type=args.type, glob=glob)
-                index._create()
-
+                index.create()
+                
 ################################################################################

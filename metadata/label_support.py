@@ -107,8 +107,7 @@ def _create_for_cumulative(label_path, template_path, table_type):
 
 #===============================================================================
 def create(filepath, 
-               system=None, creation_time=None, preserve_time=False, 
-               table_type=''):
+           system=None, creation_time=None, preserve_time=False, table_type=''):
     """Creates a label for a given geometry table.
 
     Args:
@@ -161,4 +160,5 @@ def create(filepath,
 
     # Create a geometry label
     _create_for_geometry(label_path, template_path, table_type)
-
+    
+################################################################################
