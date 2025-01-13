@@ -16,8 +16,8 @@
 ################################################################################
 import metadata.geometry_support as geom
 
-geom.process_index(host='GOISS', 
-                   glob='GO_????_index.lbl',
-                   selection="S", 
-                   exclude=['GO_0999'])
+geom.process_tables(host='GOISS', 
+                    glob='GO_????_index.lbl',
+                    selection="S", 
+                    exclude=['GO_0999'])
 ################################################################################
