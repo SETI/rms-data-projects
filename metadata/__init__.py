@@ -91,16 +91,11 @@ import sys, os
 import config
 import argparse
 import numpy as np
-import time
-import fnmatch
-import pdstable, pdsparser
 import oops
 
 from pathlib                import Path
 from filecache              import FCPath
-from pdstemplate            import PdsTemplate
-from pdstemplate.pds3table  import pds3_table_preprocessor
-from pdslogger              import PdsLogger, LoggerError
+from pdslogger              import PdsLogger
 
 ###############################
 # Define constants
@@ -209,7 +204,7 @@ def splitpath(path: str, string: str):
     """Split a path at a given string.
 
     Args:
-        path (str): Path to split.
+        path (str, Path, or FCPath): Path to split.
         string (str): 
             Search string. The path is split at the first occurrence and the search 
             string is omitted.
@@ -226,14 +221,14 @@ def splitpath(path: str, string: str):
     """
     parts = path.parts
     i = parts.index(string)
-    return (Path('').joinpath(*parts[0:i]), Path('').joinpath(*parts[i+1:]))
+    return (FCPath('').joinpath(*parts[0:i]), FCPath('').joinpath(*parts[i+1:]))
 
 #===============================================================================
 def get_volume_subdir(path):
     """Determine the Subdirectory of an input file relative to the volume dir.
 
     Args:
-        path (str): Input path or directory.
+        path (str, Path, or FCPath): Input path or directory.
 
     Returns:
         str: Final directory in tree.
@@ -334,11 +329,33 @@ def add_by_base(x_digits, y_digits, bases):           ### move to utilities
     return list(reversed(result))
 
 #===============================================================================
+def expandvars(filespec):           ### add to FCPath?
+    """Expand environment variables in path.
+
+    Args:
+        filespec (str, Path, or FCPath): Path to expand.
+
+    Returns:
+        str, Path, or FCPath: Expanded path.
+
+    """
+    if not isinstance(filespec, str):
+        result = filespec.as_posix()
+    result = Path(os.path.expandvars(result)).resolve()
+    
+    if isinstance(filespec, str):
+        return result.as_posix()
+    if isinstance(filespec, FCPath):
+        return FCPath(result)
+    return result
+
+#===============================================================================
 def read_txt_file(filespec, as_string=False, terminator='\r\n'):           ### move to utilities
     """Read a text file.
 
     Args:
-        filespec (str or Path): Path to the file to read.  Environment variables are expanded.
+        filespec (str, Path, or FCPath): 
+            Path to the file to read.  Environment variables are expanded.
         as_string (bool, optional): 
             If True, the result is return as a string using the specified terminator.
         terminator (str): Terminator to use for string return.
@@ -350,8 +367,7 @@ def read_txt_file(filespec, as_string=False, terminator='\r\n'):           ### m
     """
 
     # Expand environment variables and resolve to absolute path
-    filespec = Path(os.path.expandvars(filespec)).resolve()
-    filespec = FCPath(filespec)
+    filespec = expandvars(filespec)
 
     # Read the file
     content = filespec.read_text(encoding='utf-8', newline=terminator)    
@@ -371,7 +387,7 @@ def write_txt_file(filespec, content, terminator='\r\n'):        ### move to uti
     """Write a text file.
 
     Args:
-        filespec (str or Path): Path to the file to write.
+        filespec (str, Path, or FCPath): Path to the file to write.
         content (str or list): 
             Text to write.  If list, each element is a line that will be terminated
             using the specified terminator.  If string, existing terminators are 
@@ -383,8 +399,7 @@ def write_txt_file(filespec, content, terminator='\r\n'):        ### move to uti
     """
 
     # Expand environment variables and resolve to absolute path
-    filespec = Path(os.path.expandvars(filespec)).resolve()
-    filespec = FCPath(filespec)
+    filespec = expandvars(filespec)
 
     # Determine terminator
     if terminator is None:

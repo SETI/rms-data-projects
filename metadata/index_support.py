@@ -1,7 +1,6 @@
 ################################################################################
 # index_support.py - Tools for generating index files
 ################################################################################
-import glob as glb
 import fortranformat as ff
 import fnmatch
 import warnings
@@ -12,9 +11,7 @@ import metadata.label_support as lab
 import config
 import pdstable
 
-from pathlib                import Path
 from filecache              import FCPath
-from pdstemplate            import PdsTemplate
 from pdstemplate.pds3table  import Pds3Table
 
 ################################################################################
@@ -29,22 +26,20 @@ class Index():
         """Constructor for an Index object.
 
         Args:
-            input_dir (str):
-                Directory containing the volume, specifically the
-                data labels.
-            output_dir (str):
-                Directory in which to find the "updated" index file
-                (e.g., <volume>_index.tab, and in which to write the
-                new index files.
+            input_dir (str, Path, or FCPath):
+                Directory containing the volume, specifically the data labels.
+            output_dir (str, Path, or FCPath):
+                Directory in which to find the "updated" index file (e.g., 
+                <volume>_index.tab, and in which to write the new index files.
             type (str, optional):
-                Qualifying string identifying the type of index file
-                to create, e.g., 'supplemental'.
+                Qualifying string identifying the type of index file to create, 
+                e.g., 'supplemental'.
             glob (str, optional): Glob pattern for index files.
         """
 
         # Save inputs
-        self.input_dir = Path(input_dir)
-        self.output_dir = Path(output_dir)
+        self.input_dir = FCPath(input_dir)
+        self.output_dir = FCPath(output_dir)
         self.type = type
         self.glob = glob
 
@@ -70,13 +65,14 @@ class Index():
             self.primary_index_path = self.output_dir/(primary_index_name + '.lbl')
 
             try:
-                table = pdstable.PdsTable(self.primary_index_path)
+                local_path = self.primary_index_path.retrieve()
+                table = pdstable.PdsTable(local_path)
             except FileNotFoundError:
                 warnings.warn('Primary index file not found: %s.  Skipping' % self.primary_index_path)
                 return
 
             primary_row_dicts = table.dicts_by_row()
-            self.files = [Path(primary_row_dict['FILE_SPECIFICATION_NAME']) \
+            self.files = [FCPath(primary_row_dict['FILE_SPECIFICATION_NAME']) \
                                    for primary_row_dict in primary_row_dicts]
 
             for i in range(len(self.files)): 
@@ -87,9 +83,9 @@ class Index():
             self.files = [f for f in input_dir.rglob('*.LBL')]
 
         # Extract relevent fields from the template
-        template_path = Path('./templates/')/(template_name + '.lbl')
+        template_path = FCPath('./templates/')/(template_name + '.lbl')
         label_name = meta.get_index_name(self.input_dir, self.volume_id, self.type) 
-        label_path = self.output_dir / Path(label_name + '.lbl')
+        label_path = self.output_dir / FCPath(label_name + '.lbl')
         label_path = FCPath(label_path).retrieve()
 
         template = meta.read_txt_file(template_path, as_string=True)
@@ -184,7 +180,7 @@ class Index():
 
         Args:
             column_stub (dict): Column stub dictionary.
-            label_path (str): Path to the PDS label.
+            label_path (str, Path, or FCPath): Path to the PDS label.
             label_dict (dict): Dictionary containing the PDS label fields.
 
         Returns:
@@ -398,7 +394,7 @@ def key__volume_id(label_path, label_dict):
     file under VOLUME_ID.
 
     Args:
-        label_path (str): Path to the PDS label.
+        label_path (str, Path, or FCPath): Path to the PDS label.
         label_dict (dict): Dictionary containing the PDS label fields.
 
     Returns:
@@ -412,7 +408,7 @@ def key__file_specification_name(label_path, label_dict):
     the index file under FILE_SPECIFICATION_NAME.
 
     Args:
-        label_path (str): Path to the PDS label.
+        label_path (str, Path, or FCPath): Path to the PDS label.
         label_dict (dict): Dictionary containing the PDS label fields.
 
     Returns:
@@ -471,15 +467,14 @@ def process_index(host=None, type='', glob=None):
     parser = get_args(host=host, type=type)
     args = parser.parse_args()
 
-    input_tree = Path(args.input_tree) 
-    output_tree = Path(args.output_tree) 
+    input_tree = FCPath(args.input_tree) 
+    output_tree = FCPath(args.output_tree) 
     volume = args.volume
 
     # Build volume glob
     vol_glob = meta.get_volume_glob(input_tree.name)
 
     # Walk the input tree, making indexes for each found volume
-    #### need FCPath.walk() method
     for root, dirs, files in input_tree.walk():
         # __skip directory will not be scanned, so it's safe for test results
         if '__skip' in root.as_posix():
@@ -487,7 +482,7 @@ def process_index(host=None, type='', glob=None):
 
         # Sort directories for progress monitoring
         dirs.sort()
-        root = Path(root)
+        root = FCPath(root)
 
         # Determine notional set and volume
         parts = root.parts

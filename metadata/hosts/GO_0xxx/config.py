@@ -8,7 +8,8 @@ import julian
 import vicar
 import warnings
 
-from pathlib import Path
+from pathlib   import Path
+from filecache import FCPath
 
 import oops
 import hosts.galileo.ssi as ssi
@@ -181,18 +182,20 @@ def key__product_creation_time(label_path, label_dict):
     """Key function for PRODUCT_CREATION_TIME.  
 
     Args:
-        label_path  (str): Path to the PDS label.
+        label_path  (str, Path, or FCPath): Path to the PDS label.
         label_dict (dict): Dictionary containing the PDS label fields.
 
     Returns: 
         str: Value to write in the index file under PRODUCT_CREATION_TIME.
     """
     # Get path for VICAR image
+    label_path = FCPath(label_path)
     image_path = label_path.with_suffix('.IMG') 
 
     # Read the VICAR label and take the latest DAT_TIM value
     try:
-        viclab = vicar.VicarLabel.from_file(image_path)
+        local_path = image_path.retrieve()
+        viclab = vicar.VicarLabel.from_file(local_path)
     except FileNotFoundError:
         raise FileNotFoundError(image_path)
     except vicar.VicarError as err:
@@ -214,12 +217,14 @@ def key__start_time(label_path, label_dict):
     the center of the exposure.
 
     Args:
-        label_path  (str): Path to the PDS label.
+        label_path  (str, Path, or FCPath): Path to the PDS label.
         label_dict (dict): Dictionary containing the PDS label fields.
 
     Returns: 
         str: Value to write in the index file under START_TIME.
     """
+    label_path = FCPath(label_path)
+
     # get start tai; pass though any NULL value
     start_tai = _event_tai(label_path, label_dict)
     if start_tai == 'UNK':
@@ -234,12 +239,15 @@ def key__stop_time(label_path, label_dict):
     the center of the exposure.
 
     Args:
-        label_path  (str): Path to the PDS label.
+        label_path  (str, Path, or FCPath): Path to the PDS label.
         label_dict (dict): Dictionary containing the PDS label fields.
 
     Returns: 
         str: Value to write in the index file under STOP_TIME.
     """
+    label_path = FCPath(label_path)
+
+    # get stop tai; pass though any NULL value
     stop_tai = _event_tai(label_path, label_dict, stop=True)
     if stop_tai == 'UNK':
         return stop_tai
@@ -253,7 +261,7 @@ def key__spacecraft_clock_start_count(label_path, label_dict):
        definition supercedes that in the default index file.
 
     Args:
-        label_path  (str): Path to the PDS label.
+        label_path  (str, Path, or FCPath): Path to the PDS label.
         label_dict (dict): Dictionary containing the PDS label fields.
 
     Returns: 
@@ -266,39 +274,13 @@ def key__spacecraft_clock_stop_count(label_path, label_dict):
     """Key function for SPACECRAFT_CLOCK_STOP_COUNT.  
 
     Args:
-        label_path  (str): Path to the PDS label.
+        label_path  (str, Path, or FCPath): Path to the PDS label.
         label_dict (dict): Dictionary containing the PDS label fields.
 
     Returns: 
         str: Value to write in the index file under SPACECRAFT_CLOCK_STOP_COUNT.
     """
     return _spacecraft_clock_stop_count_from_label(label_dict)
-
-#===============================================================================
-def key__image_start_time(label_path, label_dict):
-    """Key function for IMAGE_START_TIME.  
-
-    Args:
-        label_path  (str): Path to the PDS label.
-        label_dict (dict): Dictionary containing the PDS label fields.
-
-    Returns: 
-        str: Value to write in the index file under IMAGE_START_TIME.
-    """
-    return _spacecraft_time(label_path, label_dict, stop=False)
-
-#===============================================================================
-def key__image_stop_time(label_path, label_dict):
-    """Key function for IMAGE_STOP_TIME.  
-
-    Args:
-        label_path  (str): Path to the PDS label.
-        label_dict (dict): Dictionary containing the PDS label fields.
-
-    Returns: 
-        str: Value to writer in the index file under IMAGE_STOP_TIME.
-    """
-    return _spacecraft_time(label_path, label_dict, stop=True)
 
 ################################################################################
 

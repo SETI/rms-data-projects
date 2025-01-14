@@ -11,7 +11,8 @@ import metadata as meta
 import metadata.label_support as lab
 import config
 
-from pathlib import Path
+from pathlib   import Path
+from filecache import FCPath
 
 ################################################################################
 # FORMAT_DICT tuples are:
@@ -738,7 +739,7 @@ class Table(object):
             return
 
         # Create filename
-        filename = Path(prefix + self.suffix)
+        filename = FCPath(prefix + self.suffix)
 
         # Write table
         logger.info("Writing:", filename)
@@ -892,8 +893,9 @@ class Suite(object):
         """Constructor for a geometry Suite object.
 
         Args:
-            input_dir (Path): Directory containing the volume.
-            output_dir (Path): Directory in which to write the geometry files.
+            input_dir (str,Path, or FCPath): Directory containing the volume.
+            output_dir (str,Path, or FCPath): 
+                Directory in which to write the geometry files.
             selection (str, optional):
                 A string containing...
                 "S" to generate summary files;
@@ -906,8 +908,8 @@ class Suite(object):
         logger = meta.get_logger()
 
         # Save inputs
-        self.input_dir = Path(input_dir)
-        self.output_dir = Path(output_dir)
+        self.input_dir = FCPath(input_dir)
+        self.output_dir = FCPath(output_dir)
         self.glob = glob
         self.first = first
     
@@ -944,7 +946,7 @@ class Suite(object):
         self.prefix = self.output_dir.joinpath(self.volume_id).as_posix()
 
         # Initialize inventory table
-        self.inventory_filename = Path(self.prefix + "_inventory.csv")
+        self.inventory_filename = FCPath(self.prefix + "_inventory.csv")
         self.inventory = []
         logger.info("Inventory file: " + self.inventory_filename.as_posix())
 
@@ -1135,8 +1137,8 @@ def process_tables(host=None, selection=None, exclude=None, sampling=8, glob=Non
     parser = get_args(host=host, selection=selection, exclude=exclude, sampling=sampling)
     args = parser.parse_args()
 
-    input_tree = Path(args.input_tree) 
-    output_tree = Path(args.output_tree) 
+    input_tree = FCPath(args.input_tree) 
+    output_tree = FCPath(args.output_tree) 
     volume = args.volume
     new_only = args.new_only
 
@@ -1154,7 +1156,7 @@ def process_tables(host=None, selection=None, exclude=None, sampling=8, glob=Non
 
         # Sort directories for progress monitoring
         dirs.sort()
-        root = Path(root)
+        root = FCPath(root)
 
         # Determine notional set and volume
         parts = root.parts

@@ -7,7 +7,7 @@ import fnmatch
 import metadata as meta
 import metadata.label_support as lab
 
-from pathlib import Path
+from filecache import FCPath
 
 #===============================================================================
 def _cat_rows(volume_tree, cumulative_dir, volume_glob, table_type, *,
@@ -15,7 +15,7 @@ def _cat_rows(volume_tree, cumulative_dir, volume_glob, table_type, *,
     """Creates the cumulative files for a collection of volumes.
 
     Args:
-        volume_tree (Path): Root of the tree containing the volumes.
+        volume_tree (str, Path, or FCPath): Root of the tree containing the volumes.
         exclude (list, optional): List of volumes to exclude.
         volume (str, optional): If given, only this volume is processed.
     """
@@ -35,7 +35,7 @@ def _cat_rows(volume_tree, cumulative_dir, volume_glob, table_type, *,
 
         # Sort directories 
         dirs.sort()
-        root = Path(root)
+        root = FCPath(root)
 
         # Determine notional set and volume
         parts = root.parts
@@ -56,7 +56,7 @@ def _cat_rows(volume_tree, cumulative_dir, volume_glob, table_type, *,
                         continue
 
                     # Copy table file to cumulative index
-                    cumulative_file = Path(table_file.as_posix().replace(volume_id, cumulative_id))
+                    cumulative_file = FCPath(table_file.as_posix().replace(volume_id, cumulative_id))
                     lines = meta.read_txt_file(table_file)
                     content += lines
 
@@ -105,8 +105,8 @@ def create_cumulative_indexes(host=None, exclude=None):
     parser = get_args(host=host, exclude=exclude)
     args = parser.parse_args()
 
-    volume_tree = Path(args.input_tree) 
-    cumulative_dir = Path(args.output_tree) 
+    volume_tree = FCPath(args.input_tree) 
+    cumulative_dir = FCPath(args.output_tree) 
     volume = args.volume
 
     # Set logger
