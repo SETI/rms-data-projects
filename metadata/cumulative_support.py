@@ -37,10 +37,18 @@ def _cat_rows(volume_tree, cumulative_dir, volume_glob, table_type, *,
         dirs.sort()
         root = FCPath(root)
 
-        # Determine notional set and volume
+        # Determine notional volume
         parts = root.parts
-        set = parts[-2]
         vol = parts[-1]
+
+        # Do not continue if this volume is excluded
+        skip = False
+        if exclude is not None:
+            for item in exclude:
+                if item in root.parts:
+                    skip = True
+        if skip:
+            continue
 
         # Test whether this root is a volume
         if fnmatch.filter([vol], volume_glob):
