@@ -49,6 +49,8 @@ FORMAT_DICT = {
 
     "distance"                  : ("",    2, 12, "%12.3f", "%12.5e", -999.),
     "center_distance"           : ("",    2, 12, "%12.3f", "%12.5e", -999.),
+    "center_x_coordinate"       : ("",    2, 6,  "%12.3f", "%12.5e", -999.),
+    "center_y_coordinate"       : ("",    2, 6,  "%12.3f", "%12.5e", -999.),
 
     "event_time"                : ("",    2, 16, "%16.3f", "%16.9e",    0.),
 
@@ -893,8 +895,8 @@ class Suite(object):
         """Constructor for a geometry Suite object.
 
         Args:
-            input_dir (str,Path, or FCPath): Directory containing the volume.
-            output_dir (str,Path, or FCPath): 
+            input_dir (str, Path, or FCPath): Directory containing the volume.
+            output_dir (str, Path, or FCPath): 
                 Directory in which to write the geometry files.
             selection (str, optional):
                 A string containing...
@@ -940,7 +942,7 @@ class Suite(object):
         try:
             self.observations = config.from_index(index_filename, supplemental_index_filename)
         except FileNotFoundError:
-            pass
+            logger.error(traceback.format_exc())
 
         # Set file prefix
         self.prefix = self.output_dir.joinpath(self.volume_id).as_posix()

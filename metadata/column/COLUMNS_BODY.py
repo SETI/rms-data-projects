@@ -64,6 +64,8 @@ BODY_GRIDLESS_COLUMNS = [
 #    (("sub_observer_longitude", BODYX, "iau", "east"),     ("",   "",  "" )),
     (("center_resolution",      BODYX, "u"),               ("",   "",  "" )),
     (("center_distance",        BODYX, "obs"),             ("",   "",  "" )),
+    (("center_x_coordinate",    BODYX),                    ("",   "",  "" )),
+    (("center_y_coordinate",    BODYX),                    ("",   "",  "" )),
     (("center_phase_angle",     BODYX),                    ("",   "",  "" ))]
 
 # Assemble the column lists for each type of file for the moons and planet
