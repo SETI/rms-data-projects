@@ -1390,5 +1390,69 @@ $END_NOTE
       observation; it is independent of the field of view."
   END_OBJECT                    = COLUMN
 
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_RADIUS_IN_PIXELS"
+    NULL_CONSTANT               = -999
+    DESCRIPTION                 = "Apparent radius in pixels of the planet
+      or specified target body.
+
+      This column tabulates the minimum value of pixel radius among all of 
+      the pixels observed in that direction."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_RADIUS_IN_PIXELS"
+    NULL_CONSTANT               = -999
+    DESCRIPTION                 = "Apparent radius in pixels of the planet
+      or specified target body.
+
+      This column tabulates the maximum value of pixel radius among all of 
+      the pixels observed in that direction."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_CENTER_X_COORDINATE"
+    NULL_CONSTANT               = -9.99e+09
+    DESCRIPTION                 = "Image X coordinate of the center of the 
+      ring. A value of 0.5 corresponds to the center of the first pixel in the 
+      file. 
+
+      This column tabulates the minimum value of center X coordinate
+      among all of the pixels observed in that direction."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_CENTER_X_COORDINATE"
+    NULL_CONSTANT               = -9.99e+09
+    DESCRIPTION                 = "Image X coordinate of the center of the 
+      ring. A value of 0.5 corresponds to the center of the first pixel in the 
+      file. 
+
+      This column tabulates the maximum value of center X coordinate
+      among all of the pixels observed in that direction."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_CENTER_Y_COORDINATE"
+    NULL_CONSTANT               = -9.99e+09
+    DESCRIPTION                 = "Image Y coordinate of the center of the 
+      ring. A value of 0.5 corresponds to the center of the first pixel in the 
+      file. 
+
+      This column tabulates the minimum value of center Y coordinate
+      among all of the pixels observed in that direction."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_CENTER_Y_COORDINATE"
+    NULL_CONSTANT               = -9.99e+09
+    DESCRIPTION                 = "Image Y coordinate of the center of the 
+      ring. A value of 0.5 corresponds to the center of the first pixel in the 
+      file. 
+
+      This column tabulates the maximum value of center Y coordinate
+      among all of the pixels observed in that direction."
+  END_OBJECT                    = COLUMN
+
 END_OBJECT                      = $TABLE_TYPE$_TABLE
 END

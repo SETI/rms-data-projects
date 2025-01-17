@@ -75,7 +75,10 @@ RING_GRIDLESS_COLUMNS = [
     (("ring_center_emission_angle",
                                 planet_ring, "prograde"),   ("",   "",  "" )),
     (("sub_solar_latitude",     planet_ring),               ("",   "",  "" )),
-    (("sub_observer_latitude",  planet_ring),               ("",   "",  "" ))]
+    (("sub_observer_latitude",  planet_ring),               ("",   "",  "" )),
+    (("radius_in_pixels",       planet_ring),               ("",   "",  "" )),
+    (("center_x_coordinate",    BODYX),                     ("",   "",  "" )),
+    (("center_y_coordinate",    BODYX),                     ("",   "",  "" ))]
 
 ANSA_COLUMNS = [
     (("ansa_radius",            planet_ansa),               ("PM", "P", "")),
