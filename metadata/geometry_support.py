@@ -26,19 +26,13 @@ from filecache import FCPath
 #        = "360" = convert to degrees, with 360-deg periodicity;
 #        = ""    = do not modify value.
 #
-# Adding a column:
-#   1. Update format dictionary below as needed
-#   2. Run GO_xxxx_geometry.py
-#   3. Update label template:
-#       a. Update RECORD_BYTES (= .tab last line number + 2)
-#       b. Update ROW_BYTES (= RECORD_BYTES)
-#       c. Update COLUMNS
-#       d. Add column description(s) in label template(s)
-#          - Update COLUMN_NUMBER
-#          - Update START_BYTE (= table character # after comma + 1)
-#       e. Run make_label.py
-#          **** check other tables for any new columns resulting from step 1.
-#   4. Update unit tests
+# Adding a geometry column:
+#   1. Add a column definition to column definition file, e.g. COLUMNS_BODY.py.
+#   2. Add function to appropriate backplane module.
+#   3. Add a row to the format dictionary below.
+#   4. Add column description(s) to the label template, e.g., body_summary.lbl.
+#   5. Run the host-specific geometry program, e.g., GO_xxxx_geometry.py.
+#   6. Update the unit tests.
 #   
 ################################################################################
 FORMAT_DICT = {
@@ -49,8 +43,9 @@ FORMAT_DICT = {
 
     "distance"                  : ("",    2, 12, "%12.3f", "%12.5e", -999.),
     "center_distance"           : ("",    2, 12, "%12.3f", "%12.5e", -999.),
-    "center_x_coordinate"       : ("",    2, 12, "%12.3f", "%12.5e", -999.),
-    "center_y_coordinate"       : ("",    2, 12, "%12.3f", "%12.5e", -999.),
+    "center_x_coordinate"       : ("",    2, 12, "%12.3f", "%12.5e", -9.99e9),
+    "center_y_coordinate"       : ("",    2, 12, "%12.3f", "%12.5e", -9.99e9),
+    "radius_in_pixels"          : ("",    2, 12, "%12.3f", "%12.5e", -999.),
 
     "event_time"                : ("",    2, 16, "%16.3f", "%16.9e",    0.),
 
