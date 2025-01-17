@@ -49,8 +49,8 @@ FORMAT_DICT = {
 
     "distance"                  : ("",    2, 12, "%12.3f", "%12.5e", -999.),
     "center_distance"           : ("",    2, 12, "%12.3f", "%12.5e", -999.),
-    "center_x_coordinate"       : ("",    2, 6,  "%12.3f", "%12.5e", -999.),
-    "center_y_coordinate"       : ("",    2, 6,  "%12.3f", "%12.5e", -999.),
+    "center_x_coordinate"       : ("",    2, 12, "%12.3f", "%12.5e", -999.),
+    "center_y_coordinate"       : ("",    2, 12, "%12.3f", "%12.5e", -999.),
 
     "event_time"                : ("",    2, 16, "%16.3f", "%16.9e",    0.),
 
@@ -679,6 +679,7 @@ class Record(object):
                     string99 = overflow_format % number
 
                     if len(string99) > column_width:
+                        from IPython import embed; print('+++++++++++++'); embed()
                         error_message = "column overflow: " + string
                     else:
                         warnings.warn("column overflow: " + string +

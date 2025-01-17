@@ -1,5 +1,4 @@
 # oops
-# fancyindex
 IPython
 astropy
 coverage
