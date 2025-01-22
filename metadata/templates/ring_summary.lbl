@@ -203,8 +203,88 @@ $END_NOTE
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the maximum (coarsest) value of radial
-      resolution within the field of view of the observation."
+      This column tabulates the maximum (coarsest) value of radial resolution
+      within the field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "FINEST_LONGITUDINAL_RESOLUTION"
+    UNIT                        = "KM"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Longitudinal resolution is related to the
+      gradient of the ring intercept longitude. It is equal to the largest
+      change in the longitude resulting from a one-pixel shift of the line of
+      sight. In practice, it defines the approximate size of the narrowest
+      azimuthal ring feature that can be resolved.
+
+      Ring intercept points that are obscured by the planet or a moon within
+      the observed field of view are ignored. For observations capturing
+      reflected sunlight (i.e., with wavelengths in the visual or
+      near-infrared), ring intercept points that are shadowed by the planet
+      are also ignored.
+
+      This column tabulates the minimum (finest) value of longitudinal resolution
+      within the field of view of the observation, expressed in degrees."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "COARSEST_LONGITUDINAL_RESOLUTION"
+    UNIT                        = "KM"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Longitudinal resolution is the gradient of the
+      gradient of the ring intercept longitude. It is equal to the largest
+      change in the longitude resulting from a one-pixel shift of the line of
+      sight. In practice, it defines the approximate size of the narrowest
+      azimuthal ring feature that can be resolved.
+
+      Ring intercept points that are obscured by the planet or a moon within
+      the observed field of view are ignored. For observations capturing
+      reflected sunlight (i.e., with wavelengths in the visual or
+      near-infrared), ring intercept points that are shadowed by the planet
+      are also ignored.
+
+      This column tabulates the maximum (coarsest) value of longitudinal resolution
+      within the field of view of the observation, expressed in degrees."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "FINEST_LONGITUDINAL_RESOLUTION_KM"
+    UNIT                        = "KM"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Longitudinal resolution is related to the
+      gradient of the ring intercept longitude. It is equal to the largest
+      change in the longitude resulting from a one-pixel shift of the line of
+      sight. In practice, it defines the approximate size of the narrowest
+      azimuthal ring feature that can be resolved.
+
+      Ring intercept points that are obscured by the planet or a moon within
+      the observed field of view are ignored. For observations capturing
+      reflected sunlight (i.e., with wavelengths in the visual or
+      near-infrared), ring intercept points that are shadowed by the planet
+      are also ignored.
+
+      This column tabulates the minimum (finest) value of longitudinal resolution
+      within the field of view of the observation, expressed in kilometers."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "COARSEST_LONGITUDINAL_RESOLUTION_KM"
+    UNIT                        = "KM"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Longitudinal resolution is the gradient of the
+      gradient of the ring intercept longitude. It is equal to the largest
+      change in the longitude resulting from a one-pixel shift of the line of
+      sight. In practice, it defines the approximate size of the narrowest
+      azimuthal ring feature that can be resolved.
+
+      Ring intercept points that are obscured by the planet or a moon within
+      the observed field of view are ignored. For observations capturing
+      reflected sunlight (i.e., with wavelengths in the visual or
+      near-infrared), ring intercept points that are shadowed by the planet
+      are also ignored.
+
+      This column tabulates the maximum (coarsest) value of longitudinal resolution
+      within the field of view of the observation, expressed in kilometers."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN

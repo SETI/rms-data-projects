@@ -43,8 +43,7 @@ FORMAT_DICT = {
 
     "distance"                  : ("",    2, 12, "%12.3f", "%12.5e", -999.),
     "center_distance"           : ("",    2, 12, "%12.3f", "%12.5e", -999.),
-    "center_x_coordinate"       : ("",    2, 12, "%12.3f", "%12.5e", -9.99e9),
-    "center_y_coordinate"       : ("",    2, 12, "%12.3f", "%12.5e", -9.99e9),
+    "center_coordinate"         : ("",    2, 12, "%12.3f", "%12.5e", -9.99e9),
     "radius_in_pixels"          : ("",    2, 12, "%12.3f", "%12.5e", -999.),
 
     "event_time"                : ("",    2, 16, "%16.3f", "%16.9e",    0.),
@@ -59,6 +58,10 @@ FORMAT_DICT = {
     "finest_resolution"         : ("",    2, 10, "%10.5f", "%10.4e", -999.),
     "coarsest_resolution"       : ("",    2, 10, "%10.5f", "%10.4e", -999.),
     "ring_radial_resolution"    : ("",    2, 10, "%10.5f", "%10.4e", -999.),
+    "ring_longitudinal_resolution"
+                                : ("DEG", 2, 10, "%10.5f", "%10.4e", -999.),
+    "ring_longitudinal_resolution_km"
+                                : ("",    2, 10, "%10.5f", "%10.4e", -999.),
     "ansa_radial_resolution"    : ("",    2, 10, "%10.5f", "%10.4e", -999.),
     "ansa_vertical_resolution"  : ("",    2, 10, "%10.5f", "%10.4e", -999.),
     "center_resolution"         : ("",    2, 10, "%10.5f", "%10.4e", -999.),

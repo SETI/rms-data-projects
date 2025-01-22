@@ -66,8 +66,8 @@ BODY_GRIDLESS_COLUMNS = [
     (("center_distance",        BODYX, "obs"),             ("",   "",  "" )),
     (("center_phase_angle",     BODYX),                    ("",   "",  "" )),
     (("radius_in_pixels",       BODYX),                    ("",   "",  "" )),
-    (("center_x_coordinate",    BODYX),                    ("",   "",  "" )),
-    (("center_y_coordinate",    BODYX),                    ("",   "",  "" ))]
+    (("center_coordinate",      BODYX, "x"),               ("",   "",  "" )),
+    (("center_coordinate",      BODYX, "y"),               ("",   "",  "" ))]
 
 # Assemble the column lists for each type of file for the moons and planet
 

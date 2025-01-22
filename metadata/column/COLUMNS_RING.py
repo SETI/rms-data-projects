@@ -39,6 +39,10 @@ RING_COLUMNS = [
     (("ring_radius",            planet_ring),               ("PM", "P", "")),
     (("resolution",             planet_ring, "v"),          ("PM", "P", "")),
     (("ring_radial_resolution", planet_ring),               ("PM", "P", "")),
+    (("ring_longitudinal_resolution", 
+                                planet_ring),               ("PM", "P", "")),
+    (("ring_longitudinal_resolution_km", 
+                                planet_ring),               ("PM", "P", "")),
     (("distance",               planet_ring),               ("PM", "P", "")),
     (("ring_longitude",         planet_ring, "aries"),      ("PM", "P", "")),
 #    (("ring_longitude",         planet_ring, "node"),       ("PM", "P", "")),
@@ -77,8 +81,8 @@ RING_GRIDLESS_COLUMNS = [
     (("sub_solar_latitude",     planet_ring),               ("",   "",  "" )),
     (("sub_observer_latitude",  planet_ring),               ("",   "",  "" )),
     (("radius_in_pixels",       planet_ring),               ("",   "",  "" )),
-    (("center_x_coordinate",    BODYX),                     ("",   "",  "" )),
-    (("center_y_coordinate",    BODYX),                     ("",   "",  "" ))]
+    (("center_coordinate",      BODYX, "x"),                ("",   "",  "" )),
+    (("center_coordinate",      BODYX, "y"),                ("",   "",  "" ))]
 
 ANSA_COLUMNS = [
     (("ansa_radius",            planet_ansa),               ("PM", "P", "")),
