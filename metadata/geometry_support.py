@@ -140,7 +140,7 @@ class Record(object):
             }
         else:
             self.dicts |= {
-                'ring'   : meta.RING_SUMMARY_DETAILEDT,
+                'ring'   : meta.RING_SUMMARY_DETAILED,
                 'body'   : meta.BODY_SUMMARY_DETAILED,
             }
 

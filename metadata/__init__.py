@@ -107,6 +107,11 @@ NULL = "null"
 BODYX = "bodyx"                     # Placeholder for an arbitrary body to be 
                                     # filled in by replacement_dict()
 
+NAME_LENGTH = 12
+
+# Maintain a list of translations for target names
+TRANSLATIONS = {}
+
 ################################################################################
 # Create a list of body IDs
 ################################################################################
@@ -129,10 +134,20 @@ for planet in PLANET_NAMES:
     bodies += bod.select_children("REGULAR")
 BODIES = {body.name: body for body in bodies}
 
-NAME_LENGTH = 12
-
-# Maintain a list of translations for target names
-TRANSLATIONS = {}
+################################################################################
+# Body Data tables
+################################################################################
+RING_SYSTEM_RADII = {
+    'MERCURY':  0,
+    'VENUS':    0,
+    'EARTH':    0,
+    'MARS':     0,
+    'JUPITER':  128940.,
+    'SATURN':   136780.,
+    'URANUS':   51604.,
+    'NEPTUNE':  62940.,
+    'PLUTO':    0
+    }
 
 ##########################################################################################
 # Logger management
@@ -238,7 +253,8 @@ def get_volume_subdir(path):
 #===============================================================================
 def replace(tree, placeholder, name):
     """Return a copy of the tree of objects, with each occurrence of the
-    placeholder string replaced by the given name.
+    placeholder string replaced by the given name.  If a dictionary reference is
+    detected, then it is evaluated.
 
     Args:
         tree (list): List contining the tree. 
@@ -252,12 +268,25 @@ def replace(tree, placeholder, name):
 
     new_tree = []
     for leaf in tree:
+        # Main entries: replace placeholder and evaulate dict references
         if type(leaf) in (tuple, list):
-            new_tree.append(replace(leaf, placeholder, name))
+            # replace placeholder
+            replacement = replace(leaf, placeholder, name)
 
+            # evaluate any dictionary references now that placeholders are resolved
+            lrep = list(replacement)
+            for i in range(len(lrep)):
+                if isinstance(lrep[i], str) and '[' in lrep[i]:
+                    lrep[i] = eval(lrep[i])
+            replacement = tuple(lrep)
+
+            new_tree.append(replacement)
+
+        # Simple str with placeholders: replace placeholder and add to tree
         elif type(leaf) == str and leaf.find(placeholder) != -1:
             new_tree.append(leaf.replace(placeholder, name))
 
+        # Everything else: add to tree unchanged
         else:
             new_tree.append(leaf)
 
@@ -287,6 +316,20 @@ def replacement_dict(tree, placeholder, names):
         dict[name] = replace(tree, placeholder, name)
 
     return dict
+
+#===============================================================================
+def replacement_fn(dict, name):
+    """Create a relacement-able dictionary reference.
+
+    Args:
+        dict (str): Name  of dictionary. 
+        name (str): Dictionary key, which could be a placeholder string.
+
+    Returns:
+        str: Dictionary reference keyed by possible placeholder name.
+
+    """
+    return dict + '["' + name + '"]'
 
 #===============================================================================
 def get_volume_glob(col):

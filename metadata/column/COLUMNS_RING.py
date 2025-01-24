@@ -80,7 +80,9 @@ RING_GRIDLESS_COLUMNS = [
                                 planet_ring, "prograde"),   ("",   "",  "" )),
     (("sub_solar_latitude",     planet_ring),               ("",   "",  "" )),
     (("sub_observer_latitude",  planet_ring),               ("",   "",  "" )),
-    (("radius_in_pixels",       planet_ring),               ("",   "",  "" )),
+    (("radius_in_pixels",       planet_ring, 
+                                    replacement_fn("RING_SYSTEM_RADII", BODYX)),
+                                                            ("",   "",  "" )),
     (("center_coordinate",      BODYX, "x"),                ("",   "",  "" )),
     (("center_coordinate",      BODYX, "y"),                ("",   "",  "" ))]
 
@@ -100,13 +102,6 @@ RING_SUMMARY_COLUMNS  = (RING_COLUMNS + ANSA_COLUMNS +
 RING_DETAILED_COLUMNS = RING_COLUMNS + ANSA_COLUMNS
 
 # Create a dictionary for the columns of each planet
-#RING_SUMMARY_DICT = {}
-#RING_DETAILED_DICT = {}
-#for planet in PLANET_NAMES:
-#    RING_SUMMARY_DICT[planet]  = replacement_dict(RING_SUMMARY_COLUMNS,
-#                                                         BODYX, [planet])
-#    RING_DETAILED_DICT[planet] = replacement_dict(RING_DETAILED_COLUMNS,
-#                                                         BODYX, [planet])
 RING_SUMMARY_DICT = {}
 RING_DETAILED_DICT = {}
 for planet in PLANET_NAMES:
