@@ -45,7 +45,7 @@ RING_COLUMNS = [
                                 planet_ring),               ("PM", "P", "")),
     (("distance",               planet_ring),               ("PM", "P", "")),
     (("ring_longitude",         planet_ring, "aries"),      ("PM", "P", "")),
-#    (("ring_longitude",         planet_ring, "node"),       ("PM", "P", "")),
+    (("ring_longitude",         planet_ring, "node"),       ("PM", "P", "")),
     (("ring_longitude",         planet_ring, "sha"),        ("PM", "",  "")),
     (("ring_longitude",         planet_ring, "obs"),  ("PM", "P", ""), "-180"),
     (("ring_azimuth",           planet_ring, "obs"),        ("PM", "P", "")),
@@ -60,16 +60,26 @@ RING_COLUMNS = [
 #    (("ring_elevation",         planet_ring, "sun", "prograde", False), ("PM", "P", "")),
 #    (("ring_elevation",         planet_ring, "obs", "prograde", False), ("PM", "P", ""))]
 
+ANSA_COLUMNS = [
+    (("ansa_radius",            planet_ansa),               ("PM", "P", "")),
+    (("ansa_altitude",          planet_ansa),               ("PM", "P", "")),
+    (("ansa_radial_resolution", planet_ansa),               ("PM", "P", "")),
+    (("distance",               planet_ansa),               ("PM", "P", "")),
+    (("ansa_longitude",         planet_ansa, "aries"),      ("PM", "P", "")),
+    (("ansa_longitude",         planet_ansa, "node"),       ("PM", "P", "")),
+    (("ansa_longitude",         planet_ansa, "sha"),        ("PM", "P", ""))]
+#    (("ansa_longitude",         planet_ansa, "obs"),        ("PM", "P", ""))]
+
 RING_GRIDLESS_COLUMNS = [
     (("center_distance",        planet_ring, "obs"),        ("",   "",  "" )),
     (("ring_sub_solar_longitude",
                                 planet_ring, "aries"),      ("",   "",  "" )),
+    (("ring_sub_solar_longitude",
+                                planet_ring, "node"),       ("",   "",  "" )),
     (("ring_sub_observer_longitude",
-                               planet_ring, "aries"),      ("",   "",  "" )),
-#    (("ring_sub_solar_longitude",
-#                                planet_ring, "node"),       ("",   "",  "" )),
-#    (("ring_sub_observer_longitude",
-#                                planet_ring, "node"),       ("",   "",  "" )),
+                                planet_ring, "aries"),      ("",   "",  "" )),
+    (("ring_sub_observer_longitude",
+                                planet_ring, "node"),       ("",   "",  "" )),
     (("center_phase_angle",     planet_ring),               ("",   "",  "" )),
     (("ring_center_incidence_angle",
                                 planet_ring),               ("",   "",  "" )),
@@ -86,16 +96,6 @@ RING_GRIDLESS_COLUMNS = [
                                                             ("",   "",  "" )),
     (("center_coordinate",      BODYX, "x"),                ("",   "",  "" )),
     (("center_coordinate",      BODYX, "y"),                ("",   "",  "" ))]
-
-ANSA_COLUMNS = [
-    (("ansa_radius",            planet_ansa),               ("PM", "P", "")),
-    (("ansa_altitude",          planet_ansa),               ("PM", "P", "")),
-    (("ansa_radial_resolution", planet_ansa),               ("PM", "P", "")),
-    (("distance",               planet_ansa),               ("PM", "P", "")),
-    (("ansa_longitude",         planet_ansa, "aries"),      ("PM", "P", "")),
-#    (("ansa_longitude",         planet_ansa, "node"),       ("PM", "P", "")),
-    (("ansa_longitude",         planet_ansa, "sha"),        ("PM", "P", ""))]
-#    (("ansa_longitude",         planet_ansa, "obs"),        ("PM", "P", ""))]
 
 # Assemble the column lists for each type of file for the rings and for Saturn
 RING_SUMMARY_COLUMNS  = (RING_COLUMNS + ANSA_COLUMNS +

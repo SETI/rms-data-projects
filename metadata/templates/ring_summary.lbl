@@ -373,6 +373,52 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_RING_LONGITUDE_WRT_NODE"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Ring longitude specifies the inertial
+      longitude of the ring plane intercept point. Longitudes increase in
+      the prograde direction. Values are measured in the ringplane from the 
+      ascending node of the ring system's invariable plane on J2000.
+
+      Ring intercept points that are obscured by the planet or a moon within
+      the observed field of view are ignored. For observations capturing
+      reflected sunlight (i.e., with wavelengths in the visual or
+      near-infrared), ring intercept points that are shadowed by the planet
+      are also ignored.
+
+      This column tabulates the minimum value of node-based ring longitude 
+      within the field of view of the observation. For fields of view that 
+      cross the prime meridian, the tabulated minimum value will be greater
+      than the maximum."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_RING_LONGITUDE_WRT_NODE"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Ring longitude specifies the inertial
+      longitude of the ring plane intercept point. Longitudes increase in
+      the prograde direction. Values are measured in the ringplane from the 
+      ascending node of the ring system's invariable plane on J2000.
+
+      Ring intercept points that are obscured by the planet or a moon within
+      the observed field of view are ignored. For observations capturing
+      reflected sunlight (i.e., with wavelengths in the visual or
+      near-infrared), ring intercept points that are shadowed by the planet
+      are also ignored.
+
+      This column tabulates the maximum value of node-based ring longitude 
+      within the field of view of the observation. For fields of view that 
+      cross the prime meridian, the tabulated minimum value will be greater
+      than the maximum."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SOLAR_HOUR_ANGLE"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
@@ -822,8 +868,6 @@ $END_NOTE
       within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
-
-
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SURFACE_INTERCEPT_TIME"
     UNIT                        = "SECONDS"
@@ -853,9 +897,6 @@ $END_NOTE
       This column tabulates the maximum value of Surface intercept time within 
       the field of view of the observation."
   END_OBJECT                    = COLUMN
-
-
-
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_EDGE_ON_RING_RADIUS"
@@ -1136,6 +1177,68 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_EDGE_ON_RING_LONGITUDE_WRT_NODE"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Edge-on ring longitude is the inertial
+      longitude of the edge-on intercept point. Longitudes increase in the
+      prograde direction. Values are measured in the ringplane from the 
+      ascending node of the ring system's invariable plane on J2000.
+
+      Edge-on intercept geometry is optimized for describing observations of
+      planetary rings obtained from viewpoints close to the ring plane. It
+      employs cylindrical coordinates (radius, altitude, longitude), where
+      radius values are measured from the ring rotation pole and altitude is
+      normal to the ring plane. The intercept is defined as the point along
+      a line of sight where that line is tangent to a cylinder with a
+      particular radius.
+
+      Edge-on intercept points that are obscured by the planet or a moon
+      within the observed field of view are ignored. For observations
+      capturing reflected sunlight (i.e., with wavelengths in the visual or
+      near-infrared), intercept points that are shadowed by the planet are
+      also ignored.
+
+      This column tabulates the minimum value of the edge-on ring longitude
+      within the field of view of the observation. For fields of view that
+      cross the prime meridian, the tabulated minimum value will be greater
+      than the maximum."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_EDGE_ON_RING_LONGITUDE_WRT_NODE"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Edge-on ring longitude is the inertial
+      longitude of the edge-on intercept point. Longitudes increase in the
+      prograde direction. Values are measured in the ringplane from the 
+      ascending node of the ring system's invariable plane on J2000.
+
+      Edge-on intercept geometry is optimized for describing observations of
+      planetary rings obtained from viewpoints close to the ring plane. It
+      employs cylindrical coordinates (radius, altitude, longitude), where
+      radius values are measured from the ring rotation pole and altitude is
+      normal to the ring plane. The intercept is defined as the point along
+      a line of sight where that line is tangent to a cylinder with a
+      particular radius.
+
+      Edge-on intercept points that are obscured by the planet or a moon
+      within the observed field of view are ignored. For observations
+      capturing reflected sunlight (i.e., with wavelengths in the visual or
+      near-infrared), intercept points that are shadowed by the planet are
+      also ignored.
+
+      This column tabulates the maximum value of the edge-on ring longitude
+      within the field of view of the observation. For fields of view that
+      cross the prime meridian, the tabulated minimum value will be greater
+      than the maximum."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
     NAME                        = "MINIMUM_EDGE_ON_SOLAR_HOUR_ANGLE"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
@@ -1254,6 +1357,36 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_SUB_SOLAR_RING_LONGITUDE_WRT_NODE"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Inertial longitude of the sub-solar point
+      on the ring plane. Longitudes increase in the prograde direction. Values 
+      are measured in the ringplane from the ascending node of the ring 
+      system's invariable plane on J2000.
+
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_SUB_SOLAR_RING_LONGITUDE_WRT_NODE"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Inertial longitude of the sub-solar point
+      on the ring plane. Longitudes increase in the prograde direction. Values 
+      are measured in the ringplane from the ascending node of the ring 
+      system's invariable plane on J2000.
+
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SUB_OBSERVER_RING_LONGITUDE"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = 0.
@@ -1282,6 +1415,36 @@ $END_NOTE
       Point of Aries (right ascension = 0), along the J2000 x-y plane to the
       ascending node of the ring system's invariable plane, and then along
       the ring plane.
+
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_SUB_OBSERVER_RING_LONGITUDE_WRT_NODE"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Inertial longitude of the sub-observer
+      point on the ring plane. Longitudes increase in the prograde direction. 
+      Values are measured in the ringplane from the ascending node of the ring 
+      system's invariable plane on J2000.
+
+      This value is defined by the instantaneous geometry at the time of the
+      observation; it is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_SUB_OBSERVER_RING_LONGITUDE_WRT_NODE"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Inertial longitude of the sub-observer
+      point on the ring plane. Longitudes increase in the prograde direction. 
+      Values are measured in the ringplane from the ascending node of the ring 
+      system's invariable plane on J2000.
 
       This value is defined by the instantaneous geometry at the time of the
       observation; it is independent of the field of view."
