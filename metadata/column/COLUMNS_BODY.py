@@ -51,7 +51,8 @@ BODY_COLUMNS = [
 #    (("phase_angle",            BODYX),                    ("RM", "",   "D")),
     (("phase_angle",            BODYX),                    ("RM", "",   "")),
     (("incidence_angle",        BODYX),                    ("RM", "",   "" )),
-    (("emission_angle",         BODYX),                    ("RM", "",   "" ))]
+    (("emission_angle",         BODYX),                    ("RM", "",   "" )),
+    (("event_time",             BODYX),                    ("RM", "", ""))]
 
 BODY_GRIDLESS_COLUMNS = [
     (("sub_solar_latitude",     BODYX, "centric"),         ("",   "",  "" )),

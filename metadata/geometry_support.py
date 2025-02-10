@@ -66,6 +66,8 @@ FORMAT_DICT = {
     "ansa_vertical_resolution"  : ("",    2, 10, "%10.5f", "%10.4e", -999.),
     "center_resolution"         : ("",    2, 10, "%10.5f", "%10.4e", -999.),
 
+    "event_time"                : ("",    2, 12, "%12.3f", "%12.5e", -9.99e99),
+
     "ring_angular_resolution"   : ("DEG", 2, 10, "%8.5f",  "%8.4f",  -999.),
 
     "longitude"                 : ("360", 2,  8, "%8.3f",  None,     -999.),
@@ -677,7 +679,6 @@ class Record(object):
                     string99 = overflow_format % number
 
                     if len(string99) > column_width:
-                        from IPython import embed; print('+++++++++++++'); embed()
                         error_message = "column overflow: " + string
                     else:
                         warnings.warn("column overflow: " + string +

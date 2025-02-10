@@ -1,6 +1,6 @@
 $NOTE 
 ################################################################################
-# Geometry file template for bodies.  
+# Geometry file template for sky quantities.  
 #
 #  This template controls the creation of body geometry files.  The procedure 
 #  for generating geometry files for a host is as follows.  Files referred to 

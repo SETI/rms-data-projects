@@ -589,6 +589,36 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_SURFACE_INTERCEPT_TIME"
+    UNIT                        = "SECONDS"
+    NULL_CONSTANT               = -9.99e99
+    DESCRIPTION                 = "Surface intercept time is the time in 
+       seconds TDB when the received photon left the surface intercept point.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored.
+
+      This column tabulates the minimum value of Surface intercept time within 
+      the field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_SURFACE_INTERCEPT_TIME"
+    UNIT                        = "SECONDS"
+    NULL_CONSTANT               = -9.99e99
+    DESCRIPTION                 = "Surface intercept time is the time in 
+       seconds TDB when the received photon left the surface intercept point.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored.
+
+      This column tabulates the maximum value of Surface intercept time within 
+      the field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE"
     UNIT                        = "DEGREES"
     VALID_MINIMUM               = -90.

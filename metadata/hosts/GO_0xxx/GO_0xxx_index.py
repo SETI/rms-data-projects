@@ -3,10 +3,10 @@
 # GO_0xxx_index.py: Generate supplemental index files and labels for Galileo SSI.
 #
 # Usage:
-#   python GO_0xxx_index.py input_tree output_tree [volume]
+#   python3 GO_0xxx_index.py input_tree output_tree [volume]
 #
-#   e.g., python GO_0xxx_index.py $RMS_VOLUMES/GO_0xxx/ $RMS_METADATA/GO_0xxx/
-#         python GO_0xxx_index.py $RMS_VOLUMES/GO_0xxx/ $RMS_METADATA/GO_0xxx/ GO_0017
+#   e.g., python3 GO_0xxx_index.py $RMS_VOLUMES/GO_0xxx/ $RMS_METADATA/GO_0xxx/
+#         python3 GO_0xxx_index.py $RMS_VOLUMES/GO_0xxx/ $RMS_METADATA/GO_0xxx/ GO_0017
 #
 # Procedure:
 #  1) Point $RMS_METADATA and $RMS_VOLUMES to the top of the local metadata and

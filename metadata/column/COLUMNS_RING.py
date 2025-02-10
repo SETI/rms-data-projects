@@ -55,7 +55,8 @@ RING_COLUMNS = [
     (("ring_emission_angle",    planet_ring),               ("PM", "P", "")),
     (("ring_emission_angle",    planet_ring, "prograde"),   ("PM", "P", "")),
     (("ring_elevation",         planet_ring, "sun"),        ("PM", "P", "")),
-    (("ring_elevation",         planet_ring, "obs"),        ("PM", "P", ""))]
+    (("ring_elevation",         planet_ring, "obs"),        ("PM", "P", "")),
+    (("event_time",             planet_ring),               ("PM", "P", ""))]
 #    (("ring_elevation",         planet_ring, "sun", "prograde", False), ("PM", "P", "")),
 #    (("ring_elevation",         planet_ring, "obs", "prograde", False), ("PM", "P", ""))]
 

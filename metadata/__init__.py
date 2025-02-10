@@ -257,7 +257,7 @@ def replace(tree, placeholder, name):
     detected, then it is evaluated.
 
     Args:
-        tree (list): List contining the tree. 
+        tree (list): List containing the tree. 
         placeholder (str): Placeholder to replace
         name (str): Replacement string.
 
@@ -319,7 +319,7 @@ def replacement_dict(tree, placeholder, names):
 
 #===============================================================================
 def replacement_fn(dict, name):
-    """Create a relacement-able dictionary reference.
+    """Create a replacement-able dictionary reference.
 
     Args:
         dict (str): Name  of dictionary. 
