@@ -3,7 +3,6 @@
 ################################################################################
 import oops
 
-
 ################################################################################
 # *COLUMN description tuples are
 #
@@ -63,10 +62,14 @@ BODY_GRIDLESS_COLUMNS = [
 #    (("sub_solar_longitude",    BODYX, "iau", "east"),     ("",   "",  "" )),
     (("sub_observer_longitude", BODYX, "iau", "west"),     ("",   "",  "" )),
 #    (("sub_observer_longitude", BODYX, "iau", "east"),     ("",   "",  "" )),
+    (("limb_altitude",          BODYX, -0.01, 1000, True), ("",   "",  "" )),
+    (("limb_clock_angle",       BODYX),                    ("",   "",  "" )),
     (("center_resolution",      BODYX, "u"),               ("",   "",  "" )),
     (("center_distance",        BODYX, "obs"),             ("",   "",  "" )),
     (("center_phase_angle",     BODYX),                    ("",   "",  "" )),
     (("radius_in_pixels",       BODYX),                    ("",   "",  "" )),
+    (("pole_clock_angle",       BODYX),                    ("",   "",  "" )),
+    (("pole_position_angle",    BODYX),                    ("",   "",  "" )),
     (("center_coordinate",      BODYX, "x"),               ("",   "",  "" )),
     (("center_coordinate",      BODYX, "y"),               ("",   "",  "" ))]
 
@@ -90,25 +93,10 @@ for body in BODIES:
 # count. The remaining items define a sequence of tiles to use in a
 # detailed tabulation.
 ################################################################################
-PLANET_TILES = {}
-for planet in PLANET_NAMES:
-    PLANET_TILES[planet] = [
-        ("where_sunward", planet),                      # mask over remaining tiles
-        ("where_below",   ("latitude", planet), -70. * oops.RPD),
-        ("where_between", ("latitude", planet), -70. * oops.RPD, -50. * oops.RPD),
-        ("where_between", ("latitude", planet), -50. * oops.RPD, -30. * oops.RPD),
-        ("where_between", ("latitude", planet), -30. * oops.RPD, -10. * oops.RPD),
-        ("where_between", ("latitude", planet), -10. * oops.RPD,  10. * oops.RPD),
-        ("where_between", ("latitude", planet),  10. * oops.RPD,  30. * oops.RPD),
-        ("where_between", ("latitude", planet),  30. * oops.RPD,  50. * oops.RPD),
-        ("where_between", ("latitude", planet),  50. * oops.RPD,  70. * oops.RPD),
-        ("where_above",   ("latitude", planet),  70. * oops.RPD)
-    ]
-
 BODY_TILES = {}
-for planet in PLANET_NAMES:
-    BODY_TILES[planet] = [
-        ("where_all", ("where_in_front", BODYX, planet), # mask over remaining tiles
+for body in BODY_NAMES:
+    BODY_TILES[body] = [
+        ("where_all", ("where_in_front", BODYX, body), # mask over remaining tiles
                       ("where_sunward",  BODYX)),
         ("where_below",   ("latitude", BODYX), -70. * oops.RPD),
         ("where_between", ("latitude", BODYX), -70. * oops.RPD, -50. * oops.RPD),
@@ -123,7 +111,7 @@ for planet in PLANET_NAMES:
 
 BODY_TILE_DICT = {}
 
-for body in PLANET_NAMES:
+for body in BODY_NAMES:
     BODY_TILE_DICT[body] = {}
     BODY_TILE_DICT[body] = replace(BODY_TILES[body], BODYX, body)
 ################################################################################

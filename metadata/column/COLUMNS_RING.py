@@ -105,11 +105,11 @@ RING_DETAILED_COLUMNS = RING_COLUMNS + ANSA_COLUMNS
 # Create a dictionary for the columns of each planet
 RING_SUMMARY_DICT = {}
 RING_DETAILED_DICT = {}
-for planet in PLANET_NAMES:
+for body in BODY_NAMES:
     RING_SUMMARY_DICT.update(replacement_dict(RING_SUMMARY_COLUMNS,
-                                                         BODYX, [planet]))
+                                                         BODYX, [body]))
     RING_DETAILED_DICT.update(replacement_dict(RING_DETAILED_COLUMNS,
-                                                         BODYX, [planet]))
+                                                         BODYX, [body]))
 
 ################################################################################
 # Define the tiling for detailed listings
@@ -121,8 +121,8 @@ for planet in PLANET_NAMES:
 RING_AZ = ("ring_azimuth", planet_ring, "obs")
 
 RING_TILES = {}
-for planet in PLANET_NAMES:
-    RING_TILES[planet] = [
+for body in BODY_NAMES:
+    RING_TILES[body] = [
         ("where_all",                                   # mask over remaining tiles
             ("where_in_front", planet_ring, BODYX),
             ("where_outside_shadow", planet_ring, BODYX),
@@ -140,8 +140,8 @@ for planet in PLANET_NAMES:
     ]
 
 OUTER_RING_TILES = {}
-for planet in PLANET_NAMES:
-    OUTER_RING_TILES[planet] = [
+for body in BODY_NAMES:
+    OUTER_RING_TILES[body] = [
         ("where_all",                                   # mask over remaining tiles
                 ("where_in_front", planet_ring, BODYX),
         ("where_above", ("ring_radius", planet_ring), 150000.)),
@@ -159,11 +159,11 @@ for planet in PLANET_NAMES:
     ]
 
 RING_TILE_DICT = {}
-for planet in PLANET_NAMES:
-    RING_TILE_DICT[planet] = replace(RING_TILES[planet], BODYX, planet)
+for body in BODY_NAMES:
+    RING_TILE_DICT[body] = replace(RING_TILES[body], BODYX, body)
 
 OUTER_RING_TILE_DICT = {}
-for planet in PLANET_NAMES:
-    OUTER_RING_TILE_DICT[planet] = replace(OUTER_RING_TILES[planet], BODYX, planet)
+for body in BODY_NAMES:
+    OUTER_RING_TILE_DICT[body] = replace(OUTER_RING_TILES[body], BODYX, body)
 
 ################################################################################

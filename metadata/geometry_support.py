@@ -51,8 +51,8 @@ FORMAT_DICT = {
     "ring_radius"               : ("",    2, 12, "%12.3f", "%12.5e", -999.),
     "ansa_radius"               : ("",    2, 12, "%12.3f", "%12.5e", -999.),
 
-    "altitude"                  : ("",    2, 12, "%12.3f", "%12.5e", -9.99e9),
-    "ansa_altitude"             : ("",    2, 12, "%12.3f", "%12.5e", -9.99e9),
+    "altitude"                  : ("",    2, 12, "%12.3f", "%12.5e", -999),
+    "ansa_altitude"             : ("",    2, 12, "%12.3f", "%12.5e", -999),
 
     "resolution"                : ("",    2, 10, "%10.5f", "%10.4e", -999.),
     "finest_resolution"         : ("",    2, 10, "%10.5f", "%10.4e", -999.),
@@ -83,6 +83,12 @@ FORMAT_DICT = {
     "latitude"                  : ("DEG", 2,  8, "%8.3f",  None,     -999.),
     "sub_solar_latitude"        : ("DEG", 2,  8, "%8.3f",  None,     -999.),
     "sub_observer_latitude"     : ("DEG", 2,  8, "%8.3f",  None,     -999.),
+
+    "limb_altitude"             : ("",    2, 12, "%12.3f", "%12.5e", -9.99e99),
+    "limb_clock_angle"          : ("DEG", 2,  8, "%8.3f",  None,     -999.),
+
+    "pole_clock_angle"          : ("DEG", 2,  8, "%8.3f",  None,     -999.),
+    "pole_position_angle"       : ("DEG", 2,  8, "%8.3f",  None,     -999.),
 
     "phase_angle"               : ("DEG", 2,  8, "%8.3f",  None,     -999.),
     "center_phase_angle"        : ("DEG", 2,  8, "%8.3f",  None,     -999.),
@@ -137,13 +143,15 @@ class Record(object):
         self.dicts = {'sky' : meta.SKY_COLUMNS}
         if level == 'summary':
             self.dicts |= {
+                'sun'    : meta.SUN_SUMMARY_COLUMNS,
                 'ring'   : meta.RING_SUMMARY_DICT,
                 'body'   : meta.BODY_SUMMARY_DICT,
             }
         else:
             self.dicts |= {
+                'sun'    : meta.SUN_DETAILED_COLUMNS,
                 'ring'   : meta.RING_SUMMARY_DETAILED,
-                'body'   : meta.BODY_SUMMARY_DETAILED,
+                'body'   : meta.BODY_SUMMARY_DETAILED
             }
 
         # Set up planet-based geometry
@@ -236,7 +244,7 @@ class Record(object):
         non-empty regions of the meshgrid are written.
 
         Args:
-            qualifier: 'sky', 'ring', or 'body'.
+            qualifier: 'sky', 'sun', 'ring', or 'body'.
             name (str, optional): Name identifying a specific column description.
             target (str, optional): Optionally, the target name to write into the record.
             tiles (list, optional):
@@ -708,7 +716,7 @@ class Table(object):
         Args:
             volume_id (str): Volume ID.
             level (str, optional): Processing level: 'summary' or 'detailed'.
-            qualifier (str): "sky", "ring", "body", or "inventory".
+            qualifier (str): "sky", "sun", "ring", "body", or "inventory".
             suffix (str): [[]]
         """
         self.volume_id = volume_id
@@ -808,6 +816,33 @@ class SkyTable(Table):
             None.
         """
         self.rows += record.add(self.qualifier, no_body=True)
+
+################################################################################
+# SunTable class
+################################################################################
+"""Class describing a sun geometry table.
+"""
+class SunTable(Table):
+    #===========================================================================
+    def __init__(self, **kwargs):
+        """Constructor for a SunTable object.
+
+        Args:
+            table: Parent Table instance.
+        """
+        super().__init__(qualifier='sun', **kwargs)
+
+    #===============================================================================
+    def add(self, record):
+        """Add a Sun row.
+
+        Args:
+            record (Record): Record describing the row to add.
+
+        Returns:
+            None.
+        """
+        self.rows += record.add(self.qualifier)#, no_body=True)###########
 
 ################################################################################
 # RingTable class
@@ -972,6 +1007,7 @@ class Suite(object):
         self.tables = [
             InventoryTable(volume_id=self.volume_id, level=level),
             SkyTable(volume_id=self.volume_id, level=level),
+#            SunTable(volume_id=self.volume_id, level=level),
             RingTable(volume_id=self.volume_id, level=level),
             BodyTable(volume_id=self.volume_id, level=level)
             ]

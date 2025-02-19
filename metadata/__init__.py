@@ -115,7 +115,7 @@ TRANSLATIONS = {}
 ################################################################################
 # Create a list of body IDs
 ################################################################################
-PLANET_NAMES = [
+BODY_NAMES = [
     'MERCURY', 
     'VENUS', 
     'EARTH', 
@@ -128,8 +128,8 @@ PLANET_NAMES = [
 ]
 
 bodies = []
-for planet in PLANET_NAMES:
-    bod = oops.Body.lookup(planet)
+for name in BODY_NAMES:
+    bod = oops.Body.lookup(name)
     bodies += [bod]
     bodies += bod.select_children("REGULAR")
 BODIES = {body.name: body for body in bodies}
