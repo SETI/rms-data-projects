@@ -9,7 +9,7 @@ import fnmatch
 
 import metadata as meta
 import metadata.label_support as lab
-import config
+import host_config as config
 
 from pathlib   import Path
 from filecache import FCPath

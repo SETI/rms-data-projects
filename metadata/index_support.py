@@ -8,7 +8,7 @@ import hosts.pds3 as pds3
 
 import metadata as meta
 import metadata.label_support as lab
-import config
+import host_config as config
 import pdstable
 
 from filecache              import FCPath

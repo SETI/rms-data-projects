@@ -40,15 +40,15 @@ class Test_Index_Common(unittest.TestCase):
             table = pdstable.PdsTable(file)
 
             # verify # rows, columns
-            self.assertEqual(table.info.rows, len(table.column_values['VOLUME_ID']))
-            self.assertEqual(table.info.columns, len(table.keys))
+            self.assertEqual(table.info.rows, len(table.column_values['VOLUME_ID']), file)
+            self.assertEqual(table.info.columns, len(table.keys), file)
 
             # validate column values
-            self.assertIsInstance(table.column_values['VOLUME_ID'][0], np.str_)
-            self.assertIsInstance(table.column_values['FILE_SPECIFICATION_NAME'][0], np.str_)
-            self.assertIsInstance(table.column_values['PRODUCT_CREATION_TIME'][0], np.str_)
-            self.assertIsInstance(table.column_values['START_TIME'][0], np.str_)
-            self.assertIsInstance(table.column_values['STOP_TIME'][0], np.str_)
+            self.assertIsInstance(table.column_values['VOLUME_ID'][0], np.str_, file)
+            self.assertIsInstance(table.column_values['FILE_SPECIFICATION_NAME'][0], np.str_, file)
+            self.assertIsInstance(table.column_values['PRODUCT_CREATION_TIME'][0], np.str_, file)
+            self.assertIsInstance(table.column_values['START_TIME'][0], np.str_, file)
+            self.assertIsInstance(table.column_values['STOP_TIME'][0], np.str_, file)
 
 #########################################
 if __name__ == '__main__':

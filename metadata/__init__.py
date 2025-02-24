@@ -88,7 +88,7 @@ Attributes:
 """
 ################################################################################
 import sys, os
-import config
+import host_config as config
 import argparse
 import numpy as np
 import oops
