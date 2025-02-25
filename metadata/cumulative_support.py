@@ -1,7 +1,7 @@
 ################################################################################
 # cumulative_support.py - Code for cumulative index files
 ################################################################################
-import config
+import host_config as config
 import fnmatch
 
 import metadata as meta

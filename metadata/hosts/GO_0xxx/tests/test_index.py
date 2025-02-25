@@ -7,7 +7,7 @@ import pdstable, pdsparser
 import numpy as np
 
 #import metadata as meta
-import metadata.unittester_support as unit
+import metadata.tests.unittester_support as unit
 
 
 class Test_Index_GOSSI(unittest.TestCase):
