@@ -96,11 +96,15 @@ class Index():
         self.content = []
 
     #===========================================================================
-    def create(self):
+    def create(self, labels_only=False):
         """Create the index file for a single volume.
 
-        Args: None
-        Returns: None.
+        Args:
+            labels_only (bool): 
+                If True, labels are generated for any existing geometry tables.
+
+        Returns: 
+            None.
         """
         if not hasattr(self, 'files'):
             return
@@ -112,26 +116,27 @@ class Index():
 
         # Build the index
         n = len(self.files)
-        for i in range(n):
-            file = self.files[i]
-            name = file.name
-            root = file.parent
+        if not labels_only:
+            for i in range(n):
+                file = self.files[i]
+                name = file.name
+                root = file.parent
 
-            # Match the glob pattern
-            file = fnmatch.filter([name], self.glob)[0]
-            if file == []:
-             continue
+                # Match the glob pattern
+                file = fnmatch.filter([name], self.glob)[0]
+                if file == []:
+                 continue
 
-            # Log volume ID and subpath
-            subdir = meta.get_volume_subdir(root)
-            logger.info('%s %4d/%4d  %s' % (self.volume_id, i+1, n, subdir/name))
+                # Log volume ID and subpath
+                subdir = meta.get_volume_subdir(root)
+                logger.info('%s %4d/%4d  %s' % (self.volume_id, i+1, n, subdir/name))
 
-            # Make the index for this file
-            self._index_one_file(root, file)
+                # Make the index for this file
+                self._index_one_file(root, file)
 
-        # Write index 
-        if self.content:
-            meta.write_txt_file(self.index_path, self.content)
+            # Write index 
+            if self.content:
+                meta.write_txt_file(self.index_path, self.content)
 
         # Create the label
         lab.create(self.index_path, table_type=self.type)
@@ -470,6 +475,7 @@ def process_index(host=None, type='', glob=None):
     input_tree = FCPath(args.input_tree) 
     output_tree = FCPath(args.output_tree) 
     volume = args.volume
+    labels_only = args.labels is not False
 
     # Build volume glob
     vol_glob = meta.get_volume_glob(input_tree.name)
@@ -499,6 +505,6 @@ def process_index(host=None, type='', glob=None):
 
                 # Process this volumne
                 index = Index(indir, outdir, type=args.type, glob=glob)
-                index.create()
+                index.create(labels_only=labels_only)
                 
 ################################################################################

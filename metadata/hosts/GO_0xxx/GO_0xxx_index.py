@@ -15,18 +15,13 @@
 #         RMS_METADATA = ~/SETI/RMS/metadata_test
 #         RMS_VOLUMES = ~/SETI/RMS/holdings/volumes
 #
-#  2) From the host directory (e.g., rms-data-projects/metadata/hosts/GO_0xxx),
-#     run download.sh to create and populate the metadata and volume trees:
-#
-#         python ../download.py $RMS_METADATA $RMS_VOLUMES
-#
-#  3) Create a template for the supplemental label, e.g.: rms-data-projects/
+#  2) Create a template for the supplemental label, e.g.: rms-data-projects/
 #     hosts/GO_0xxx/templates/GO_0xxx_index_supplemental.lbl
 #
-#  4) Create a host_defs.lbl file in the host templates directory, e.g.:
+#  3) Create a host_defs.lbl file in the host templates directory, e.g.:
 #     rms-data-projects/hosts/GO_0xxx/templates/host_defs.lbl
 #
-#  5) Run this script to generate the supplemental files in that tree.
+#  4) Run this script to generate the supplemental files in that tree.
 #
 ################################################################################
 import metadata.index_support as idx

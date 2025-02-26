@@ -1,5 +1,5 @@
 ################################################################################
-# config.py for GLL SSI
+# host_config.py for GLL SSI
 #
 #  Host-specific utilites and key functions.
 #
@@ -19,7 +19,7 @@ import metadata as meta
 ssi.initialize()
 
 ################################################################################
-# SCLK-dependent mission-specific data.
+# SCLK-dependent mission-specific data (required)
 ################################################################################
 SCLK_BASES = [16777215,91,10,8]
 
@@ -35,9 +35,13 @@ SYSTEMS_TABLE = [
 
 
 
-BORDER = 25         # in units of full-size SSI pixels
-NAC_PIXEL = 6.0e-6  # approximate full-size SSI pixel in units of radians
-EXPAND = BORDER * NAC_PIXEL
+BORDER = 25                 # in units of full-size SSI pixels
+NAC_PIXEL = 6.0e-6          # approximate full-size SSI pixel in units of radians
+EXPAND = BORDER * NAC_PIXEL # Amount to expand FOV in units of radians
+
+################################################################################
+# Meshgrid functions (required)
+################################################################################
 
 #===============================================================================
 def meshgrids(sampling):
@@ -90,7 +94,7 @@ def meshgrid(meshgrids, snapshot):
 
 
 ################################################################################
-# Utilities
+# Utilities (required)
 ################################################################################
 
 #===============================================================================
@@ -174,7 +178,56 @@ def _spacecraft_clock_stop_count_from_label(label_dict):
 
 
 ################################################################################
-# Key functions
+# SSI geometry functions (required)
+################################################################################
+
+from_index = ssi.from_index
+
+#===============================================================================
+def target_name(dict):
+    """Determines the target name from the snapshot's dictionary. If the given
+    name is "SKY", it checks the CIMS ID and the TARGET_DESC for something
+    different.
+
+    Args:
+        dict (dict): Snapshot observation dictionary.
+
+    Returns:
+        str: Target name.
+    """
+
+    return  dict["TARGET_NAME"]
+
+    target = dict["TARGET_NAME"]
+    if target != "SKY": return target
+
+    id = dict["OBSERVATION_ID"]
+    abbrev = id[id.index("_"):][4:6]
+
+    if abbrev == "SK":
+        desc = dict["TARGET_DESC"]
+        if desc in MOON_NAMES:
+            return desc
+
+    try:
+        return columns.CIMS_TARGET_ABBREVIATIONS[abbrev]
+    except KeyError:
+        return target
+
+#===============================================================================
+def cleanup():
+    """Cleanup function for geometry code.  This function is called after
+       the geometry table and labels are written, before exiting.
+
+        Args: None
+        Returns: None.
+    """
+    pass
+
+
+
+################################################################################
+# Key functions (optional)
 ################################################################################
 
 #===============================================================================
@@ -284,52 +337,4 @@ def key__spacecraft_clock_stop_count(label_path, label_dict):
 
 ################################################################################
 
-
-############################################
-# SSI geometry functions
-############################################
-
-from_index = ssi.from_index
-
-#===============================================================================
-def target_name(dict):
-    """Determines the target name from the snapshot's dictionary. If the given
-    name is "SKY", it checks the CIMS ID and the TARGET_DESC for something
-    different.
-
-    Args:
-        dict (dict): Snapshot observation dictionary.
-
-    Returns: 
-        str: Target name.
-    """
-
-    return  dict["TARGET_NAME"]
-
-    target = dict["TARGET_NAME"]
-    if target != "SKY": return target
-
-    id = dict["OBSERVATION_ID"]
-    abbrev = id[id.index("_"):][4:6]
-
-    if abbrev == "SK":
-        desc = dict["TARGET_DESC"]
-        if desc in MOON_NAMES:
-            return desc
-
-    try:
-        return columns.CIMS_TARGET_ABBREVIATIONS[abbrev]
-    except KeyError:
-        return target
-
-#===============================================================================
-def cleanup():
-    """Cleanup function for geometry code.  This function is called after
-       the geometry table and labels are written, before exiting.
-
-        Args: None
-        Returns: None.
-    """
-    pass
-################################################################################
 

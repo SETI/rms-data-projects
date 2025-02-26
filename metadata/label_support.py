@@ -123,6 +123,10 @@ def create(filepath,
     Returns:
         None.
     """
+    filepath = FCPath(filepath)
+    if not filepath.exists():
+        return
+
     table_type = table_type.upper()
 
     # Get the label path

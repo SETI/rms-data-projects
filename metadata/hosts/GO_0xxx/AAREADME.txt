@@ -24,24 +24,15 @@ final subdirectory, GO_0999, contains cumulative indices for all volumes.
 
 *_supplemental_index.tab    An index of supplemental information not found in
                             the original index. This content has been scraped
-                            from the product labels.
+                            or derived from the product labels.
 *_supplemental_index.lbl    PDS3 label for the above.
-
-*_jupiter_summary.tab       Index of viewing geometry for the planet Jupiter,
-                            provided for volumes GO_0016-GO_0023.
-*_jupiter_summary.lbl       PDS3 label for the above.
-
-*_moon_summary.tab          Index of viewing geometry for the moons of Jupiter,
-                            provided for volumes GO_0016-GO_0023.
-*_moon_summary.lbl          PDS3 label for the above.
 
 *_ring_summary.tab          Index of viewing geometry for Jupiter's ring system,
                             provided for volumes GO_0016-GO_0023.
 *_ring_summary.lbl          PDS3 label for the above.
 
-*_body_summary.tab          Index of viewing geometry for targeted bodies and
-                            incidental Jupiter system bodies during the cruise
-                            to Jupiter, provided for volumes GO_0002- GO_0015.
+*_body_summary.tab          Index of viewing geometry for all relevant planets
+                            and moons, provided for volumes GO_0002- GO_0023.
 *_body_summary.lbl          PDS3 label for the above.
 
 *_sky_summary.tab           Index of sky viewing geometry for all volumes.
@@ -54,6 +45,33 @@ GO_0016_sl9_index.lbl       PDS3 label for the above.
 
 RELEASE NOTES
 -------------
+
+Version 5.0: [[February 26]], 2025
+
+This major release involves the reorganization of the geometry index files for
+Galileo mission, as well as the addition of new geometric quantities.
+
+All body geometry is now tabulated in a single body table. The following
+geometric quantities have been added to the ring geometry index files:
+  LONGITUDAL_RESOLUTION
+  RADIUS_IN_PIXELS
+  CENTER_X_COORDINATE
+  CENTER_Y_COORDINATE
+  EDGE_ON_RING_LONGITUDE_WRT_NODE
+  RING_LONGITUDE_WRT_NODE
+  SURFACE_INTERCEPT_TIME
+
+The following geometric quantities have been added to the body geometry index
+files:
+  RADIUS_IN_PIXELS
+  CENTER_X_COORDINATE
+  CENTER_Y_COORDINATE
+  NORTH_POLE_CLOCK_ANGLE
+  NORTH_POLE_POSITION_ANGLE
+  LIMB_ALTITUDE
+  LIMB_CLOCK_ANGLE
+  SURFACE_INTERCEPT_TIME
+
 
 Version 4.0: August 20, 2024
 

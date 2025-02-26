@@ -1,5 +1,5 @@
 ################################################################################
-""" PDS metadata generation package.
+""" RMS NODE metadata generation package.
 
 Utilities to generate index and geometry tables and their corresponding PDS3
 labels.  Each line of the table contains metadata for a single data file 
@@ -9,15 +9,15 @@ Index files contain descriptive information about the data product like
 observation times, exposures, instrument modes and settings, etc.  Index file 
 entries are taken from the label for the data product by default, but may 
 instead be derived from label quantities by defining the appropriate 
-configuration function in the config.py for the specific host.  
+configuration function in the host_config.py for the specific host.  
 
 Raw index files are provided by each project, with varying levels of compliance.
 The project-supplied index files are modified to produce the corrected index 
 files that can be used with the host from_index() method.  This package is 
 intended to produce supplemetnal index files, which add columns to the corrected
-index file.  Supplemental index files are just index files with specual names,
+index file.  Supplemental index files are just index files with special names,
 so this package can generate any kind of index file.  Supplemental index files
-can be provded as arguments to from_index() create a merged dicionary.
+can be provded as arguments to from_index() to create a merged dictionary.
 
 Index files are used as input to OPUS, and are available via viewmaster to be 
 downloaded by PDS users
@@ -25,7 +25,7 @@ downloaded by PDS users
 Geometry files tabulate the values of geometrc quantites for each data file
 derived from SPICE using the information in the index file or from the PDS3 
 label using OOPS.  The purpose of the geometry files is to provide input
-to OPUS and they are not available to PDS users [[right?]]
+to OPUS.
 
 The procedure for generating metadata table is as follows:
 
@@ -37,8 +37,8 @@ The procedure for generating metadata table is as follows:
 
      <collection>_index.py
      <collection>_geometry.py
-     index_config.py
-     geometry_config.py
+     <cumulative>_geometry.py
+     host_config.py
 
  3. Create a templates/ subdirectory and copy the label templates from an 
     exsting host, and rename accordingly, yielding:
@@ -48,41 +48,21 @@ The procedure for generating metadata table is as follows:
 
  4. Edit the supplmental template according to the instructions in that file.
 
- 5. Edit the host_defs file to decsribe the new host.
+ 5. Edit the host_defs file to describe the new host.
 
  6. Edit <collection>_index.py and <collection>_geometry.py by replacing the old
     collection names with that of the new host and modifying the arguments to
-    make_index() and process_index() accordingly.
+    process_tables() and process_index() accordingly.
 
  7. Generate the supplemental index using <collection>_index.py:
 
-    7.1. Point $RMS_METADATA and $RMS_VOLUMES to the top of the local metadata 
-         and volume trees respectively., e.g.,
+ 8. Generate the geometry tables using <collection>_geometry.py:
 
-          $ RMS_METADATA = ~/SETI/RMS/metadata_test
-          $ RMS_VOLUMES = ~/SETI/RMS/holdings/volumes
-
-    7.2. From the host directory (e.g., rms-data-projects/metadata/hosts/GO_0xxx),
-         run download.sh to create and populate the metadata and volume trees:
-
-          $ python ../download.py $RMS_METADATA $RMS_VOLUMES
-
-    7.3. Create a template for the supplemental label, e.g.: rms-data-projects/
-         hosts/GO_0xxx/templates/GO_0xxx_index_supplemental.lbl
-
-    7.4  Run the script to generate the supplemental files in that tree:
-
-          $ python <collection>_index.py $RMS_VOLUMES/<collection>/ $RMS_METADATA/<collection>/ [volume id]
-
- 8. Generate the geometry files using <collection>_geometry.py:
-
-          $ python <collection>_geometry.py $RMS_METADATA/<collection>/ $RMS_METADATA/<collection>/ [volume id]
+ 8. Generate the cumulative tables using <collection>_cumulative.py:
 
 Attributes:
     COLUMNS_DIR (str): Directory containing the columns definitions files.
-
     GLOBAL_TEMPLATE_PATH (str): Directory containing the geometry templates.
-
     NULL (str): Backplane key NULL value.
 
 """
@@ -851,6 +831,9 @@ def get_common_args(host=None):
                             volume files.''')
     gr.add_argument('volume', type=str, nargs='?', metavar='volume',
                     help='''If given, only this volume is processed.''')
+    gr.add_argument('--labels', '-l', nargs='*', type=str, metavar='labels',
+                    default=False, 
+                    help='''If given, labels are generated for existing index files.''')
 
     # Return parser
     return parser

@@ -28,7 +28,7 @@ from filecache import FCPath
 #
 # Adding a geometry column:
 #   1. Add a column definition to column definition file, e.g. COLUMNS_BODY.py.
-#   2. Add function to appropriate backplane module.
+#   2. Add corresponding function to appropriate backplane module.
 #   3. Add a row to the format dictionary below.
 #   4. Add column description(s) to the label template, e.g., body_summary.lbl.
 #   5. Run the host-specific geometry program, e.g., GO_xxxx_geometry.py.
@@ -731,7 +731,7 @@ class Table(object):
         self.rows = []
 
      #===============================================================================
-    def write(self, prefix, filename=None):
+    def write(self, prefix, filename=None, labels_only=False):
         """Write a table and its label.
 
         Args:
@@ -739,21 +739,24 @@ class Table(object):
             filename (str or Path, optional):
                 Name of file to write instead of creating one using the given prefix, 
                 and the suffix attribute.
+            labels_only (bool): 
+                If True, labels are generated for any existing geometry tables.
 
         Returns:
             None.
         """
         logger = meta.get_logger()
         
-        if self.rows == []:
-            return
-
         # Create filename
         filename = FCPath(prefix + self.suffix)
+    
+        if not labels_only:
+            if self.rows == []:
+                return
 
-        # Write table
-        logger.info("Writing:", filename)
-        meta.write_txt_file(filename, self.rows)
+            # Write table
+            logger.info("Writing:", filename)
+            meta.write_txt_file(filename, self.rows)
 
         # Write label
         table_type = ''
@@ -1045,23 +1048,27 @@ class Suite(object):
                     table.add(record)
 
     #===============================================================================
-    def write(self):
+    def write(self, labels_only=False):
         """Write all tables and their labels.
 
         Args: 
-            None
+            labels_only (bool): 
+                If True, labels are generated for any existing geometry tables.
+
         Returns: 
             None
         """
         for table in self.tables:
-            table.write(self.prefix)
+            table.write(self.prefix, labels_only=labels_only)
 
     #===============================================================================
-    def create(self):
+    def create(self, labels_only=False):
         """Process the volume and write a suite of geometry files.
 
         Args: 
-            None
+            labels_only (bool): 
+                If True, labels are generated for any existing geometry tables.
+
         Returns: 
             None
         """
@@ -1073,36 +1080,37 @@ class Suite(object):
         # Loop through the observations...
         nobs = len(self.observations)
         count = 0
-        for i in range(nobs):
-            # Abort if count exceeds a specified limit
-            if self.first and count >= self.first:
-                continue
+        if not labels_only:
+            for i in range(nobs):
+                # Abort if count exceeds a specified limit
+                if self.first and count >= self.first:
+                    continue
 
-            # Print a log of progress
-            logger.info("%s  %4d/%4d" % (self.volume_id, i+1, nobs))
+                # Print a log of progress
+                logger.info("%s  %4d/%4d" % (self.volume_id, i+1, nobs))
 
-            # Continue processing even if cspice throws a runtime error
-            try:
-                # Construct the record for this observation
-                records = self.make_records(i)
- 
-                # Update the tables
-                self.add(records)
-                count += 1
- 
-            # A RuntimeError is probably caused by missing spice data. There is
-            # probably nothing we can do.
-            except RuntimeError as e:
-                logger.warn(str(e))
+                # Continue processing even if cspice throws a runtime error
+                try:
+                    # Construct the record for this observation
+                    records = self.make_records(i)
+    
+                    # Update the tables
+                    self.add(records)
+                    count += 1
+    
+                # A RuntimeError is probably caused by missing spice data. There is
+                # probably nothing we can do.
+                except RuntimeError as e:
+                    logger.warn(str(e))
 
-            # Other kinds of errors are genuine bugs. For now, we just log the
-            # problem, and jump over the image; we can deal with it later.
-            except (AssertionError, AttributeError, IndexError, KeyError,
-                    LookupError, TypeError, ValueError):
-                logger.error(traceback.format_exc())
+                # Other kinds of errors are genuine bugs. For now, we just log the
+                # problem, and jump over the image; we can deal with it later.
+                except (AssertionError, AttributeError, IndexError, KeyError,
+                        LookupError, TypeError, ValueError):
+                    logger.error(traceback.format_exc())
 
         # Write tables and make labels
-        self.write()
+        self.write(labels_only=labels_only)
 
         # Clean up
         config.cleanup()
@@ -1157,7 +1165,11 @@ def get_args(host=None, selection=None, exclude=None, sampling=8):
     return parser
 
 #===============================================================================
-def process_tables(host=None, selection=None, exclude=None, sampling=8, glob=None):
+def process_tables(host=None, 
+                   selection=None, 
+                   exclude=None, 
+                   sampling=8, 
+                   glob=None):
     """Create geometry tables for a collection of volumes.
 
     Args:
@@ -1169,6 +1181,8 @@ def process_tables(host=None, selection=None, exclude=None, sampling=8, glob=Non
         exclude (list, optional): List of volumes to exclude.
         sampling (int, optional): Pixel sampling density.
         glob (str, optional): Glob pattern for index files.
+        labels_only (bool): 
+            If True, labels are generated for any existing geometry tables.
   """
 
     # Parse arguments
@@ -1178,7 +1192,8 @@ def process_tables(host=None, selection=None, exclude=None, sampling=8, glob=Non
     input_tree = FCPath(args.input_tree) 
     output_tree = FCPath(args.output_tree) 
     volume = args.volume
-    new_only = args.new_only
+    new_only = args.new_only is not False
+    labels_only = args.labels is not False
 
     if volume:
         new_only = False
@@ -1225,8 +1240,8 @@ def process_tables(host=None, selection=None, exclude=None, sampling=8, glob=Non
 
                 # Process this volumne
                 tables = Suite(indir, outdir, 
-                              selection=args.selection, glob=glob, first=args.first, 
-                              sampling=args.sampling)
-                tables.create()
+                               selection=args.selection, glob=glob, first=args.first, 
+                               sampling=args.sampling)
+                tables.create(labels_only=labels_only)
 
 ################################################################################

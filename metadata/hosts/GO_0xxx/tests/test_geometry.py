@@ -51,7 +51,7 @@ class Test_Geometry_GOSSI(unittest.TestCase):
             target = table.column_values['TARGET_NAME']
 
             # validate value bounds
-# These bounds only apply to the Jupiter orbits....
+# These bounds only apply to the Jupiter orbits, if any.
 #            unit.bounds(self, file, table, 'SUB_SOLAR_PLANETOCENTRIC_LATITUDE', min=-30, max=30)
 #            unit.bounds(self, file, table, 'SUB_SOLAR_PLANETOGRAPHIC_LATITUDE', min=-30, max=30)
 #            unit.bounds(self, file, table, 'SUB_OBSERVER_PLANETOCENTRIC_LATITUDE', min=-35, max=35)

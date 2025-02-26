@@ -209,7 +209,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "FINEST_LONGITUDINAL_RESOLUTION"
-    UNIT                        = "KM"
+    UNIT                        = "DEG"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Longitudinal resolution is related to the
       gradient of the ring intercept longitude. It is equal to the largest
@@ -229,7 +229,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "COARSEST_LONGITUDINAL_RESOLUTION"
-    UNIT                        = "KM"
+    UNIT                        = "DEG"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Longitudinal resolution is the gradient of the
       gradient of the ring intercept longitude. It is equal to the largest
@@ -1671,21 +1671,21 @@ $END_NOTE
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_RADIUS_IN_PIXELS"
     NULL_CONSTANT               = -999
-    DESCRIPTION                 = "Apparent radius in pixels of the planet
-      or specified target body.
+    DESCRIPTION                 = "Apparent radius in pixels of the classical
+      ring system
 
       This column tabulates the minimum value of pixel radius among all of 
-      the pixels observed in that direction."
+      the pixels observed winin the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_RADIUS_IN_PIXELS"
     NULL_CONSTANT               = -999
-    DESCRIPTION                 = "Apparent radius in pixels of the planet
-      or specified target body.
+    DESCRIPTION                 = "Apparent radius in pixels of the classical
+      ring system
 
       This column tabulates the maximum value of pixel radius among all of 
-      the pixels observed in that direction."
+      the pixels observed winin the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1696,7 +1696,8 @@ $END_NOTE
       file. 
 
       This column tabulates the minimum value of center X coordinate
-      among all of the pixels observed in that direction."
+      among all of the pixels observed winin the field of view of the
+      observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1707,7 +1708,8 @@ $END_NOTE
       file. 
 
       This column tabulates the maximum value of center X coordinate
-      among all of the pixels observed in that direction."
+      among all of the pixels observed winin the field of view of the
+      observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1718,7 +1720,8 @@ $END_NOTE
       file. 
 
       This column tabulates the minimum value of center Y coordinate
-      among all of the pixels observed in that direction."
+      among all of the pixels observed winin the field of view of the
+      observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1729,7 +1732,8 @@ $END_NOTE
       file. 
 
       This column tabulates the maximum value of center Y coordinate
-      among all of the pixels observed in that direction."
+      among all of the pixels observed winin the field of view of the
+      observation."
   END_OBJECT                    = COLUMN
 
 END_OBJECT                      = $TABLE_TYPE$_TABLE
