@@ -87,9 +87,16 @@ def add_modification_detail(file_path):
     # Define the new Modification_Detail entry with aligned indentation
     new_mod_detail = f"""\
 {mod_history_indent}    <Modification_Detail>
-{mod_detail_indent}    <modification_date>2025-01-30</modification_date>
+{mod_detail_indent}    <modification_date>2025-03-03</modification_date>
 {mod_detail_indent}    <version_id>1.1</version_id>
-{mod_detail_indent}    <description>Corrected values for spacecraft_clock_start_count, start_date_time, stop_date_time, and image_mid_time.</description>
+{mod_detail_indent}    <description>
+{mod_detail_indent}        Corrected values for spacecraft_clock_start_count, start_date_time, 
+{mod_detail_indent}        stop_date_time, cassini:image_mid_time, cassini:image_time,
+{mod_detail_indent}        cassini:start_time_doy, and cassini:stop_time_doy.
+{mod_detail_indent}        cassini:mission_phase_name has also been updated in order
+{mod_detail_indent}        to provide consistency across multiple instrument data sets
+{mod_detail_indent}        distinguished by either mission stage or encounter.
+{mod_detail_indent}    </description>
 {mod_detail_indent}</Modification_Detail>
 """
 
