@@ -46,10 +46,10 @@ GO_0016_sl9_index.lbl       PDS3 label for the above.
 RELEASE NOTES
 -------------
 
-Version 5.0: [[February 26]], 2025
+Version 5.0: February 26, 2025
 
 This major release involves the reorganization of the geometry index files for
-Galileo mission, as well as the addition of new geometric quantities.
+the Galileo mission, as well as the addition of new geometric quantities.
 
 All body geometry is now tabulated in a single body table. The following
 geometric quantities have been added to the ring geometry index files:

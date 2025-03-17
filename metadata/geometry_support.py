@@ -2,6 +2,7 @@
 # geometry_support.py - Tools for generating geometry tables.
 ################################################################################
 import oops
+import julian
 import numpy as np
 import traceback
 import warnings
@@ -46,29 +47,26 @@ FORMAT_DICT = {
     "center_coordinate"         : ("",    2, 12, "%12.3f", "%12.5e", -9.99e9),
     "radius_in_pixels"          : ("",    2, 12, "%12.3f", "%12.5e", -999.),
 
-    "event_time"                : ("",    2, 16, "%16.3f", "%16.9e",    0.),
-
     "ring_radius"               : ("",    2, 12, "%12.3f", "%12.5e", -999.),
     "ansa_radius"               : ("",    2, 12, "%12.3f", "%12.5e", -999.),
 
-    "altitude"                  : ("",    2, 12, "%12.3f", "%12.5e", -999),
-    "ansa_altitude"             : ("",    2, 12, "%12.3f", "%12.5e", -999),
+    "altitude"                  : ("",    2, 12, "%12.3f", "%12.5e", -9.99e99),
+    "ansa_altitude"             : ("",    2, 12, "%12.3f", "%12.5e", -9.99e99),
 
     "resolution"                : ("",    2, 10, "%10.5f", "%10.4e", -999.),
     "finest_resolution"         : ("",    2, 10, "%10.5f", "%10.4e", -999.),
     "coarsest_resolution"       : ("",    2, 10, "%10.5f", "%10.4e", -999.),
     "ring_radial_resolution"    : ("",    2, 10, "%10.5f", "%10.4e", -999.),
-    "ring_longitudinal_resolution"
-                                : ("DEG", 2, 10, "%10.5f", "%10.4e", -999.),
-    "ring_longitudinal_resolution_km"
-                                : ("",    2, 10, "%10.5f", "%10.4e", -999.),
+
     "ansa_radial_resolution"    : ("",    2, 10, "%10.5f", "%10.4e", -999.),
     "ansa_vertical_resolution"  : ("",    2, 10, "%10.5f", "%10.4e", -999.),
     "center_resolution"         : ("",    2, 10, "%10.5f", "%10.4e", -999.),
+    "body_diameter_in_pixels"   : ("",    2, 12, "%12.3f", "%12.5e", -999.),
 
-    "event_time"                : ("",    2, 12, "%12.3f", "%12.5e", -9.99e99),
+#    "event_time"                : ("",    2, 12, "%12.3f", "%12.5e", -9.99e99),
+    "event_time"                : ("ISO", 2, 25, "%25s", "%25s", '"UNK"'),
 
-    "ring_angular_resolution"   : ("DEG", 2, 10, "%8.5f",  "%8.4f",  -999.),
+    "ring_angular_resolution"   : ("DEG", 2, 10, "%10.5f",  "%10.4e", -999.),
 
     "longitude"                 : ("360", 2,  8, "%8.3f",  None,     -999.),
     "ring_longitude"            : ("360", 2,  8, "%8.3f",  None,     -999.),
@@ -95,7 +93,8 @@ FORMAT_DICT = {
     "incidence_angle"           : ("DEG", 2,  8, "%8.3f",  None,     -999.),
     "ring_incidence_angle"      : ("DEG", 2,  8, "%8.3f",  None,     -999.),
     "center_incidence_angle"    : ("DEG", 2,  8, "%8.3f",  None,     -999.),
-    "ring_center_incidence_angle":("DEG", 2,  8, "%8.3f",  None,     -999.),
+    "ring_center_incidence_angle"
+                                : ("DEG", 2,  8, "%8.3f",  None,     -999.),
     "emission_angle"            : ("DEG", 2,  8, "%8.3f",  None,     -999.),
     "ring_emission_angle"       : ("DEG", 2,  8, "%8.3f",  None,     -999.),
     "center_emission_angle"     : ("DEG", 2,  8, "%8.3f",  None,     -999.),
@@ -108,6 +107,8 @@ FORMAT_DICT = {
     "where_antisunward"         : ("",    2,  1, "%1d",    None,        0 )}
 
 ALT_FORMAT_DICT = {
+    ("ring_angular_resolution", "km")    
+                                : ("KM",   2, 10, "%10.5f", "%10.4e", -999.),
     ("longitude",      "-180")  : ("-180", 2, 8, "%8.3f",  None,     -999.),
     ("ring_longitude", "-180")  : ("-180", 2, 8, "%8.3f",  None,     -999.),
     ("sub_longitude",  "-180")  : ("-180", 2, 8, "%8.3f",  None,     -999.)}
@@ -664,18 +665,23 @@ class Record(object):
         else:
             results = [values.min().as_builtin(), values.max().as_builtin()]
 
+        if flag in ("ISO","iso"):
+            if not isinstance(results[0], str):
+                s = julian.iso_from_tai(results, digits=3)
+                results = ['"'+str(s[0])+'"', '"'+str(s[1])+'"']
+
         # Write the formatted value(s)
         strings = []
         for number in results:
             error_message = ""
 
-            if np.isnan(number):
-                warnings.warn("NaN encountered")
-                number = null_value
-
-            if np.isinf(number):
-                warnings.warn("infinity encountered")
-                number = null_value
+            if not isinstance(number, str):
+                if np.isnan(number):
+                    warnings.warn("NaN encountered")
+                    number = null_value
+                if np.isinf(number):
+                    warnings.warn("infinity encountered")
+                    number = null_value
 
             string = standard_format % number
 

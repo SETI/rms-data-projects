@@ -53,7 +53,7 @@ class Index():
         # Get relevant filenames and paths
         primary_index_name = meta.get_index_name(self.input_dir, self.volume_id, None)
         index_name = meta.get_index_name(self.input_dir, self.volume_id, self.type) 
-        template_name = meta.get_template_name(self.type)         # assumes top dir is pwd
+        template_name = meta.get_template_name(index_name, self.volume_id) 
         self.index_path = self.output_dir/(index_name + '.tab')
 
         # If the index name is the same as the primary inxex name,

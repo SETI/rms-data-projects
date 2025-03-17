@@ -19,11 +19,10 @@ class Test_Index_Common(unittest.TestCase):
         files = unit.exclude(files, 'templates/', 'old/', '__skip/')
 
         # Test labels
-#        for file in files:
-#            print()
-#            from IPython import embed; print('++++++test_supplemental_index__cumulative+++++++'); embed()
-#           print('Reading', file)
-#           table = pdstable.PdsTable(file) 
+        for file in files:
+            print()
+            print('Reading', file)
+            table = pdstable.PdsTable(file)
 
     #===========================================================================
     # test supplemental index common fields

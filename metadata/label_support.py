@@ -143,7 +143,7 @@ def create(filepath,
     
     # Create an index label using the local template path
     if ('index' in body):
-        template_name = meta.get_template_name('supplemental')
+        template_name = meta.get_template_name(filename, volume_id)
         template_path = Path('./templates/').resolve() / (template_name + '.lbl')
         _create_for_index(label_path, template_path)
         return

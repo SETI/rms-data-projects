@@ -67,7 +67,7 @@ BODY_GRIDLESS_COLUMNS = [
     (("center_resolution",      BODYX, "u"),               ("",   "",  "" )),
     (("center_distance",        BODYX, "obs"),             ("",   "",  "" )),
     (("center_phase_angle",     BODYX),                    ("",   "",  "" )),
-    (("radius_in_pixels",       BODYX),                    ("",   "",  "" )),
+    (("body_diameter_in_pixels",BODYX),                    ("",   "",  "" )),
     (("pole_clock_angle",       BODYX),                    ("",   "",  "" )),
     (("pole_position_angle",    BODYX),                    ("",   "",  "" )),
     (("center_coordinate",      BODYX, "x"),               ("",   "",  "" )),

@@ -172,27 +172,18 @@ def get_index_name(dir, vol_id, type):
     return name
 
 #===============================================================================
-def get_template_name(type):
+def get_template_name(filename, volume_id):
     """Determine the name of the label template.
 
     Args:
-        type (str): Index type.
+        filename (str): Nmae of table or label file.
 
     Returns:
         str: Index name.
     """   
-
-    # Name starts with collection id
     dir = Path.cwd()
-    name = dir.name
-
-    # Add type if given
-    if type:
-        name += '_' + type
-
-    name += '_index'
-
-    return name
+    collection = dir.name
+    return filename.replace(volume_id, collection).split('.')[0]
 
 #===============================================================================
 def splitpath(path: str, string: str):

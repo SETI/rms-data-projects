@@ -59,7 +59,7 @@ def _cat_rows(volume_tree, cumulative_dir, volume_glob, table_type, *,
 
                     # Check existence of table
                     try:
-                        table_file = list(root.glob('*%s.tab' % table_type.lower()))[0]
+                        table_file = list(root.glob('%s_%s.tab' % (vol, table_type.lower())))[0]
                     except IndexError:
                         continue
 

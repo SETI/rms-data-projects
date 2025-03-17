@@ -871,11 +871,11 @@ $END_NOTE
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SURFACE_INTERCEPT_TIME"
     UNIT                        = "SECONDS"
-    NULL_CONSTANT               = -9.99e99
-    DESCRIPTION                 = "Surface intercept time is the time in 
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "Surface intercept time is the time in
        seconds TDB when the received photon left the surface intercept point.
 
-      The surface has been modeled as an ellipsoid. Surface intercept points
+      The surface has been modeled as a plane. Surface intercept points
       that are obscured by the planet or another moon within the observed
       field of view are ignored.
 
@@ -886,11 +886,11 @@ $END_NOTE
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SURFACE_INTERCEPT_TIME"
     UNIT                        = "SECONDS"
-    NULL_CONSTANT               = -9.99e99
+    NULL_CONSTANT               = "UNK"
     DESCRIPTION                 = "Surface intercept time is the time in 
        seconds TDB when the received photon left the surface intercept point.
 
-      The surface has been modeled as an ellipsoid. Surface intercept points
+      The surface has been modeled as a plane. Surface intercept points
       that are obscured by the planet or another moon within the observed
       field of view are ignored.
 
@@ -1307,8 +1307,9 @@ $END_NOTE
     DESCRIPTION                 = "Distance from the observer to the center of
       the ring system.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1318,8 +1319,9 @@ $END_NOTE
     DESCRIPTION                 = "Distance from the observer to the center of
       the ring system.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1335,8 +1337,9 @@ $END_NOTE
       ascending node of the ring system's invariable plane, and then along
       the ring plane.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1352,8 +1355,9 @@ $END_NOTE
       ascending node of the ring system's invariable plane, and then along
       the ring plane.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1367,8 +1371,9 @@ $END_NOTE
       are measured in the ringplane from the ascending node of the ring 
       system's invariable plane on J2000.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1382,8 +1387,9 @@ $END_NOTE
       are measured in the ringplane from the ascending node of the ring 
       system's invariable plane on J2000.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1399,8 +1405,9 @@ $END_NOTE
       ascending node of the ring system's invariable plane, and then along
       the ring plane.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1416,8 +1423,9 @@ $END_NOTE
       ascending node of the ring system's invariable plane, and then along
       the ring plane.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1431,8 +1439,9 @@ $END_NOTE
       Values are measured in the ringplane from the ascending node of the ring 
       system's invariable plane on J2000.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1446,8 +1455,9 @@ $END_NOTE
       Values are measured in the ringplane from the ascending node of the ring 
       system's invariable plane on J2000.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1461,8 +1471,9 @@ $END_NOTE
       photon from the Sun and the local direction of an outgoing photon to
       the observer.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1476,8 +1487,9 @@ $END_NOTE
       photon from the Sun and the local direction of an outgoing photon to
       the observer.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1491,8 +1503,9 @@ $END_NOTE
       vector on the sunlit side of the ring plane to the direction of the
       incoming photon from the Sun. Note that it never exceeds 90 degrees.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1506,8 +1519,9 @@ $END_NOTE
       vector on the sunlit side of the ring plane to the direction of the
       incoming photon from the Sun. Note that it never exceeds 90 degrees.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1522,8 +1536,9 @@ $END_NOTE
       direction of the incoming photon from the Sun. It is > 90 degrees
       when the Sun shines on the south face of the rings.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1538,8 +1553,9 @@ $END_NOTE
       direction of the incoming photon from the Sun. It is > 90 degrees
       when the Sun shines on the south face of the rings.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1554,8 +1570,9 @@ $END_NOTE
       outgoing photon to the observer. It is < 90 degrees on the sunlit side
       of the ring plane and > 90 degrees on the 'dark' side.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1570,8 +1587,9 @@ $END_NOTE
       outgoing photon to the observer. It is < 90 degrees on the sunlit side
       of the ring plane and > 90 degrees on the 'dark' side.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1587,8 +1605,9 @@ $END_NOTE
       on the north side of the ring plane and > 90 degrees on the south
       side.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1604,8 +1623,9 @@ $END_NOTE
       on the north side of the ring plane and > 90 degrees on the south
       side.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1619,8 +1639,9 @@ $END_NOTE
       direction of incoming photon from the Sun. It is positive on the north
       side of the ring plane and negative on the south side.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1634,8 +1655,9 @@ $END_NOTE
       direction of incoming photon from the Sun. It is positive on the north
       side of the ring plane and negative on the south side.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1649,8 +1671,9 @@ $END_NOTE
       direction of outgoing photon to the observer. It is positive on the
       north side of the ring plane and negative on the south side.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1664,76 +1687,79 @@ $END_NOTE
       direction of outgoing photon to the observer. It is positive on the
       north side of the ring plane and negative on the south side.
 
-      This value is defined by the instantaneous geometry at the time of the
-      observation; it is independent of the field of view."
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    NAME                        = "MINIMUM_RADIUS_IN_PIXELS"
+    NAME                        = "MINIMUM_DIAMETER_IN_PIXELS"
     NULL_CONSTANT               = -999
-    DESCRIPTION                 = "Apparent radius in pixels of the classical
-      ring system
+    DESCRIPTION                 = "Apparent largest projected radius in pixels
+      of the classical ring system.
 
-      This column tabulates the minimum value of pixel radius among all of 
-      the pixels observed winin the field of view of the observation."
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    NAME                        = "MAXIMUM_RADIUS_IN_PIXELS"
+    NAME                        = "MAXIMUM_DIAMETER_IN_PIXELS"
     NULL_CONSTANT               = -999
-    DESCRIPTION                 = "Apparent radius in pixels of the classical
-      ring system
+    DESCRIPTION                 = "The apparent radius in pixels of the main
+      rings along their longest projected direction. This value is defined by the geometry during the time of the observation; it is independent of the field of view.
 
-      This column tabulates the maximum value of pixel radius among all of 
-      the pixels observed winin the field of view of the observation."
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_CENTER_X_COORDINATE"
     NULL_CONSTANT               = -9.99e+09
-    DESCRIPTION                 = "Image X coordinate of the center of the 
-      ring. A value of 0.5 corresponds to the center of the first pixel in the 
-      file. 
+    DESCRIPTION                 = "The position of the center of the ring plane
+      in the image in the Y or line direction. A fractional value of 0.5
+      indicates the center of the pixel.
 
-      This column tabulates the minimum value of center X coordinate
-      among all of the pixels observed winin the field of view of the
-      observation."
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_CENTER_X_COORDINATE"
     NULL_CONSTANT               = -9.99e+09
-    DESCRIPTION                 = "Image X coordinate of the center of the 
-      ring. A value of 0.5 corresponds to the center of the first pixel in the 
-      file. 
+    DESCRIPTION                 = "The position of the center of the ring plane
+      in the image in the X or sample direction. A fractional value of 0.5
+      indicates the center of the pixel.
 
-      This column tabulates the maximum value of center X coordinate
-      among all of the pixels observed winin the field of view of the
-      observation."
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_CENTER_Y_COORDINATE"
     NULL_CONSTANT               = -9.99e+09
-    DESCRIPTION                 = "Image Y coordinate of the center of the 
-      ring. A value of 0.5 corresponds to the center of the first pixel in the 
-      file. 
+    DESCRIPTION                 = "The position of the center of the ring plane
+      in the image in the X or sample direction. A fractional value of 0.5
+      indicates the center of the pixel.
 
-      This column tabulates the minimum value of center Y coordinate
-      among all of the pixels observed winin the field of view of the
-      observation."
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_CENTER_Y_COORDINATE"
     NULL_CONSTANT               = -9.99e+09
-    DESCRIPTION                 = "Image Y coordinate of the center of the 
-      ring. A value of 0.5 corresponds to the center of the first pixel in the 
-      file. 
+    DESCRIPTION                 = "The position of the center of the ring plane
+      in the image in the Y or line direction. A fractional value of 0.5
+      indicates the center of the pixel.
 
-      This column tabulates the maximum value of center Y coordinate
-      among all of the pixels observed winin the field of view of the
-      observation."
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
   END_OBJECT                    = COLUMN
 
 END_OBJECT                      = $TABLE_TYPE$_TABLE
