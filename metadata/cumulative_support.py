@@ -16,6 +16,11 @@ def _cat_rows(volume_tree, cumulative_dir, volume_glob, table_type, *,
 
     Args:
         volume_tree (str, Path, or FCPath): Root of the tree containing the volumes.
+        cumulative_dir (str, Path, or FCPath): 
+            Directory in which the cumulative files will reside.
+        volume_glob (str): Glob pattern for volume identification.
+        table_type (str): 
+            'SKY_SUMMARY', 'BODY_SUMMARY', 'RING_SUMMARY', or 'SUPPLEMENTAL_INDEX'.
         exclude (list, optional): List of volumes to exclude.
         volume (str, optional): If given, only this volume is processed.
     """

@@ -28,7 +28,7 @@ def _create_for_inventory(label_path, template_path,
     Returns:
         None.
     """
-    label_path = FCPath(label_path).retrieve()
+    label_path = FCPath(label_path)
     template_path = FCPath(template_path).retrieve()
 
     # Determine the creation time
@@ -58,7 +58,7 @@ def _create_for_geometry(label_path, template_path, table_type):
     Returns:
         None.
     """
-    label_path = FCPath(label_path).retrieve()
+    label_path = FCPath(label_path)
     template_path = FCPath(template_path).retrieve()
 
     T = PdsTemplate(template_path, crlf=True, 
@@ -77,7 +77,7 @@ def _create_for_index(label_path, template_path):
     Returns:
         None.
     """
-    label_path = FCPath(label_path).retrieve()
+    label_path = FCPath(label_path)
     template_path = FCPath(template_path).retrieve()
 
     T = PdsTemplate(template_path, crlf=True, 
@@ -97,7 +97,7 @@ def _create_for_cumulative(label_path, template_path, table_type):
     Returns:
         None.
     """
-    label_path = FCPath(label_path).retrieve()
+    label_path = FCPath(label_path)
     template_path = FCPath(template_path).retrieve()
 
     T = PdsTemplate(template_path, crlf=True, 

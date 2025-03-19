@@ -586,7 +586,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SURFACE_INTERCEPT_TIME"
-    UNIT                        = "SECONDS"
+    UNIT                        = "ISO"
     NULL_CONSTANT               = "UNK"
     DESCRIPTION                 = "Surface intercept time is the time in
        seconds TDB when the received photon left the surface intercept point.
@@ -601,7 +601,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SURFACE_INTERCEPT_TIME"
-    UNIT                        = "SECONDS"
+    UNIT                        = "ISO"
     NULL_CONSTANT               = "UNK"
     DESCRIPTION                 = "Surface intercept time is the time in
        seconds TDB when the received photon left the surface intercept point.
@@ -959,8 +959,8 @@ $END_NOTE
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_DIAMETER_IN_PIXELS"
     NULL_CONSTANT               = -999
-    DESCRIPTION                 = "Apparent radius in pixels of the planet
-      or specified target body.
+    DESCRIPTION                 = "Apparent largest diameter in pixels of the
+      planet or specified target body.
 
       This column tabulates the minimum value among all of the samples
       comprising this observation. It is defined by the geometry during
@@ -970,8 +970,8 @@ $END_NOTE
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_DIAMETER_IN_PIXELS"
     NULL_CONSTANT               = -999
-    DESCRIPTION                 = "Apparent radius in pixels of the planet
-      or specified target body.
+    DESCRIPTION                 = "Apparent largest diameter in pixels of the
+      planet or specified target body.
 
       This column tabulates the maximum value among all of the samples
       comprising this observation. It is defined by the geometry during

@@ -870,7 +870,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SURFACE_INTERCEPT_TIME"
-    UNIT                        = "SECONDS"
+    UNIT                        = "ISO"
     NULL_CONSTANT               = "UNK"
     DESCRIPTION                 = "Surface intercept time is the time in
        seconds TDB when the received photon left the surface intercept point.
@@ -885,7 +885,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SURFACE_INTERCEPT_TIME"
-    UNIT                        = "SECONDS"
+    UNIT                        = "ISO"
     NULL_CONSTANT               = "UNK"
     DESCRIPTION                 = "Surface intercept time is the time in 
        seconds TDB when the received photon left the surface intercept point.
@@ -1695,8 +1695,8 @@ $END_NOTE
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_DIAMETER_IN_PIXELS"
     NULL_CONSTANT               = -999
-    DESCRIPTION                 = "Apparent largest projected radius in pixels
-      of the classical ring system.
+    DESCRIPTION                 = "Apparent largest diameter in pixels of the
+      classical ring system.
 
       This column tabulates the minimum value among all of the samples
       comprising this observation. It is defined by the geometry during
@@ -1706,8 +1706,8 @@ $END_NOTE
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_DIAMETER_IN_PIXELS"
     NULL_CONSTANT               = -999
-    DESCRIPTION                 = "The apparent radius in pixels of the main
-      rings along their longest projected direction. This value is defined by the geometry during the time of the observation; it is independent of the field of view.
+    DESCRIPTION                 = "Apparent largest diameter in pixels of the
+      classical ring system.
 
       This column tabulates the maximum value among all of the samples
       comprising this observation. It is defined by the geometry during

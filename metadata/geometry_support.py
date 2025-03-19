@@ -665,6 +665,7 @@ class Record(object):
         else:
             results = [values.min().as_builtin(), values.max().as_builtin()]
 
+        # Convert results to ISO
         if flag in ("ISO","iso"):
             if not isinstance(results[0], str):
                 s = julian.iso_from_tai(results, digits=3)

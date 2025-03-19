@@ -86,7 +86,6 @@ class Index():
         template_path = FCPath('./templates/')/(template_name + '.lbl')
         label_name = meta.get_index_name(self.input_dir, self.volume_id, self.type) 
         label_path = self.output_dir / FCPath(label_name + '.lbl')
-        label_path = FCPath(label_path).retrieve()
 
         template = meta.read_txt_file(template_path, as_string=True)
         pds3_table = Pds3Table(label_path, template, validate=False, numbers=True, formats=True)
