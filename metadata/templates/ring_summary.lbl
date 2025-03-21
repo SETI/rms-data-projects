@@ -23,7 +23,7 @@ PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = $LABEL_VALUE("RECORD_TYPE")$
 RECORD_BYTES                    = $LABEL_VALUE("RECORD_BYTES")$
 FILE_RECORDS                    = $LABEL_VALUE("FILE_RECORDS")$
-^$TABLE_TYPE$_TABLE              = "$LABEL_VALUE("TABLE_BASENAME")$"
+^$TABLE_TYPE$_TABLE             = "$LABEL_VALUE("TABLE_BASENAME")$"
 
 $INCLUDE("./templates/host_defs.lbl")
 
@@ -85,8 +85,8 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    NAME                        = "SYSTEM"
-    DESCRIPTION                 = "The target name is the name of the body for
+    NAME                        = "SYSTEM_NAME"
+    DESCRIPTION                 = "The system name is the name of the body for
       which the surface geometry parameters in this row of the table are
       applicable."
   END_OBJECT                    = COLUMN
@@ -870,10 +870,10 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SURFACE_INTERCEPT_TIME"
-    UNIT                        = "ISO"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "Surface intercept time is the time in
-       seconds TDB when the received photon left the surface intercept point.
+    DESCRIPTION                 = "Surface intercept time is the time when the
+      received photon left the surface intercept point.  It is given as in ISO
+      format: YYYY-MM-DDTHH:mm:ss.sss.
 
       The surface has been modeled as a plane. Surface intercept points
       that are obscured by the planet or another moon within the observed
@@ -885,10 +885,10 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SURFACE_INTERCEPT_TIME"
-    UNIT                        = "ISO"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "Surface intercept time is the time in 
-       seconds TDB when the received photon left the surface intercept point.
+    DESCRIPTION                 = "Surface intercept time is the time when the
+      received photon left the surface intercept point.  It is given as in ISO
+      format: YYYY-MM-DDTHH:mm:ss.sss.
 
       The surface has been modeled as a plane. Surface intercept points
       that are obscured by the planet or another moon within the observed
@@ -1716,7 +1716,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_CENTER_X_COORDINATE"
-    NULL_CONSTANT               = -9.99e+09
+    NULL_CONSTANT               = -9.99e+99
     DESCRIPTION                 = "The position of the center of the ring plane
       in the image in the Y or line direction. A fractional value of 0.5
       indicates the center of the pixel.
@@ -1728,7 +1728,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_CENTER_X_COORDINATE"
-    NULL_CONSTANT               = -9.99e+09
+    NULL_CONSTANT               = -9.99e+99
     DESCRIPTION                 = "The position of the center of the ring plane
       in the image in the X or sample direction. A fractional value of 0.5
       indicates the center of the pixel.

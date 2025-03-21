@@ -44,7 +44,7 @@ FORMAT_DICT = {
 
     "distance"                  : ("",    2, 12, "%12.3f", "%12.5e", -999.),
     "center_distance"           : ("",    2, 12, "%12.3f", "%12.5e", -999.),
-    "center_coordinate"         : ("",    2, 12, "%12.3f", "%12.5e", -9.99e9),
+    "center_coordinate"         : ("",    2, 12, "%12.3f", "%12.5e", -9.99e99),
     "radius_in_pixels"          : ("",    2, 12, "%12.3f", "%12.5e", -999.),
 
     "ring_radius"               : ("",    2, 12, "%12.3f", "%12.5e", -999.),
@@ -82,7 +82,7 @@ FORMAT_DICT = {
     "sub_solar_latitude"        : ("DEG", 2,  8, "%8.3f",  None,     -999.),
     "sub_observer_latitude"     : ("DEG", 2,  8, "%8.3f",  None,     -999.),
 
-    "limb_altitude"             : ("",    2, 12, "%12.3f", "%12.5e", -9.99e99),
+    "limb_altitude"             : ("",    2, 12, "%12.3f", "%12.5e", -99999),
     "limb_clock_angle"          : ("DEG", 2,  8, "%8.3f",  None,     -999.),
 
     "pole_clock_angle"          : ("DEG", 2,  8, "%8.3f",  None,     -999.),

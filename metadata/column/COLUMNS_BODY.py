@@ -51,6 +51,8 @@ BODY_COLUMNS = [
     (("phase_angle",            BODYX),                    ("RM", "",   "")),
     (("incidence_angle",        BODYX),                    ("RM", "",   "" )),
     (("emission_angle",         BODYX),                    ("RM", "",   "" )),
+    (("limb_altitude",          BODYX, -0.01, 1000, True), ("",   "",  "" )),
+    (("limb_clock_angle",       BODYX),                    ("",   "",  "" )),
     (("event_time",             BODYX),                    ("RM", "", ""))]
 
 BODY_GRIDLESS_COLUMNS = [
@@ -62,16 +64,14 @@ BODY_GRIDLESS_COLUMNS = [
 #    (("sub_solar_longitude",    BODYX, "iau", "east"),     ("",   "",  "" )),
     (("sub_observer_longitude", BODYX, "iau", "west"),     ("",   "",  "" )),
 #    (("sub_observer_longitude", BODYX, "iau", "east"),     ("",   "",  "" )),
-    (("limb_altitude",          BODYX, -0.01, 1000, True), ("",   "",  "" )),
-    (("limb_clock_angle",       BODYX),                    ("",   "",  "" )),
     (("center_resolution",      BODYX, "u"),               ("",   "",  "" )),
     (("center_distance",        BODYX, "obs"),             ("",   "",  "" )),
     (("center_phase_angle",     BODYX),                    ("",   "",  "" )),
     (("body_diameter_in_pixels",BODYX),                    ("",   "",  "" )),
     (("pole_clock_angle",       BODYX),                    ("",   "",  "" )),
     (("pole_position_angle",    BODYX),                    ("",   "",  "" )),
-    (("center_coordinate",      BODYX, "x"),               ("",   "",  "" )),
-    (("center_coordinate",      BODYX, "y"),               ("",   "",  "" ))]
+    (("center_coordinate",      BODYX, "u"),               ("",   "",  "" )),
+    (("center_coordinate",      BODYX, "v"),               ("",   "",  "" ))]
 
 # Assemble the column lists for each type of file for the moons and planet
 

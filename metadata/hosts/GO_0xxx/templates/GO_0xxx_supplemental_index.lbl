@@ -151,7 +151,7 @@ constant 'N/A'."
 
   OBJECT                        = COLUMN
     NAME                        = "HUFFMAN_TABLE_TYPE"
-    FORMAT                      = "A6"
+    FORMAT                      = "A7"
     NOT_APPLICABLE_CONSTANT     = "N/A"
     DESCRIPTION                 = "The table type used for Huffman
 compression, 'SKEWED' or 'UNIFORM'. If Huffman compression was not used, the

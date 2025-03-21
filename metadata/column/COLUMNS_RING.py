@@ -92,8 +92,8 @@ RING_GRIDLESS_COLUMNS = [
     (("body_diameter_in_pixels",planet_ring,
                                     replacement_fn("RING_SYSTEM_RADII", BODYX)),
                                                             ("",   "",  "" )),
-    (("center_coordinate",      BODYX, "x"),                ("",   "",  "" )),
-    (("center_coordinate",      BODYX, "y"),                ("",   "",  "" ))]
+    (("center_coordinate",      BODYX, "u"),                ("",   "",  "" )),
+    (("center_coordinate",      BODYX, "v"),                ("",   "",  "" ))]
 
 # Assemble the column lists for each type of file for the rings and for Saturn
 RING_SUMMARY_COLUMNS  = (RING_COLUMNS + ANSA_COLUMNS +
