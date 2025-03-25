@@ -134,10 +134,10 @@ for an instrument."
 
   OBJECT                        = COLUMN
     NAME                        = "ON_CHIP_MOSAIC_FLAG"
-    FORMAT                      = "A1"
+    FORMAT                      = "A3"
     NOT_APPLICABLE_CONSTANT     = "-"
     DESCRIPTION                 = "A flag indicating whether on-chip
-mosaicking was performed, 'Y' or 'N'."
+mosaicking was performed, 'YES' or 'NO'."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN

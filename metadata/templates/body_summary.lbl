@@ -36,13 +36,13 @@ OBJECT                          = $TABLE_TYPE$_TABLE
   COLUMNS                       = $LABEL_VALUE("COLUMNS")$
   ROW_BYTES                     = $LABEL_VALUE("ROW_BYTES")$
   INDEX_TYPE                    = SINGLE
-  DESCRIPTION                   = "This index describes the intercept geometry
-    for the regular satellites and other targeted bodies within the field of
-    view of the instrument. The table contains zero or more rows for each
-    image file found on the volume identified by the VOLUME_ID keyword above.
-    For each image, the file contains one row for each regular satellite
-    falling within the field of view, plus one row if the targeted body is not
-    a regular satellite (generally, an irregular satellite).
+  DESCRIPTION                   = "This index describes the intercept 
+    geometry for the regular satellites and other targeted bodies within the 
+    field of view of the instrument. The table contains zero or more rows for
+    each image file found on the volume identified by the VOLUME_ID keyword 
+    above. For each image, the file contains one row for each regular 
+    satellite falling within the field of view, plus one row if the targeted 
+    body is not a regular satellite (generally, an irregular satellite).
 
     Occasionally, SPICE pointing information is unavailable for the time at
     which an image was exposed. When this situation occurs, no row has been
@@ -61,10 +61,10 @@ OBJECT                          = $TABLE_TYPE$_TABLE
     maximum.
 
     Regions of a body that are obscured by Jupiter or by a targeted moon are
-    excluded from the tabulation. The dark side of each body is also generally
-    excluded. If a body is too small to have been captured in an 8x8 sampling
-    of the image, then the associated NULL_CONSTANT will appear in each
-    column."
+    excluded from the tabulation. The dark side of each body is also 
+    generally excluded. If a body is too small to have been captured in an 
+    8x8 sampling of the image, then the associated NULL_CONSTANT will appear 
+    in each column."
 
 $NOTE 
 ################################################################
@@ -304,8 +304,8 @@ $END_NOTE
     VALID_MINIMUM               = -180.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "This alternative definition of longitude is
-      measured relative to the direction toward the observer. Values
+    DESCRIPTION                 = "This alternative definition of longitude 
+      is measured relative to the direction toward the observer. Values
       increase westward. Unlike other longitudes, this quantity ranges from
       -180 to 180 degrees instead of 0 to 360 degrees.
 
@@ -325,8 +325,8 @@ $END_NOTE
     VALID_MINIMUM               = -180.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "This alternative definition of longitude is
-      measured relative to the direction toward the observer. Values
+    DESCRIPTION                 = "This alternative definition of longitude 
+      is measured relative to the direction toward the observer. Values
       increase westward. Unlike other longitudes, this quantity ranges from
       -180 to 180 degrees instead of 0 to 360 degrees.
 
@@ -587,12 +587,13 @@ $END_NOTE
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_LIMB_ALTITUDE"
     UNIT                        = "KM"
-    NULL_CONSTANT               = -99999
-    DESCRIPTION                 = "Elevation above the point on the limb, measured normal
-      to the surface, of the planet or a specified target body.
+    NULL_CONSTANT               = -99999.
+    DESCRIPTION                 = "Elevation above the point on the limb, 
+      measured normal to the surface, of the planet or a specified target 
+      body.
 
-      Altiudes below -0.1 times the maximum body radius and above 1000 times the maximum
-      body radius are not reported.
+      Altiudes below -0.1 times the maximum body radius and above 1000 times 
+      the maximum body radius are not reported.
 
       This column tabulates the maximum value of emission angle within the
       field of view of the observation."
@@ -602,11 +603,12 @@ $END_NOTE
     NAME                        = "MAXIMUM_LIMB_ALTITUDE"
     UNIT                        = "KM"
     NULL_CONSTANT               = -99999
-    DESCRIPTION                 = "Elevation above the point on the limb, measured normal
-      to the surface, of the planet or a specified target body.
+    DESCRIPTION                 = "Elevation above the point on the limb, 
+      measured normal to the surface, of the planet or a specified target 
+      body.
 
-      Altiudes below -0.1 times the maximum body radius and above 1000 times the maximum
-      body radius are not reported.
+      Altiudes below -0.1 times the maximum body radius and above 1000 times 
+      the maximum body radius are not reported.
 
       This column tabulates the maximum value of emission angle within the
       field of view of the observation."
@@ -641,31 +643,31 @@ $END_NOTE
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SURFACE_INTERCEPT_TIME"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "Surface intercept time is the time when the
-      received photon left the surface intercept point.  It is given as in ISO
-      format: YYYY-MM-DDTHH:mm:ss.sss.
+    DESCRIPTION                 = "Surface intercept time is the time when 
+      the received photon left the surface intercept point.  It is given as 
+      in ISO format: YYYY-MM-DDTHH:mm:ss.sss.
 
       The surface has been modeled as an ellipsoid. Surface intercept points
       that are obscured by the planet or another moon within the observed
       field of view are ignored.
 
-      This column tabulates the minimum value of Surface intercept time within 
-      the field of view of the observation."
+      This column tabulates the minimum value of Surface intercept time 
+      within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SURFACE_INTERCEPT_TIME"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "Surface intercept time is the time when the
-      received photon left the surface intercept point.  It is given as in ISO
-      format: YYYY-MM-DDTHH:mm:ss.sss.
+    DESCRIPTION                 = "Surface intercept time is the time when 
+      the received photon left the surface intercept point.  It is given as 
+      in ISO format: YYYY-MM-DDTHH:mm:ss.sss.
 
       The surface has been modeled as an ellipsoid. Surface intercept points
       that are obscured by the planet or another moon within the observed
       field of view are ignored.
 
-      This column tabulates the maximum value of Surface intercept time within 
-      the field of view of the observation."
+      This column tabulates the maximum value of Surface intercept time 
+      within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -746,10 +748,10 @@ $END_NOTE
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Planetocentric latitude of the sub-observer
-      point on the surface of the planet or specified target body. The
-      planetocentric value is defined by the angle from the body's equator
-      plane to a line defined by a vector from the body center to the
+    DESCRIPTION                 = "Planetocentric latitude of the sub-
+      observer point on the surface of the planet or specified target body. 
+      The planetocentric value is defined by the angle from the body's 
+      equator plane to a line defined by a vector from the body center to the
       sub-observer point. Values are positive in the body's northern
       hemisphere and negative in the southern hemisphere.
 
@@ -764,10 +766,10 @@ $END_NOTE
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Planetocentric latitude of the sub-observer
-      point on the surface of the planet or specified target body. The
-      planetocentric value is defined by the angle from the body's equator
-      plane to a line defined by a vector from the body center to the
+    DESCRIPTION                 = "Planetocentric latitude of the sub-
+      observer point on the surface of the planet or specified target body. 
+      The planetocentric value is defined by the angle from the body's 
+      equator plane to a line defined by a vector from the body center to the
       sub-observer point. Values are positive in the body's northern
       hemisphere and negative in the southern hemisphere.
 
@@ -782,9 +784,9 @@ $END_NOTE
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Planetographic latitude of the sub-observer
-      point on the surface of the planet or specified target body. The
-      planetographic value is defined by the angle between the body's
+    DESCRIPTION                 = "Planetographic latitude of the sub-
+      observer point on the surface of the planet or specified target body. 
+      The planetographic value is defined by the angle between the body's
       equator plane and the local surface normal at the sub-observer point.
       Values are positive in the body's northern hemisphere and negative in
       the southern hemisphere.
@@ -800,9 +802,9 @@ $END_NOTE
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Planetographic latitude of the sub-observer
-      point on the surface of the planet or specified target body. The
-      planetographic value is defined by the angle between the body's
+    DESCRIPTION                 = "Planetographic latitude of the sub-
+      observer point on the surface of the planet or specified target body. 
+      The planetographic value is defined by the angle between the body's
       equator plane and the local surface normal at the sub-observer point.
       Values are positive in the body's northern hemisphere and negative in
       the southern hemisphere.
@@ -958,9 +960,9 @@ $END_NOTE
     DESCRIPTION                 = "Apparent largest diameter in pixels of the
       planet or specified target body.
 
-      This column tabulates the minimum value among all of the samples
-      comprising this observation. It is defined by the geometry during
-      the observation and is independent of the field of view."
+      This column tabulates the minimum projected longest diameter based on
+      the body's current distance, but as if it fell at the center of the
+      field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -969,9 +971,9 @@ $END_NOTE
     DESCRIPTION                 = "Apparent largest diameter in pixels of the
       planet or specified target body.
 
-      This column tabulates the maximum value among all of the samples
-      comprising this observation. It is defined by the geometry during
-      the observation and is independent of the field of view."
+      This column tabulates the maximum projected longest diameter based on
+      the body's current distance, but as if it fell at the center of the
+      field of view."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -980,9 +982,9 @@ $END_NOTE
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Angle of projected pole vector of the planet or a 
-      specified target body on the sky, measured from celestial north toward celestial 
-      west (i.e., clockwise on the sky).
+    DESCRIPTION                 = "Angle of projected pole vector of the 
+      planet or a specified target body on the sky, measured from celestial 
+      north toward celestial west (i.e., clockwise on the sky).
 
       This column tabulates the minimum value among all of the samples
       comprising this observation. It is defined by the geometry during
@@ -995,9 +997,9 @@ $END_NOTE
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Angle of projected pole vector of the planet or a 
-      specified target body on the sky, measured from celestial north toward celestial 
-      west (i.e., clockwise on the sky).
+    DESCRIPTION                 = "Angle of projected pole vector of the 
+      planet or a specified target body on the sky, measured from celestial 
+      north toward celestial west (i.e., clockwise on the sky).
 
       This column tabulates the maximum value among all of the samples
       comprising this observation. It is defined by the geometry during
@@ -1010,9 +1012,9 @@ $END_NOTE
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Angle of projected pole vector of the planet or a 
-      specified target body on the sky, measured from celestial north toward celestial 
-      east (i.e., counterclockwise on the sky).
+    DESCRIPTION                 = "Angle of projected pole vector of the 
+      planet or a specified target body on the sky, measured from celestial 
+      north toward celestial east (i.e., counterclockwise on the sky).
 
       This column tabulates the minimum value among all of the samples
       comprising this observation. It is defined by the geometry during
@@ -1025,9 +1027,9 @@ $END_NOTE
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Angle of projected pole vector of the planet or a 
-      specified target body on the sky, measured from celestial north toward celestial 
-      east (i.e., counterclockwise on the sky).
+    DESCRIPTION                 = "Angle of projected pole vector of the 
+      planet or a specified target body on the sky, measured from celestial 
+      north toward celestial east (i.e., counterclockwise on the sky).
 
       This column tabulates the maximum value among all of the samples
       comprising this observation. It is defined by the geometry during
@@ -1036,50 +1038,42 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_CENTER_X_COORDINATE"
-    NULL_CONSTANT               = -9.99e+09
-    DESCRIPTION                 = "The position of the center of the body in
-      the image in the X or sample direction. A fractional value of 0.5
-      indicates the center of the pixel.
+    NULL_CONSTANT               = -99999999.999
+    DESCRIPTION                 = "The horizontal coordinate of the center of
+      the body in the data product. A fractional value of 0.5 indicates the
+      center of the pixel.
 
-      This column tabulates the minimum value among all of the samples
-      comprising this observation. It is defined by the geometry during
-      the observation and is independent of the field of view."
+      This is the minimum value of the coordinate within the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_CENTER_X_COORDINATE"
-    NULL_CONSTANT               = -9.99e+09
-    DESCRIPTION                 = "The position of the center of the body in
-      the image in the X or sample direction. A fractional value of 0.5
-      indicates the center of the pixel.
+    NULL_CONSTANT               = -99999999.999
+    DESCRIPTION                 = "The horizontal coordinate of the center of
+      the body in the data product. A fractional value of 0.5 indicates the
+      center of the pixel.
 
-      This column tabulates the maximum value among all of the samples
-      comprising this observation. It is defined by the geometry during
-      the observation and is independent of the field of view."
+      This is the minimum value of the coordinate within the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_CENTER_Y_COORDINATE"
-    NULL_CONSTANT               = -9.99e+99
-    DESCRIPTION                 = "The position of the center of the body in
-      the image in the Y or line direction. A fractional value of 0.5
-      indicates the center of the pixel.
+    NULL_CONSTANT               = -99999999.999
+    DESCRIPTION                 = "The vertical coordinate of the center of
+      the body in the data product. A fractional value of 0.5 indicates the
+      center of the pixel.
 
-      This column tabulates the minimum value among all of the samples
-      comprising this observation. It is defined by the geometry during
-      the observation and is independent of the field of view."
+      This is the minimum value of the coordinate within the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_CENTER_Y_COORDINATE"
-    NULL_CONSTANT               = -9.99e+99
-    DESCRIPTION                 = "The position of the center of the body in
-      the image in the Y or line direction. A fractional value of 0.5
-      indicates the center of the pixel.
+    NULL_CONSTANT               = -99999999.999
+    DESCRIPTION                 = "The vertical coordinate of the center of
+      the body in the data product. A fractional value of 0.5 indicates the
+      center of the pixel.
 
-      This column tabulates the maximum value among all of the samples
-      comprising this observation. It is defined by the geometry during
-      the observation and is independent of the field of view."
+      This is the minimum value of the coordinate within the observation."
   END_OBJECT                    = COLUMN
 
 END_OBJECT                      = $TABLE_TYPE$_TABLE

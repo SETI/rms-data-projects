@@ -44,14 +44,14 @@ FORMAT_DICT = {
 
     "distance"                  : ("",    2, 12, "%12.3f", "%12.5e", -999.),
     "center_distance"           : ("",    2, 12, "%12.3f", "%12.5e", -999.),
-    "center_coordinate"         : ("",    2, 12, "%12.3f", "%12.5e", -9.99e99),
+    "center_coordinate"         : ("",    2, 12, "%12.3f", "%12.5e", -99999999.999),
     "radius_in_pixels"          : ("",    2, 12, "%12.3f", "%12.5e", -999.),
 
     "ring_radius"               : ("",    2, 12, "%12.3f", "%12.5e", -999.),
     "ansa_radius"               : ("",    2, 12, "%12.3f", "%12.5e", -999.),
 
-    "altitude"                  : ("",    2, 12, "%12.3f", "%12.5e", -9.99e99),
-    "ansa_altitude"             : ("",    2, 12, "%12.3f", "%12.5e", -9.99e99),
+    "altitude"                  : ("",    2, 12, "%12.3f", "%12.5e", -99999.),
+    "ansa_altitude"             : ("",    2, 12, "%12.3f", "%12.5e", -99999.),
 
     "resolution"                : ("",    2, 10, "%10.5f", "%10.4e", -999.),
     "finest_resolution"         : ("",    2, 10, "%10.5f", "%10.4e", -999.),
@@ -63,7 +63,6 @@ FORMAT_DICT = {
     "center_resolution"         : ("",    2, 10, "%10.5f", "%10.4e", -999.),
     "body_diameter_in_pixels"   : ("",    2, 12, "%12.3f", "%12.5e", -999.),
 
-#    "event_time"                : ("",    2, 12, "%12.3f", "%12.5e", -9.99e99),
     "event_time"                : ("ISO", 2, 25, "%25s", "%25s", '"UNK"'),
 
     "ring_angular_resolution"   : ("DEG", 2, 10, "%10.5f",  "%10.4e", -999.),
@@ -82,7 +81,7 @@ FORMAT_DICT = {
     "sub_solar_latitude"        : ("DEG", 2,  8, "%8.3f",  None,     -999.),
     "sub_observer_latitude"     : ("DEG", 2,  8, "%8.3f",  None,     -999.),
 
-    "limb_altitude"             : ("",    2, 12, "%12.3f", "%12.5e", -99999),
+    "limb_altitude"             : ("",    2, 12, "%12.3f", "%12.5e", -99999.),
     "limb_clock_angle"          : ("DEG", 2,  8, "%8.3f",  None,     -999.),
 
     "pole_clock_angle"          : ("DEG", 2,  8, "%8.3f",  None,     -999.),

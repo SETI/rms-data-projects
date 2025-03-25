@@ -285,7 +285,7 @@ class Index():
         Returns:
             str: formatted value.
         """
-    
+
         # format value
         line = ff.FortranRecordWriter('(' + format + ')')
         line = line.write([value])
@@ -300,7 +300,7 @@ class Index():
     #===============================================================================
     @staticmethod
     def _format_parms(format):
-        """Determine len and type corresopnding to a given FORTRAN format code..
+        """Determine len and type corresopnding to a given FORTRAN format code.
 
         Args:
             format (str): FORTRAN_style format code.

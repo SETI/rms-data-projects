@@ -325,16 +325,30 @@ def key__spacecraft_clock_start_count(label_path, label_dict):
 
 #===============================================================================
 def key__spacecraft_clock_stop_count(label_path, label_dict):
-    """Key function for SPACECRAFT_CLOCK_STOP_COUNT.  
+    """Key function for SPACECRAFT_CLOCK_STOP_COUNT.
 
     Args:
         label_path  (str, Path, or FCPath): Path to the PDS label.
         label_dict (dict): Dictionary containing the PDS label fields.
 
-    Returns: 
+    Returns:
         str: Value to write in the index file under SPACECRAFT_CLOCK_STOP_COUNT.
     """
     return _spacecraft_clock_stop_count_from_label(label_dict)
+#===============================================================================
+def key__on_chip_mosaic_flag(label_path, label_dict):
+    """Key function for SPACECRAFT_CLOCK_STOP_COUNT.
+
+    Args:
+        label_path  (str, Path, or FCPath): Path to the PDS label.
+        label_dict (dict): Dictionary containing the PDS label fields.
+
+    Returns:
+        str: Value to write in the index file under SPACECRAFT_CLOCK_STOP_COUNT.
+    """
+    if not 'ON_CHIP_MOSAIC_FLAG' in label_dict:
+        return None
+    return {'N': 'NO', 'Y': 'YES'}[label_dict['ON_CHIP_MOSAIC_FLAG']]
 
 ################################################################################
 
