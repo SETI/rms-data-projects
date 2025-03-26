@@ -88,6 +88,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "SYSTEM_NAME"
+    NULL_CONSTANT               = "UNK"
     DESCRIPTION                 = "The system name is the name of the body for
       which the surface geometry parameters in this row of the table are
       applicable."
