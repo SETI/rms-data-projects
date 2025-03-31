@@ -100,11 +100,11 @@ def _create_for_cumulative(label_path, template_path, table_type):
     label_path = FCPath(label_path)
     template_path = FCPath(template_path).retrieve()
 
+#    from IPython import embed; print('+++++++++++++'); embed()
     T = PdsTemplate(template_path, crlf=True, 
                     preprocess=pds3_table_preprocessor, 
                     kwargs={'formats':True, 'numbers':True, 'validate':False})
-    T.write({'TABLE_TYPE': table_type, 
-             'INDEX_TYPE':'CUMULATIVE'}, label_path=label_path, mode='repair',)
+    T.write({'TABLE_TYPE': 'CUMULATIVE'}, label_path=label_path, mode='repair')
 
 #===============================================================================
 def create(filepath, 
@@ -144,13 +144,13 @@ def create(filepath,
     # Create an index label using the local template path
     if ('index' in body):
         template_name = meta.get_template_name(filename, volume_id)
-        template_path = Path('./templates/').resolve() / (template_name + '.lbl')
+        template_path = FCPath('./templates/').resolve() / (template_name + '.lbl')
         _create_for_index(label_path, template_path)
         return
 
     # Use the global template path for all other labels
     offset = 0 if not system else len(system) + 1
-    template_path = Path(meta.GLOBAL_TEMPLATE_PATH) / Path('%s.lbl' % body[underscore+6+offset:])
+    template_path = FCPath(meta.GLOBAL_TEMPLATE_PATH) / FCPath('%s.lbl' % body[underscore+6+offset:])
 
     # Create an inventory label
     if ('inventory' in body):
@@ -160,6 +160,7 @@ def create(filepath,
         
     # Create a cumulative label
     if '999' in volume_id:      ## is this a safe assumption?
+        template_path = FCPath(template_path.as_posix().replace('summary', 'cumulative'))
         _create_for_cumulative(label_path, template_path, table_type)
         return
 

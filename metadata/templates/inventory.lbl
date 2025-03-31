@@ -7,6 +7,7 @@ RECORD_TYPE                     = STREAM
 
 VOLUME_ID                       = "$VOLUME_ID$"
 PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
+INDEX_TYPE                      = SINGLE
 
 $INCLUDE("./templates/host_defs.lbl")
 
@@ -26,6 +27,5 @@ each record are separated by commas. The fields are:
 
   Volume ID,
   File specification path to the data product label file,
-  Ring Observation ID,
   Target (this field recurs as many times as necessary).
 

@@ -53,7 +53,6 @@ $NOTE
 # Edit COLUMN NAME and any fields not enclosed in dollar signs
 ################################################################
 $END_NOTE
-
   OBJECT                        = COLUMN
     NAME                        = "VOLUME_ID"
     FORMAT                      = "A7"

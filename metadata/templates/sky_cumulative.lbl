@@ -1,21 +1,21 @@
-$NOTE 
+$NOTE
 ################################################################################
-# Geometry file template for sky quantities.  
+# Geometry file template for sky quantities.
 #
-#  This template controls the creation of body geometry files.  The procedure 
-#  for generating geometry files for a host is as follows.  Files referred to 
-#  below should be copied into the top directory for the collection, e.g., 
+#  This template controls the creation of body geometry files.  The procedure
+#  for generating geometry files for a host is as follows.  Files referred to
+#  below should be copied into the top directory for the collection, e.g.,
 #  GO_0xxx:
 #
-#  2. Copy and edit the <collection>_geometry.py script to reflect the 
+#  2. Copy and edit the <collection>_geometry.py script to reflect the
 #     type of index and glob pattern for the table files.
 #  3. Copy and edit config.py to address any host-dependent processing.
 #  4. Run <collection>_geometry.py from the collection top directory.
 #
-#  In the host_defs files, replace all values describing the new host.  
-#  In this template, quantities enclosed in dollar signs are automatically 
-#  filled in and should not be edited.  Add a column for each quantity to be 
-#  copied from the product label into the index.  
+#  In the host_defs files, replace all values describing the new host.
+#  In this template, quantities enclosed in dollar signs are automatically
+#  filled in and should not be edited.  Add a column for each quantity to be
+#  copied from the product label into the index.
 #
 ################################################################################
 $END_NOTE
@@ -23,22 +23,20 @@ PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = $LABEL_VALUE("RECORD_TYPE")$
 RECORD_BYTES                    = $LABEL_VALUE("RECORD_BYTES")$
 FILE_RECORDS                    = $LABEL_VALUE("FILE_RECORDS")$
-^$TABLE_TYPE$_TABLE             = "$LABEL_VALUE("TABLE_BASENAME")$"
+^CUMULATIVE_TABLE               = "$LABEL_VALUE("TABLE_BASENAME")$"
 
 $INCLUDE("./templates/host_defs.lbl")
 
 PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
-VOLUME_ID                       = "$LABEL_VALUE('FIRST', 'VOLUME_ID')$"
 
-OBJECT                          = $TABLE_TYPE$_TABLE
+OBJECT                          = CUMULATIVE_TABLE
   INTERCHANGE_FORMAT            = ASCII
   ROWS                          = $LABEL_VALUE("ROWS")$
   COLUMNS                       = $LABEL_VALUE("COLUMNS")$
   ROW_BYTES                     = $LABEL_VALUE("ROW_BYTES")$
-  INDEX_TYPE                    = SINGLE
+  INDEX_TYPE                    = CUMULATIVE
   DESCRIPTION                   = "This index describes the sky intercept
-    geometry of the field of each observation found on the volume identified
-    by the VOLUME_ID keyword above.
+    geometry of the field of all observations in the collection.
 
     For each sampled pixel, a variety of geometric quantitities have been
     calculated. All quantites are tabulated in terms of a global minimum and

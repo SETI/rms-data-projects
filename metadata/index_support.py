@@ -8,11 +8,12 @@ import hosts.pds3 as pds3
 
 import metadata as meta
 import metadata.label_support as lab
-import host_config as config
 import pdstable
 
 from filecache              import FCPath
 from pdstemplate.pds3table  import Pds3Table
+
+import host_config as config
 
 ################################################################################
 # Index class
@@ -127,7 +128,7 @@ class Index():
                  continue
 
                 # Log volume ID and subpath
-                subdir = meta.get_volume_subdir(root)
+                subdir = meta.get_volume_subdir(root, config.get_volume_id(root))
                 logger.info('%s %4d/%4d  %s' % (self.volume_id, i+1, n, subdir/name))
 
                 # Make the index for this file
@@ -285,11 +286,10 @@ class Index():
         Returns:
             str: formatted value.
         """
-
+    
         # format value
         line = ff.FortranRecordWriter('(' + format + ')')
-        line = line.write([value])
-        result = line.strip().ljust(len(line))                 # Left justify
+        result = line.write([value])
 
         # add double quotes to string formats
         if format[0] == 'A':
@@ -300,7 +300,7 @@ class Index():
     #===============================================================================
     @staticmethod
     def _format_parms(format):
-        """Determine len and type corresopnding to a given FORTRAN format code.
+        """Determine len and type corresopnding to a given FORTRAN format code..
 
         Args:
             format (str): FORTRAN_style format code.
@@ -418,7 +418,7 @@ def key__file_specification_name(label_path, label_dict):
     Returns:
         str: File Specification name.
     """
-    return meta.get_volume_subdir(label_path)
+    return meta.get_volume_subdir(label_path, config.get_volume_id(label_path))
     
 
 ################################################################################

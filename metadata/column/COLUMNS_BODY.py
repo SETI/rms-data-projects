@@ -85,7 +85,6 @@ for body in BODIES:
                                                          BODYX, [body]))
     BODY_DETAILED_DICT.update(replacement_dict(BODY_DETAILED_COLUMNS,
                                                          BODYX, [body]))
-
 ################################################################################
 # Define the tiling for detailed listings
 #

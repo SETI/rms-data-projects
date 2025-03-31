@@ -10,10 +10,11 @@ import fnmatch
 
 import metadata as meta
 import metadata.label_support as lab
-import host_config as config
 
 from pathlib   import Path
 from filecache import FCPath
+
+import host_config as config
 
 ################################################################################
 # FORMAT_DICT tuples are:
@@ -113,7 +114,6 @@ ALT_FORMAT_DICT = {
     ("sub_longitude",  "-180")  : ("-180", 2, 8, "%8.3f",  None,     -999.)}
 
 SYSTEMS_TABLE = meta.convert_systems_table(config.SYSTEMS_TABLE, config.SCLK_BASES)
-SYSTEM_NULL = "UNK"
 
 ################################################################################
 # Record class
@@ -138,9 +138,6 @@ class Record(object):
         sclk = observation.dict["SPACECRAFT_CLOCK_START_COUNT"] + '' 
         self.system, self.secondaries = \
             meta.get_system(SYSTEMS_TABLE, sclk, config.SCLK_BASES)
-#        if not self.system:
-#            self.system = None
-
         self.level = level
 
         # Level-specific column dictionaries
@@ -221,7 +218,7 @@ class Record(object):
 
     #===============================================================================
     def add(self, qualifier, *,
-                  name=None, target=None, tiles=[], tiling_min=100,
+                  name=None,target=None, tiles=[], tiling_min=100,
                   ignore_shadows=False, start_index=1, allow_zero_rows=False, 
                   no_mask=False, no_body=False):
         """Generates the geometry for one row, given a list of column descriptions.
@@ -334,7 +331,7 @@ class Record(object):
                 The name of one body that may be able to block or shadow
                 other bodies.
             column_descs (list): A list of column descriptions.
-            system (str): Name of system body, uppercase, e.g., "SATURN".
+            system (str): Name of systembody, uppercase, e.g., "SATURN".
             target (str, optional): Optionally, the target name to write into the record.
             name_length (int, optional):
                 The character width of a column to contain body names.
@@ -433,10 +430,7 @@ class Record(object):
 
             # Append the target and system name as needed
             if not no_body:
-######## system should be SYSTEM_NULL if there's no system
-######## also can skip much of the above
-                system_string = system if system else SYSTEM_NULL
-                Record._append_body_prefix(prefix_columns, system_string, name_length)
+                Record._append_body_prefix(prefix_columns, system, name_length)
                 if target is not None:
                     Record._append_body_prefix(prefix_columns, target, name_length)
 
@@ -453,26 +447,24 @@ class Record(object):
                 event_key = column_desc[0]
                 mask_desc = column_desc[1]
 
-                values = None
-                if system is not None:
-                    # Fill in the backplane array
-                    if event_key[1] == meta.NULL:
-                        values = oops.Scalar(0., True)
-                    else:
-                        values = backplane.evaluate(event_key)
+                # Fill in the backplane array
+                if event_key[1] == meta.NULL:
+                    values = oops.Scalar(0., True)
+                else:
+                    values = backplane.evaluate(event_key)
 
-                    # Make a shallow copy and apply the new masks
-                    if excluded_mask_dict != {}:
-                        target = event_key[1]
-                        excluded = excluded_mask_dict[(target,) + mask_desc]
-                        values = values.mask_where(excluded)
-                        if len(subregion_masks) > 1:
-                            values = values.mask_where(subregion_masks[indx])
-                        elif len(subregion_masks) == 1:
-                            values = values.mask_where(subregion_masks[0])
+                # Make a shallow copy and apply the new masks
+                if excluded_mask_dict != {}:
+                    target = event_key[1]
+                    excluded = excluded_mask_dict[(target,) + mask_desc]
+                    values = values.mask_where(excluded)
+                    if len(subregion_masks) > 1:
+                        values = values.mask_where(subregion_masks[indx])
+                    elif len(subregion_masks) == 1:
+                        values = values.mask_where(subregion_masks[0])
 
-                    if not np.all(values.mask):
-                        nothing_found = False
+                if not np.all(values.mask):
+                    nothing_found = False
 
                 # Write the column using the specified format
                 if len(column_desc) > 2:
@@ -624,9 +616,7 @@ class Record(object):
         """Returns one formatted column (or a pair of columns) as a string.
 
         Args:
-            values (oops.Scalar): 
-                A Scalar of values with its applied mask or None to return only
-                null values.
+            values (oops.Scalar): A Scalar of values with its applied mask.
             format (tuple):
                 A tuple (flag, number_of_values, column_width,standard_format, 
                 overflow_format, null_value),describing the format to use. 
@@ -651,38 +641,35 @@ class Record(object):
         (flag, number_of_values, column_width,
         standard_format, overflow_format, null_value) = format
 
-        if values is None:
-            results = [null_value, null_value]
-        else:
-            # Convert from radians to degrees if necessary
-            if flag in ("DEG","360","-180"):
-                values = values * oops.DPR
+        # Convert from radians to degrees if necessary
+        if flag in ("DEG","360","-180"):
+            values = values * oops.DPR
 
-            # Create a list of the numeric values for this column
-            if number_of_values == 1:
-                meanval = values.mean().as_builtin()
-                if type(meanval) == oops.Scalar and meanval.mask:
-                    results = [null_value]
-                else:
-                    results = [meanval]
-
-            elif np.all(values.mask):
-                results = [null_value, null_value]
-
-            elif flag == "360":
-                results = meta._get_range_mod360(values)
-
-            elif flag == "-180":
-                results = meta._get_range_mod360(values, alt_format=flag)
-
+        # Create a list of the numeric values for this column
+        if number_of_values == 1:
+            meanval = values.mean().as_builtin()
+            if type(meanval) == oops.Scalar and meanval.mask:
+                results = [null_value]
             else:
-                results = [values.min().as_builtin(), values.max().as_builtin()]
+                results = [meanval]
 
-            # Convert results to ISO
-            if flag in ("ISO","iso"):
-                if not isinstance(results[0], str):
-                    s = julian.iso_from_tai(results, digits=3)
-                    results = ['"'+str(s[0])+'"', '"'+str(s[1])+'"']
+        elif np.all(values.mask):
+            results = [null_value, null_value]
+
+        elif flag == "360":
+            results = meta._get_range_mod360(values)
+
+        elif flag == "-180":
+            results = meta._get_range_mod360(values, alt_format=flag)
+
+        else:
+            results = [values.min().as_builtin(), values.max().as_builtin()]
+
+        # Convert results to ISO
+        if flag in ("ISO","iso"):
+            if not isinstance(results[0], str):
+                s = julian.iso_from_tai(results, digits=3)
+                results = ['"'+str(s[0])+'"', '"'+str(s[1])+'"']
 
         # Write the formatted value(s)
         strings = []
@@ -934,10 +921,10 @@ class BodyTable(Table):
         if record.system:
             self.rows += record.add(self.qualifier, name=record.system, target=record.system)
 
-            # Add other bodies
-            for name in record.bodies:
-                if name != record.system:
-                    self.rows += record.add(self.qualifier, name=name, target=name)
+        # Add other bodies
+        for name in record.bodies:
+            if name != record.system:
+                self.rows += record.add(self.qualifier, name=name, target=name)
 
 
 ################################################################################
@@ -1107,7 +1094,8 @@ class Suite(object):
                     continue
 
                 # Print a log of progress
-                logger.info("%s  %4d/%4d" % (self.volume_id, i+1, nobs))
+                logger.info("%s  %s %4d/%4d" %
+                            (self.volume_id, self.observations[i].basename, i+1, nobs))
 
                 # Continue processing even if cspice throws a runtime error
                 try:

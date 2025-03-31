@@ -137,6 +137,8 @@ RING_SYSTEM_RADII = {
 _LOGGER = PdsLogger.get_logger('metadata', timestamps=False, digits=0, lognames=False,
                                pid=False, indent=True, blanklines=False, level='info')
 
+SYSTEM_NULL = "NONE"
+
 #===============================================================================
 def get_logger():
     """The global PdsLogger for the metadata tools."""
@@ -210,7 +212,7 @@ def splitpath(path: str, string: str):
     return (FCPath('').joinpath(*parts[0:i]), FCPath('').joinpath(*parts[i+1:]))
 
 #===============================================================================
-def get_volume_subdir(path):
+def get_volume_subdir(path, volume_id):
     """Determine the Subdirectory of an input file relative to the volume dir.
 
     Args:
@@ -219,7 +221,7 @@ def get_volume_subdir(path):
     Returns:
         str: Final directory in tree.
     """
-    return splitpath(path, config.get_volume_id(path))[1]
+    return splitpath(path, volume_id)[1]
 
 #===============================================================================
 def replace(tree, placeholder, name):

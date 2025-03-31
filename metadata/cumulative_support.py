@@ -138,5 +138,7 @@ def create_cumulative_indexes(host=None, exclude=None):
               exclude=exclude, volume=volume)
     _cat_rows(volume_tree, cumulative_dir, volume_glob, 'SUPPLEMENTAL_INDEX',
               exclude=exclude, volume=volume)
+#    _cat_rows(volume_tree, cumulative_dir, volume_glob, 'INVENTORY',
+#              exclude=exclude, volume=volume)
 
 ################################################################################
