@@ -25,6 +25,7 @@ def _cat_rows(volume_tree, cumulative_dir, volume_glob, table_type, *,
         volume (str, optional): If given, only this volume is processed.
     """
     logger = meta.get_logger()
+    ext = '.csv' if table_type=='INVENTORY' else '.tab'
 
     # Walk the input tree, adding lines for each found volume
     logger.info('Building Cumulative %s table' % table_type)
@@ -63,8 +64,9 @@ def _cat_rows(volume_tree, cumulative_dir, volume_glob, table_type, *,
                     cumulative_id = config.get_volume_id(cumulative_dir)
 
                     # Check existence of table
+                    basename = '%s_%s' % (vol, table_type.lower())
                     try:
-                        table_file = list(root.glob('%s_%s.tab' % (vol, table_type.lower())))[0]
+                        table_file = list(root.glob('%s_%s' % (vol, table_type.lower())+ext))[0]
                     except IndexError:
                         continue
 
@@ -138,7 +140,7 @@ def create_cumulative_indexes(host=None, exclude=None):
               exclude=exclude, volume=volume)
     _cat_rows(volume_tree, cumulative_dir, volume_glob, 'SUPPLEMENTAL_INDEX',
               exclude=exclude, volume=volume)
-#    _cat_rows(volume_tree, cumulative_dir, volume_glob, 'INVENTORY',
-#              exclude=exclude, volume=volume)
+    _cat_rows(volume_tree, cumulative_dir, volume_glob, 'INVENTORY',
+              exclude=exclude, volume=volume)
 
 ################################################################################

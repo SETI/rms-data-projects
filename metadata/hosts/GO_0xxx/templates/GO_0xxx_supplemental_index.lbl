@@ -41,7 +41,11 @@ OBJECT                          = SUPPLEMENTAL_INDEX_TABLE
   ROWS                          = $LABEL_VALUE("ROWS")$
   COLUMNS                       = $LABEL_VALUE("COLUMNS")$
   ROW_BYTES                     = $LABEL_VALUE("ROW_BYTES")$
+$IF(TABLE_TYPE == 'CUMULATIVE')
+  INDEX_TYPE                    = CUMULATIVE
+$ELSE
   INDEX_TYPE                    = SINGLE
+$END_IF
   DESCRIPTION                   = "This index supplements the file
 INDEX/INDEX.TAB found on each Galileo SSI archive volume in the PDS. It
 contains a large set of useful parameter values that are not found in the

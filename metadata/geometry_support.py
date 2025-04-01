@@ -756,7 +756,7 @@ class Table(object):
         
         # Create filename
         filename = FCPath(prefix + self.suffix)
-    
+
         if not labels_only:
             if self.rows == []:
                 return
@@ -766,8 +766,9 @@ class Table(object):
             meta.write_txt_file(filename, self.rows)
 
         # Write label
-        table_type = ''
-        table_type = self.qualifier + '_' + self.level
+        table_type = self.qualifier
+        if self.level:
+            table_type += '_' + self.level
         lab.create(filename, table_type=table_type)
 
 ################################################################################
@@ -783,7 +784,7 @@ class InventoryTable(Table):
         Args:
             table: Parent Table instance.
         """
-        super().__init__(qualifier='inventory', suffix="_inventory.csv", **kwargs)
+        super().__init__(qualifier='inventory', suffix="_inventory.csv", level=None, **kwargs)
 
     #===============================================================================
     def add(self, record):
@@ -1015,7 +1016,7 @@ class Suite(object):
             None.
         """
         self.tables = [
-            InventoryTable(volume_id=self.volume_id, level=level),
+            InventoryTable(volume_id=self.volume_id),#, level=level),
             SkyTable(volume_id=self.volume_id, level=level),
 #            SunTable(volume_id=self.volume_id, level=level),
             RingTable(volume_id=self.volume_id, level=level),
@@ -1051,7 +1052,7 @@ class Suite(object):
         """
         for table in self.tables:
             for record in records:
-                if record.level == table.level:
+                if (record.level == table.level) | (table.level is None):
                     table.add(record)
 
     #===============================================================================

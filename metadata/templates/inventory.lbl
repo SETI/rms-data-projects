@@ -7,7 +7,11 @@ RECORD_TYPE                     = STREAM
 
 VOLUME_ID                       = "$VOLUME_ID$"
 PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
+$IF(TABLE_TYPE == 'CUMULATIVE')
+INDEX_TYPE                      = CUMULATIVE
+$ELSE
 INDEX_TYPE                      = SINGLE
+$END_IF
 
 $INCLUDE("./templates/host_defs.lbl")
 

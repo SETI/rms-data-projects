@@ -35,10 +35,16 @@ OBJECT                          = $TABLE_TYPE$_TABLE
   ROWS                          = $LABEL_VALUE("ROWS")$
   COLUMNS                       = $LABEL_VALUE("COLUMNS")$
   ROW_BYTES                     = $LABEL_VALUE("ROW_BYTES")$
+$IF(TABLE_TYPE == 'CUMULATIVE')
+  INDEX_TYPE                    = CUMULATIVE
+  DESCRIPTION                   = "This index describes the sky intercept
+    geometry of the field of all observations in the collection.
+$ELSE
   INDEX_TYPE                    = SINGLE
   DESCRIPTION                   = "This index describes the sky intercept
     geometry of the field of each observation found on the volume identified
     by the VOLUME_ID keyword above.
+$END_IF
 
     For each sampled pixel, a variety of geometric quantitities have been
     calculated. All quantites are tabulated in terms of a global minimum and
@@ -54,4 +60,68 @@ OBJECT                          = $TABLE_TYPE$_TABLE
     $INCLUDE("./templates/description.lbl")
     "
 
-$INCLUDE("../../templates/sky_columns.lbl")
+$NOTE
+################################################################
+# Add a column below for each desired index quantity
+# Edit COLUMN NAME and any fields not enclosed in dollar signs
+################################################################
+$END_NOTE
+  OBJECT                        = COLUMN
+    NAME                        = "VOLUME_ID"
+    DESCRIPTION                 = "The volume ID provides a unique
+      for a PDS data volume."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "FILE_SPECIFICATION_NAME"
+    DESCRIPTION                 = "The file specification name provides the
+      full name of a file, including a path name, relative to the root
+      directory of the PDS volume."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_RIGHT_ASCENSION"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "This is the minimum value for J2000 right
+      ascension within the field of view sampled by this observation. For
+      fields of view that cross 360 degrees, the tabulated minimum value
+      will be greater than the maximum."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_RIGHT_ASCENSION"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "This is the maximum value for J2000 right
+      ascension within the field of view sampled by this observation. For
+      fields of view that cross 360 degrees, the tabulated minimum value
+      will be greater than the maximum."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_DECLINATION"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "This is the minimum value for J2000
+      declination within the field of view sampled by the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_DECLINATION"
+    UNIT                        = "DEGREES"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "This is the maximum value for J2000
+      declination within the field of view sampled by the observation."
+  END_OBJECT                    = COLUMN
+
+END_OBJECT                      = $TABLE_TYPE$_TABLE
+END
