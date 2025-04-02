@@ -68,7 +68,6 @@ Attributes:
 """
 ################################################################################
 import sys, os
-import host_config as config
 import argparse
 import numpy as np
 import oops
@@ -76,6 +75,9 @@ import oops
 from pathlib                import Path
 from filecache              import FCPath
 from pdslogger              import PdsLogger
+
+import host_init            # initialize host module so that we have access to
+                            # to kernel data
 
 ###############################
 # Define constants
@@ -107,12 +109,15 @@ BODY_NAMES = [
     'PLUTO'
 ]
 
-bodies = []
-for name in BODY_NAMES:
-    bod = oops.Body.lookup(name)
-    bodies += [bod]
-    bodies += bod.select_children("REGULAR")
-BODIES = {body.name: body for body in bodies}
+def define_bodies(body_names):
+    bodies = []
+    for name in body_names:
+        bod = oops.Body.lookup(name)
+        bodies += [bod]
+        bodies += bod.select_children("REGULAR")
+    return {body.name: body for body in bodies}
+
+BODIES = define_bodies(BODY_NAMES)
 
 ################################################################################
 # Body Data tables
@@ -547,8 +552,8 @@ def sclk_to_ticks(sclk, bases):
     return ticks
     
 #===============================================================================
-def convert_systems_table(table, bases):
-    """Convert systems tables SCLK count string to ticks.
+def convert_default_bodies_table(table, bases):
+    """Convert default bodies tables SCLK count string to ticks.
 
     Args:
         table (list): Systems table.
@@ -567,20 +572,20 @@ def convert_systems_table(table, bases):
     return new_table
 
 #===============================================================================
-def get_system(table, sclk, bases):
-    """Use converted systems table to determine the system for a given spacecraft 
+def get_primary(table, sclk, bases):
+    """Use converted default bodies table to determine the primary for a given spacecraft 
     clock count.
 
     Args:
-        table (list): Converted systems table containing sclk ticks instead of strings.
+        table (list): Converted default bodies table containing sclk ticks instead of strings.
         sclk (str): Spacecraft clock string corresponding to the observation time.
         bases (list): Base (int) to use for each decimal place.
 
     Returns:
-        NamedTuple (system (str), secondaries (list)): 
-            system: Name of the system corresponding to the given SCLK value.
+        NamedTuple (primary (str), secondaries (list)): 
+            primary: Name of the primary corresponding to the given SCLK value.
             secondaries: 
-                Names of any secondaries for this system.
+                Names of any secondaries.
     """
     sclk_ticks = sclk_to_ticks(sclk, bases)
     for row in table:

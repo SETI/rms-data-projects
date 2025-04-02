@@ -4,7 +4,6 @@
 import time
 import pdsparser
 
-from pathlib                import Path
 from filecache              import FCPath
 from pdstemplate            import PdsTemplate
 from pdstemplate.pds3table  import pds3_table_preprocessor
@@ -54,7 +53,7 @@ def create(filepath,
 
     # Default preprocessor
     preprocess = pds3_table_preprocessor
-    if inventory' in body:
+    if 'inventory' in body:
         preprocess = None
 
     # Default template dictionary

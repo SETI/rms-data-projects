@@ -113,7 +113,8 @@ ALT_FORMAT_DICT = {
     ("ring_longitude", "-180")  : ("-180", 2, 8, "%8.3f",  None,     -999.),
     ("sub_longitude",  "-180")  : ("-180", 2, 8, "%8.3f",  None,     -999.)}
 
-SYSTEMS_TABLE = meta.convert_systems_table(config.SYSTEMS_TABLE, config.SCLK_BASES)
+DEFAULT_BODIES_TABLE = \
+    meta.convert_default_bodies_table(config.DEFAULT_BODIES_TABLE, config.SCLK_BASES)
 
 ################################################################################
 # Record class
@@ -134,10 +135,10 @@ class Record(object):
         """
         self.observation = observation
 
-        # Determine system, if any
+        # Determine primary, if any
         sclk = observation.dict["SPACECRAFT_CLOCK_START_COUNT"] + '' 
-        self.system, self.secondaries = \
-            meta.get_system(SYSTEMS_TABLE, sclk, config.SCLK_BASES)
+        self.primary, self.secondaries = \
+            meta.get_primary(DEFAULT_BODIES_TABLE, sclk, config.SCLK_BASES)
         self.level = level
 
         # Level-specific column dictionaries
@@ -159,10 +160,10 @@ class Record(object):
         self.bodies = []
         self.blocker = None
 
-        if self.system:
-            self.rings_present = meta.BODIES[self.system].ring_frame is not None    
-            self.ring_tile_dict = meta.RING_TILE_DICT[self.system]
-            self.body_tile_dict = meta.BODY_TILE_DICT[self.system]
+        if self.primary:
+            self.rings_present = meta.BODIES[self.primary].ring_frame is not None    
+            self.ring_tile_dict = meta.RING_TILE_DICT[self.primary]
+            self.body_tile_dict = meta.BODY_TILE_DICT[self.primary]
 
         # Determine target
         self.target = config.target_name(observation.dict)
@@ -192,7 +193,7 @@ class Record(object):
             body_names += self.secondaries
         self.bodies = body_names
 
-        if self.system:
+        if self.primary:
             # Define a blocker body, if any
             if self.target in self.bodies:
                 self.blocker = self.target
@@ -274,7 +275,7 @@ class Record(object):
 
         # Prepare the rows
         rows = Record._prep_row(self.prefixes, self.backplane, self.blocker, column_descs,
-                                system=self.system, target=target,
+                                primary=self.primary, target=target,
                                 tiles=tiles, tiling_min=tiling_min, ignore_shadows=ignore_shadows,
                                 start_index=start_index, allow_zero_rows=allow_zero_rows, no_mask=no_mask, 
                                 no_body=no_body)
@@ -293,7 +294,7 @@ class Record(object):
     #===============================================================================
     @staticmethod
     def _prep_row(prefixes, backplane, blocker, column_descs, *,
-                  system=None, target=None, name_length=meta.NAME_LENGTH,
+                  primary=None, target=None, name_length=meta.NAME_LENGTH,
                   tiles=[], tiling_min=100, ignore_shadows=False,
                   start_index=1, allow_zero_rows=False, no_mask=False, 
                   no_body=False):
@@ -331,7 +332,7 @@ class Record(object):
                 The name of one body that may be able to block or shadow
                 other bodies.
             column_descs (list): A list of column descriptions.
-            system (str): Name of systembody, uppercase, e.g., "SATURN".
+            primary (str): Name of primary body, uppercase, e.g., "SATURN".
             target (str, optional): Optionally, the target name to write into the record.
             name_length (int, optional):
                 The character width of a column to contain body names.
@@ -365,7 +366,7 @@ class Record(object):
             local_index = start_index
             for tile in tiles:
                 new_rows = Record._prep_row(prefixes, backplane, blocker, column_descs,
-                                            system, target, name_length,
+                                            primary, target, name_length,
                                             tile, tiling_min, ignore_shadows,
                                             local_index, allow_zero_rows=True)
                 rows += new_rows
@@ -375,7 +376,7 @@ class Record(object):
                 return rows
 
             return Record._prep_row(prefixes, backplane, blocker, column_descs,
-                                    system, target, name_length,
+                                    primary, target, name_length,
                                     [], tiling_min, ignore_shadows,
                                     start_index, allow_zero_rows=False)
 
@@ -409,7 +410,7 @@ class Record(object):
 
                 excluded_mask_dict[key] = \
                     Record._construct_excluded_mask(
-                                backplane, mask_target, system, mask_desc,
+                                backplane, mask_target, primary, mask_desc,
                                 blocker=blocker, ignore_shadows=ignore_shadows)
         # Initialize the list of rows
 
@@ -428,9 +429,9 @@ class Record(object):
             # Initialize the list of columns
             prefix_columns = list(prefixes) # make a copy
 
-            # Append the target and system name as needed
+            # Append the target and primary name as needed
             if not no_body:
-                Record._append_body_prefix(prefix_columns, system, name_length)
+                Record._append_body_prefix(prefix_columns, primary, name_length)
                 if target is not None:
                     Record._append_body_prefix(prefix_columns, target, name_length)
 
@@ -484,7 +485,7 @@ class Record(object):
             return rows
 
         return Record._prep_row(prefixes, backplane, blocker, column_descs,
-                                system, target, name_length,
+                                primary, target, name_length,
                                 [], 0, ignore_shadows, start_index,
                                 allow_zero_rows=False)
 
@@ -518,7 +519,7 @@ class Record(object):
 
     #===============================================================================
     @staticmethod
-    def _construct_excluded_mask(backplane, target, system, mask_desc, *,
+    def _construct_excluded_mask(backplane, target, primary, mask_desc, *,
                                  blocker=None, ignore_shadows=True):
         """Return a mask using the specified target, maskers and shadowers to
         indicate excluded pixels.
@@ -526,7 +527,7 @@ class Record(object):
         Args:
             backplane (oops.Backplne): The backplane defining the target surface.
             target (str): The name of the target surface.
-            system (str): Name of system, e.g., "SATURN".
+            primary (str): Name of primary, e.g., "SATURN".
             mask_desc (masker, shadower, face), where:
                 Masker      a string identifying what surfaces can obscure the
                 target. It is a concatenation of:
@@ -560,8 +561,8 @@ class Record(object):
 
         # Generate the new mask, with True means included
         if type(target) == str:
-            system_name = target.split(':')[0]
-            if not oops.Body.exists(system_name):
+            primary_name = target.split(':')[0]
+            if not oops.Body.exists(primary_name):
                 return True
 
         (masker, shadower, face) = mask_desc
@@ -569,12 +570,12 @@ class Record(object):
         excluded = np.zeros(backplane.shape, dtype='bool')
 
         # Handle maskers
-        if "R" in masker and system == "SATURN":
+        if "R" in masker and primary == "SATURN":
             excluded |= backplane.where_in_back(target, "SATURN_MAIN_RINGS").vals
 
         if "P" in masker:
-            excluded |= backplane.where_in_back(target, system).vals
-            if system == "PLUTO":
+            excluded |= backplane.where_in_back(target, primary).vals
+            if primary == "PLUTO":
                 excluded |= backplane.where_in_back(target, "CHARON").vals
 
         if "M" in masker and blocker is not None:
@@ -583,12 +584,12 @@ class Record(object):
         if not ignore_shadows:
 
             # Handle shadowers
-            if "R" in shadower and system == "SATURN":
+            if "R" in shadower and primary == "SATURN":
                 excluded |= backplane.where_inside_shadow(target, "SATURN_MAIN_RINGS").vals
 
             if "P" in shadower:
-                excluded |= backplane.where_inside_shadow(target, system).vals
-                if system == "PLUTO":
+                excluded |= backplane.where_inside_shadow(target, primary).vals
+                if primary == "PLUTO":
                     excluded |= backplane.where_inside_shadow(target, "CHARON").vals
 
             if "M" in shadower and blocker is not None:
@@ -882,9 +883,9 @@ class RingTable(Table):
         """
 
         # Add record
-        if record.system:
+        if record.primary:
             if record.rings_present:
-                self.rows += record.add(self.qualifier, name=record.system)
+                self.rows += record.add(self.qualifier, name=record.primary)
 
 #        # Add other rings
 #        for name in record.bodies
@@ -918,13 +919,13 @@ class BodyTable(Table):
             None.
         """
 
-        # Add system body
-        if record.system:
-            self.rows += record.add(self.qualifier, name=record.system, target=record.system)
+        # Add primary body
+        if record.primary:
+            self.rows += record.add(self.qualifier, name=record.primary, target=record.primary)
 
         # Add other bodies
         for name in record.bodies:
-            if name != record.system:
+            if name != record.primary:
                 self.rows += record.add(self.qualifier, name=name, target=name)
 
 

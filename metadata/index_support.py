@@ -293,7 +293,7 @@ class Index():
 
         # add double quotes to string formats
         if format[0] == 'A':
-            result = '"' + result + '"'
+            result = '"' + result.strip().ljust(len(result)) + '"'
     
         return result
 

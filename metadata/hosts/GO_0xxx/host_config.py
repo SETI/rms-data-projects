@@ -15,8 +15,7 @@ import oops
 import hosts.galileo.ssi as ssi
 import metadata as meta
 
-
-ssi.initialize()
+import host_init
 
 ################################################################################
 # SCLK-dependent mission-specific data (required)
@@ -25,7 +24,7 @@ SCLK_BASES = [16777215,91,10,8]
 
 # SYSTEM and SECONDARIES are always included in the body table regardless
 # of whether the intersect the FOV.
-SYSTEMS_TABLE = [
+DEFAULT_BODIES_TABLE = [
 #      SCLK_START range (inclusive)   SYSTEM      SECONDARIES
     (('00180626.00', '00190641.00'), 'VENUS',     []),
     (('00597197.00', '00623035.00'), 'EARTH',     []),
