@@ -25,7 +25,7 @@ SCLK_BASES = [16777215,91,10,8]
 # SYSTEM and SECONDARIES are always included in the body table regardless
 # of whether the intersect the FOV.
 DEFAULT_BODIES_TABLE = [
-#      SCLK_START range (inclusive)   SYSTEM      SECONDARIES
+#      SCLK_START range (inclusive)   PRIMARY      SECONDARIES
     (('00180626.00', '00190641.00'), 'VENUS',     []),
     (('00597197.00', '00623035.00'), 'EARTH',     []),
 ###    (('00594697.00', '00623035.00'), 'EARTH',     []),
@@ -33,8 +33,8 @@ DEFAULT_BODIES_TABLE = [
     (('01645330.00', '01663247.00'), 'EARTH',     []), 
 #    (('02025307.00', '02025628.00'), 'IDA',       []), 
 #    (('03464059.00', '06475387.00'), 'JUPITER',   ['IO', 'EUROPA', 'GANYMEDE', 'CALLISTO']) ]
-    (('03464059.00', '06475387.00'), 'JUPITER',   []) ]
-#    (('01973272.00', '06475387.00'), 'JUPITER',   []) ]
+#    (('03464059.00', '06475387.00'), 'JUPITER',   []) ]
+    (('01973272.00', '06475387.00'), 'JUPITER',   []) ]
 
 
 BORDER = 25                 # in units of full-size SSI pixels

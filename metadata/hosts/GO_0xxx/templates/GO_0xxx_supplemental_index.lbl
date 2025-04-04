@@ -172,14 +172,6 @@ efficiency."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    NAME                        = "PRODUCT_VERSION_ID"
-    FORMAT                      = "I3"
-    NOT_APPLICABLE_CONSTANT     = -1
-    DESCRIPTION                 = "The version number of the individual
-product within this data set."
-  END_OBJECT                    = COLUMN
-
-  OBJECT                        = COLUMN
     NAME                        = "ICT_QUANTIZATION_STEP_SIZE"
     FORMAT                      = "I3"
     NOT_APPLICABLE_CONSTANT     = -1
@@ -195,15 +187,6 @@ divided. The greater the step-size, the greater the data loss."
     DESCRIPTION                 = "The zigzag pattern used to rearrange the
 Integer Cosine Transform (ICT), one of 'ZIGZAG' or 'ALT'. If ICT compression
 was not used, the 'not applicable' constant 'N/A'."
-  END_OBJECT                    = COLUMN
-
-  OBJECT                        = COLUMN
-    NAME                        = "COMPRESSION_QUANTIZATION_TABLE_ID"
-    FORMAT                      = "A7"
-    NOT_APPLICABLE_CONSTANT     = "N/A"
-    DESCRIPTION                 = "The 8X8 quantization matrix identifier
-for the Integer Cosine Transform. Valid values are 'UNIFORM', 'VG2', and
-'VG3'."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN

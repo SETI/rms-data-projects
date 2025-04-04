@@ -23,7 +23,7 @@ PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = $LABEL_VALUE("RECORD_TYPE")$
 RECORD_BYTES                    = $LABEL_VALUE("RECORD_BYTES")$
 FILE_RECORDS                    = $LABEL_VALUE("FILE_RECORDS")$
-^$TABLE_TYPE$_TABLE             = "$LABEL_VALUE("TABLE_BASENAME")$"
+^BODY_SUMMARY_TABLE             = "$LABEL_VALUE("TABLE_BASENAME")$"
 
 $INCLUDE("./templates/host_defs.lbl")
 
@@ -971,7 +971,7 @@ $END_NOTE
     NAME                        = "MINIMUM_DIAMETER_IN_PIXELS"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Longest projected diameter of the planet or
-      specified target body, converted to pixels.  This diameter is computed
+      specified target body, converted to pixels. This diameter is computed
       based on the body's current distance, but as if it fell at the center of
       the field of view.
 
@@ -984,7 +984,7 @@ $END_NOTE
     NAME                        = "MAXIMUM_DIAMETER_IN_PIXELS"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Longest projected diameter of the planet or
-      specified target body, converted to pixels.  This diameter is computed
+      specified target body, converted to pixels. This diameter is computed
       based on the body's current distance, but as if it fell at the center of
       the field of view.
 

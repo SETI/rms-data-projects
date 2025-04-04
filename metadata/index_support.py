@@ -43,6 +43,8 @@ class Index():
         self.output_dir = FCPath(output_dir)
         self.type = type
         self.glob = glob
+        self.usage = {}
+        self.unused = set()
 
         # Get volume id from label
         self.volume_id = config.get_volume_id(self.input_dir)
@@ -134,6 +136,11 @@ class Index():
                 # Make the index for this file
                 self._index_one_file(root, file)
 
+            # Flag any unused columns
+            for name in self.usage:
+                if not self.usage[name]:
+                    self.unused.update({name})
+
             # Write index 
             if self.content:
                 meta.write_txt_file(self.index_path, self.content)
@@ -164,8 +171,13 @@ class Index():
             if not column_stub:
                 continue
 
+            # Add column name to usage dict if not already there
+            name = column_stub['NAME']
+            if not name in self.usage:
+                self.usage[name] = False
+
             # Get the value
-            value = Index._index_one_value(column_stub, path, label)
+            value = self._index_one_value(column_stub, path, label)
 
             # Write the value into the index
             if not first:
@@ -179,8 +191,7 @@ class Index():
         self.content += [line]
 
     #===============================================================================
-    @staticmethod
-    def _index_one_value(column_stub, label_path, label_dict):
+    def _index_one_value(self, column_stub, label_path, label_dict):
         """Determine value for one row of one column.
 
         Args:
@@ -215,6 +226,11 @@ class Index():
             value = nullval
 
         assert value is not None, 'Null constant needed for %s.' % column_stub['NAME']
+
+        # If valid value, mark this column as used
+        if value != nullval:
+            self.usage[key] = True
+
         return value
 
     #===============================================================================
@@ -467,6 +483,8 @@ def process_index(host=None, type='', glob=None):
     Returns:
         None.
     """
+    logger = meta.get_logger()
+
     # Parse arguments
     parser = get_args(host=host, type=type)
     args = parser.parse_args()
@@ -489,21 +507,27 @@ def process_index(host=None, type='', glob=None):
         dirs.sort()
         root = FCPath(root)
 
-        # Determine notional set and volume
+        # Determine notional collection and volume
         parts = root.parts
-        set = parts[-2]
+        col = parts[-2]
         vol = parts[-1]
 
+        unused = None
         # Test whether this root is a volume
         if fnmatch.filter([vol], vol_glob):
             if not volume or vol == volume:
                 indir = root
-                if output_tree.parts[-1] != set: 
-                    outdir = output_tree/set
+                if output_tree.parts[-1] != col: 
+                    outdir = output_tree/col
                 outdir = output_tree/vol
 
                 # Process this volumne
                 index = Index(indir, outdir, type=args.type, glob=glob)
                 index.create(labels_only=labels_only)
-                
+
+                unused = index.unused if not unused else unused & index.unused
+
+        if unused:
+            logger.warn('Used columns: %s', unused)
+
 ################################################################################

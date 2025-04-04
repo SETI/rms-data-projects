@@ -23,7 +23,7 @@ PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = $LABEL_VALUE("RECORD_TYPE")$
 RECORD_BYTES                    = $LABEL_VALUE("RECORD_BYTES")$
 FILE_RECORDS                    = $LABEL_VALUE("FILE_RECORDS")$
-^$TABLE_TYPE$_TABLE             = "$LABEL_VALUE("TABLE_BASENAME")$"
+^SKY_SUMMARY_TABLE              = "$LABEL_VALUE("TABLE_BASENAME")$"
 
 $INCLUDE("./templates/host_defs.lbl")
 
