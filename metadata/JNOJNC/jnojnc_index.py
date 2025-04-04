@@ -18,6 +18,7 @@ It also does not write a label.
 """
 
 import os
+import pdstemplate
 import re
 import shutil
 import sys
@@ -101,6 +102,11 @@ def write_jnojnc_index(filepath):
         # Now we can interpret the record as Python values
         values = list(eval(rec))
 
+        # Remove extra zero from VOLUME_ID if necessary
+        volume_id = values[VOLUME_ID]
+        if len(volume_id) == 12:
+            values[VOLUME_ID] = volume_id[:7] + volume_id[-4:]
+        
         # If the three of the four floating-point columns are zero, they should be
         # NOT_APPLICABLE_CONSTANT
         if values[SPACECRAFT_ALTITUDE:SPACECRAFT_ALTITUDE+3] == [0,0,0]:
@@ -142,6 +148,17 @@ def write_jnojnc_index(filepath):
 
     # Close the output file
     f.close()
+
+    # Write the label
+    label_path = output_file[:-4] + '.lbl'
+    backup_label = output_file[:-4] + '-original.lbl'
+    if os.path.exists(label_path):
+        shutil.move(label_path, backup_label)
+    
+    program_path = sys.modules['__main__'].__file__
+    template_path = os.path.split(program_path)[0] + '/JNOJNC_0xxx_index_template.lbl'
+    template = pdstemplate.PdsTemplate(template_path)
+    template.write({}, label_path)
 
 ##########################################################################################
 
