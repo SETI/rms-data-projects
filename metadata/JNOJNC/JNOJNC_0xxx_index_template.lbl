@@ -42,6 +42,8 @@ $END_IF
     - Dates have been quoted for improved compatibility with many readers.
     - NOT_APPLICABLE_CONSTANTS have been specified where relevant in this
       label file.
+    - Starting in volume JNOJNC_0025, erroneous values in the first column,
+      VOLUME_ID, have been corrected.
 "
 
   OBJECT                        = COLUMN

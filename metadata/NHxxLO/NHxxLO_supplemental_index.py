@@ -85,7 +85,7 @@ def write_rec(f, label_filename, volume_id):
     try:        # Pluto only
       f.write('"%-80s",'  % label['NEWHORIZONS:OBSERVATION_DESC'].strip()[:80])
       if len(label['NEWHORIZONS:OBSERVATION_DESC'].strip()) > 80:
-        print 'OBSERVATION_DESC overflow in', label['PRODUCT_ID']
+        print('OBSERVATION_DESC overflow in', label['PRODUCT_ID'])
     except KeyError:
       f.write('"%-80s",'  % 'NULL')
 
@@ -157,7 +157,7 @@ for arg in sys.argv[1:]:
         os.makedirs(outdir)
 
     outpath = outdir.rstrip('/') + '/' + volume_id + '_supplemental_index.tab'
-    f = open(outpath, 'wb')
+    f = open(outpath, 'w', encoding='latin8')
 
     prev_root = ''
     for (root, dirs, files) in os.walk(os.path.join(arg, 'data')):
@@ -165,7 +165,7 @@ for arg in sys.argv[1:]:
             if not name.upper().endswith('.LBL'): continue
 
             if prev_root != root:
-                print root
+                print(root)
                 prev_root = root
 
             write_rec(f, os.path.join(root, name), volume_id)
