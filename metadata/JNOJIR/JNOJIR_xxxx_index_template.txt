@@ -8,6 +8,9 @@ RECORD_BYTES                    = 250
 FILE_RECORDS                    = $records$
 ^INDEX_TABLE                    = "$BASENAME(index_path)$"
 
+$IF(index_type == 'SINGLE')
+VOLUME_ID                       = "$volume_id$"
+$END_IF
 PRODUCT_CREATION_TIME           = $FILE_TIME(index_path)$
 
 INSTRUMENT_HOST_ID              = "JNO"
@@ -15,16 +18,12 @@ INSTRUMENT_HOST_NAME            = "JUNO"
 INSTRUMENT_ID                   = "JIRAM"
 INSTRUMENT_NAME                 = "JOVIAN INFRARED AURORAL MAPPER"
 
-$IF(index_type == 'SINGLE')
-VOLUME_ID                       = "$volume_id$"
-
-$END_IF
 OBJECT                          = INDEX_TABLE
   NAME                          = "INDEX_TABLE"
   INDEX_TYPE                    = $index_type$
   INTERCHANGE_FORMAT            = ASCII
   ROWS                          = $records$
-  COLUMNS                       = 9
+  COLUMNS                       = 10
   ROW_BYTES                     = 250
 $IF(index_type == 'SINGLE')
   DESCRIPTION                   = "Index of all the data products on volume
@@ -42,58 +41,84 @@ $END_IF
       to year-month-day format for consistency across all volume indices.
     - Date fields are now quoted, for better compatibility with some tools
       that read ASCII tables.
-    - Several products on volumes JNOJIR_1000 and JNOJIR_2000 had version
-      number 3.0 but were identified as version 1.0 in INDEX.TAB. These
-      entries have been corrected.
+    - Starting on volumes JNOJIR_1004 and JNOJIR_2004, the INDEX.TAB files had
+      a column of PRODUCT_ID values. These values have been filled in for
+      volumes JNOJIR_1000-1003 and JNOJIR_2000-2003.
     - Column widths are now uniform across all metadata files on all volumes.
+    - The FILE_SPECIFICATION_NAME column has been re-positioned as the second
+      column, immediately after the VOLUME_ID, for improved readability.
 "
 
   OBJECT                        = COLUMN
     NAME                        = "VOLUME_ID"
+    COLUMN_NUMBER               = 1
     DATA_TYPE                   = CHARACTER
     START_BYTE                  = 2
     BYTES                       = 11
+    FORMAT                      = A11
     DESCRIPTION                 = "Volume ID."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    NAME                        = "PRODUCT_TYPE"
+    NAME                        = "FILE_SPECIFICATION_NAME"
+    COLUMN_NUMBER               = 2
     DATA_TYPE                   = CHARACTER
     START_BYTE                  = 16
+    BYTES                       = 43
+    FORMAT                      = A43
+    DESCRIPTION                 = "The path to the PDS label file that
+describes the file containing instrument data. The path is relative to the
+root of the archive volume."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "PRODUCT_TYPE"
+    COLUMN_NUMBER               = 3
+    DATA_TYPE                   = CHARACTER
+    START_BYTE                  = 62
     BYTES                       = 3
+    FORMAT                      = A3
     DESCRIPTION                 = "The product type, either 'EDR' or 'RDR'."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "STANDARD_DATA_PRODUCT_ID"
+    COLUMN_NUMBER               = 4
     DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 22
+    START_BYTE                  = 68
     BYTES                       = 9
+    FORMAT                      = A9
     DESCRIPTION                 = "The general data product name as referred
 to in the volume SIS. One of 'IMAGE', 'SPECTRAL', or 'AUXILIARY'."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "DATA_SET_ID"
+    COLUMN_NUMBER               = 5
     DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 34
+    START_BYTE                  = 80
     BYTES                       = 22
+    FORMAT                      = A22
     DESCRIPTION                 = "The data set ID from the product label."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "PRODUCT_ID"
+    COLUMN_NUMBER               = 6
     DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 59
+    START_BYTE                  = 105
     BYTES                       = 34
+    FORMAT                      = A34
     DESCRIPTION                 = "The product ID unique to each data file."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "START_TIME"
+    COLUMN_NUMBER               = 7
     DATA_TYPE                   = TIME
-    START_BYTE                  = 96
+    START_BYTE                  = 142
     BYTES                       = 23
+    FORMAT                      = A23
     DESCRIPTION                 = "The starting Spacecraft Event Time of the
 coverage period for this product. Note that this value is not necessarily
 equal to the time stamp of the first record in the product as data may not
@@ -103,9 +128,11 @@ day of year."
 
   OBJECT                        = COLUMN
     NAME                        = "STOP_TIME"
+    COLUMN_NUMBER               = 8
     DATA_TYPE                   = TIME
-    START_BYTE                  = 122
+    START_BYTE                  = 168
     BYTES                       = 23
+    FORMAT                      = A23
     DESCRIPTION                 = "The ending Spacecraft Event Time of the
 coverage period for this product. Note that this value is not necessarily
 close to the time stamp of the last record in the product as data may not be
@@ -114,20 +141,12 @@ day of year."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    NAME                        = "FILE_SPECIFICATION_NAME"
-    DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 148
-    BYTES                       = 43
-    DESCRIPTION                 = "The path to the PDS label file that
-describes the file containing instrument data. The path is relative to the
-root of the archive volume."
-  END_OBJECT                    = COLUMN
-
-  OBJECT                        = COLUMN
     NAME                        = "PRODUCT_CREATION_TIME"
-    DATA_TYPE                   = CHARACTER
+    COLUMN_NUMBER               = 9
+    DATA_TYPE                   = TIME
     START_BYTE                  = 194
     BYTES                       = 19
+    FORMAT                      = A19
     DESCRIPTION                 = "The creation date of the product file,
 which may not be the same as the product label file. Note that dates in
 volumes 0003 are in year-month-day format; later dates are indicated by year
@@ -136,9 +155,11 @@ and day of year."
 
   OBJECT                        = COLUMN
     NAME                        = "PRODUCT_LABEL_MD5CHECKSUM"
+    COLUMN_NUMBER               = 10
     DATA_TYPE                   = CHARACTER
     START_BYTE                  = 216
     BYTES                       = 32
+    FORMAT                      = A32
     DESCRIPTION                 = "The MD5 checksum of the label file,
 represented as a 32-character hexadecimal value."
   END_OBJECT                    = COLUMN

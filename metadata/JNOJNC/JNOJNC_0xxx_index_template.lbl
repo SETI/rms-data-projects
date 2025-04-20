@@ -8,6 +8,9 @@ RECORD_BYTES                    = 457
 FILE_RECORDS                    = $records$
 ^INDEX_TABLE                    = "$BASENAME(index_path)$"
 
+$IF(index_type == 'SINGLE')
+VOLUME_ID                       = "$volume_id$"
+$END_IF
 PRODUCT_CREATION_TIME           = $FILE_TIME(index_path)$
 
 INSTRUMENT_HOST_ID              = "JNO"
@@ -15,10 +18,6 @@ INSTRUMENT_HOST_NAME            = "JUNO"
 INSTRUMENT_ID                   = "JUNOCAM"
 INSTRUMENT_NAME                 = "JUNO EPO CAMERA"
 
-$IF(index_type == 'SINGLE')
-VOLUME_ID                       = "$volume_id$"
-
-$END_IF
 OBJECT                          = INDEX_TABLE
   NAME                          = "INDEX_TABLE"
   INDEX_TYPE                    = $index_type$
@@ -44,46 +43,71 @@ $END_IF
       label file.
     - Starting in volume JNOJNC_0025, erroneous values in the first column,
       VOLUME_ID, have been corrected.
+    - TARGET_NAME values of 'SPACE' have been replaced with 'N/A'.
+    - The FILE_SPECIFICATION_NAME column has been re-positioned as the second
+      column, immediately after the VOLUME_ID, for improved readability.
 "
 
   OBJECT                        = COLUMN
     NAME                        = "VOLUME_ID"
+    COLUMN_NUMBER               = 1
     DATA_TYPE                   = CHARACTER
     START_BYTE                  = 2
     BYTES                       = 11
+    FORMAT                      = A11
     DESCRIPTION                 = "Volume ID."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    NAME                        = "STANDARD_DATA_PRODUCT_ID"
+    NAME                        = "FILE_SPECIFICATION_NAME"
+    COLUMN_NUMBER               = 2
     DATA_TYPE                   = CHARACTER
     START_BYTE                  = 16
+    BYTES                       = 55
+    FORMAT                      = A55
+    DESCRIPTION                 = "The path to the PDS label file that
+describes the file containing instrument data. The path is relative to the
+root of the archive volume."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "STANDARD_DATA_PRODUCT_ID"
+    COLUMN_NUMBER               = 3
+    DATA_TYPE                   = CHARACTER
+    START_BYTE                  = 74
     BYTES                       = 11
+    FORMAT                      = A11
     DESCRIPTION                 = "The general data product name as referred
 to in the volume SIS."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "DATA_SET_ID"
+    COLUMN_NUMBER               = 4
     DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 30
+    START_BYTE                  = 88
     BYTES                       = 29
+    FORMAT                      = A29
     DESCRIPTION                 = "The data set ID from the product label."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "PRODUCT_ID"
+    COLUMN_NUMBER               = 5
     DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 62
+    START_BYTE                  = 120
     BYTES                       = 25
+    FORMAT                      = A25
     DESCRIPTION                 = "The product ID unique to each data file."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "START_TIME"
-    DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 90
+    COLUMN_NUMBER               = 6
+    DATA_TYPE                   = TIME
+    START_BYTE                  = 148
     BYTES                       = 23
+    FORMAT                      = A23
     DESCRIPTION                 = "The starting Spacecraft Event Time in UTC
 of the coverage period for this product. Note that this value is not
 necessarily equal to the time stamp of the first record in the product as data
@@ -92,9 +116,11 @@ may not be available for the entire coverage period."
 
   OBJECT                        = COLUMN
     NAME                        = "STOP_TIME"
+    COLUMN_NUMBER               = 7
     DATA_TYPE                   = TIME
-    START_BYTE                  = 116
+    START_BYTE                  = 174
     BYTES                       = 23
+    FORMAT                      = A23
     DESCRIPTION                 = "The ending Spacecraft Event Time in UTC of
 the coverage period for this product. Note that this value is not necessarily
 close to the time stamp of the last record in the product as data may not be
@@ -103,39 +129,45 @@ available for the entire coverage period."
 
   OBJECT                        = COLUMN
     NAME                        = "PROCESSING_LEVEL_ID"
+    COLUMN_NUMBER               = 8
     DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 142
+    START_BYTE                  = 200
     BYTES                       = 1
+    FORMAT                      = A1
     DESCRIPTION                 = "PROCESSING_LEVEL_ID from the product
 label."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "RATIONALE_DESC"
+    COLUMN_NUMBER               = 9
     DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 146
+    START_BYTE                  = 204
     BYTES                       = 140
+    FORMAT                      = A140
     DESCRIPTION                 = "RATIONALE_DESC from the product label."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "SOLAR_DISTANCE"
+    COLUMN_NUMBER               = 10
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 288
+    START_BYTE                  = 346
     BYTES                       = 10
     FORMAT                      = "E10.4"
-    UNIT                        = KM
+    UNIT                        = "km"
     NOT_APPLICABLE_CONSTANT     = -1.e32
     DESCRIPTION                 = "SOLAR_DISTANCE from the product label."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "SPACECRAFT_ALTITUDE"
+    COLUMN_NUMBER               = 11
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 299
+    START_BYTE                  = 357
     BYTES                       = 10
     FORMAT                      = "F10.1"
-    UNIT                        = KM
+    UNIT                        = "km"
     NOT_APPLICABLE_CONSTANT     = -1.e32
     DESCRIPTION                 = "SPACECRAFT_ALTITUDE from the product
 label."
@@ -143,11 +175,12 @@ label."
 
   OBJECT                        = COLUMN
     NAME                        = "SUB_SPACECRAFT_LATITUDE"
+    COLUMN_NUMBER               = 12
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 310
+    START_BYTE                  = 368
     BYTES                       = 8
     FORMAT                      = "F8.4"
-    UNIT                        = DEGREES
+    UNIT                        = "deg"
     NOT_APPLICABLE_CONSTANT     = -1.e32
     DESCRIPTION                 = "SUB_SPACECRAFT_LATITUDE from the product
 label."
@@ -155,11 +188,12 @@ label."
 
   OBJECT                        = COLUMN
     NAME                        = "SUB_SPACECRAFT_LONGITUDE"
+    COLUMN_NUMBER               = 13
     DATA_TYPE                   = ASCII_REAL
-    START_BYTE                  = 319
+    START_BYTE                  = 377
     BYTES                       = 8
     FORMAT                      = "F8.4"
-    UNIT                        = DEGREES
+    UNIT                        = "deg"
     NOT_APPLICABLE_CONSTANT     = -1.e32
     DESCRIPTION                 = "SUB_SPACECRAFT_LONGITUDE from the product
 label."
@@ -167,36 +201,32 @@ label."
 
   OBJECT                        = COLUMN
     NAME                        = "TARGET_NAME"
+    COLUMN_NUMBER               = 14
     DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 329
+    START_BYTE                  = 387
     BYTES                       = 11
+    FORMAT                      = A11
     DESCRIPTION                 = "TARGET_NAME from the product label."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    NAME                        = "FILE_SPECIFICATION_NAME"
-    DATA_TYPE                   = CHARACTER
-    START_BYTE                  = 343
-    BYTES                       = 55
-    DESCRIPTION                 = "The path to the PDS label file that
-describes the file containing instrument data. The path is relative to the
-root of the archive volume."
-  END_OBJECT                    = COLUMN
-
-  OBJECT                        = COLUMN
     NAME                        = "PRODUCT_CREATION_TIME"
-    DATA_TYPE                   = CHARACTER
+    COLUMN_NUMBER               = 15
+    DATA_TYPE                   = TIME
     START_BYTE                  = 401
     BYTES                       = 19
+    FORMAT                      = A19
     DESCRIPTION                 = "The creation date of the product file,
 which may not be the same as the product label file."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "PRODUCT_LABEL_MD5CHECKSUM"
+    COLUMN_NUMBER               = 16
     DATA_TYPE                   = CHARACTER
     START_BYTE                  = 423
     BYTES                       = 32
+    FORMAT                      = A32
     DESCRIPTION                 = "The MD5 checksum of the label file,
 represented as a 32-character hexadecimal value."
   END_OBJECT                    = COLUMN
