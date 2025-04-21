@@ -28,7 +28,9 @@ FILE_RECORDS                    = $LABEL_VALUE("FILE_RECORDS")$
 $INCLUDE("./templates/host_defs.lbl")
 
 PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
+$IF(TABLE_TYPE != 'CUMULATIVE')
 VOLUME_ID                       = "$LABEL_VALUE('FIRST', 'VOLUME_ID')$"
+$END_IF
 
 OBJECT                          = $TABLE_TYPE$_TABLE
   INTERCHANGE_FORMAT            = ASCII
@@ -608,7 +610,7 @@ $END_NOTE
       Altiudes below -0.1 times the maximum body radius and above 1000 times
       the maximum body radius are not reported.
 
-      This column tabulates the maximum value of emission angle within the
+      This column tabulates the maximum value of the limb altitude within the
       field of view of the observation."
   END_OBJECT                    = COLUMN
 
@@ -623,7 +625,7 @@ $END_NOTE
       Altiudes below -0.1 times the maximum body radius and above 1000 times
       the maximum body radius are not reported.
 
-      This column tabulates the maximum value of emission angle within the
+      This column tabulates the maximum value of the limb altitude within the
       field of view of the observation."
   END_OBJECT                    = COLUMN
 
@@ -633,11 +635,12 @@ $END_NOTE
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Angular location around the limb, measured clockwise
-      from the projected north pole, of the planet or a specified target body.
+    DESCRIPTION                 = "Angular location around the limb, measured
+      clockwise from the projected north pole, of the planet or a specified
+      target body.
 
-      This column tabulates the maximum value of emission angle within the
-      field of view of the observation."
+      This column tabulates the minimum value of the limb clock angle within
+      the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -646,25 +649,26 @@ $END_NOTE
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Angular location around the limb, measured clockwise
-      from the projected north pole, of the planet or a specified target body.
+    DESCRIPTION                 = "Angular location around the limb, measured
+      clockwise from the projected north pole, of the planet or a specified
+      target body.
 
-      This column tabulates the maximum value of emission angle within the
-      field of view of the observation."
+      This column tabulates the maximum value of the limb clock angle within
+      the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SURFACE_INTERCEPT_TIME"
     NULL_CONSTANT               = "UNK"
     DESCRIPTION                 = "Surface intercept time is the time when
-      the received photon left the surface intercept point.  It is given as
-      in ISO format: YYYY-MM-DDTHH:mm:ss.sss.
+      the received photon left the surface intercept point.  It is given in
+      ISO format: YYYY-MM-DDTHH:mm:ss.sss.
 
       The surface has been modeled as an ellipsoid. Surface intercept points
       that are obscured by the planet or another moon within the observed
       field of view are ignored.
 
-      This column tabulates the minimum value of Surface intercept time
+      This column tabulates the minimum value of the surface intercept time
       within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
@@ -672,14 +676,14 @@ $END_NOTE
     NAME                        = "MAXIMUM_SURFACE_INTERCEPT_TIME"
     NULL_CONSTANT               = "UNK"
     DESCRIPTION                 = "Surface intercept time is the time when
-      the received photon left the surface intercept point.  It is given as
-      in ISO format: YYYY-MM-DDTHH:mm:ss.sss.
+      the received photon left the surface intercept point.  It is given in
+      ISO format: YYYY-MM-DDTHH:mm:ss.sss.
 
       The surface has been modeled as an ellipsoid. Surface intercept points
       that are obscured by the planet or another moon within the observed
       field of view are ignored.
 
-      This column tabulates the maximum value of Surface intercept time
+      This column tabulates the maximum value of the surface intercept time
       within the field of view of the observation."
   END_OBJECT                    = COLUMN
 

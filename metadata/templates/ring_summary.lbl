@@ -28,8 +28,9 @@ FILE_RECORDS                    = $LABEL_VALUE("FILE_RECORDS")$
 $INCLUDE("./templates/host_defs.lbl")
 
 PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
+$IF(TABLE_TYPE != 'CUMULATIVE')
 VOLUME_ID                       = "$LABEL_VALUE('FIRST', 'VOLUME_ID')$"
-
+$END_IF
 
 OBJECT                          = $TABLE_TYPE$_TABLE
   INTERCHANGE_FORMAT            = ASCII
@@ -266,7 +267,7 @@ $END_NOTE
       gradient of the ring intercept longitude. It is equal to the largest
       change in the longitude resulting from a one-pixel shift of the line of
       sight. In practice, it defines the approximate size of the narrowest
-      azimuthal ring feature that can be resolved.
+      ring clump that can be resolved.
 
       Ring intercept points that are obscured by the planet or a moon within
       the observed field of view are ignored. For observations capturing
@@ -283,11 +284,11 @@ $END_NOTE
     NAME                        = "COARSEST_LONGITUDINAL_RESOLUTION_KM"
     UNIT                        = "KM"
     NULL_CONSTANT               = -999.
-    DESCRIPTION                 = "Longitudinal resolution is the gradient of
-      the gradient of the ring intercept longitude. It is equal to the largest
+    DESCRIPTION                 = "Longitudinal resolution is related to the
+      gradient of the ring intercept longitude. It is equal to the largest
       change in the longitude resulting from a one-pixel shift of the line of
       sight. In practice, it defines the approximate size of the narrowest
-      azimuthal ring feature that can be resolved.
+      ring clump that can be resolved.
 
       Ring intercept points that are obscured by the planet or a moon within
       the observed field of view are ignored. For observations capturing
@@ -884,31 +885,31 @@ $END_NOTE
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SURFACE_INTERCEPT_TIME"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "Surface intercept time is the time when the
-      received photon left the surface intercept point.  It is given as in ISO
-      format: YYYY-MM-DDTHH:mm:ss.sss.
+    DESCRIPTION                 = "Surface intercept time is the time when
+      the received photon left the surface intercept point.  It is given in
+      ISO format: YYYY-MM-DDTHH:mm:ss.sss.
 
       The surface has been modeled as a plane. Surface intercept points
       that are obscured by the planet or another moon within the observed
       field of view are ignored.
 
-      This column tabulates the minimum value of Surface intercept time within
-      the field of view of the observation."
+      This column tabulates the maximum value of the surface intercept time
+      within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SURFACE_INTERCEPT_TIME"
     NULL_CONSTANT               = "UNK"
-    DESCRIPTION                 = "Surface intercept time is the time when the
-      received photon left the surface intercept point.  It is given as in ISO
-      format: YYYY-MM-DDTHH:mm:ss.sss.
+    DESCRIPTION                 = "Surface intercept time is the time when
+      the received photon left the surface intercept point.  It is given in
+      ISO format: YYYY-MM-DDTHH:mm:ss.sss.
 
       The surface has been modeled as a plane. Surface intercept points
       that are obscured by the planet or another moon within the observed
       field of view are ignored.
 
-      This column tabulates the maximum value of Surface intercept time within
-      the field of view of the observation."
+      This column tabulates the maximum value of the surface intercept time
+      within the field of view of the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1700,7 +1701,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_DIAMETER_IN_PIXELS"
-    NULL_CONSTANT               = -999
+    NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Projected diameter of the classical ring
       system, converted to pixels. This diameter is computed based on the
       body's current distance, but as if it fell at the center of the field
@@ -1713,7 +1714,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_DIAMETER_IN_PIXELS"
-    NULL_CONSTANT               = -999
+    NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Projected diameter of the classical ring
       system, converted to pixels. This diameter is computed based on the
       body's current distance, but as if it fell at the center of the field

@@ -28,7 +28,9 @@ FILE_RECORDS                    = $LABEL_VALUE("FILE_RECORDS")$
 $INCLUDE("./templates/host_defs.lbl")
 
 PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
+$IF(TABLE_TYPE != 'CUMULATIVE')
 VOLUME_ID                       = "$LABEL_VALUE('FIRST', 'VOLUME_ID')$"
+$END_IF
 
 OBJECT                          = $TABLE_TYPE$_TABLE
   INTERCHANGE_FORMAT            = ASCII

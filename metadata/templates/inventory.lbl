@@ -5,7 +5,9 @@ RECORD_TYPE                     = STREAM
 
 ^TEXT                           = "$TABLE_PATH$" 
 
+$IF(TABLE_TYPE != 'CUMULATIVE')
 VOLUME_ID                       = "$VOLUME_ID$"
+$END_IF
 PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
 $IF(TABLE_TYPE == 'CUMULATIVE')
 INDEX_TYPE                      = CUMULATIVE

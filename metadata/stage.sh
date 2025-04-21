@@ -8,7 +8,7 @@
 #
 #         $RMS_METADATA_TEST/GO_0xxx/
 #
-#     Metadata tables and labels are copied to:
+#     New metadata tables and labels are copied to:
 #
 #         $RMS_METADATA_STAGE/<collection>/current/
 #
