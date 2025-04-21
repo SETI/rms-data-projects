@@ -13,8 +13,10 @@ metadata tree. The output file is written into the metadata tree with the correc
 subdirectory and name. If a file of that name is already present and there is no backup,
 the existing file is renamed with the ending "-backup.tab".
 
+Afterward, it labels the new index file, regenerates the cumulative index, and labels the
+new cumulative index.
+
 This program does not correct any information that is incorrect in the existing index!
-It also does not write a label.
 """
 
 import glob
@@ -85,7 +87,7 @@ def write_jnojir_index(filepath):
     f = open(output_file, 'wb')     # use binary write to suppress <cr><lf> handling
 
     # Loop through the records...
-    for rec in recs:
+    for irec, rec in enumerate(recs):
 
         # Because the time fields are un-quoted, we need to quote them before the next
         # step. re.split() alternates between the fields between non-dates and dates.
@@ -132,7 +134,7 @@ def write_jnojir_index(filepath):
         for k, v in enumerate(values):
             values[k] = '"' + v.rstrip().ljust(LENGTHS[k]) + '"'
             if len(values[k]) != LENGTHS[k] + 2:
-                print('Length overflow in column', k, repr(values[k]))
+                print(f'Length overflow in record {irec}, column {k}: {values[k]!r}')
                 print(values)
                 f.close()
 
@@ -147,7 +149,6 @@ def write_jnojir_index(filepath):
         values.insert(1, filespec)
 
         # Merge this back into a single record
-        # Note that the join() only works because every column in the index is a string
         new_rec = ','.join(values) + '\r\n'
 
         # Write the new record
@@ -173,7 +174,8 @@ def write_jnojir_cum_index(filepath):
 
     index_files = glob.glob(index_pattern)
     index_files.sort()
-    index_files.remove(output_file)     # don't copy self!
+    if output_file in index_files:          # don't copy self!
+        index_files.remove(output_file)
 
     # Make a backup if necessary
     backup_file = output_file[:-4] + '-backup.tab'

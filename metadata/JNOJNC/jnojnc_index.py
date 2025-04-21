@@ -90,7 +90,7 @@ def write_jnojnc_index(filepath):
     f = open(output_file, 'wb')     # use binary write to suppress <cr><lf> handling
 
     # Loop through the records...
-    for rec in recs:
+    for irec, rec in enumerate(recs):
 
         # Because the time fields are un-quoted, we need to quote them before the next
         # step. The result of re.split() alternates between the non-dates and the dates.
@@ -143,7 +143,7 @@ def write_jnojnc_index(filepath):
         # A length error probably indicates length overflow of a string-valued column
         if len(new_rec) != RECORD_LENGTH:
             print('Length error!')
-            print(values)
+            print(irec, values)
             f.close()
 
             # If a backup file exists, copy it back
@@ -173,7 +173,8 @@ def write_jnojnc_cum_index(index_file):
 
     index_files = glob.glob(index_pattern)
     index_files.sort()
-    index_files.remove(output_file)     # don't copy self!
+    if output_file in index_files:          # don't copy self!
+        index_files.remove(output_file)
 
     # Make a backup if necessary
     backup_file = output_file[:-4] + '-backup.tab'
