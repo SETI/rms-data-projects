@@ -527,7 +527,8 @@ def process_index(host=None, type='', glob=None):
 
                 unused = index.unused if not unused else unused & index.unused
 
+        # Log a warning for any columns that never had non-null values
         if unused:
-            logger.warn('Used columns: %s', unused)
+            logger.warn('Unused columns: %s', unused)
 
 ################################################################################
