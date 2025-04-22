@@ -1,7 +1,6 @@
 import argparse
 import cspyce
 import json
-import re
 from lxml import etree
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -62,6 +61,14 @@ def add_modification_detail(file_path):
     with open(file_path, "r", encoding="UTF-8") as f:
         lines = f.readlines()
 
+    # Count occurrences of <Modification_Detail>
+    mod_detail_count = sum(1 for line in lines if "<Modification_Detail>" in line)
+
+    # If there are already two or more instances, exit the function
+    if mod_detail_count >= 2:
+        print("Two or more Modification_Detail entries exist. No changes made.")
+        return
+
     # Locate the <Modification_History> section and capture indentation of existing <Modification_Detail>
     mod_history_start = None
     mod_detail_indent = None
@@ -90,12 +97,11 @@ def add_modification_detail(file_path):
 {mod_detail_indent}    <modification_date>2025-03-03</modification_date>
 {mod_detail_indent}    <version_id>1.1</version_id>
 {mod_detail_indent}    <description>
-{mod_detail_indent}        Corrected values for spacecraft_clock_start_count, start_date_time, 
-{mod_detail_indent}        stop_date_time, cassini:image_mid_time, cassini:image_time,
-{mod_detail_indent}        cassini:start_time_doy, and cassini:stop_time_doy.
-{mod_detail_indent}        cassini:mission_phase_name has also been updated in order
-{mod_detail_indent}        to provide consistency across multiple instrument data sets
-{mod_detail_indent}        distinguished by either mission stage or encounter.
+{mod_detail_indent}        Values have been corrected for start_date_time, stop_date_time,
+{mod_detail_indent}            cassini:image_mid_time, cassini:image_time,
+{mod_detail_indent}            cassini:start_time_doy, and cassini:stop_time_doy.
+{mod_detail_indent}        Updated cassini:mission_phase_name (for which multiple values are possible)
+{mod_detail_indent}            in order to provide consistency across multiple instrument data sets.
 {mod_detail_indent}    </description>
 {mod_detail_indent}</Modification_Detail>
 """
@@ -110,6 +116,8 @@ def add_modification_detail(file_path):
     # Write back the modified content
     with open(file_path, "w", encoding="UTF-8") as f:
         f.writelines(lines)
+
+
 
 
 def cassini_mission_name(image_mid_time, mission_data, mission_phase_name):
@@ -250,16 +258,16 @@ def start_time_replace(directory_path, pattern, kernel_dir, mission_data):
         # spacecraft_clock_start_count in UTC
         new_start_count_utc = new_stop_time - timedelta(seconds=exposure_duration)
 
-        # Convert spacecraft_clock_start_count back to spacecraft clock count, and
-        # round the result.
-        new_start_count_e = cspyce.utc2et(str(new_start_count_utc))
-        new_start_count = cspyce.sce2s(cassini_id, new_start_count_e)
-        if rounded:
-            new_start_count = f"{round(float(new_start_count.split('/')[1]))}.000"
-            # Overwrite spacecraft_clock_start_count
-            start_count_elem.text = new_start_count
-        else:
-            start_count_elem.text = new_start_count.split('/')[1]
+        # # Convert spacecraft_clock_start_count back to spacecraft clock count, and
+        # # round the result.
+        # new_start_count_e = cspyce.utc2et(str(new_start_count_utc))
+        # new_start_count = cspyce.sce2s(cassini_id, new_start_count_e)
+        # if rounded:
+        #     new_start_count = f"{round(float(new_start_count.split('/')[1]))}.000"
+        #     # Overwrite spacecraft_clock_start_count
+        #     start_count_elem.text = new_start_count
+        # else:
+        #     start_count_elem.text = new_start_count.split('/')[1]
 
         # Convert stop_date_time to datetime object
         stop_time_dt = datetime.strptime(stop_time_elem.text, "%Y-%m-%dT%H:%M:%S.%fZ")
