@@ -23,7 +23,11 @@ PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = $LABEL_VALUE("RECORD_TYPE")$
 RECORD_BYTES                    = $LABEL_VALUE("RECORD_BYTES")$
 FILE_RECORDS                    = $LABEL_VALUE("FILE_RECORDS")$
+$IF(TABLE_TYPE != 'CUMULATIVE')
 ^RING_SUMMARY_TABLE             = "$LABEL_VALUE("TABLE_BASENAME")$"
+$ELSE
+^CUMULATIVE_TABLE               = "$LABEL_VALUE("TABLE_BASENAME")$"
+$END_IF
 
 $INCLUDE("./templates/host_defs.lbl")
 

@@ -1221,9 +1221,9 @@ def process_tables(host=None,
         dirs.sort()
         root = FCPath(root)
 
-        # Determine notional set and volume
+        # Determine notional collection and volume
         parts = root.parts
-        set = parts[-2]
+        col = parts[-2]
         vol = parts[-1]
 
         # Proceed only if this root is a volume
@@ -1231,8 +1231,8 @@ def process_tables(host=None,
             if not volume or vol == volume:
                 # Set up input and output directories
                 indir = root
-                if output_tree.parts[-1] != set: 
-                    outdir = output_tree.joinpath(set)
+                if output_tree.parts[-1] != col: 
+                    outdir = output_tree.joinpath(col)
                 outdir = output_tree.joinpath(vol)
 
                 # Do not continue if this volume is excluded
@@ -1248,7 +1248,7 @@ def process_tables(host=None,
                 if new_only & (list(outdir.glob('*_inventory.csv')) != []):
                     continue
 
-                # Process this volumne
+                # Process this volume
                 tables = Suite(indir, outdir, 
                                selection=args.selection, glob=glob, first=args.first, 
                                sampling=args.sampling)

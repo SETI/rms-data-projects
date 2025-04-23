@@ -68,6 +68,7 @@ Attributes:
 """
 ################################################################################
 import sys, os
+import re
 import argparse
 import numpy as np
 import oops
@@ -362,13 +363,16 @@ def expandvars(filespec):           ### add to FCPath?
     """
     if not isinstance(filespec, str):
         result = filespec.as_posix()
-    result = Path(os.path.expandvars(result)).resolve()
+
+    result = re.sub('://', '<<token>>', result)
+    result = os.path.expandvars(result)
+    result = re.sub('<<token>>', '://', result)
     
     if isinstance(filespec, str):
         return result.as_posix()
     if isinstance(filespec, FCPath):
         return FCPath(result)
-    return result
+    return Path(result)
 
 #===============================================================================
 def read_txt_file(filespec, as_string=False, terminator='\r\n'):           ### move to utilities
@@ -802,6 +806,7 @@ def _get_range_mod360(values, alt_format=None):
     else:
         return complete_coverage
 
+
 #===============================================================================
 def get_common_args(host=None):
     """Common argument parser for metadata tools.
@@ -813,6 +818,14 @@ def get_common_args(host=None):
             argparser.ArgumentParser : 
                 Parser containing the common argument specifications.
    """
+    # Action method for path arguments
+    class PathAction(argparse.Action):
+        def __call__(self, parser, namespace, values, option_string=None):
+            vals = re.sub('://', '<<token>>', values)
+            vals = re.sub('//*', '/', vals)
+            vals = re.sub('<<token>>', '://', vals)
+            setattr(namespace, self.dest, vals)
+
     # Define parser
     parser = argparse.ArgumentParser(
                     description='Metadata generation utility%s.'
@@ -823,7 +836,7 @@ def get_common_args(host=None):
     gr = parser.add_argument_group('Common Arguments')
     gr.add_argument('input_tree', type=str, metavar='input_tree',
                     help='''File path to the top to tree containing the 
-                            volume files.''')
+                            volume files.''', action=PathAction)
     gr.add_argument('output_tree', type=str, metavar='output_tree',
                     help='''File path to the top to tree in which to place the 
                             volume files.''')

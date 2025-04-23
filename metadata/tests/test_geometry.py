@@ -53,10 +53,7 @@ class Test_Geometry(unittest.TestCase):
         print()
         for file in files:
             print('Reading', file)
-            try:
-                table = pdstable.PdsTable(file)
-            except:
-                from IPython import embed; print('+++++++++++++'); embed()
+            table = pdstable.PdsTable(file)
 
 
             # verify # rows, columns

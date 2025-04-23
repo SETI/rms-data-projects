@@ -65,13 +65,16 @@ class Index():
 
         # If there is a primary file, read it and build the file list
         if not create_primary:
-            self.primary_index_path = self.output_dir/(primary_index_name + '.lbl')
+            self.primary_index_label_path = self.output_dir/(primary_index_name + '.lbl')
+            self.primary_index_path = self.output_dir/(primary_index_name + '.tab')
 
+#            from IPython import embed; print('+++++++++++++'); embed()
             try:
+                local_label_path = self.primary_index_label_path.retrieve()
                 local_path = self.primary_index_path.retrieve()
-                table = pdstable.PdsTable(local_path)
+                table = pdstable.PdsTable(local_label_path)
             except FileNotFoundError:
-                warnings.warn('Primary index file not found: %s.  Skipping' % self.primary_index_path)
+                warnings.warn('Primary index file not found: %s.  Skipping' % self.primary_index_label_path)
                 return
 
             primary_row_dicts = table.dicts_by_row()
@@ -114,7 +117,10 @@ class Index():
         logger = meta.get_logger()
 
         # Open the output file; create dir if necessary
-        self.output_dir.mkdir(exist_ok=True)
+        try:
+            self.output_dir.mkdir(exist_ok=True)
+        except NotImplementedError:
+            pass ### need to check for existence.
 
         # Build the index
         n = len(self.files)
@@ -502,6 +508,7 @@ def process_index(host=None, type='', glob=None):
         # __skip directory will not be scanned, so it's safe for test results
         if '__skip' in root.as_posix():
             continue
+        print(root)
 
         # Sort directories for progress monitoring
         dirs.sort()
