@@ -1,0 +1,62 @@
+PDS_VERSION_ID          = PDS3
+RECORD_TYPE             = STREAM
+$ONCE(csv_file = LABEL_PATH()[:-4] + '.csv')
+$ONCE(file_recs = FILE_RECORDS(csv_file))
+$ONCE(record_bytes = RECORD_BYTES(csv_file))
+$ONCE(name_bytes = record_bytes - (11 + 3 + 49 + 3 + 2 + 2))
+PDS_VERSION_ID          = PDS3
+RECORD_TYPE             = STREAM
+RECORD_BYTES            = $record_bytes$   $' ' if record_bytes < 100 else ''$/* max length including <CR><LF> */
+FILE_RECORDS            = $file_recs$
+^INVENTORY_SPREADSHEET  = "$BASENAME(csv_file)$"
+
+$IF('999' not in LABEL_PATH())
+VOLUME_ID               = "$BASENAME(LABEL_PATH())[:11]$"
+$END_IF
+PRODUCT_CREATION_TIME   = $FILE_TIME(csv_file)$
+
+INSTRUMENT_HOST_NAME    = "NEW HORIZONS"
+INSTRUMENT_HOST_ID      = "NH"
+INSTRUMENT_NAME         = "LONG RANGE RECONNAISSANCE IMAGER"
+INSTRUMENT_ID           = "LORRI"
+
+OBJECT                  = INVENTORY_SPREADSHEET
+  INTERCHANGE_FORMAT    = ASCII
+  ROWS                  = $file_recs$
+  ROW_BYTES             = $record_bytes$   $' ' if record_bytes < 100 else ''$/* max length including <CR><LF> */
+  FIELDS                = 3
+  FIELD_DELIMITER       = COMMA
+  INDEX_TYPE            = $'CUMULATIVE' if '999' in LABEL_PATH() else 'SINGLE'$
+  DESCRIPTION           = "This table identifies every body partially or fully
+    inside each image's field of view."
+
+  OBJECT                = FIELD
+    FIELD_NUMBER        = 1
+    NAME                = VOLUME_ID
+    DATA_TYPE           = CHARACTER
+    BYTES               = 11
+    FORMAT              = A11
+    DESCRIPTION         = "The unique identifier for the PDS data volume."
+  END_OBJECT            = FIELD
+
+  OBJECT                = FIELD
+    FIELD_NUMBER        = 2
+    NAME                = FILE_SPECIFICATION_NAME
+    DATA_TYPE           = CHARACTER
+    BYTES               = 49
+    FORMAT              = A49
+    DESCRIPTION         = "The full name of the raw image file, including the
+        directory path, relative to the root directory of the PDS volume."
+  END_OBJECT            = FIELD
+
+  OBJECT                = FIELD
+    FIELD_NUMBER        = 3
+    NAME                = BODY_NAMES
+    DATA_TYPE           = CHARACTER
+    BYTES               = $name_bytes$   $'  ' if name_bytes < 10 else ' ' if name_bytes < 100 else ''$/* max length */
+    DESCRIPTION         = "The names of all the bodies estimated to be
+        partially or fully inside the field of view, separated by commas."
+  END_OBJECT            = FIELD
+
+END_OBJECT              = INVENTORY_SPREADSHEET
+END
