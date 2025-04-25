@@ -1,0 +1,638 @@
+$ONCE(volume_id = '_'.join(BASENAME(LABEL_PATH()).split('_')[:2]))
+$ONCE(index_path = LABEL_PATH()[:-4] + '.tab')
+$ONCE(records = FILE_RECORDS(index_path))
+$ONCE(index_type = 'CUMULATIVE' if volume_id.endswith('999') else 'SINGLE')
+PDS_VERSION_ID              = PDS3
+RECORD_TYPE                 = FIXED_LENGTH
+RECORD_BYTES                = 449
+FILE_RECORDS                = $records$
+^ENGINEERING_INDEX_TABLE    = "$BASENAME(index_path)$"
+
+PRODUCT_CREATION_TIME       = $FILE_TIME(index_path)$
+
+$IF(index_type == 'SINGLE')
+VOLUME_ID                   = "$volume_id$"
+DATA_SET_NAME               = "$DATA_SET_NAME$"
+DATA_SET_ID                 = "$DATA_SET_ID$"
+START_TIME                  = $START_TIME[:19]$
+STOP_TIME                   = $STOP_TIME[:19]$
+
+PRODUCT_VERSION_ID          = "$PRODUCT_VERSION_ID$"
+COMMAND_FILE_NAME           = $QUOTE_IF(COMMAND_FILE_NAME)$
+ORBIT_NUMBER                = $REPLACE_NA(ORBIT_NUMBER, "'N/A'")$
+TARGET_NAME                 = $TARGET_NAME$
+TARGET_TYPE                 = $TARGET_TYPE$
+
+$END_IF
+STANDARD_DATA_PRODUCT_ID    = "AUXILIARY"
+PROCESSING_LEVEL_ID         = "$'2' if 'JNOJIR_1' in LABEL_PATH() else '3'$"
+PRODUCT_TYPE                = "ENGINEERING_DATA"
+INSTRUMENT_NAME             = "JOVIAN INFRARED AURORAL MAPPER"
+INSTRUMENT_ID               = "JIR"
+INSTRUMENT_HOST_NAME        = "JUNO"
+INSTRUMENT_HOST_ID          = "JNO"
+
+OBJECT                      = ENGINEERING_INDEX_TABLE
+  INTERCHANGE_FORMAT        = ASCII
+  ROWS                      = $records$
+  ROW_BYTES                 = 449
+  COLUMNS                   = 51
+  INDEX_TYPE                = $index_type$
+$IF(index_type == 'SINGLE')
+  DESCRIPTION               = "Index of engineering data for the data products
+on volume $volume_id$. Adapted from the original CSV files
+$BASENAME(old_label)$ for fixed-length records and improved PDS3
+compliance:
+$ELSE
+  DESCRIPTION               = "Cumulative index of engineering data for all
+the data products in this volume set. Adapted from the original CSV files
+JIR_STATUS_*.CSV for fixed-length records and improved PDS3 compliance:
+$END_IF
+    - A column of VOLUME_ID values as been inserted in front.
+    - Column widths are now uniform across all files on all volumes.
+    - Many columns containing integers and floats in the original files had
+      incorrect values for DATA_TYPE and FORMAT. These have been fixed.
+    - Where appropriate, UNIT values have been specified in the label.
+    - A NOT_APPLICABLE_CONSTANT value of -1 has been added for columns of
+      integers and floats, replacing any string values of 'N/A' that appear in
+      the table.
+    - Previously, there were two columns named M_CAL_SOURCE_TEMP and
+      M_DIFFUSER_CAL_TEMP. The second occurrences have been renamed with a
+      suffix of '_K' to indicate that these columns are in units of Kelvins.
+    - Previously, the column NADIR_OFFSET_SIGN appeared twice in the label but
+      only once in the table. The extra occurrence has been removed.
+    - An extraneous trailing column that always contains '0' has been stripped
+      from the table.
+"
+
+  OBJECT                    = COLUMN
+    NAME                    = VOLUME_ID
+    DATA_TYPE               = CHARACTER
+    START_BYTE              = 2
+    COLUMN_NUMBER           = 1
+    BYTES                   = 11
+    FORMAT                  = A11
+    DESCRIPTION             = "Unique identifier for the PDS volume."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = FILE_SPECIFICATION_NAME
+    DATA_TYPE               = CHARACTER
+    START_BYTE              = 16
+    COLUMN_NUMBER           = 2
+    BYTES                   = 34
+    FORMAT                  = A34
+    DESCRIPTION             = "Science file directory path and name."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = TIME_TM
+    DATA_TYPE               = ASCII_REAL
+    START_BYTE              = 52
+    COLUMN_NUMBER           = 3
+    BYTES                   = 14
+    FORMAT                  = "F14.4"
+    DESCRIPTION             = "Datation of TM production time."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = TIME_SCI_HK
+    DATA_TYPE               = ASCII_REAL
+    START_BYTE              = 67
+    COLUMN_NUMBER           = 4
+    BYTES                   = 14
+    FORMAT                  = "F14.4"
+    DESCRIPTION             = "Datation of science and HK acquisition time."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = COMMAND_FILE_NAME
+    DATA_TYPE               = CHARACTER
+    START_BYTE              = 83
+    COLUMN_NUMBER           = 5
+    BYTES                   = 16
+    FORMAT                  = A16
+    DESCRIPTION             = "Command file name."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = ACQ_NAME
+    DATA_TYPE               = CHARACTER
+    START_BYTE              = 102
+    COLUMN_NUMBER           = 6
+    BYTES                   = 7
+    FORMAT                  = A7
+    DESCRIPTION             = "Acquisition name reported in command file
+                               (sasf)."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = TARGET
+    DATA_TYPE               = CHARACTER
+    START_BYTE              = 112
+    COLUMN_NUMBER           = 7
+    BYTES                   = 9
+    FORMAT                  = A9
+    DESCRIPTION             = "Target of observation."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = LAMP
+    DATA_TYPE               = CHARACTER
+    START_BYTE              = 124
+    COLUMN_NUMBER           = 8
+    BYTES                   = 9
+    FORMAT                  = A9
+    DESCRIPTION             = "Calibration Source ID. The values are:
+                               'LAMP_1', 'LAMP_2', or 'BOTH_LAMP'."
+END_OBJECT                  = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = LAMP_GAIN_CURRENT_1
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 135
+    COLUMN_NUMBER           = 9
+    BYTES                   = 3
+    FORMAT                  = I3
+    DESCRIPTION             = "GAIN CURRENT for Lamp 1: Min = 0; Max = 15.
+                               This column is valid only for the steps 3-4 of
+                               the CAL mode."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = "LAMP_GAIN_CURRENT_1 (mA)"
+    DATA_TYPE               = ASCII_REAL
+    START_BYTE              = 139
+    COLUMN_NUMBER           = 10
+    BYTES                   = 5
+    FORMAT                  = "F5.1"
+    UNITS                   = "mA"
+    DESCRIPTION             = "GAIN CURRENT for Lamp 1 in mA."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = "LAMP_GAIN_CURRENT_2"
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 145
+    COLUMN_NUMBER           = 11
+    BYTES                   = 9
+    FORMAT                  = I9
+    DESCRIPTION             = "GAIN CURRENT for Lamp 2: Min = 0 Max = 15. This
+                               column is valid only for the steps 3-4 of the
+                               CAL mode."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = "LAMP_GAIN_CURRENT_2 (mA)"
+    DATA_TYPE               = ASCII_REAL
+    START_BYTE              = 155
+    COLUMN_NUMBER           = 12
+    BYTES                   = 5
+    FORMAT                  = "F5.1"
+    UNITS                   = "mA"
+    DESCRIPTION             = "GAIN CURRENT for Lamp 2 in mA."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = DETECTORS
+    DATA_TYPE               = CHARACTER
+    START_BYTE              = 162
+    COLUMN_NUMBER           = 13
+    BYTES                   = 11
+    FORMAT                  = A11
+    DESCRIPTION             = "Detectors used for the current subframe. The
+                              values are: 'Image IR' or 'Spectrum IR'."
+  END_OBJECT                = COLUMN
+
+ OBJECT                     = COLUMN
+    NAME                    = LINK
+    DATA_TYPE               = CHARACTER
+    START_BYTE              = 176
+    COLUMN_NUMBER           = 14
+    BYTES                   = 4
+    FORMAT                  = A4
+    DESCRIPTION             = "Link. The values are 'HSSL' or 'LSSL'."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = FRAME_TYPE
+    DATA_TYPE               = CHARACTER
+    START_BYTE              = 183
+    COLUMN_NUMBER           = 15
+    BYTES                   = 21
+    FORMAT                  = A21
+    DESCRIPTION             = "Type of acquisition:
+                               'SCIENCE'    for Science;
+                               'CAL_GAIN_1' for Double Science Frame 1;
+                               'CAL_GAIN_2' for Double Science Frame 2;,
+                               'BACKGROUND' for Background;
+                               'DARK'       for Dark;
+                               'RN'         for Readout noise."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = MODE
+    DATA_TYPE               = CHARACTER
+    START_BYTE              = 207
+    COLUMN_NUMBER           = 16
+    BYTES                   = 9
+    FORMAT                  = A9
+    DESCRIPTION             = "Current Operation MODE."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = COUNTER
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 218
+    COLUMN_NUMBER           = 17
+    BYTES                   = 6
+    FORMAT                  = I6
+    DESCRIPTION             = "TM sequence Counter."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = ACQ_NUMBER
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 225
+    COLUMN_NUMBER           = 18
+    BYTES                   = 5
+    FORMAT                  = I5
+    DESCRIPTION             = "Total number of acquisitions in the current
+                               session: Min=1; Max=65535."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = ACQ_COUNT
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 231
+    COLUMN_NUMBER           = 19
+    BYTES                   = 5
+    FORMAT                  = I5
+    DESCRIPTION             = "Current acquisition number in the current
+                               session."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = ACQ_REPETITION
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 237
+    COLUMN_NUMBER           = 20
+    BYTES                   = 3
+    FORMAT                  = I3
+    DESCRIPTION             = "Number of SC revolutions between two
+                               acquisitions: Min=1; Max=255."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = ACQ_DURATION
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 241
+    COLUMN_NUMBER           = 21
+    BYTES                   = 3
+    FORMAT                  = I3
+    DESCRIPTION             = "Acquisition Cycle duration: Min=27 Max=255. If
+                               the value is 0, JIRAM uses SC_Dynamics."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = SUBFRAME_NUMBER
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 245
+    COLUMN_NUMBER           = 22
+    BYTES                   = 1
+    FORMAT                  = I1
+    DESCRIPTION             = "Total number of sub_frames for current
+                               acquisition phase: Min=2; Max=6."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = SUBFRAME_TYPE
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 247
+    COLUMN_NUMBER           = 23
+    BYTES                   = 1
+    FORMAT                  = I1
+    DESCRIPTION             = "Type of subframe:
+                               0 = ImSubFrame = 128x144 pixel;
+                               1 = SpSubFrameF = 128x112 pixel;
+                               2 = SpSubFrameM = 64x112 pixel;
+                               3 = SpSubFrameS = 16x112 pixel."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = COMP_STATUS
+    DATA_TYPE               = CHARACTER
+    START_BYTE              = 250
+    COLUMN_NUMBER           = 24
+    BYTES                   = 14
+    FORMAT                  = A14
+    DESCRIPTION             = "Compression status of the current subframe:
+                               'NOT_COMPRESSED' data, 'COMPRESSED' data, or
+                               Not compressed data due to error."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = EN_DIS_SUB
+    DATA_TYPE               = CHARACTER
+    START_BYTE              = 267
+    COLUMN_NUMBER           = 25
+    BYTES                   = 18
+    FORMAT                  = A18
+    DESCRIPTION             = "Background subtraction setting:
+                               'BC_SUBTRACTION_EN'  for enabled;
+                               'BC_SUBTRACTION_DIS' for disabled."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = BKG_RN
+    DATA_TYPE               = CHARACTER
+    START_BYTE              = 288
+    COLUMN_NUMBER           = 26
+    BYTES                   = 4
+    FORMAT                  = A4
+    NOT_APPLICABLE_CONSTANT = 'N/A'
+    DESCRIPTION             = "Type of background:
+                               'BKG'  for Internal background, mirror in BKG
+                                      position;
+                               'RN'   for readout noise, mirror in BOSIGHT
+                                      position with Texpo=0;
+                               'DARK' for External background, mirror in DARK
+                                      position;
+                               'N/A'  if not applicable."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = BKG_REPETITION
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 294
+    COLUMN_NUMBER           = 27
+    BYTES                   = 2
+    FORMAT                  = I2
+    NOT_APPLICABLE_CONSTANT = -1
+    DESCRIPTION             = "Period of Background acquisition: Min=0;
+                               Max=50."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = TEXPO
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 297
+    COLUMN_NUMBER           = 28
+    BYTES                   = 5
+    FORMAT                  = I5
+    NOT_APPLICABLE_CONSTANT = -1
+    DESCRIPTION             = "Expo time for the used detector: Min=0;
+                               Max=65535."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = "TEXPO (sec)"
+    DATA_TYPE               = ASCII_REAL
+    START_BYTE              = 303
+    COLUMN_NUMBER           = 29
+    BYTES                   = 5
+    FORMAT                  = "F5.3"
+    DESCRIPTION             = "Exposure time in seconds."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = TDELAY
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 309
+    COLUMN_NUMBER           = 30
+    BYTES                   = 5
+    FORMAT                  = I5
+    DESCRIPTION             = "Delay time for the used detector: Min=0;
+        Max=65535."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = DET_TEMP
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 315
+    COLUMN_NUMBER           = 31
+    BYTES                   = 5
+    FORMAT                  = I5
+    DESCRIPTION             = "Temperature for the used detector: Min=0;
+        Max=16383."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = S_TELESCOPE_MIRROR_TEMP
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 321
+    COLUMN_NUMBER           = 32
+    BYTES                   = 5
+    FORMAT                  = I5
+    DESCRIPTION             = "Telescope mirror temperature: Min=0;
+                               Max=16383."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = S_SLIT_TEMP
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 327
+    COLUMN_NUMBER           = 33
+    BYTES                   = 5
+    FORMAT                  = I5
+    DESCRIPTION             = "Slit temperature: Min=0; Max=16383."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = S_SC_IF_TEMP
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 333
+    COLUMN_NUMBER           = 34
+    BYTES                   = 5
+    FORMAT                  = I5
+    DESCRIPTION             = "Interface with the S/C temperature: Min=0;
+                               Max=16383."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = "S_COLD_RADIATOR_TEMP"
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 339
+    COLUMN_NUMBER           = 35
+    BYTES                   = 5
+    FORMAT                  = I5
+    DESCRIPTION             = "Cold radiator temperature: Min=0; Max=16383."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = S_SPECTROMETER_MIRROR_TEMP
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 345
+    COLUMN_NUMBER           = 36
+    BYTES                   = 5
+    FORMAT                  = I5
+    DESCRIPTION             = "Spectrometer mirror temperature: Min=0;
+                               Max=16383."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = "M_MOTOR_TS"
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 351
+    COLUMN_NUMBER           = 37
+    BYTES                   = 5
+    FORMAT                  = I5
+    DESCRIPTION             = "Motor temperature: Min=0; Max=16383."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = M_CAL_SOURCE_TEMP
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 357
+    COLUMN_NUMBER           = 38
+    BYTES                   = 5
+    FORMAT                  = I5
+    DESCRIPTION             = "Lamp_1 (main) temperature: Min=0; Max=16383."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = M_DIFFUSER_CAL_TEMP
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 363
+    COLUMN_NUMBER           = 39
+    BYTES                   = 5
+    FORMAT                  = I5
+    DESCRIPTION             = "Calibration temperature: Min=0; Max=16383."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = DET_TEMP_K
+    DATA_TYPE               = ASCII_REAL
+    START_BYTE              = 369
+    COLUMN_NUMBER           = 40
+    BYTES                   = 6
+    FORMAT                  = "F6.2"
+    UNIT                    = "K"
+    DESCRIPTION             = "Temperature in Kelvin for the used detector."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = S_TELESCOPE_MIRROR_TEMP_K
+    DATA_TYPE               = ASCII_REAL
+    START_BYTE              = 376
+    COLUMN_NUMBER           = 41
+    BYTES                   = 6
+    FORMAT                  = "F6.2"
+    UNIT                    = "K"
+    DESCRIPTION             = "Telescope mirror temperature in Kelvin."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = "S_SLIT_TEMP_K"
+    DATA_TYPE               = ASCII_REAL
+    START_BYTE              = 383
+    COLUMN_NUMBER           = 42
+    BYTES                   = 6
+    FORMAT                  = "F6.2"
+    UNIT                    = "K"
+    DESCRIPTION             = "Slit temperature in Kelvin."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = "S_SC_IF_TEMP_K"
+    DATA_TYPE               = ASCII_REAL
+    START_BYTE              = 390
+    COLUMN_NUMBER           = 43
+    BYTES                   = 6
+    FORMAT                  = "F6.2"
+    UNIT                    = "K"
+    DESCRIPTION             = "Interface with the S/C temperature in Kelvin."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = S_COLD_RADIATOR_TEMP_K
+    DATA_TYPE               = ASCII_REAL
+    START_BYTE              = 397
+    COLUMN_NUMBER           = 44
+    BYTES                   = 6
+    FORMAT                  = "F6.2"
+    UNIT                    = "K"
+    DESCRIPTION             = "Cold radiator temperature in Kelvin."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = S_SPECTROMETER_MIRROR_TEMP_K
+    DATA_TYPE               = ASCII_REAL
+    START_BYTE              = 404
+    COLUMN_NUMBER           = 45
+    BYTES                   = 6
+    FORMAT                  = "F6.2"
+    UNIT                    = "K"
+    DESCRIPTION             = "Spectrometer mirror temperature in Kelvin."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = M_MOTOR_TS_K
+    DATA_TYPE               = ASCII_REAL
+    START_BYTE              = 411
+    COLUMN_NUMBER           = 46
+    BYTES                   = 6
+    FORMAT                  = "F6.2"
+    UNIT                    = "K"
+    DESCRIPTION             = "Motor temperature in Kelvin."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = M_CAL_SOURCE_TEMP_K
+    DATA_TYPE               = ASCII_REAL
+    START_BYTE              = 418
+    COLUMN_NUMBER           = 47
+    BYTES                   = 6
+    FORMAT                  = "F6.2"
+    UNIT                    = "K"
+    DESCRIPTION             = "Lamp_1 (main) temperature in Kelvin."
+ END_OBJECT                 = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = M_DIFFUSER_CAL_TEMP_K
+    DATA_TYPE               = ASCII_REAL
+    START_BYTE              = 425
+    COLUMN_NUMBER           = 48
+    BYTES                   = 6
+    FORMAT                  = "F6.2"
+    UNIT                    = "K"
+    NOT_APPLICABLE_CONSTANT = -1.
+    DESCRIPTION             = "Calibration temperature in Kelvin."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = NADIR_OFFSET_SIGN
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 432
+    COLUMN_NUMBER           = 49
+    BYTES                   = 1
+    FORMAT                  = I1
+    DESCRIPTION             = "Sign of the NADIR_OFFSET: 0 = positive;
+                               1 = negative."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = NADIR_OFFSET
+    DATA_TYPE               = ASCII_INTEGER
+    START_BYTE              = 434
+    COLUMN_NUMBER           = 50
+    BYTES                   = 5
+    FORMAT                  = I5
+    DESCRIPTION             = "NADIR_OFFSET angle (Deg\100) elated to the
+                              current frame: Min=0; Max=57343. For sign, see
+                              NADIR_OFFSET_SIGN column."
+  END_OBJECT                = COLUMN
+
+  OBJECT                    = COLUMN
+    NAME                    = "NADIR_OFFSET (deg)"
+    DATA_TYPE               = ASCII_REAL
+    START_BYTE              = 440
+    COLUMN_NUMBER           = 51
+    BYTES                   = 8
+    FORMAT                  = "F8.4"
+    DESCRIPTION             = "NADIR_OFFSET angle in deg; for sign see
+                               NADIR_OFFSET_SIGN column."
+  END_OBJECT                = COLUMN
+
+END_OBJECT                  = ENGINEERING_INDEX_TABLE
+END
