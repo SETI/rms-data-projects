@@ -1,5 +1,5 @@
 $NOTE 
-################################################################################
+##############################################################################
 # Geometry file template for rings.  
 #
 #  This template controls the creation of body geometry files.  The procedure 
@@ -17,37 +17,38 @@ $NOTE
 #  filled in and should not be edited.  Add a column for each quantity to be 
 #  copied from the product label into the index.  
 #
-################################################################################
+##############################################################################
 $END_NOTE
+$ONCE(volume_id = LABEL_VALUE('FIRST', 'VOLUME_ID'))
+$ONCE(index_path = LABEL_PATH()[:-4] + '.tab')
+$ONCE(table_name = BASENAME(index_path))
+$ONCE(records = FILE_RECORDS(index_path))
+$ONCE(index_type = 'CUMULATIVE' if volume_id.endswith('999') else 'SINGLE')
+$ONCE(padding = ' '*(21 - len(TABLE_TYPE)))
 PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = $LABEL_VALUE("RECORD_TYPE")$
 RECORD_BYTES                    = $LABEL_VALUE("RECORD_BYTES")$
-FILE_RECORDS                    = $LABEL_VALUE("FILE_RECORDS")$
-$IF(TABLE_TYPE != 'CUMULATIVE')
-^RING_SUMMARY_TABLE             = "$LABEL_VALUE("TABLE_BASENAME")$"
-$ELSE
-^CUMULATIVE_TABLE               = "$LABEL_VALUE("TABLE_BASENAME")$"
-$END_IF
+FILE_RECORDS                    = $records$
+^$TABLE_TYPE$_TABLE   $padding$ = "$table_name$"
 
 $INCLUDE("./templates/host_defs.lbl")
 
-PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
+PRODUCT_CREATION_TIME           = $FILE_TIME(index_path)$
 $IF(TABLE_TYPE != 'CUMULATIVE')
-VOLUME_ID                       = "$LABEL_VALUE('FIRST', 'VOLUME_ID')$"
+VOLUME_ID                       = "$volume_id$"
 $END_IF
 
 OBJECT                          = $TABLE_TYPE$_TABLE
   INTERCHANGE_FORMAT            = ASCII
-  ROWS                          = $LABEL_VALUE("ROWS")$
+  ROWS                          = $records$
   COLUMNS                       = $LABEL_VALUE("COLUMNS")$
   ROW_BYTES                     = $LABEL_VALUE("ROW_BYTES")$
+  INDEX_TYPE                    = $index_type$
 $IF(TABLE_TYPE == 'CUMULATIVE')
-  INDEX_TYPE                    = CUMULATIVE
   DESCRIPTION                   = "This index describes the ring geometry of
     all observations in the collection. The index contains one row for each
     observation in which rings appear in the field of view.
 $ELSE
-  INDEX_TYPE                    = SINGLE
   DESCRIPTION                   = "This index describes the ring geometry of
     each observation in the volume identified by the VOLUME_ID keyword above.
     The index contains one row for each observation in which rings appear in
@@ -107,7 +108,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_RING_RADIUS"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Ring radius is the distance from the center
       of the planet to the point where a line of sight intercepts the ring
@@ -125,7 +126,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_RING_RADIUS"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Ring radius is the distance from the center
       of the planet to the point where a line of sight intercepts the ring
@@ -143,7 +144,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "FINEST_RING_INTERCEPT_RESOLUTION"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Ring intercept resolution is the size of
       one edge of a pixel at the distance of the ring intercept point. If
@@ -163,7 +164,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "COARSEST_RING_INTERCEPT_RESOLUTION"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Ring intercept resolution is the size of
       one edge of a pixel at the distance of the ring intercept point. If
@@ -183,7 +184,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "FINEST_RADIAL_RESOLUTION"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Radial resolution is related to the
       gradient of the ring intercept radius. It is equal to the largest
@@ -203,7 +204,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "COARSEST_RADIAL_RESOLUTION"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Radial resolution is the gradient of the
       gradient of the ring intercept radius. It is equal to the largest
@@ -265,7 +266,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "FINEST_LONGITUDINAL_RESOLUTION_KM"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Longitudinal resolution is related to the
       gradient of the ring intercept longitude. It is equal to the largest
@@ -286,7 +287,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "COARSEST_LONGITUDINAL_RESOLUTION_KM"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Longitudinal resolution is related to the
       gradient of the ring intercept longitude. It is equal to the largest
@@ -307,7 +308,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_RING_DISTANCE"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Ring distance equals the separation between
       the observer and the point where a line of sight intercepts the ring
@@ -324,7 +325,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_RING_DISTANCE"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Ring distance equals the separation between
       the observer and the point where a line of sight intercepts the ring
@@ -342,7 +343,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_RING_LONGITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -367,7 +368,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_RING_LONGITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -392,7 +393,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_RING_LONGITUDE_WRT_NODE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -415,7 +416,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_RING_LONGITUDE_WRT_NODE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -438,7 +439,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SOLAR_HOUR_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -459,7 +460,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SOLAR_HOUR_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -480,7 +481,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_RING_LONGITUDE_WRT_OBSERVER"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -180.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -502,7 +503,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_RING_LONGITUDE_WRT_OBSERVER"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -180.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -524,7 +525,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_RING_AZIMUTH"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -552,7 +553,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_RING_AZIMUTH"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -580,7 +581,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_RING_PHASE_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -600,7 +601,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_RING_PHASE_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -620,7 +621,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_RING_INCIDENCE_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -641,7 +642,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_RING_INCIDENCE_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -662,7 +663,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_NORTH_BASED_INCIDENCE_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -684,7 +685,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_NORTH_BASED_INCIDENCE_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -706,7 +707,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_RING_EMISSION_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -729,7 +730,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_RING_EMISSION_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -752,7 +753,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_NORTH_BASED_EMISSION_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -774,7 +775,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_NORTH_BASED_EMISSION_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -796,7 +797,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SOLAR_RING_ELEVATION"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -819,7 +820,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SOLAR_RING_ELEVATION"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -842,7 +843,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_OBSERVER_RING_ELEVATION"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -865,7 +866,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_OBSERVER_RING_ELEVATION"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -918,7 +919,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_EDGE_ON_RING_RADIUS"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Edge-on ring radius is the distance from
       the planet's rotation pole to the edge-on intercept point.
@@ -943,7 +944,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_EDGE_ON_RING_RADIUS"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Edge-on ring radius is the distance from
       the planet's rotation pole to the edge-on intercept point.
@@ -968,7 +969,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_EDGE_ON_RING_ALTITUDE"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -99999.
     DESCRIPTION                 = "Edge-on ring altitude is the distance from
       the ring plane to the edge-on intercept point. The value is positive
@@ -996,7 +997,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_EDGE_ON_RING_ALTITUDE"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -99999.
     DESCRIPTION                 = "Edge-on ring altitude is the distance from
       the ring plane to the edge-on intercept point. The value is positive
@@ -1024,7 +1025,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "FINEST_EDGE_ON_RADIAL_RESOLUTION"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Edge-on radial resolution is the gradient
       of the edge-on ring radius. It is equal to the largest change in the
@@ -1052,7 +1053,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "COARSEST_EDGE_ON_RADIAL_RESOLUTION"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Edge-on radial resolution is the gradient
       of the edge-on ring radius. It is equal to the largest change in the
@@ -1080,7 +1081,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_EDGE_ON_INTERCEPT_DISTANCE"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Edge-on intercept distance is distance from
       the observer to the edge-on intercept point.
@@ -1105,7 +1106,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_EDGE_ON_INTERCEPT_DISTANCE"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Edge-on intercept distance is distance from
       the observer to the edge-on intercept point.
@@ -1130,7 +1131,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_EDGE_ON_RING_LONGITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -1163,7 +1164,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_EDGE_ON_RING_LONGITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -1196,7 +1197,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_EDGE_ON_RING_LONGITUDE_WRT_NODE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -1227,7 +1228,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_EDGE_ON_RING_LONGITUDE_WRT_NODE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -1258,7 +1259,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_EDGE_ON_SOLAR_HOUR_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -1289,7 +1290,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_EDGE_ON_SOLAR_HOUR_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -1320,7 +1321,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_RING_CENTER_DISTANCE"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Distance from the observer to the center of
       the ring system.
@@ -1332,7 +1333,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_RING_CENTER_DISTANCE"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Distance from the observer to the center of
       the ring system.
@@ -1344,7 +1345,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SUB_SOLAR_RING_LONGITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -1361,7 +1362,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SUB_SOLAR_RING_LONGITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -1378,7 +1379,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SUB_SOLAR_RING_LONGITUDE_WRT_NODE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -1394,7 +1395,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SUB_SOLAR_RING_LONGITUDE_WRT_NODE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -1410,7 +1411,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SUB_OBSERVER_RING_LONGITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -1427,7 +1428,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SUB_OBSERVER_RING_LONGITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -1444,7 +1445,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SUB_OBSERVER_RING_LONGITUDE_WRT_NODE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -1460,7 +1461,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SUB_OBSERVER_RING_LONGITUDE_WRT_NODE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -1476,7 +1477,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_RING_CENTER_PHASE_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -1492,7 +1493,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_RING_CENTER_PHASE_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -1508,7 +1509,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_RING_CENTER_INCIDENCE_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -1524,7 +1525,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_RING_CENTER_INCIDENCE_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -1540,7 +1541,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_RING_CENTER_NORTH_BASED_INCIDENCE_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -1557,7 +1558,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_RING_CENTER_NORTH_BASED_INCIDENCE_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -1574,7 +1575,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_RING_CENTER_EMISSION_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -1591,7 +1592,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_RING_CENTER_EMISSION_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -1608,7 +1609,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_RING_CENTER_NORTH_BASED_EMISSION_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -1625,7 +1626,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_RING_CENTER_NORTH_BASED_EMISSION_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -1642,7 +1643,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SOLAR_RING_OPENING_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -1657,7 +1658,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SOLAR_RING_OPENING_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -1673,7 +1674,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_OBSERVER_RING_OPENING_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -1689,7 +1690,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_OBSERVER_RING_OPENING_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.

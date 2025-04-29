@@ -844,7 +844,7 @@ def get_common_args(host=None):
                     help='''If given, only this volume is processed.''')
     gr.add_argument('--labels', '-l', nargs='*', type=str, metavar='labels',
                     default=False, 
-                    help='''If given, labels are generated for existing index files.''')
+                    help='''If given, labels are generated for existing files.''')
 
     # Return parser
     return parser

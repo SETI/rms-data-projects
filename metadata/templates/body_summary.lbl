@@ -1,5 +1,5 @@
 $NOTE 
-################################################################################
+##############################################################################
 # Geometry file template for bodies.  
 #
 #  This template controls the creation of body geometry files.  The procedure 
@@ -17,39 +17,40 @@ $NOTE
 #  filled in and should not be edited.  Add a column for each quantity to be 
 #  copied from the product label into the index.  
 #
-################################################################################
+##############################################################################
 $END_NOTE
+$ONCE(volume_id = LABEL_VALUE('FIRST', 'VOLUME_ID'))
+$ONCE(index_path = LABEL_PATH()[:-4] + '.tab')
+$ONCE(table_name = BASENAME(index_path))
+$ONCE(records = FILE_RECORDS(index_path))
+$ONCE(index_type = 'CUMULATIVE' if volume_id.endswith('999') else 'SINGLE')
+$ONCE(padding = ' '*(21 - len(TABLE_TYPE)))
 PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = $LABEL_VALUE("RECORD_TYPE")$
 RECORD_BYTES                    = $LABEL_VALUE("RECORD_BYTES")$
-FILE_RECORDS                    = $LABEL_VALUE("FILE_RECORDS")$
-$IF(TABLE_TYPE != 'CUMULATIVE')
-^BODY_SUMMARY_TABLE             = "$LABEL_VALUE("TABLE_BASENAME")$"
-$ELSE
-^CUMULATIVE_TABLE               = "$LABEL_VALUE("TABLE_BASENAME")$"
-$END_IF
+FILE_RECORDS                    = $records$
+^$TABLE_TYPE$_TABLE   $padding$ = "$table_name$"
 
 $INCLUDE("./templates/host_defs.lbl")
 
-PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
+PRODUCT_CREATION_TIME           = $FILE_TIME(index_path)$
 $IF(TABLE_TYPE != 'CUMULATIVE')
-VOLUME_ID                       = "$LABEL_VALUE('FIRST', 'VOLUME_ID')$"
+VOLUME_ID                       = "$volume_id$"
 $END_IF
 
 OBJECT                          = $TABLE_TYPE$_TABLE
   INTERCHANGE_FORMAT            = ASCII
-  ROWS                          = $LABEL_VALUE("ROWS")$
+  ROWS                          = $records$
   COLUMNS                       = $LABEL_VALUE("COLUMNS")$
   ROW_BYTES                     = $LABEL_VALUE("ROW_BYTES")$
+  INDEX_TYPE                    = $index_type$
 $IF(TABLE_TYPE == 'CUMULATIVE')
-  INDEX_TYPE                    = CUMULATIVE
   DESCRIPTION                   = "This index describes the geometry of all
     observations in the collection. The index contains one row for each
     observation in which planets, regular satellites, and other targeted
     bodies appear in he field of view.  In addition, goemetry is always
     tabulated for the body identified by the SYSTEM_NAME keyword below.
 $ELSE
-  INDEX_TYPE                    = SINGLE
   DESCRIPTION                   = "This index describes the geometry of each
     observation found on the volume identified by the VOLUME_ID keyword above.
     The index contains one row for each observation in which planets, regular
@@ -77,11 +78,10 @@ $END_IF
     been added to the file.
 
     Regions of a body that are obscured by another body are
-    excluded from the tabulation. [[The dark side of each body is also
-    generally excluded]]. If a body is too small to have been captured in an
-    8x8 sampling of the image, then the associated NULL_CONSTANT will appear 
-    in each column. Quantities that are independent of the field of view are
-    tabulated regardless of obstruction or apparent body size.
+    excluded from the tabulation. If a body is too small to have been captured
+    in an 8x8 sampling of the image, then the associated NULL_CONSTANT will
+    appear in each column. Quantities that are independent of the field of
+    view are tabulated regardless of obstruction or apparent body size.
 
     $INCLUDE("./templates/description.lbl")
     "
@@ -113,15 +113,15 @@ $END_NOTE
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
-    NAME                        = "TARGET_NAME"
-    DESCRIPTION                 = "The target name is the name of the body for
+    NAME                        = "BODY_NAME"
+    DESCRIPTION                 = "The body name is the name of the body for
       which the surface geometry parameters in this row of the table are
       applicable."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_PLANETOCENTRIC_LATITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -147,7 +147,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_PLANETOCENTRIC_LATITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -173,7 +173,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_PLANETOGRAPHIC_LATITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -198,7 +198,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_PLANETOGRAPHIC_LATITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -223,7 +223,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_IAU_LONGITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -246,7 +246,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_IAU_LONGITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -269,7 +269,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_LOCAL_HOUR_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -294,7 +294,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_LOCAL_HOUR_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -319,7 +319,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_LONGITUDE_WRT_OBSERVER"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -180.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -340,7 +340,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_LONGITUDE_WRT_OBSERVER"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -180.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -361,7 +361,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_FINEST_SURFACE_RESOLUTION"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Finest surface resolution is the shorter
       dimension of a pixel as projected onto the surface at the intercept
@@ -382,7 +382,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_FINEST_SURFACE_RESOLUTION"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Finest surface resolution is the shorter
       dimension of a pixel as projected onto the surface at the intercept
@@ -405,7 +405,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_COARSEST_SURFACE_RESOLUTION"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Coarsest surface resolution is the longer
       dimension of a pixel as projected onto the surface at the intercept
@@ -430,7 +430,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_COARSEST_SURFACE_RESOLUTION"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Coarsest surface resolution is the longer
       dimension of a pixel as projected onto the surface at the intercept
@@ -455,7 +455,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SURFACE_DISTANCE"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Surface distance is the separation between
       the observer and the point where a line of sight intercepts the
@@ -473,7 +473,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SURFACE_DISTANCE"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Surface distance is the separation between
       the observer and the point where a line of sight intercepts the
@@ -491,7 +491,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_PHASE_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -510,7 +510,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_PHASE_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -529,7 +529,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_INCIDENCE_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -548,7 +548,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_INCIDENCE_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -567,7 +567,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_EMISSION_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -586,7 +586,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_EMISSION_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -605,7 +605,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_LIMB_ALTITUDE"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -99999.
     DESCRIPTION                 = "Elevation above the point on the limb,
       measured normal to the surface, of the planet or a specified target
@@ -620,7 +620,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_LIMB_ALTITUDE"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -99999
     DESCRIPTION                 = "Elevation above the point on the limb,
       measured normal to the surface, of the planet or a specified target
@@ -635,7 +635,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_LIMB_CLOCK_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -649,7 +649,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_LIMB_CLOCK_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -693,7 +693,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -711,7 +711,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -729,7 +729,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -747,7 +747,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -765,7 +765,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -783,7 +783,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -801,7 +801,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -819,7 +819,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = -90.
     VALID_MAXIMUM               = 90.
     NULL_CONSTANT               = -999.
@@ -837,7 +837,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SUB_SOLAR_IAU_LONGITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -852,7 +852,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SUB_SOLAR_IAU_LONGITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -867,7 +867,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_SUB_OBSERVER_IAU_LONGITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -882,7 +882,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_SUB_OBSERVER_IAU_LONGITUDE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -897,7 +897,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_CENTER_RESOLUTION"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "The linear size of a pixel as projected at
       the center of the planet or specified target body.
@@ -909,7 +909,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_CENTER_RESOLUTION"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "The linear size of a pixel as projected at
       the center of the planet or specified target body.
@@ -921,7 +921,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_CENTER_DISTANCE"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Distance from the observer to the center of
       the planet or a specified target body.
@@ -933,7 +933,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_CENTER_DISTANCE"
-    UNIT                        = "KM"
+    UNIT                        = "km"
     NULL_CONSTANT               = -999.
     DESCRIPTION                 = "Distance from the observer to the center of
       the planet or a specified target body.
@@ -945,7 +945,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_CENTER_PHASE_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -961,7 +961,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_CENTER_PHASE_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 180.
     NULL_CONSTANT               = -999.
@@ -1003,7 +1003,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_NORTH_POLE_CLOCK_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -1018,7 +1018,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_NORTH_POLE_CLOCK_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -1033,7 +1033,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MINIMUM_NORTH_POLE_POSITION_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.
@@ -1048,7 +1048,7 @@ $END_NOTE
 
   OBJECT                        = COLUMN
     NAME                        = "MAXIMUM_NORTH_POLE_POSITION_ANGLE"
-    UNIT                        = "DEGREES"
+    UNIT                        = "deg"
     VALID_MINIMUM               = 0.
     VALID_MAXIMUM               = 360.
     NULL_CONSTANT               = -999.

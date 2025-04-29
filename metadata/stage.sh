@@ -21,7 +21,7 @@
 # Collection is current dir name
 pwd=`pwd`
 parts=($(echo $pwd | tr "/" " "))
-pfx=${parts[0]}
+###pfx=${parts[0]}
 col=${parts[-1]}
 
 parts=($(echo $col | tr "_" " "))

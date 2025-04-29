@@ -79,7 +79,7 @@ class Test_Geometry(unittest.TestCase):
             table = pdstable.PdsTable(file)
 
             # validate column types
-            self.assertIsInstance(table.column_values['TARGET_NAME'][0], np.str_, file)
+            self.assertIsInstance(table.column_values['BODY_NAME'][0], np.str_, file)
 
             # validate bounded values
             unit.bounds(self, file, table, 'PLANETOCENTRIC_LATITUDE', min=-90, max=90)
