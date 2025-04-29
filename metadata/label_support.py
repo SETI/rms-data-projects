@@ -57,17 +57,10 @@ def create(filepath,
         preprocess = None
 
     # Default template dictionary
-    if preserve_time:
-        local_path = label_path.retrieve()
-        label = pdsparser.PdsLabel.from_file(local_path)
-        creation_time = label.__getitem__('PRODUCT_CREATION_TIME')
-    elif creation_time is None:
-        creation_time = '%04d-%02d-%02dT%02d:00:00' % time.gmtime()[:4]
     fields = {'VOLUME_ID'           : volume_id,
-              'TABLE_TYPE'          : table_type,
-              'PUBLICATION_DATE'    : creation_time[:10]}
+              'TABLE_TYPE'          : table_type}
 
-    # Cumulative indexes
+    # Cumulative index
     if '999' in volume_id:
         fields['TABLE_TYPE'] = 'CUMULATIVE'
 

@@ -1,37 +1,59 @@
 $ONCE(TABLE_PATH = LABEL_PATH().replace(".lbl",".tab").replace(".LBL",".TAB").split('/')[-1])
-
+$ONCE(csv_file = LABEL_PATH()[:-4] + '.csv')
+$ONCE(records = FILE_RECORDS(csv_file))
+$ONCE(record_bytes = RECORD_BYTES(csv_file))
+$ONCE(name_bytes = record_bytes - (7 + 3 + 32 + 3 + 2 + 2))
+$ONCE(index_type = 'CUMULATIVE' if VOLUME_ID.endswith('999') else 'SINGLE')
 PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = STREAM
-
-^TEXT                           = "$TABLE_PATH$" 
-
-$IF(TABLE_TYPE != 'CUMULATIVE')
-VOLUME_ID                       = "$VOLUME_ID$"
-$END_IF
-PRODUCT_CREATION_TIME           = $CURRENT_ZULU()$
-$IF(TABLE_TYPE == 'CUMULATIVE')
-INDEX_TYPE                      = CUMULATIVE
-$ELSE
-INDEX_TYPE                      = SINGLE
-$END_IF
+RECORD_BYTES                    = $record_bytes$   $' ' if record_bytes < 100 else '/* max length including <CR><LF> */'$
+FILE_RECORDS                    = $records$
+^INVENTORY_SPREADSHEET          = "$BASENAME(csv_file)$"
 
 $INCLUDE("./templates/host_defs.lbl")
 
-OBJECT                          = TEXT
-  PUBLICATION_DATE              = $PUBLICATION_DATE$
-  NOTE                          = "Description of the contents of
-the Inventory table."
-END_OBJECT                      = TEXT
+PRODUCT_CREATION_TIME           = $FILE_TIME(csv_file)$
+$IF(TABLE_TYPE != 'CUMULATIVE')
+VOLUME_ID                       = "$VOLUME_ID$"
+$END_IF
+
+OBJECT                  = INVENTORY_SPREADSHEET
+  INTERCHANGE_FORMAT    = ASCII
+  ROWS                  = $records$
+  ROW_BYTES             = $record_bytes$   $' ' if record_bytes < 100 else '/* max length including <CR><LF> */'$
+  FIELDS                = 3
+  FIELD_DELIMITER       = COMMA
+  INDEX_TYPE            = $index_type$
+  DESCRIPTION           = "This table identifies every body partially or fully
+    inside each image's field of view."
+
+  OBJECT                = FIELD
+    FIELD_NUMBER        = 1
+    NAME                = VOLUME_ID
+    DATA_TYPE           = CHARACTER
+    BYTES               = 7
+    FORMAT              = A7
+    DESCRIPTION         = "The unique identifier for the PDS data volume."
+  END_OBJECT            = FIELD
+
+  OBJECT                = FIELD
+    FIELD_NUMBER        = 2
+    NAME                = FILE_SPECIFICATION_NAME
+    DATA_TYPE           = CHARACTER
+    BYTES               = 32
+    FORMAT              = A32
+    DESCRIPTION         = "The full name of the raw image file, including the
+        directory path, relative to the root directory of the PDS volume."
+  END_OBJECT            = FIELD
+
+  OBJECT                = FIELD
+    FIELD_NUMBER        = 3
+    NAME                = BODY_NAMES
+    DATA_TYPE           = CHARACTER
+    BYTES               = $name_bytes$    $' ' if name_bytes < 10 else '/* max length */'$
+    DESCRIPTION         = "The names of all the bodies estimated to be
+        partially or fully inside the field of view, separated by commas."
+  END_OBJECT            = FIELD
+
+END_OBJECT              = INVENTORY_SPREADSHEET
 END
-
-  DESCRIPTION OF THE INVENTORY TABLE
-  -----------------------------------------------------------------
-
-This table lists every target inside the instrument field of view. Each
-record in the table corresponds to a single data product. The fields in 
-each record are separated by commas. The fields are:
-
-  Volume ID,
-  File specification path to the data product label file,
-  Target (this field recurs as many times as necessary).
-
