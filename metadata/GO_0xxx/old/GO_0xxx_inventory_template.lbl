@@ -1,0 +1,40 @@
+$ONCE(volume_id = '_'.join(BASENAME(LABEL_PATH()).split('_')[:2]))
+$ONCE(index_path = LABEL_PATH()[:-4] + '.csv')
+$ONCE(index_type = 'CUMULATIVE' if volume_id.endswith('999') else 'SINGLE')
+PDS_VERSION_ID                  = PDS3
+RECORD_TYPE                     = STREAM
+
+^TEXT                           = "$BASENAME(index_path)$"
+
+PRODUCT_CREATION_TIME           = $FILE_TIME(index_path)$
+
+MISSION_NAME                    = "GALILEO"
+INSTRUMENT_HOST_NAME            = "GALILEO"
+INSTRUMENT_HOST_ID              = "GLL"
+INSTRUMENT_NAME                 = "SOLID STATE IMAGER"
+INSTRUMENT_ID                   = "SSI"
+DATA_SET_ID                     = "GO-J/JSA-SSI-2-REDR-V1.0"
+
+$IF(index_type == 'SINGLE')
+VOLUME_ID                       = "$volume_id$"
+
+$END_IF
+OBJECT                          = TEXT
+  INDEX_TYPE                    = $index_type$
+  PUBLICATION_DATE              = $CURRENT_TIME(date_only=True)$
+  NOTE                          = "Description of the contents of
+the Inventory table."
+END_OBJECT                      = TEXT
+END
+
+  DESCRIPTION OF THE INVENTORY TABLE
+  -----------------------------------------------------------------
+
+This table lists every target inside the instrument field of view. Each
+record in the table corresponds to a single data product. The fields in 
+each record are separated by commas. The fields are:
+
+  Volume ID,
+  File specification path to the data product label file,
+  Target (this field recurs as many times as necessary).
+

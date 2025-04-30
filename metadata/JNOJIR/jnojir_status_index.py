@@ -29,7 +29,7 @@ import sys
 VOLUME_ID_REGEX = re.compile(r'(.*?)(JNOJIR_\d\d\d\d)')
 
 # The number of characters in each column, excluding quotes
-LENGTHS = [11, 34, 14, 14, 16, 7, 9, 9, 3, 5, 9, 5, 11, 4, 21, 9, 6, 5, 5, 3, 3,
+LENGTHS = [11, 39, 14, 14, 16, 7, 9, 9, 3, 5, 9, 5, 11, 4, 21, 9, 6, 5, 5, 3, 3,
            1, 1, 14, 18, 4, 2, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6,
            6, 6, 6, 6, 6, 1, 5, 8, 1]
 TYPES = 'ccffccccififcccciiiiiiiccciifiiiiiiiiiiiffffffffiifi'
@@ -146,6 +146,9 @@ def write_jnojir_status_index(filepath):
             rec = '"' + volume_id + '","' + rec[:icomma] + '"' + rec[icomma:]
 
         values = list(eval(rec))
+
+        # Convert FILE_NAME to FILE_SPECIFICATION_NAME
+        values[FILE_SPECIFICATION_NAME] = 'DATA/' + values[FILE_SPECIFICATION_NAME]
 
         # These errors appear in JNOJIR_1047
         if values[M_DIFFUSER_CAL_TEMP_K] == 9999:
@@ -271,7 +274,6 @@ def label_jnojir_status_index(source_file, index_file):
             label_dict['COMMAND_FILE_NAME'] = "'N/A'"
 
         label_dict['old_label'] = source_label
-
     else:
         label_dict = {}
 
