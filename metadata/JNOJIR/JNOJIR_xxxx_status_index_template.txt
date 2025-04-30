@@ -507,7 +507,7 @@ END_OBJECT                  = COLUMN
     COLUMN_NUMBER           = 40
     BYTES                   = 6
     FORMAT                  = "F6.2"
-    UNIT                    = K
+    UNIT                    = "K"
     DESCRIPTION             = "Temperature in Kelvin for the used detector."
   END_OBJECT                = COLUMN
 
@@ -518,7 +518,7 @@ END_OBJECT                  = COLUMN
     COLUMN_NUMBER           = 41
     BYTES                   = 6
     FORMAT                  = "F6.2"
-    UNIT                    = K
+    UNIT                    = "K"
     DESCRIPTION             = "Telescope mirror temperature in Kelvin."
   END_OBJECT                = COLUMN
 
@@ -529,7 +529,7 @@ END_OBJECT                  = COLUMN
     COLUMN_NUMBER           = 42
     BYTES                   = 6
     FORMAT                  = "F6.2"
-    UNIT                    = K
+    UNIT                    = "K"
     DESCRIPTION             = "Slit temperature in Kelvin."
   END_OBJECT                = COLUMN
 
@@ -540,7 +540,7 @@ END_OBJECT                  = COLUMN
     COLUMN_NUMBER           = 43
     BYTES                   = 6
     FORMAT                  = "F6.2"
-    UNIT                    = K
+    UNIT                    = "K"
     DESCRIPTION             = "Interface with the S/C temperature in Kelvin."
   END_OBJECT                = COLUMN
 
@@ -551,7 +551,7 @@ END_OBJECT                  = COLUMN
     COLUMN_NUMBER           = 44
     BYTES                   = 6
     FORMAT                  = "F6.2"
-    UNIT                    = K
+    UNIT                    = "K"
     DESCRIPTION             = "Cold radiator temperature in Kelvin."
   END_OBJECT                = COLUMN
 
@@ -562,7 +562,7 @@ END_OBJECT                  = COLUMN
     COLUMN_NUMBER           = 45
     BYTES                   = 6
     FORMAT                  = "F6.2"
-    UNIT                    = K
+    UNIT                    = "K"
     DESCRIPTION             = "Spectrometer mirror temperature in Kelvin."
   END_OBJECT                = COLUMN
 
@@ -573,7 +573,7 @@ END_OBJECT                  = COLUMN
     COLUMN_NUMBER           = 46
     BYTES                   = 6
     FORMAT                  = "F6.2"
-    UNIT                    = K
+    UNIT                    = "K"
     DESCRIPTION             = "Motor temperature in Kelvin."
   END_OBJECT                = COLUMN
 
@@ -584,7 +584,7 @@ END_OBJECT                  = COLUMN
     COLUMN_NUMBER           = 47
     BYTES                   = 6
     FORMAT                  = "F6.2"
-    UNIT                    = K
+    UNIT                    = "K"
     DESCRIPTION             = "Lamp_1 (main) temperature in Kelvin."
  END_OBJECT                 = COLUMN
 
@@ -595,7 +595,7 @@ END_OBJECT                  = COLUMN
     COLUMN_NUMBER           = 48
     BYTES                   = 6
     FORMAT                  = "F6.2"
-    UNIT                    = K
+    UNIT                    = "K"
     NOT_APPLICABLE_CONSTANT = -1.
     DESCRIPTION             = "Calibration temperature in Kelvin."
   END_OBJECT                = COLUMN
