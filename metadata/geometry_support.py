@@ -797,13 +797,7 @@ class InventoryTable(Table):
         Returns:
             None.
         """
-####        from IPython import embed; print('+++++++++++++'); embed()
-#        line = ",".join(record.prefixes) + ',"' + ",".join(record.bodies) + '"'
-
-        line = ",".join(record.prefixes)
-        for name in record.bodies:
-            line += ',"' + name + '"'
-
+        line = ",".join(record.prefixes) + ',"' + ",".join(record.bodies) + '"'
         self.rows += [line]
 
 ################################################################################

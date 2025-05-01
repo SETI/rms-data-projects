@@ -68,7 +68,6 @@ class Index():
             self.primary_index_label_path = self.output_dir/(primary_index_name + '.lbl')
             self.primary_index_path = self.output_dir/(primary_index_name + '.tab')
 
-#            from IPython import embed; print('+++++++++++++'); embed()
             try:
                 local_label_path = self.primary_index_label_path.retrieve()
                 local_path = self.primary_index_path.retrieve()
@@ -508,7 +507,6 @@ def process_index(host=None, type='', glob=None):
         # __skip directory will not be scanned, so it's safe for test results
         if '__skip' in root.as_posix():
             continue
-        print(root)
 
         # Sort directories for progress monitoring
         dirs.sort()

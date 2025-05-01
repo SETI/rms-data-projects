@@ -250,7 +250,8 @@ def key__product_creation_time(label_path, label_dict):
     # Read the VICAR label and take the latest DAT_TIM value
     try:
         local_path = image_path.retrieve()
-        viclab = vicar.VicarLabel.from_file(local_path)
+#        viclab = vicar.VicarLabel.from_file(local_path)
+        viclab = vicar.VicarLabel(local_path, strict=False)
     except FileNotFoundError:
         raise FileNotFoundError(image_path)
     except vicar.VicarError as err:
@@ -336,6 +337,7 @@ def key__spacecraft_clock_stop_count(label_path, label_dict):
         str: Value to write in the index file under SPACECRAFT_CLOCK_STOP_COUNT.
     """
     return _spacecraft_clock_stop_count_from_label(label_dict)
+
 #===============================================================================
 def key__on_chip_mosaic_flag(label_path, label_dict):
     """Key function for SPACECRAFT_CLOCK_STOP_COUNT.
@@ -347,10 +349,39 @@ def key__on_chip_mosaic_flag(label_path, label_dict):
     Returns:
         str: Value to write in the index file under SPACECRAFT_CLOCK_STOP_COUNT.
     """
+    # Return Y for all SL9 images
+    image_time = label_dict['IMAGE_TIME']
+    if image_time != 'UNK':
+        image_tai = julian.tai_from_iso(image_time)
+        start_time = '1994-07-19T09:46:37.667Z'
+        stop_time = '1994-07-22T07:45:16.781Z'
+        start_tai = julian.tai_from_iso(start_time)
+        stop_tai = julian.tai_from_iso(stop_time)
+
+        if start_tai <= image_tai <= stop_tai:
+            return 'Y'
+
+    # Return None if keyword not present
     if not 'ON_CHIP_MOSAIC_FLAG' in label_dict:
         return None
-    return {'N': 'NO', 'Y': 'YES'}[label_dict['ON_CHIP_MOSAIC_FLAG']]
 
+    # Return value if keyword present
+    return label_dict['ON_CHIP_MOSAIC_FLAG']
+
+#===============================================================================
+def key__compression_quantization_table_id(label_path, label_dict):
+    """Key function for CMPRS_QUANTZ_TBL_ID.
+
+    Args:
+        label_path  (str, Path, or FCPath): Path to the PDS label.
+        label_dict (dict): Dictionary containing the PDS label fields.
+
+    Returns:
+        str: Value to write in the index file under SPACECRAFT_CLOCK_STOP_COUNT.
+    """
+    if not 'CMPRS_QUANTZ_TBL_ID' in label_dict:
+        return None
+    return label_dict['CMPRS_QUANTZ_TBL_ID']
 ################################################################################
 
 
