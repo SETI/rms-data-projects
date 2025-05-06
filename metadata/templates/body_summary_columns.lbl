@@ -1,0 +1,981 @@
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_PLANETOCENTRIC_LATITUDE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = -90.
+    VALID_MAXIMUM               = 90.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Planetocentric latitude is the latitude at
+      the surface intercept point on the planet or a specified target body.
+      The planetocentric value is defined by the angle from the body's
+      equator plane to a line defined by a vector from the body center to
+      the body intercept point. Values are positive in the body's northern
+      hemisphere and negative in the southern hemisphere. Note that, for a
+      given surface intercept point on a non-spherical body, the
+      planetocentric latitude is smaller in magnitude than the
+      planetographic latitude.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. For observations capturing reflected
+      sunlight (i.e., with wavelengths in the visual or near-infrared), the
+      night side of the target body is also ignored.
+
+      This column tabulates the minimum value of planetocentric latitude
+      within the field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_PLANETOCENTRIC_LATITUDE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = -90.
+    VALID_MAXIMUM               = 90.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Planetocentric latitude is the latitude at
+      the surface intercept point on the planet or a specified target body.
+      The planetocentric value is defined by the angle from the body's
+      equator plane to a line defined by a vector from the body center to
+      the body intercept point. Values are positive in the body's northern
+      hemisphere and negative in the southern hemisphere. Note that, for a
+      given surface intercept point on a non-spherical body, the
+      planetocentric latitude is smaller in magnitude than the
+      planetographic latitude.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. For observations capturing reflected
+      sunlight (i.e., with wavelengths in the visual or near-infrared), the
+      night side of the target body is also ignored.
+
+      This column tabulates the maximum value of planetocentric latitude
+      within the field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_PLANETOGRAPHIC_LATITUDE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = -90.
+    VALID_MAXIMUM               = 90.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Planetographic latitude is the latitude at
+      the surface intercept point on the planet or a specified target body.
+      The planetographic value is defined by the angle between the body's
+      equator plane and the local surface normal at the body intercept
+      point. Values are positive in the body's northern hemisphere and
+      negative in the southern hemisphere. Note that, for a given surface
+      intercept point on a non-spherical body, the planetographic latitude
+      is larger in magnitude than the planetocentric latitude.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. For observations capturing reflected
+      sunlight (i.e., with wavelengths in the visual or near-infrared), the
+      night side of the target body is also ignored.
+
+      This column tabulates the minimum value of planetographic latitude
+      within the field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_PLANETOGRAPHIC_LATITUDE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = -90.
+    VALID_MAXIMUM               = 90.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Planetographic latitude is the latitude at
+      the surface intercept point on the planet or a specified target body.
+      The planetographic value is defined by the angle between the body's
+      equator plane and the local surface normal at the body intercept
+      point. Values are positive in the body's northern hemisphere and
+      negative in the southern hemisphere. Note that, for a given surface
+      intercept point on a non-spherical body, the planetographic latitude
+      is larger in magnitude than the planetocentric latitude.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. For observations capturing reflected
+      sunlight (i.e., with wavelengths in the visual or near-infrared), the
+      night side of the target body is also ignored.
+
+      This column tabulates the maximum value of planetographic latitude
+      within the field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_IAU_LONGITUDE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "IAU longitude is the longitude at the
+      surface intercept point on the planet or a specified target body.
+      Longitudes increase toward the west, in the rotating coordinate frame
+      defined by the IAU.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. For observations capturing reflected
+      sunlight (i.e., with wavelengths in the visual or near-infrared), the
+      night side of the target body is also ignored.
+
+      This column tabulates the minimum value of IAU longitude within the
+      field of view of the observation. For fields of view that cross the
+      prime meridian, the tabulated minimum value will be greater than the
+      maximum."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_IAU_LONGITUDE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "IAU longitude is the longitude at the
+      surface intercept point on the planet or a specified target body.
+      Longitudes increase toward the west, in the rotating coordinate frame
+      defined by the IAU.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. For observations capturing reflected
+      sunlight (i.e., with wavelengths in the visual or near-infrared), the
+      night side of the target body is also ignored.
+
+      This column tabulates the maximum value of IAU longitude within the
+      field of view of the observation. For fields of view that cross the
+      prime meridian, the tabulated minimum value will be greater than the
+      maximum."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_LOCAL_HOUR_ANGLE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Local hour angle is a measure of the local
+      solar time as observed at the surface intercept point on the planet or
+      a specified target body. The value is 180 degrees at a point on the
+      surface as the Sun is crossing the local meridian. Local hour angle
+      can alternatively be understood as a longitude frame that originates
+      at the anti-solar direction and increases toward the east (assuming
+      prograde rotation).
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. The night side of the target body is not
+      ignored.
+
+      This column tabulates the minimum value of local hour angle within the
+      field of view of the observation. For fields of view that cross the
+      midnight meridian, the tabulated minimum value will be greater than
+      the maximum."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_LOCAL_HOUR_ANGLE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Local hour angle is a measure of the local
+      solar time as observed at the surface intercept point on the planet or
+      a specified target body. The value is 180 degrees at a point on the
+      surface as the Sun is crossing the local meridian. Local hour angle
+      can alternatively be understood as a longitude frame that originates
+      at the anti-solar direction and increases toward the east (assuming
+      prograde rotation).
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. The night side of the target body is not
+      ignored.
+
+      This column tabulates the maximum value of local hour angle within the
+      field of view of the observation. For fields of view that cross the
+      midnight meridian, the tabulated minimum value will be greater than
+      the maximum."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_LONGITUDE_WRT_OBSERVER"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = -180.
+    VALID_MAXIMUM               = 180.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "This alternative definition of longitude
+      is measured relative to the direction toward the observer. Values
+      increase westward. Unlike other longitudes, this quantity ranges from
+      -180 to 180 degrees instead of 0 to 360 degrees.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. For observations capturing reflected
+      sunlight (i.e., with wavelengths in the visual or near-infrared), the
+      night side of the target body is also ignored.
+
+      This column tabulates the minimum value of this longitude within the
+      field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_LONGITUDE_WRT_OBSERVER"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = -180.
+    VALID_MAXIMUM               = 180.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "This alternative definition of longitude
+      is measured relative to the direction toward the observer. Values
+      increase westward. Unlike other longitudes, this quantity ranges from
+      -180 to 180 degrees instead of 0 to 360 degrees.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. For observations capturing reflected
+      sunlight (i.e., with wavelengths in the visual or near-infrared), the
+      night side of the target body is also ignored.
+
+      This column tabulates the maximum value of this longitude within the
+      field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_FINEST_SURFACE_RESOLUTION"
+    UNIT                        = "km"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Finest surface resolution is the shorter
+      dimension of a pixel as projected onto the surface at the intercept
+      point. In practice, it defines the approximate size of the smallest
+      linear feature that can be resolved if that feature is oriented
+      optimally on the surface.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. For observations capturing reflected
+      sunlight (i.e., with wavelengths in the visual or near-infrared), the
+      night side of the target body is also ignored.
+
+      This column tabulates the minimum value of finest surface resolution
+      within the field of view of the observation. In other words, this is
+      the size of the smallest resolvable feature in the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_FINEST_SURFACE_RESOLUTION"
+    UNIT                        = "km"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Finest surface resolution is the shorter
+      dimension of a pixel as projected onto the surface at the intercept
+      point. In practice, it defines the approximate size of the smallest
+      linear feature that can be resolved if that feature is oriented
+      optimally on the surface.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. For observations capturing reflected
+      sunlight (i.e., with wavelengths in the visual or near-infrared), the
+      night side of the target body is also ignored.
+
+      This column tabulates the maximum value of finest surface resolution
+      within the field of view of the observation. In other words, this is
+      the smallest resolvable feature that could be resolved anywhere in the
+      field of view provided that feature is oriented optimally on the
+      surface."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_COARSEST_SURFACE_RESOLUTION"
+    UNIT                        = "km"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Coarsest surface resolution is the longer
+      dimension of a pixel as projected onto the surface at the intercept
+      point. At any given intercept point, the coarsest surface resolution
+      is typically larger than the finest resolution by a factor of
+          1/cos(emission angle).
+      In practice, this defines the approximate size of a linear feature
+      that can be resolved if that feature has its worst possible
+      orientation on the surface.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. For observations capturing reflected
+      sunlight (i.e., with wavelengths in the visual or near-infrared), the
+      night side of the target body is also ignored.
+
+      This column tabulates the minimum value of coarsest surface resolution
+      within the field of view of the observation. In other words, this is
+      the size of the smallest feature that could be be resolved anywhere in
+      the field of view and regardless of its orientation on the surface."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_COARSEST_SURFACE_RESOLUTION"
+    UNIT                        = "km"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Coarsest surface resolution is the longer
+      dimension of a pixel as projected onto the surface at the intercept
+      point. At any given intercept point, the coarsest surface resolution
+      is typically larger than the finest resolution by a factor of
+          1/cos(emission angle).
+      In practice, this defines the approximate size of a linear feature
+      that can be resolved if that feature has its worst possible
+      orientation on the surface.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. For observations capturing reflected
+      sunlight (i.e., with wavelengths in the visual or near-infrared), the
+      night side of the target body is also ignored.
+
+      This column tabulates the maximum value of coarsest surface resolution
+      within the field of view of the observation. In other words, this is
+      the size of the smallest feature that could be be resolved anywhere in
+      the field of view and regardless of its orientation on the surface."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_SURFACE_DISTANCE"
+    UNIT                        = "km"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Surface distance is the separation between
+      the observer and the point where a line of sight intercepts the
+      surface of the planet or a specified target body.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. For observations capturing reflected
+      sunlight (i.e., with wavelengths in the visual or near-infrared), the
+      night side of the target body is also ignored.
+
+      This column tabulates the minimum value of surface distance within the
+      field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_SURFACE_DISTANCE"
+    UNIT                        = "km"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Surface distance is the separation between
+      the observer and the point where a line of sight intercepts the
+      surface of the planet or a specified target body.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. For observations capturing reflected
+      sunlight (i.e., with wavelengths in the visual or near-infrared), the
+      night side of the target body is also ignored.
+
+      This column tabulates the maximum value of surface distance within the
+      field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_PHASE_ANGLE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 180.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Phase angle is the angle, measured at the
+      surface intercept point, between the direction of the incoming photon
+      from the Sun and the direction of the outgoing photon to the observer.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. The night side of the target body is not
+      ignored.
+
+      This column tabulates the minimum value of phase angle within the
+      field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_PHASE_ANGLE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 180.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Phase angle is the angle, measured at the
+      surface intercept point, between the direction of the incoming photon
+      from the Sun and the direction of the outgoing photon to the observer.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. The night side of the target body is not
+      ignored.
+
+      This column tabulates the maximum value of phase angle within the
+      field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_INCIDENCE_ANGLE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 180.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Incidence angle is the angle, measured at
+      the surface intercept point, between the local surface normal vector
+      and the direction of the incoming photon from the Sun.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. The night side of the target body is not
+      ignored; here the incidence angle is > 90 degrees.
+
+      This column tabulates the minimum value of incidence angle within the
+      field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_INCIDENCE_ANGLE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 180.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Incidence angle is the angle, measured at
+      the surface intercept point, between the local surface normal vector
+      and the direction of the incoming photon from the Sun.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. The night side of the target body is not
+      ignored; here the incidence angle is > 90 degrees.
+
+      This column tabulates the maximum value of incidence angle within the
+      field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_EMISSION_ANGLE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 90.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Emission angle is the angle, measured at
+      the surface intercept point, between the local surface normal vector
+      and the direction of the outgoing photon to the observer.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. The night side of the target body is not
+      ignored.
+
+      This column tabulates the minimum value of emission angle within the
+      field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_EMISSION_ANGLE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 90.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Emission angle is the angle, measured at
+      the surface intercept point, between the local surface normal vector
+      and the direction of the outgoing photon to the observer.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored. The night side of the target body is not
+      ignored.
+
+      This column tabulates the maximum value of emission angle within the
+      field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_LIMB_ALTITUDE"
+    UNIT                        = "km"
+    NULL_CONSTANT               = -99999.
+    DESCRIPTION                 = "Elevation above the point on the limb,
+      measured normal to the surface, of the planet or a specified target
+      body.
+
+      Altiudes below -0.1 times the maximum body radius and above 1000 times
+      the maximum body radius are not reported.
+
+      This column tabulates the maximum value of the limb altitude within the
+      field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_LIMB_ALTITUDE"
+    UNIT                        = "km"
+    NULL_CONSTANT               = -99999
+    DESCRIPTION                 = "Elevation above the point on the limb,
+      measured normal to the surface, of the planet or a specified target
+      body.
+
+      Altiudes below -0.1 times the maximum body radius and above 1000 times
+      the maximum body radius are not reported.
+
+      This column tabulates the maximum value of the limb altitude within the
+      field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_LIMB_CLOCK_ANGLE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Angular location around the limb, measured
+      clockwise from the projected north pole, of the planet or a specified
+      target body.
+
+      This column tabulates the minimum value of the limb clock angle within
+      the field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_LIMB_CLOCK_ANGLE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Angular location around the limb, measured
+      clockwise from the projected north pole, of the planet or a specified
+      target body.
+
+      This column tabulates the maximum value of the limb clock angle within
+      the field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_SURFACE_INTERCEPT_TIME"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "Surface intercept time is the time when
+      the received photon left the surface intercept point.  It is given in
+      ISO format: YYYY-MM-DDTHH:mm:ss.sss.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored.
+
+      This column tabulates the minimum value of the surface intercept time
+      within the field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_SURFACE_INTERCEPT_TIME"
+    NULL_CONSTANT               = "UNK"
+    DESCRIPTION                 = "Surface intercept time is the time when
+      the received photon left the surface intercept point.  It is given in
+      ISO format: YYYY-MM-DDTHH:mm:ss.sss.
+
+      The surface has been modeled as an ellipsoid. Surface intercept points
+      that are obscured by the planet or another moon within the observed
+      field of view are ignored.
+
+      This column tabulates the maximum value of the surface intercept time
+      within the field of view of the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = -90.
+    VALID_MAXIMUM               = 90.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Planetocentric latitude of the sub-solar
+      point on the surface of the planet or specified target body. The
+      planetocentric value is defined by the angle from the body's equator
+      plane to a line defined by a vector from the body center to the
+      sub-solar point. Values are positive in the body's northern hemisphere
+      and negative in the southern hemisphere.
+
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_SUB_SOLAR_PLANETOCENTRIC_LATITUDE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = -90.
+    VALID_MAXIMUM               = 90.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Planetocentric latitude of the sub-solar
+      point on the surface of the planet or specified target body. The
+      planetocentric value is defined by the angle from the body's equator
+      plane to a line defined by a vector from the body center to the
+      sub-solar point. Values are positive in the body's northern hemisphere
+      and negative in the southern hemisphere.
+
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = -90.
+    VALID_MAXIMUM               = 90.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Planetographic latitude of the sub-solar
+      point on the surface of the planet or specified target body. The
+      planetographic value is defined by the angle between the body's
+      equator plane and the local surface normal at the sub-solar point.
+      Values are positive in the body's northern hemisphere and negative in
+      the southern hemisphere.
+
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_SUB_SOLAR_PLANETOGRAPHIC_LATITUDE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = -90.
+    VALID_MAXIMUM               = 90.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Planetographic latitude of the sub-solar
+      point on the surface of the planet or specified target body. The
+      planetographic value is defined by the angle between the body's
+      equator plane and the local surface normal at the sub-solar point.
+      Values are positive in the body's northern hemisphere and negative in
+      the southern hemisphere.
+
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = -90.
+    VALID_MAXIMUM               = 90.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Planetocentric latitude of the sub-
+      observer point on the surface of the planet or specified target body.
+      The planetocentric value is defined by the angle from the body's
+      equator plane to a line defined by a vector from the body center to the
+      sub-observer point. Values are positive in the body's northern
+      hemisphere and negative in the southern hemisphere.
+
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_SUB_OBSERVER_PLANETOCENTRIC_LATITUDE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = -90.
+    VALID_MAXIMUM               = 90.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Planetocentric latitude of the sub-
+      observer point on the surface of the planet or specified target body.
+      The planetocentric value is defined by the angle from the body's
+      equator plane to a line defined by a vector from the body center to the
+      sub-observer point. Values are positive in the body's northern
+      hemisphere and negative in the southern hemisphere.
+
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = -90.
+    VALID_MAXIMUM               = 90.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Planetographic latitude of the sub-
+      observer point on the surface of the planet or specified target body.
+      The planetographic value is defined by the angle between the body's
+      equator plane and the local surface normal at the sub-observer point.
+      Values are positive in the body's northern hemisphere and negative in
+      the southern hemisphere.
+
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_SUB_OBSERVER_PLANETOGRAPHIC_LATITUDE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = -90.
+    VALID_MAXIMUM               = 90.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Planetographic latitude of the sub-
+      observer point on the surface of the planet or specified target body.
+      The planetographic value is defined by the angle between the body's
+      equator plane and the local surface normal at the sub-observer point.
+      Values are positive in the body's northern hemisphere and negative in
+      the southern hemisphere.
+
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_SUB_SOLAR_IAU_LONGITUDE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Longitude of the sub-solar point on the
+      surface of the planet or specified target body. Longitudes increase
+      toward the west from the IAU-defined prime meridian.
+
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_SUB_SOLAR_IAU_LONGITUDE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Longitude of the sub-solar point on the
+      surface of the planet or specified target body. Longitudes increase
+      toward the west from the IAU-defined prime meridian.
+
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_SUB_OBSERVER_IAU_LONGITUDE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Longitude of the sub-observer point on the
+      surface of the planet or specified target body. Longitudes increase
+      toward the west from the IAU-defined prime meridian.
+
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_SUB_OBSERVER_IAU_LONGITUDE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Longitude of the sub-observer point on the
+      surface of the planet or specified target body. Longitudes increase
+      toward the west from the IAU-defined prime meridian.
+
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_CENTER_RESOLUTION"
+    UNIT                        = "km"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "The linear size of a pixel as projected at
+      the center of the planet or specified target body.
+
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_CENTER_RESOLUTION"
+    UNIT                        = "km"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "The linear size of a pixel as projected at
+      the center of the planet or specified target body.
+
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_CENTER_DISTANCE"
+    UNIT                        = "km"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Distance from the observer to the center of
+      the planet or a specified target body.
+
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_CENTER_DISTANCE"
+    UNIT                        = "km"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Distance from the observer to the center of
+      the planet or a specified target body.
+
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_CENTER_PHASE_ANGLE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 180.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Phase angle at the center of the planet or
+      specified target body. This is the angle between the local direction
+      of in incoming photon from the Sun and the local direction of an
+      outgoing photon to the observer.
+
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_CENTER_PHASE_ANGLE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 180.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Phase angle at the center of the planet or
+      specified target body. This is the angle between the local direction
+      of in incoming photon from the Sun and the local direction of an
+      outgoing photon to the observer.
+
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_DIAMETER_IN_PIXELS"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Longest projected diameter of the planet or
+      specified target body, converted to pixels. This diameter is computed
+      based on the body's current distance, but as if it fell at the center of
+      the field of view.
+
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_DIAMETER_IN_PIXELS"
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Longest projected diameter of the planet or
+      specified target body, converted to pixels. This diameter is computed
+      based on the body's current distance, but as if it fell at the center of
+      the field of view.
+
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_NORTH_POLE_CLOCK_ANGLE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Angle of projected pole vector of the
+      planet or a specified target body on the sky, measured from celestial
+      north toward celestial west (i.e., clockwise on the sky).
+
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_NORTH_POLE_CLOCK_ANGLE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Angle of projected pole vector of the
+      planet or a specified target body on the sky, measured from celestial
+      north toward celestial west (i.e., clockwise on the sky).
+
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_NORTH_POLE_POSITION_ANGLE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Angle of projected pole vector of the
+      planet or a specified target body on the sky, measured from celestial
+      north toward celestial east (i.e., counterclockwise on the sky).
+
+      This column tabulates the minimum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_NORTH_POLE_POSITION_ANGLE"
+    UNIT                        = "deg"
+    VALID_MINIMUM               = 0.
+    VALID_MAXIMUM               = 360.
+    NULL_CONSTANT               = -999.
+    DESCRIPTION                 = "Angle of projected pole vector of the
+      planet or a specified target body on the sky, measured from celestial
+      north toward celestial east (i.e., counterclockwise on the sky).
+
+      This column tabulates the maximum value among all of the samples
+      comprising this observation. It is defined by the geometry during
+      the observation and is independent of the field of view."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_CENTER_X_COORDINATE"
+    NULL_CONSTANT               = -99999999.999
+    DESCRIPTION                 = "The horizontal coordinate of the center of
+      the body in the data product. A fractional value of 0.5 indicates the
+      center of the pixel.
+
+      This is the minimum value of the coordinate within the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_CENTER_X_COORDINATE"
+    NULL_CONSTANT               = -99999999.999
+    DESCRIPTION                 = "The horizontal coordinate of the center of
+      the body in the data product. A fractional value of 0.5 indicates the
+      center of the pixel.
+
+      This is the minimum value of the coordinate within the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MINIMUM_CENTER_Y_COORDINATE"
+    NULL_CONSTANT               = -99999999.999
+    DESCRIPTION                 = "The vertical coordinate of the center of
+      the body in the data product. A fractional value of 0.5 indicates the
+      center of the pixel.
+
+      This is the minimum value of the coordinate within the observation."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "MAXIMUM_CENTER_Y_COORDINATE"
+    NULL_CONSTANT               = -99999999.999
+    DESCRIPTION                 = "The vertical coordinate of the center of
+      the body in the data product. A fractional value of 0.5 indicates the
+      center of the pixel.
+
+      This is the minimum value of the coordinate within the observation."
+  END_OBJECT                    = COLUMN

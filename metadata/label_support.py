@@ -11,17 +11,16 @@ from pdstemplate.pds3table  import pds3_table_preprocessor
 import metadata as meta
 
 #===============================================================================
-def create(filepath, 
-           system=None, creation_time=None, preserve_time=False, table_type=''):
+def create(filepath, system=None, 
+                     use_global_template=False,
+                     table_type=''):
     """Creates a label for a given geometry table.
 
     Args:
         filepath (str|Path|FCPath): Path to the local or remote geometry table.
         system (str): Name of system, for rings and moons.
-        creation_time (xxx, optional): Creation time to use instead of the current time.
-        preserve_time (bool, optional):
-            If True, the creation time is copied from any existing
-            label before it is overwrittten.
+        use_global_template (bool): 
+            If True, the label template is to be found in the global template
         table_type (str, optional): BODY, RING, SKY, SUPPLEMENTAL_INDEX, INVENTORY.
 
     Returns:
@@ -46,8 +45,9 @@ def create(filepath,
     
     # Default template path
     offset = 0 if not system else len(system) + 1
-    template_path = FCPath(meta.GLOBAL_TEMPLATE_PATH) / FCPath('%s.lbl' % body[underscore+6+offset:])
-    if 'index' in body:
+    if use_global_template:
+        template_path = FCPath(meta.GLOBAL_TEMPLATE_PATH) / FCPath('%s.lbl' % body[underscore+6+offset:])
+    else:
         template_name = meta.get_template_name(filename, volume_id)
         template_path = FCPath('./templates/').resolve() / (template_name + '.lbl')
 

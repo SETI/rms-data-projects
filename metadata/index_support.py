@@ -16,15 +16,15 @@ from pdstemplate.pds3table  import Pds3Table
 import host_config as config
 
 ################################################################################
-# Index class
+# IndexTable class
 ################################################################################
-class Index():
+class IndexTable(meta.Table):
     """Class describing an index for a single volume.
     """
 
     #===========================================================================
-    def __init__(self, input_dir, output_dir, *, type='', glob=None):
-        """Constructor for an Index object.
+    def __init__(self, input_dir, output_dir, *, type='', glob=None, **kwargs):
+        """Constructor for an IndexTable object.
 
         Args:
             input_dir (str, Path, or FCPath):
@@ -38,6 +38,11 @@ class Index():
             glob (str, optional): Glob pattern for index files.
         """
 
+        # Initialize table, return if specific paths not given
+        super().__init__(level="index", qualifier=type, **kwargs)
+        if not input_dir:
+            return
+
         # Save inputs
         self.input_dir = FCPath(input_dir)
         self.output_dir = FCPath(output_dir)
@@ -46,7 +51,7 @@ class Index():
         self.usage = {}
         self.unused = set()
 
-        # Get volume id from label
+        # Get volume id
         self.volume_id = config.get_volume_id(self.input_dir)
 
         logger = meta.get_logger()
@@ -94,7 +99,7 @@ class Index():
 
         template = meta.read_txt_file(template_path, as_string=True)
         pds3_table = Pds3Table(label_path, template, validate=False, numbers=True, formats=True)
-        self.column_stubs = Index._get_column_values(pds3_table)
+        self.column_stubs = IndexTable._get_column_values(pds3_table)
 
         # Initialize the index
         self.content = []
@@ -139,7 +144,7 @@ class Index():
                 logger.info('%s %4d/%4d  %s' % (self.volume_id, i+1, n, subdir/name))
 
                 # Make the index for this file
-                self._index_one_file(root, file)
+                self.add(root, file)
 
             # Flag any unused columns
             for name in self.usage:
@@ -154,7 +159,7 @@ class Index():
         lab.create(self.index_path, table_type=self.type)
  
     #===============================================================================
-    def _index_one_file(self, root, name):
+    def add(self, root, name):
         """Write a single index file entry.
 
         Args:
@@ -188,7 +193,7 @@ class Index():
             if not first:
                 line += ","
 
-            fvalue = Index._format_column(column_stub, value)
+            fvalue = IndexTable._format_column(column_stub, value)
             line += fvalue
 
             first = False
@@ -261,7 +266,7 @@ class Index():
                 {'NAME'          : name, 
                  'FORMAT'        : pds3_table.old_lookup('FORMAT', colnum),
                  'ITEMS'         : pds3_table.old_lookup('ITEMS', colnum),
-                 'NULL_CONSTANT' : Index._get_null_value(pds3_table, colnum)} ]
+                 'NULL_CONSTANT' : IndexTable._get_null_value(pds3_table, colnum)} ]
 
             colnum += 1
 
@@ -338,9 +343,9 @@ class Index():
                       'F':'ASCII_REAL', 
                       'I':'ASCII_INTEGER'}
         try:
-            f = Index._format_value('0', format)
+            f = IndexTable._format_value('0', format)
         except TypeError:
-            f = Index._format_value(0, format)
+            f = IndexTable._format_value(0, format)
 
         width = len(f)
         data_type = data_types[format[0]]
@@ -366,7 +371,7 @@ class Index():
         # Get value parameters
         name = column_stub['NAME']
         format = column_stub['FORMAT'].strip('"')
-        (width, data_type) =  Index._format_parms(format)
+        (width, data_type) =  IndexTable._format_parms(format)
         if not count:
             count = column_stub['ITEMS'] if column_stub['ITEMS'] else 1
 
@@ -378,7 +383,7 @@ class Index():
 
             fmt_list = []
             for item in value:
-                result = Index._format_column(column_stub, item, count=1) 
+                result = IndexTable._format_column(column_stub, item, count=1) 
                 fmt_list.append(result)
             return ','.join(fmt_list)
 
@@ -392,7 +397,7 @@ class Index():
 
         # Format the value
         try:
-            result = Index._format_value(value, format)
+            result = IndexTable._format_value(value, format)
         except TypeError:
             logger.warn("Invalid format: %s %s %s" % (name, value, format))
             result = width * "*"
@@ -527,7 +532,7 @@ def process_index(host=None, type='', glob=None):
                 outdir = output_tree/vol
 
                 # Process this volumne
-                index = Index(indir, outdir, type=args.type, glob=glob)
+                index = IndexTable(indir, outdir, type=args.type, glob=glob)
                 index.create(labels_only=labels_only)
 
                 unused = index.unused if not unused else unused & index.unused

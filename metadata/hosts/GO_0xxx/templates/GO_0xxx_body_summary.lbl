@@ -1,0 +1,96 @@
+$NOTE
+##############################################################################
+# Geometry file template for bodies.
+#
+#  This template controls the creation of body geometry files.  The procedure
+#  for generating geometry files for a host is as follows.  Files referred to
+#  below should be copied into the top directory for the collection, e.g.,
+#  GO_0xxx:
+#
+#  2. Copy and edit the <collection>_geometry.py script to reflect the
+#     type of index and glob pattern for the table files.
+#  3. Copy and edit config.py to address any host-dependent processing.
+#  4. Run <collection>_geometry.py from the collection top directory.
+#
+#  In the host_defs files, replace all values describing the new host.
+#  In this template, quantities enclosed in dollar signs are automatically
+#  filled in and should not be edited.  Add a column for each quantity to be
+#  copied from the product label into the index.
+#
+##############################################################################
+$END_NOTE
+$INCLUDE("./templates/GO_0xxx_summary_header.lbl")
+
+^BODY_SUMMARY_TABLE             = "$table_name$"
+OBJECT                          = BODY_SUMMARY_TABLE
+  INTERCHANGE_FORMAT            = ASCII
+  ROWS                          = $records$
+  ROW_BYTES                     = $record_bytes$
+  INDEX_TYPE                    = $index_type$
+  DESCRIPTION                   = "This index describes the geometry of all
+    observations in the volume or collection. The index contains one row for
+    each observation in which planets, regular satellites, and other targeted
+    bodies appear in he field of view.  In addition, geometry is always
+    tabulated for the body identified by the SYSTEM_NAME keyword below.
+
+    Two types of geometry are represented in this index. Gridded quantites
+    were constructed by uniformly sampling the pixels that comprise each data
+    product on an 8x8 grid, i.e., every 64th pixel, spanning the field of
+    view. Gridless quantities represent a single value.
+
+    For each sampled pixel, a variety of geometric quantitities have been
+    calculated. All quantites, gridded and gridless, are tabulated in terms
+    of a global minimum and maximum value with respect to the varying
+    geometry during the interval in which the obsevation was taken. For
+    angular quantities that cycle from 360 degrees to zero, the tabulated
+    minimum can be numerically greater than the maximum. If the ring plane
+    does not fall within the field of view, values of the NULL_CONSTANT appear
+    in the table.
+
+    Occasionally, SPICE pointing information is unavailable for the time at
+    which an observation was taken. When this situation occurs, no row has
+    been added to the file.
+
+    Regions of a body that are obscured by another body are excluded from the
+    tabulation. The dark side of each body is also generally excluded. If a
+    body is too small to have been captured in an 8x8 sampling of the image,
+    then the associated NULL_CONSTANT will appear in each column. Quantities
+    that are independent of the field of view are tabulated regardless of
+    obstruction or apparent body size.
+
+    To accommodate pointing uncertainty, the Galileo SSI field of view has
+    been expanded on every side by a distance equivalent to 25 narrow-angle
+    pixels."
+
+  OBJECT                        = COLUMN
+    NAME                        = "VOLUME_ID"
+    DESCRIPTION                 = "The volume ID provides a unique identifier
+      for a PDS data volume."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "FILE_SPECIFICATION_NAME"
+    DESCRIPTION                 = "The file specification name provides the
+      full name of a file, including a path name, relative to the root
+      directory of the PDS volume."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "SYSTEM_NAME"
+    NULL_CONSTANT               = "NONE"
+    DESCRIPTION                 = "The system name is the name of the central
+      body for a satellite system."
+  END_OBJECT                    = COLUMN
+
+  OBJECT                        = COLUMN
+    NAME                        = "BODY_NAME"
+    DESCRIPTION                 = "The body name is the name of the body for
+      which the surface geometry parameters in this row of the table are
+      applicable."
+  END_OBJECT                    = COLUMN
+
+
+$INCLUDE('../../templates/body_summary_columns.lbl')
+
+END_OBJECT                      = BODY_SUMMARY_TABLE
+END

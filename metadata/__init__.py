@@ -77,6 +77,8 @@ from pathlib                import Path
 from filecache              import FCPath
 from pdslogger              import PdsLogger
 
+import metadata.label_support as lab
+
 import host_init            # initialize host module so that we have access to
                             # to kernel data
 
@@ -184,7 +186,7 @@ def get_template_name(filename, volume_id):
     """Determine the name of the label template.
 
     Args:
-        filename (str): Nmae of table or label file.
+        filename (str): Name of table or label file.
 
     Returns:
         str: Index name.
@@ -194,7 +196,7 @@ def get_template_name(filename, volume_id):
     return filename.replace(volume_id, collection).split('.')[0]
 
 #===============================================================================
-def splitpath(path: str, string: str):
+def splitpath(path: str, string: str):           ### move to utilities
     """Split a path at a given string.
 
     Args:
@@ -208,10 +210,6 @@ def splitpath(path: str, string: str):
             lines: Lines comprising the output label.
             lnum: Line number in output label at which processing 
                         is to continue.
-
-    Todo:
-        Place this function in a general utility package.
-
     """
     parts = path.parts
     i = parts.index(string)
@@ -227,7 +225,8 @@ def get_volume_subdir(path, volume_id):
     Returns:
         str: Final directory in tree.
     """
-    return splitpath(path, volume_id)[1]
+    return splitpath(path, volume_id)[-1]
+#    return path.split(volume_id)[-1]
 
 #===============================================================================
 def replace(tree, placeholder, name):
@@ -376,18 +375,20 @@ def expandvars(filespec):           ### add to FCPath?
 
 #===============================================================================
 def read_txt_file(filespec, as_string=False, terminator='\r\n'):           ### move to utilities
-    """Read a text file.
+    """Read a text file, with some options.  
 
     Args:
         filespec (str, Path, or FCPath): 
             Path to the file to read.  Environment variables are expanded.
         as_string (bool, optional): 
-            If True, the result is return as a string using the specified terminator.
+            If True, the result is returned as a string using the specified 
+            terminator.
         terminator (str): Terminator to use for string return.
 
     Returns:
         list (as_string==False): Lines of the file with no terminators.
-        str (as_string==True): Lines of the file concatenated using the specified terminator. 
+        str (as_string==True): Lines of the file concatenated using the specified
+        terminator. 
 
     """
 
@@ -409,7 +410,7 @@ def read_txt_file(filespec, as_string=False, terminator='\r\n'):           ### m
 
 #===============================================================================
 def write_txt_file(filespec, content, terminator='\r\n'):        ### move to utilities
-    """Write a text file.
+    """Write a text file, with some options.
 
     Args:
         filespec (str, Path, or FCPath): Path to the file to write.
@@ -848,6 +849,76 @@ def get_common_args(host=None):
 
     # Return parser
     return parser
+
+################################################################################
+# Table class
+################################################################################
+class Table(object):
+    """Class describing a single table for a single volume.
+    """
+
+    #===========================================================================
+    def __init__(self, volume_id=None, level=None, qualifier=None, suffix=None, use_global_template=False):
+        """Constructor for a table object.
+
+        Args:
+            volume_id (str): Volume ID.
+            level (str, optional): Processing level: "summary", "detailed", or "index".
+            qualifier (str): "sky", "sun", "ring", "body", "inventory", or "supplemental".
+            suffix (str): File name suffix.
+            use_global_template (bool): 
+                If True, the label template is to be found in the global template
+                directory.
+            
+        """
+        self.volume_id = volume_id
+        self.level = level
+        self.qualifier = qualifier
+        self.use_global_template = use_global_template
+        
+        if not suffix:
+            self.suffix = "_%s_%s.tab" % (self.qualifier, self.level)
+        else:
+            self.suffix = suffix
+
+        self.rows = []
+
+     #===============================================================================
+    def write(self, prefix, filename=None, labels_only=False):
+        """Write a table and its label.
+
+        Args:
+            prefix (str): Filename prefix including the full path.
+            filename (str or Path, optional):
+                Name of file to write instead of creating one using the given prefix, 
+                and the suffix attribute.
+            labels_only (bool): 
+                If True, labels are generated for any existing geometry tables.
+
+        Returns:
+            None.
+        """
+        logger = get_logger()
+        
+        # Create filename
+        filename = FCPath(prefix + self.suffix)
+
+        if not labels_only:
+            if self.rows == []:
+                return
+
+            # Write table
+            logger.info("Writing:", filename)
+            write_txt_file(filename, self.rows)
+
+        # Write label
+        table_type = self.qualifier
+        if self.level:
+            table_type += '_' + self.level
+        lab.create(filename, 
+                   table_type=table_type, use_global_template=self.use_global_template)
+
+
 
 ############################################
 # Define geometry parameters

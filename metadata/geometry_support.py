@@ -9,7 +9,6 @@ import warnings
 import fnmatch
 
 import metadata as meta
-import metadata.label_support as lab
 
 from pathlib   import Path
 from filecache import FCPath
@@ -711,73 +710,11 @@ class Record(object):
         return ",".join(strings)
 
 ################################################################################
-# Table class
-################################################################################
-class Table(object):
-    """Class describing a single geometry table for a single volume.
-    """
-
-    #===========================================================================
-    def __init__(self, volume_id=None, level=None, qualifier=None, suffix=None):
-        """Constructor for a geometry table object.
-
-        Args:
-            volume_id (str): Volume ID.
-            level (str, optional): Processing level: 'summary' or 'detailed'.
-            qualifier (str): "sky", "sun", "ring", "body", or "inventory".
-            suffix (str): [[]]
-        """
-        self.volume_id = volume_id
-        self.level = level
-        self.qualifier = qualifier
-        
-        if not suffix:
-            self.suffix = "_%s_%s.tab" % (self.qualifier, self.level)
-        else:
-            self.suffix = suffix
-
-        self.rows = []
-
-     #===============================================================================
-    def write(self, prefix, filename=None, labels_only=False):
-        """Write a table and its label.
-
-        Args:
-            prefix (str): Filename prefix including the full path.
-            filename (str or Path, optional):
-                Name of file to write instead of creating one using the given prefix, 
-                and the suffix attribute.
-            labels_only (bool): 
-                If True, labels are generated for any existing geometry tables.
-
-        Returns:
-            None.
-        """
-        logger = meta.get_logger()
-        
-        # Create filename
-        filename = FCPath(prefix + self.suffix)
-
-        if not labels_only:
-            if self.rows == []:
-                return
-
-            # Write table
-            logger.info("Writing:", filename)
-            meta.write_txt_file(filename, self.rows)
-
-        # Write label
-        table_type = self.qualifier
-        if self.level:
-            table_type += '_' + self.level
-        lab.create(filename, table_type=table_type)
-
-################################################################################
 # InventoryTable class
 ################################################################################
 """Class describing an inventory geometry table.
 """
-class InventoryTable(Table):
+class InventoryTable(meta.Table):
     #===========================================================================
     def __init__(self, **kwargs):
         """Constructor for an InventoryTable object.
@@ -785,7 +722,10 @@ class InventoryTable(Table):
         Args:
             table: Parent Table instance.
         """
-        super().__init__(qualifier='inventory', suffix="_inventory.csv", level=None, **kwargs)
+        super().__init__(qualifier='inventory', 
+                         suffix="_inventory.csv", 
+                         use_global_template=True, 
+                         level=None, **kwargs)
 
     #===============================================================================
     def add(self, record):
@@ -805,7 +745,7 @@ class InventoryTable(Table):
 ################################################################################
 """Class describing a sky geometry table.
 """
-class SkyTable(Table):
+class SkyTable(meta.Table):
     #===========================================================================
     def __init__(self, **kwargs):
         """Constructor for a SkyTable object.
@@ -813,7 +753,8 @@ class SkyTable(Table):
         Args:
             table: Parent Table instance.
         """
-        super().__init__(qualifier='sky', **kwargs)
+        super().__init__(qualifier='sky', 
+                         use_global_template=True, **kwargs)
 
     #===============================================================================
     def add(self, record):
@@ -832,7 +773,7 @@ class SkyTable(Table):
 ################################################################################
 """Class describing a sun geometry table.
 """
-class SunTable(Table):
+class SunTable(meta.Table):
     #===========================================================================
     def __init__(self, **kwargs):
         """Constructor for a SunTable object.
@@ -859,7 +800,7 @@ class SunTable(Table):
 ################################################################################
 """Class describing a ring geometry table.
 """
-class RingTable(Table):
+class RingTable(meta.Table):
     #===========================================================================
     def __init__(self, **kwargs):
         """Constructor for a RingTable object.
@@ -896,7 +837,7 @@ class RingTable(Table):
 ################################################################################
 """Class describing a body geometry table.
 """
-class BodyTable(Table):
+class BodyTable(meta.Table):
     #===========================================================================
     def __init__(self, **kwargs):
         """Constructor for a BodyTable object.
