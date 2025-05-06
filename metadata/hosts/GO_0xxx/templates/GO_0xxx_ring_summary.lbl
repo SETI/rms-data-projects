@@ -60,25 +60,30 @@ OBJECT                          = RING_SUMMARY_TABLE
     been expanded on every side by a distance equivalent to 25 narrow-angle
     pixels."
 
-    OBJECT                        = COLUMN
+  OBJECT                        = COLUMN
     NAME                        = "VOLUME_ID"
-    DESCRIPTION                 = "The volume ID provides a unique identifier
-      for a PDS data volume."
+    FORMAT                      = A7
+    DESCRIPTION                 = "The unique identifier for the PDS3 data
+      volume."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "FILE_SPECIFICATION_NAME"
-    DESCRIPTION                 = "The file specification name provides the
-      full name of a file, including a path name, relative to the root
-      directory of the PDS volume."
+    FORMAT                      = A32
+    DESCRIPTION                 = "The full directory path to the data file's,
+      label, relative to the root directory of the PDS volume."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "SYSTEM_NAME"
-    DESCRIPTION                 = "The system name is the name of the central
-      body for a ring system."
+    FORMAT                      = A7
+    NULL_CONSTANT               = "NONE"
+    DESCRIPTION                 = "The planetary system to which this body
+      belongs."
   END_OBJECT                    = COLUMN
 
+$ONCE(is_visual = True)
+$ONCE(is_saturn = True)
 $INCLUDE('../../templates/ring_summary_columns.lbl')
 
 END_OBJECT                      = RING_SUMMARY_TABLE

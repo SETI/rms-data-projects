@@ -75,7 +75,9 @@ def bounds(test, file, table, key, min=0, max=360, minmax=True):
         return
         
     nullvals = table.info.column_info_dict[key].invalid_values.copy()
-    nullval = nullvals.pop()
+    nullval = None
+    if nullvals:
+        nullval = nullvals.pop()
 
     val = table.column_values[key]
     try:

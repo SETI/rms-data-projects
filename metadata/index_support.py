@@ -23,7 +23,7 @@ class IndexTable(meta.Table):
     """
 
     #===========================================================================
-    def __init__(self, input_dir, output_dir, *, type='', glob=None, **kwargs):
+    def __init__(self, input_dir=None, output_dir=None, qualifier='', glob=None, **kwargs):
         """Constructor for an IndexTable object.
 
         Args:
@@ -32,21 +32,20 @@ class IndexTable(meta.Table):
             output_dir (str, Path, or FCPath):
                 Directory in which to find the "updated" index file (e.g., 
                 <volume>_index.tab, and in which to write the new index files.
-            type (str, optional):
+            qualifier (str, optional):
                 Qualifying string identifying the type of index file to create, 
                 e.g., 'supplemental'.
             glob (str, optional): Glob pattern for index files.
         """
 
         # Initialize table, return if specific paths not given
-        super().__init__(level="index", qualifier=type, **kwargs)
+        super().__init__(level="index", qualifier=qualifier, **kwargs)
         if not input_dir:
             return
 
         # Save inputs
         self.input_dir = FCPath(input_dir)
         self.output_dir = FCPath(output_dir)
-        self.type = type
         self.glob = glob
         self.usage = {}
         self.unused = set()
@@ -55,12 +54,12 @@ class IndexTable(meta.Table):
         self.volume_id = config.get_volume_id(self.input_dir)
 
         logger = meta.get_logger()
-        s = ' '+type if type else ' primary'
+        s = ' '+qualifier if qualifier else ' primary'
         logger.info('New%s index for %s.' % (s, self.volume_id))
 
         # Get relevant filenames and paths
         primary_index_name = meta.get_index_name(self.input_dir, self.volume_id, None)
-        index_name = meta.get_index_name(self.input_dir, self.volume_id, self.type) 
+        index_name = meta.get_index_name(self.input_dir, self.volume_id, qualifier) 
         template_name = meta.get_template_name(index_name, self.volume_id) 
         self.index_path = self.output_dir/(index_name + '.tab')
 
@@ -94,7 +93,7 @@ class IndexTable(meta.Table):
 
         # Extract relevent fields from the template
         template_path = FCPath('./templates/')/(template_name + '.lbl')
-        label_name = meta.get_index_name(self.input_dir, self.volume_id, self.type) 
+        label_name = meta.get_index_name(self.input_dir, self.volume_id, qualifier) 
         label_path = self.output_dir / FCPath(label_name + '.lbl')
 
         template = meta.read_txt_file(template_path, as_string=True)
@@ -156,7 +155,7 @@ class IndexTable(meta.Table):
                 meta.write_txt_file(self.index_path, self.content)
 
         # Create the label
-        lab.create(self.index_path, table_type=self.type)
+        lab.create(self.index_path, table_type=self.qualifier)
  
     #===============================================================================
     def add(self, root, name):
@@ -532,7 +531,7 @@ def process_index(host=None, type='', glob=None):
                 outdir = output_tree/vol
 
                 # Process this volumne
-                index = IndexTable(indir, outdir, type=args.type, glob=glob)
+                index = IndexTable(indir, outdir, qualifier=args.type, glob=glob)
                 index.create(labels_only=labels_only)
 
                 unused = index.unused if not unused else unused & index.unused

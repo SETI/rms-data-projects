@@ -12,8 +12,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the minimum value of ring radius within the
-      field of view of the observation."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -30,8 +30,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the maximum value of ring radius within the
-      field of view of the observation."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -50,8 +50,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the minimum (finest) value of ring intercept
-      resolution within the field of view of the observation."
+      This column tabulates the minimum (finest) value among the pixels whose
+      lines of sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -70,8 +70,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the maximum (coarsest) value of ring intercept
-      resolution within the field of view of the observation."
+      This column tabulates the minimum (coarsest) value among the pixels
+      whose lines of sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -90,8 +90,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the minimum (finest) value of radial resolution
-      within the field of view of the observation."
+      This column tabulates the minimum (finest) value among the pixels whose
+      lines of sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -110,8 +110,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the maximum (coarsest) value of radial resolution
-      within the field of view of the observation."
+      This column tabulates the minimum (coarsest) value among the pixels
+      whose lines of sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -130,9 +130,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the minimum (finest) value of longitudinal
-      resolution within the field of view of the observation, expressed in
-      degrees."
+      This column tabulates the minimum (finest) value among the pixels whose
+      lines of sight intercept the ring, expressed in degrees."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -151,9 +150,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the maximum (coarsest) value of longitudinal
-      resolution within the field of view of the observation, expressed in
-      degrees."
+      This column tabulates the minimum (coarsest) value among the pixels
+      whose lines of sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -172,9 +170,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the minimum (finest) value of longitudinal
-      resolution within the field of view of the observation, expressed in
-      kilometers."
+      This column tabulates the minimum (finest) among the pixels whose lines
+      of sight intercept the ring, expressed in kilometers."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -193,9 +190,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the maximum (coarsest) value of longitudinal
-      resolution within the field of view of the observation, expressed in
-      kilometers."
+      This column tabulates the maximum (coarsest) among the pixels whose
+      lines of sight intercept the ring, expressed in kilometers."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -211,8 +207,8 @@
       wavelengths in the visual or near-infrared), ring intercept points
       that are shadowed by the planet are also ignored.
 
-      This column tabulates the minimum value of ring distance within the
-      field of view of the observation."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -229,8 +225,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the maximum value of ring distance within the
-      field of view of the observation."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -252,10 +248,9 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the minimum value of ring longitude within the
-      field of view of the observation. For fields of view that cross the
-      prime meridian, the tabulated minimum value will be greater than the
-      maximum."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring. For fields of view that cross the prime
+      meridian, the tabulated minimum value will be greater than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -277,10 +272,9 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the maximum value of ring longitude within the
-      field of view of the observation. For fields of view that cross the
-      prime meridian, the tabulated minimum value will be greater than the
-      maximum."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring. For fields of view that cross the prime
+      meridian, the tabulated minimum value will be greater than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -300,10 +294,9 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the minimum value of node-based ring longitude
-      within the field of view of the observation. For fields of view that
-      cross the prime meridian, the tabulated minimum value will be greater
-      than the maximum."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring. For fields of view that cross the prime
+      meridian, the tabulated minimum value will be greater than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -323,10 +316,9 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the maximum value of node-based ring longitude
-      within the field of view of the observation. For fields of view that
-      cross the prime meridian, the tabulated minimum value will be greater
-      than the maximum."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring. For fields of view that cross the prime
+      meridian, the tabulated minimum value will be greater than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -344,10 +336,9 @@
       the observed field of view are ignored. However, ring intercept points
       that are shadowed by the planet are not ignored.
 
-      This column tabulates the minimum value of solar hour angle within the
-      field of view of the observation. For fields of view that cross the
-      midnight meridian, the tabulated minimum value will be greater than
-      the maximum."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring. For fields of view that cross the midnight
+      meridian, the tabulated minimum value will be greater than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -365,10 +356,9 @@
       the observed field of view are ignored. However, ring intercept points
       that are shadowed by the planet are not ignored.
 
-      This column tabulates the maximum value of solar hour angle within the
-      field of view of the observation. For fields of view that cross the
-      midnight meridian, the tabulated minimum value will be greater than
-      the maximum."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring. For fields of view that cross the midnight
+      meridian, the tabulated minimum value will be greater than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -389,8 +379,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the minimum value of the this ring longitude
-      within the field of view of the observation."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -437,10 +427,9 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the minimum value of ring azimuth within the
-      field of view of the observation. For fields of view that cross 360
-      degrees, the tabulated minimum value will be greater than the
-      maximum."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring. For fields of view that cross 360 degrees, the
+      tabulated minimum value will be greater than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -465,10 +454,9 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the maximum value of ring azimuth within the
-      field of view of the observation. For fields of view that cross 360
-      degrees, the tabulated minimum value will be greater than the
-      maximum."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring. For fields of view that cross 360 degrees, the
+      tabulated minimum value will be greater than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -487,8 +475,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the minimum value of ring phase angle within the
-      field of view of the observation."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -507,8 +495,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the maximum value of ring phase angle within the
-      field of view of the observation."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -528,8 +516,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the minimum value of ring incidence angle within
-      the field of view of the observation."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -549,8 +537,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the maximum value of ring incidence angle within
-      the field of view of the observation."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -571,8 +559,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the minimum value of the north-based ring
-      incidence angle within the field of view of the observation."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -593,8 +581,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the maximum value of the north-based ring
-      incidence angle within the field of view of the observation."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -616,8 +604,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the minimum value of ring emission angle within
-      the field of view of the observation."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -639,8 +627,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the maximum value of ring emission angle within
-      the field of view of the observation."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -661,8 +649,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the minimum value of north-based ring emission
-      angle within the field of view of the observation."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -683,8 +671,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the maximum value of north-based ring emission
-      angle within the field of view of the observation."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -706,8 +694,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the minimum value of solar ring elevation within
-      the field of view of the observation."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -729,8 +717,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the maximum value of solar ring elevation within
-      the field of view of the observation."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -752,8 +740,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the minimum value of observer ring elevation
-      within the field of view of the observation."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -775,8 +763,8 @@
       near-infrared), ring intercept points that are shadowed by the planet
       are also ignored.
 
-      This column tabulates the maximum value of observer ring elevation
-      within the field of view of the observation."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -805,8 +793,8 @@
       that are obscured by the planet or another moon within the observed
       field of view are ignored.
 
-      This column tabulates the maximum value of the surface intercept time
-      within the field of view of the observation."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -830,8 +818,8 @@
       near-infrared), intercept points that are shadowed by the planet are
       also ignored.
 
-      This column tabulates the minimum value of the edge-on ring radius
-      within the field of view of the observation."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -855,8 +843,8 @@
       near-infrared), intercept points that are shadowed by the planet are
       also ignored.
 
-      This column tabulates the maximum value of the edge-on ring radius
-      within the field of view of the observation."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -883,8 +871,8 @@
       near-infrared), intercept points that are shadowed by the planet are
       also ignored.
 
-      This column tabulates the minimum value of the edge-on ring altitude
-      within the field of view of the observation."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -911,8 +899,8 @@
       near-infrared), intercept points that are shadowed by the planet are
       also ignored.
 
-      This column tabulates the maximum value of the edge-on ring altitude
-      within the field of view of the observation."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -939,8 +927,8 @@
       near-infrared), intercept points that are shadowed by the planet are
       also ignored.
 
-      This column tabulates the minimum value of the edge-on radial
-      resolution within the field of view of the observation."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -992,8 +980,8 @@
       near-infrared), intercept points that are shadowed by the planet are
       also ignored.
 
-      This column tabulates the minimum value of the edge-on intercept
-      distance within the field of view of the observation."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1017,8 +1005,8 @@
       near-infrared), intercept points that are shadowed by the planet are
       also ignored.
 
-      This column tabulates the maximum value of the edge-on intercept
-      distance within the field of view of the observation."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1048,10 +1036,9 @@
       near-infrared), intercept points that are shadowed by the planet are
       also ignored.
 
-      This column tabulates the minimum value of the edge-on ring longitude
-      within the field of view of the observation. For fields of view that
-      cross the prime meridian, the tabulated minimum value will be greater
-      than the maximum."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring. For fields of view that cross the prime
+      meridian, the tabulated minimum value will be greater than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1081,10 +1068,9 @@
       near-infrared), intercept points that are shadowed by the planet are
       also ignored.
 
-      This column tabulates the maximum value of the edge-on ring longitude
-      within the field of view of the observation. For fields of view that
-      cross the prime meridian, the tabulated minimum value will be greater
-      than the maximum."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring. For fields of view that cross the prime
+      meridian, the tabulated minimum value will be greater than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1112,10 +1098,9 @@
       near-infrared), intercept points that are shadowed by the planet are
       also ignored.
 
-      This column tabulates the minimum value of the edge-on ring longitude
-      within the field of view of the observation. For fields of view that
-      cross the prime meridian, the tabulated minimum value will be greater
-      than the maximum."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring. For fields of view that cross the prime
+      meridian, the tabulated minimum value will be greater than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1143,10 +1128,9 @@
       near-infrared), intercept points that are shadowed by the planet are
       also ignored.
 
-      This column tabulates the maximum value of the edge-on ring longitude
-      within the field of view of the observation. For fields of view that
-      cross the prime meridian, the tabulated minimum value will be greater
-      than the maximum."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring. For fields of view that cross the prime
+      meridian, the tabulated minimum value will be greater than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1174,10 +1158,9 @@
       near-infrared), intercept points that are shadowed by the planet are
       also ignored.
 
-      This column tabulates the minimum value of the edge-on solar hour
-      angle within the field of view of the observation. For fields of view
-      that cross the midnight meridian, the tabulated minimum value will be
-      greater than the maximum."
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the ring. For fields of view that cross the midnight
+      meridian, the tabulated minimum value will be greater than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1205,10 +1188,9 @@
       near-infrared), intercept points that are shadowed by the planet are
       also ignored.
 
-      This column tabulates the maximum value of the edge-on solar hour
-      angle within the field of view of the observation. For fields of view
-      that cross the midnight meridian, the tabulated minimum value will be
-      greater than the maximum."
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the ring. For fields of view that cross the prime
+      meridian, the tabulated minimum value will be greater than the maximum."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1218,9 +1200,8 @@
     DESCRIPTION                 = "Distance from the observer to the center of
       the ring system.
 
-      This column tabulates the minimum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the minimum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1230,9 +1211,8 @@
     DESCRIPTION                 = "Distance from the observer to the center of
       the ring system.
 
-      This column tabulates the maximum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the maximum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1247,9 +1227,8 @@
       ascension = 0), along the J2000 x-y plane to the ascending node of the
       ring system's invariable plane, and then along the ring plane.
 
-      This column tabulates the minimum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the minimum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1264,9 +1243,8 @@
       ascension = 0), along the J2000 x-y plane to the ascending node of the
       ring system's invariable plane, and then along the ring plane.
 
-      This column tabulates the maximum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the maximum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1280,9 +1258,8 @@
       are measured in the ringplane from the ascending node of the ring
       system's invariable plane on J2000.
 
-      This column tabulates the minimum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the minimum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1296,9 +1273,8 @@
       are measured in the ringplane from the ascending node of the ring
       system's invariable plane on J2000.
 
-      This column tabulates the maximum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the maximum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1313,9 +1289,8 @@
       (right ascension = 0), along the J2000 x-y plane to the ascending node
       of the ring system's invariable plane, and then along the ring plane.
 
-      This column tabulates the minimum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the minimum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1330,9 +1305,8 @@
       (right ascension = 0), along the J2000 x-y plane to the ascending node
       of the ring system's invariable plane, and then along the ring plane.
 
-      This column tabulates the maximum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the maximum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1346,9 +1320,8 @@
       Values are measured in the ringplane from the ascending node of the ring
       system's invariable plane on J2000.
 
-      This column tabulates the minimum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the minimum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1362,9 +1335,8 @@
       Values are measured in the ringplane from the ascending node of the ring
       system's invariable plane on J2000.
 
-      This column tabulates the maximum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the maximum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1378,9 +1350,8 @@
       photon from the Sun and the local direction of an outgoing photon to
       the observer.
 
-      This column tabulates the minimum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the minimum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1394,9 +1365,8 @@
       photon from the Sun and the local direction of an outgoing photon to
       the observer.
 
-      This column tabulates the maximum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the maximum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1410,9 +1380,8 @@
       vector on the sunlit side of the ring plane to the direction of the
       incoming photon from the Sun. Note that it never exceeds 90 degrees.
 
-      This column tabulates the minimum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the minimum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1426,9 +1395,8 @@
       vector on the sunlit side of the ring plane to the direction of the
       incoming photon from the Sun. Note that it never exceeds 90 degrees.
 
-      This column tabulates the maximum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the maximum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1443,9 +1411,8 @@
       direction of the incoming photon from the Sun. It is > 90 degrees when
       the Sun shines on the south face of the rings.
 
-      This column tabulates the minimum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the minimum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1460,9 +1427,8 @@
       direction of the incoming photon from the Sun. It is > 90 degrees when
       the Sun shines on the south face of the rings.
 
-      This column tabulates the maximum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the maximum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1477,9 +1443,8 @@
       outgoing photon to the observer. It is < 90 degrees on the sunlit side
       of the ring plane and > 90 degrees on the 'dark' side.
 
-      This column tabulates the minimum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the minimum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1494,9 +1459,8 @@
       outgoing photon to the observer. It is < 90 degrees on the sunlit side
       of the ring plane and > 90 degrees on the 'dark' side.
 
-      This column tabulates the maximum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the maximum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1511,9 +1475,8 @@
       direction of the outgoing photon to the observer. It is < 90 degrees on
       the north side of the ring plane and > 90 degrees on the south side.
 
-      This column tabulates the minimum value among all of the samples
-      comprising this observation. It is defined by the geometry during
-      the observation and is independent of the field of view."
+      This column tabulates the minimum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1528,9 +1491,8 @@
       direction of the outgoing photon to the observer. It is < 90 degrees on
       the north side of the ring plane and > 90 degrees on the south side.
 
-      This column tabulates the maximum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the maximum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1543,9 +1505,8 @@
       the ring system. This is the angle from the ring plane to the direction
       of incoming photon from the Sun. It is positive on the north side of the ring plane and negative on the south side.
 
-      This column tabulates the minimum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the minimum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1559,9 +1520,8 @@
       of incoming photon from the Sun. It is positive on the north side of the
       ring plane and negative on the south side.
 
-      This column tabulates the maximum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the maximum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1575,9 +1535,8 @@
       direction of outgoing photon to the observer. It is positive on the
       north side of the ring plane and negative on the south side.
 
-      This column tabulates the minimum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the minimum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1591,9 +1550,8 @@
       direction of outgoing photon to the observer. It is positive on the
       north side of the ring plane and negative on the south side.
 
-      This column tabulates the maximum value among all of the samples
-      comprising this observation. It is defined by the geometry during the
-      observation and is independent of the field of view."
+      This column tabulates the maximum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1604,9 +1562,8 @@
       body's current distance, but as if it fell at the center of the field
       of view.
 
-      This column tabulates the minimum value among all of the samples
-      comprising this observation. It is defined by the geometry during
-      the observation and is independent of the field of view."
+      This column tabulates the minimum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1617,9 +1574,8 @@
       body's current distance, but as if it fell at the center of the field
       of view.
 
-      This column tabulates the maximum value among all of the samples
-      comprising this observation. It is defined by the geometry during
-      the observation and is independent of the field of view."
+      This column tabulates the maximum value during the observation. It
+      depends on the observation's timing but is independent of the pointing."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1629,7 +1585,7 @@
       the body in the data product. A fractional value of 0.5 indicates the
       center of the pixel.
 
-      This is the minimum value of the coordinate within the observation."
+      This column tabulates the minimum value during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1639,7 +1595,7 @@
       the body in the data product. A fractional value of 0.5 indicates the
       center of the pixel.
 
-      This is the minimum value of the coordinate within the observation."
+      This column tabulates the maximum value during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1649,7 +1605,7 @@
       the body in the data product. A fractional value of 0.5 indicates the
       center of the pixel.
 
-      This is the minimum value of the coordinate within the observation."
+      This column tabulates the minimum value during the observation."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
@@ -1659,5 +1615,5 @@
       the body in the data product. A fractional value of 0.5 indicates the
       center of the pixel.
 
-      This is the minimum value of the coordinate within the observation."
+      This column tabulates the maximum value during the observation."
   END_OBJECT                    = COLUMN

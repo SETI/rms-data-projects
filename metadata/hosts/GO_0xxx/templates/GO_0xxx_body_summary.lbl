@@ -64,32 +64,36 @@ OBJECT                          = BODY_SUMMARY_TABLE
 
   OBJECT                        = COLUMN
     NAME                        = "VOLUME_ID"
-    DESCRIPTION                 = "The volume ID provides a unique identifier
-      for a PDS data volume."
+    FORMAT                      = A7
+    DESCRIPTION                 = "The unique identifier for the PDS3 data
+      volume."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "FILE_SPECIFICATION_NAME"
-    DESCRIPTION                 = "The file specification name provides the
-      full name of a file, including a path name, relative to the root
-      directory of the PDS volume."
+    FORMAT                      = A32
+    DESCRIPTION                 = "The full directory path to the data file's,
+      label, relative to the root directory of the PDS volume."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "SYSTEM_NAME"
+    FORMAT                      = A7
     NULL_CONSTANT               = "NONE"
-    DESCRIPTION                 = "The system name is the name of the central
-      body for a satellite system."
+    DESCRIPTION                 = "The planetary system to which this body
+      belongs."
   END_OBJECT                    = COLUMN
 
   OBJECT                        = COLUMN
     NAME                        = "BODY_NAME"
-    DESCRIPTION                 = "The body name is the name of the body for
-      which the surface geometry parameters in this row of the table are
-      applicable."
+    FORMAT                      = A12
+    DESCRIPTION                 = "The name of the body for which the surface
+      geometry parameters in this row of the table are applicable."
   END_OBJECT                    = COLUMN
 
 
+$ONCE(is_visual = True)
+$ONCE(is_saturn = False)
 $INCLUDE('../../templates/body_summary_columns.lbl')
 
 END_OBJECT                      = BODY_SUMMARY_TABLE
