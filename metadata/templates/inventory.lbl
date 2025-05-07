@@ -1,4 +1,3 @@
-$ONCE(TABLE_PATH = LABEL_PATH().replace(".lbl",".tab").replace(".LBL",".TAB").split('/')[-1])
 $ONCE(csv_file = LABEL_PATH()[:-4] + '.csv')
 $ONCE(records = FILE_RECORDS(csv_file))
 $ONCE(record_bytes = RECORD_BYTES(csv_file))
@@ -8,15 +7,15 @@ PDS_VERSION_ID                  = PDS3
 RECORD_TYPE                     = STREAM
 RECORD_BYTES                    = $str(record_bytes).ljust(3)$   /* max length including <CR><LF> */
 FILE_RECORDS                    = $records$
-^INVENTORY_SPREADSHEET          = "$BASENAME(csv_file)$"
-
-$INCLUDE("./templates/host_defs.lbl")
 
 PRODUCT_CREATION_TIME           = $FILE_TIME(csv_file)$
-$IF(TABLE_TYPE != 'CUMULATIVE')
+$IF(index_type != 'CUMULATIVE')
 VOLUME_ID                       = "$VOLUME_ID$"
 $END_IF
 
+$INCLUDE("./templates/host_defs.lbl")
+
+^INVENTORY_SPREADSHEET          = "$BASENAME(csv_file)$"
 OBJECT                          = INVENTORY_SPREADSHEET
   INTERCHANGE_FORMAT            = ASCII
   ROWS                          = $records$

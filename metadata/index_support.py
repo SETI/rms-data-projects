@@ -19,7 +19,7 @@ import host_config as config
 # IndexTable class
 ################################################################################
 class IndexTable(meta.Table):
-    """Class describing an index for a single volume.
+    """Class describing an index table for a single volume.
     """
 
     #===========================================================================
@@ -39,7 +39,7 @@ class IndexTable(meta.Table):
         """
 
         # Initialize table, return if specific paths not given
-        super().__init__(level="index", qualifier=qualifier, **kwargs)
+        super().__init__(output_dir, level="index", qualifier=qualifier, **kwargs)
         if not input_dir:
             return
 
@@ -100,9 +100,6 @@ class IndexTable(meta.Table):
         pds3_table = Pds3Table(label_path, template, validate=False, numbers=True, formats=True)
         self.column_stubs = IndexTable._get_column_values(pds3_table)
 
-        # Initialize the index
-        self.content = []
-
     #===========================================================================
     def create(self, labels_only=False):
         """Create the index file for a single volume.
@@ -150,12 +147,8 @@ class IndexTable(meta.Table):
                 if not self.usage[name]:
                     self.unused.update({name})
 
-            # Write index 
-            if self.content:
-                meta.write_txt_file(self.index_path, self.content)
-
-        # Create the label
-        lab.create(self.index_path, table_type=self.qualifier)
+        # Write tables and make labels
+        self.write(labels_only=labels_only)
  
     #===============================================================================
     def add(self, root, name):
@@ -197,7 +190,7 @@ class IndexTable(meta.Table):
 
             first = False
 
-        self.content += [line]
+        self.rows += [line]
 
     #===============================================================================
     def _index_one_value(self, column_stub, label_path, label_dict):

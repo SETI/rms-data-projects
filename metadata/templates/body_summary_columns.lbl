@@ -24,8 +24,8 @@ $ONCE(night_override = False)
       on the surface. Values are positive in the body's northern hemisphere
       and negative in the southern hemisphere.
 
-      This column tabulates the minimum among the pixels whose lines of sight
-      intercept the body's surface.
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the body's surface.
 
       $INCLUDE('../../templates/body_summary_details.lbl')
   END_OBJECT                    = COLUMN
@@ -42,8 +42,8 @@ $ONCE(night_override = False)
       on the surface. Values are positive in the body's northern hemisphere
       and negative in the southern hemisphere.
 
-      This column tabulates the maximum among the pixels whose lines of sight
-      intercept the body's surface.
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the body's surface.
 
       $INCLUDE('../../templates/body_summary_details.lbl')
   END_OBJECT                    = COLUMN
@@ -60,8 +60,8 @@ $ONCE(night_override = False)
       surface. Values are positive in the body's northern hemisphere and
       negative in the southern hemisphere.
 
-      This column tabulates the minimum among the pixels whose lines of sight
-      intercept the body's surface.
+      This column tabulates the minimum value among the pixels whose lines of
+      sight intercept the body's surface.
 
       $INCLUDE('../../templates/body_summary_details.lbl')
   END_OBJECT                    = COLUMN
@@ -78,8 +78,8 @@ $ONCE(night_override = False)
       surface. Values are positive in the body's northern hemisphere and
       negative in the southern hemisphere.
 
-      This column tabulates the maximum among the pixels whose lines of sight
-      intercept the body's surface.
+      This column tabulates the maximum value among the pixels whose lines of
+      sight intercept the body's surface.
 
       $INCLUDE('../../templates/body_summary_details.lbl')
   END_OBJECT                    = COLUMN

@@ -716,13 +716,15 @@ class Record(object):
 """
 class InventoryTable(meta.Table):
     #===========================================================================
-    def __init__(self, **kwargs):
+    def __init__(self, output_dir=None, **kwargs):
         """Constructor for an InventoryTable object.
 
         Args:
-            table: Parent Table instance.
+            output_dir (str, Path, or FCPath): 
+                Directory in which to write the geometry files.
         """
-        super().__init__(qualifier='inventory', 
+        super().__init__(output_dir, 
+                         qualifier='inventory', 
                          suffix="_inventory.csv", 
                          use_global_template=True, 
                          level=None, **kwargs)
@@ -747,13 +749,15 @@ class InventoryTable(meta.Table):
 """
 class SkyTable(meta.Table):
     #===========================================================================
-    def __init__(self, **kwargs):
+    def __init__(self, output_dir=None, **kwargs):
         """Constructor for a SkyTable object.
 
         Args:
-            table: Parent Table instance.
+            output_dir (str, Path, or FCPath): 
+                Directory in which to write the geometry files.
         """
-        super().__init__(qualifier='sky', 
+        super().__init__(output_dir, 
+                         qualifier='sky', 
                          use_global_template=True, **kwargs)
 
     #===============================================================================
@@ -775,13 +779,14 @@ class SkyTable(meta.Table):
 """
 class SunTable(meta.Table):
     #===========================================================================
-    def __init__(self, **kwargs):
+    def __init__(self, output_dir=None, **kwargs):
         """Constructor for a SunTable object.
 
         Args:
-            table: Parent Table instance.
+            output_dir (str, Path, or FCPath): 
+                Directory in which to write the geometry files.
         """
-        super().__init__(qualifier='sun', **kwargs)
+        super().__init__(output_dir, qualifier='sun', **kwargs)
 
     #===============================================================================
     def add(self, record):
@@ -802,13 +807,14 @@ class SunTable(meta.Table):
 """
 class RingTable(meta.Table):
     #===========================================================================
-    def __init__(self, **kwargs):
+    def __init__(self, output_dir=None, **kwargs):
         """Constructor for a RingTable object.
 
         Args:
-            table: Parent Table instance.
+            output_dir (str, Path, or FCPath): 
+                Directory in which to write the geometry files.
         """
-        super().__init__(qualifier='ring', **kwargs)
+        super().__init__(output_dir, qualifier='ring', **kwargs)
 
     #===============================================================================
     def add(self, record):
@@ -839,13 +845,14 @@ class RingTable(meta.Table):
 """
 class BodyTable(meta.Table):
     #===========================================================================
-    def __init__(self, **kwargs):
+    def __init__(self, output_dir=None, **kwargs):
         """Constructor for a BodyTable object.
 
         Args:
-            table: Parent Table instance.
+            output_dir (str, Path, or FCPath): 
+                Directory in which to write the geometry files.
         """
-        super().__init__(qualifier='body', **kwargs)
+        super().__init__(output_dir, qualifier='body', **kwargs)
 
     #===============================================================================
     def add(self, record):
@@ -930,37 +937,31 @@ class Suite(object):
         except FileNotFoundError:
             logger.error(traceback.format_exc())
 
-        # Set file prefix
-        self.prefix = self.output_dir.joinpath(self.volume_id).as_posix()
-
-        # Initialize inventory table
-        self.inventory_filename = FCPath(self.prefix + "_inventory.csv")
-        self.inventory = []
-        logger.info("Inventory file: " + self.inventory_filename.as_posix())
-
         # Initialize data tables
         for level in self.levels:
-            self.add_tables(level)
+            self.add_tables(output_dir, level)
 
         # Initialize meshgrids
         self.meshgrids = config.meshgrids(sampling)
 
     #===============================================================================
-    def add_tables(self, level):
+    def add_tables(self, output_dir, level):
         """Add a set of tables.
 
         Args:
+            output_dir (str, Path, or FCPath): 
+                Directory in which to write the geometry files.
            level (str): 'summary' or'detailed''.
 
         Returns:
             None.
         """
         self.tables = [
-            InventoryTable(volume_id=self.volume_id),#, level=level),
-            SkyTable(volume_id=self.volume_id, level=level),
-#            SunTable(volume_id=self.volume_id, level=level),
-            RingTable(volume_id=self.volume_id, level=level),
-            BodyTable(volume_id=self.volume_id, level=level)
+            InventoryTable(output_dir, volume_id=self.volume_id),#, level=level),
+            SkyTable(output_dir, volume_id=self.volume_id, level=level),
+#            SunTable(output_dir, volume_id=self.volume_id, level=level),
+            RingTable(output_dir, volume_id=self.volume_id, level=level),
+            BodyTable(output_dir, volume_id=self.volume_id, level=level)
             ]
 
     #===============================================================================
@@ -1007,7 +1008,7 @@ class Suite(object):
             None
         """
         for table in self.tables:
-            table.write(self.prefix, labels_only=labels_only)
+            table.write(labels_only=labels_only)
 
     #===============================================================================
     def create(self, labels_only=False):

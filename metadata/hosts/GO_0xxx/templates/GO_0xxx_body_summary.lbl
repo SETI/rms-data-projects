@@ -19,7 +19,7 @@ $NOTE
 #
 ##############################################################################
 $END_NOTE
-$INCLUDE("./templates/GO_0xxx_summary_header.lbl")
+$INCLUDE("../../templates/header.lbl")
 
 ^BODY_SUMMARY_TABLE             = "$table_name$"
 OBJECT                          = BODY_SUMMARY_TABLE
@@ -29,9 +29,9 @@ OBJECT                          = BODY_SUMMARY_TABLE
   INDEX_TYPE                    = $index_type$
   DESCRIPTION                   = "This index describes the geometry of all
     observations in the volume or collection. The index contains one row for
-    each observation in which planets, regular satellites, and other targeted
-    bodies appear in he field of view.  In addition, geometry is always
-    tabulated for the body identified by the SYSTEM_NAME keyword below.
+    each planet, regular satellite, or other targeted body that appears in
+    the field of view.  In addition, geometry is always tabulated for the body
+    identified by the SYSTEM_NAME keyword below.
 
     Two types of geometry are represented in this index. Gridded quantites
     were constructed by uniformly sampling the pixels that comprise each data
@@ -43,9 +43,7 @@ OBJECT                          = BODY_SUMMARY_TABLE
     of a global minimum and maximum value with respect to the varying
     geometry during the interval in which the obsevation was taken. For
     angular quantities that cycle from 360 degrees to zero, the tabulated
-    minimum can be numerically greater than the maximum. If the ring plane
-    does not fall within the field of view, values of the NULL_CONSTANT appear
-    in the table.
+    minimum can be numerically greater than the maximum.
 
     Occasionally, SPICE pointing information is unavailable for the time at
     which an observation was taken. When this situation occurs, no row has

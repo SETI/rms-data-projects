@@ -858,13 +858,18 @@ class Table(object):
     """
 
     #===========================================================================
-    def __init__(self, volume_id=None, level=None, qualifier=None, suffix=None, use_global_template=False):
+    def __init__(self, output_dir=None, 
+                    volume_id=None, level=None, qualifier=None, prefix=None, 
+                    suffix=None, use_global_template=False):
         """Constructor for a table object.
 
         Args:
+            output_dir (str, Path, or FCPath): 
+                Directory in which to write the index files.
             volume_id (str): Volume ID.
             level (str, optional): Processing level: "summary", "detailed", or "index".
             qualifier (str): "sky", "sun", "ring", "body", "inventory", or "supplemental".
+            prefix (str): File path prefix.
             suffix (str): File name suffix.
             use_global_template (bool): 
                 If True, the label template is to be found in the global template
@@ -875,24 +880,23 @@ class Table(object):
         self.level = level
         self.qualifier = qualifier
         self.use_global_template = use_global_template
-        
+
+        if not output_dir:
+            return
+
         if not suffix:
-            self.suffix = "_%s_%s.tab" % (self.qualifier, self.level)
-        else:
-            self.suffix = suffix
+            suffix = "_%s_%s.tab" % (self.qualifier, self.level)
+        prefix = output_dir.joinpath(self.volume_id).as_posix()
+        self.filename = FCPath(prefix + suffix)
 
         self.rows = []
 
      #===============================================================================
-    def write(self, prefix, filename=None, labels_only=False):
+    def write(self, labels_only=False):
         """Write a table and its label.
 
         Args:
-            prefix (str): Filename prefix including the full path.
-            filename (str or Path, optional):
-                Name of file to write instead of creating one using the given prefix, 
-                and the suffix attribute.
-            labels_only (bool): 
+            labels_only (bool, optional): 
                 If True, labels are generated for any existing geometry tables.
 
         Returns:
@@ -900,22 +904,19 @@ class Table(object):
         """
         logger = get_logger()
         
-        # Create filename
-        filename = FCPath(prefix + self.suffix)
-
         if not labels_only:
             if self.rows == []:
                 return
 
             # Write table
-            logger.info("Writing:", filename)
-            write_txt_file(filename, self.rows)
+            logger.info("Writing:", self.filename)
+            write_txt_file(self.filename, self.rows)
 
         # Write label
         table_type = self.qualifier
         if self.level:
             table_type += '_' + self.level
-        lab.create(filename, 
+        lab.create(self.filename, 
                    table_type=table_type, use_global_template=self.use_global_template)
 
 

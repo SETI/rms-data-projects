@@ -60,10 +60,6 @@ def create(filepath, system=None,
     fields = {'VOLUME_ID'           : volume_id,
               'TABLE_TYPE'          : table_type}
 
-    # Cumulative index
-    if '999' in volume_id:
-        fields['TABLE_TYPE'] = 'CUMULATIVE'
-
     # Generate label
     T = PdsTemplate(template_path, crlf=True, 
                     preprocess=preprocess, 

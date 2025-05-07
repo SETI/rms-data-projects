@@ -19,7 +19,7 @@ $NOTE
 #
 ##############################################################################
 $END_NOTE
-$INCLUDE("./templates/GO_0xxx_summary_header.lbl")
+$INCLUDE("../../templates/header.lbl")
 
 ^RING_SUMMARY_TABLE             = "$table_name$"
 OBJECT                          = RING_SUMMARY_TABLE
@@ -29,7 +29,7 @@ OBJECT                          = RING_SUMMARY_TABLE
   INDEX_TYPE                    = $index_type$
   DESCRIPTION                   = "This index describes the geometry of all
     observations in the volume or collection. The index contains one row for
-    each observation in which rings appear in he field of view.
+    each observation in which the rings appear in the field of view.
 
     Two types of geometry are represented in this index. Gridded quantites
     were constructed by uniformly sampling the pixels that comprise each data
