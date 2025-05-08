@@ -35,43 +35,43 @@ import oops
 #
 ################################################################################
 BODY_COLUMNS = [
-    (("latitude",               BODYX, "centric"),         ("RM", "R",  "D")),
-    (("latitude",               BODYX, "graphic"),         ("RM", "R",  "D")),
-    (("longitude",              BODYX, "iau", "west"),     ("RM", "R",  "D")),
-#    (("longitude",              BODYX, "iau", "east"),     ("RM", "R",  "D")),
-    (("longitude",              BODYX, "sha", "east"),     ("RM", "R",  "" )),
-    (("longitude",              BODYX, "obs", "west"),
+    (("latitude",               defs.BODYX, "centric"),         ("RM", "R",  "D")),
+    (("latitude",               defs.BODYX, "graphic"),         ("RM", "R",  "D")),
+    (("longitude",              defs.BODYX, "iau", "west"),     ("RM", "R",  "D")),
+#    (("longitude",              defs.BODYX, "iau", "east"),     ("RM", "R",  "D")),
+    (("longitude",              defs.BODYX, "sha", "east"),     ("RM", "R",  "" )),
+    (("longitude",              defs.BODYX, "obs", "west"),
                                                             ("RM", "R",  "D"), "-180"),
-#    (("longitude",              BODYX, "obs", "east"),
+#    (("longitude",              defs.BODYX, "obs", "east"),
 #                                                            ("RM", "R",  "D"), "-180"),
-    (("finest_resolution",      BODYX),                    ("RM", "R",  "D")),
-    (("coarsest_resolution",    BODYX),                    ("RM", "R",  "D")),
-    (("distance",               BODYX),                    ("RM", "",   "" )),
-#    (("phase_angle",            BODYX),                    ("RM", "",   "D")),
-    (("phase_angle",            BODYX),                    ("RM", "",   "")),
-    (("incidence_angle",        BODYX),                    ("RM", "",   "" )),
-    (("emission_angle",         BODYX),                    ("RM", "",   "" )),
-    (("limb_altitude",          BODYX, -0.01, 1000, True), ("",   "",  "" )),
-    (("limb_clock_angle",       BODYX),                    ("",   "",  "" )),
-    (("event_time",             BODYX),                    ("RM", "", ""))]
+    (("finest_resolution",      defs.BODYX),                    ("RM", "R",  "D")),
+    (("coarsest_resolution",    defs.BODYX),                    ("RM", "R",  "D")),
+    (("distance",               defs.BODYX),                    ("RM", "",   "" )),
+#    (("phase_angle",            defs.BODYX),                    ("RM", "",   "D")),
+    (("phase_angle",            defs.BODYX),                    ("RM", "",   "")),
+    (("incidence_angle",        defs.BODYX),                    ("RM", "",   "" )),
+    (("emission_angle",         defs.BODYX),                    ("RM", "",   "" )),
+    (("limb_altitude",          defs.BODYX, -0.01, 1000, True), ("",   "",  "" )),
+    (("limb_clock_angle",       defs.BODYX),                    ("",   "",  "" )),
+    (("event_time",             defs.BODYX),                    ("RM", "", ""))]
 
 BODY_GRIDLESS_COLUMNS = [
-    (("sub_solar_latitude",     BODYX, "centric"),         ("",   "",  "" )),
-    (("sub_solar_latitude",     BODYX, "graphic"),         ("",   "",  "" )),
-    (("sub_observer_latitude",  BODYX, "centric"),         ("",   "",  "" )),
-    (("sub_observer_latitude",  BODYX, "graphic"),         ("",   "",  "" )),
-    (("sub_solar_longitude",    BODYX, "iau", "west"),     ("",   "",  "" )),
-#    (("sub_solar_longitude",    BODYX, "iau", "east"),     ("",   "",  "" )),
-    (("sub_observer_longitude", BODYX, "iau", "west"),     ("",   "",  "" )),
-#    (("sub_observer_longitude", BODYX, "iau", "east"),     ("",   "",  "" )),
-    (("center_resolution",      BODYX, "u"),               ("",   "",  "" )),
-    (("center_distance",        BODYX, "obs"),             ("",   "",  "" )),
-    (("center_phase_angle",     BODYX),                    ("",   "",  "" )),
-    (("body_diameter_in_pixels",BODYX),                    ("",   "",  "" )),
-    (("pole_clock_angle",       BODYX),                    ("",   "",  "" )),
-    (("pole_position_angle",    BODYX),                    ("",   "",  "" )),
-    (("center_coordinate",      BODYX, "u"),               ("",   "",  "" )),
-    (("center_coordinate",      BODYX, "v"),               ("",   "",  "" ))]
+    (("sub_solar_latitude",     defs.BODYX, "centric"),         ("",   "",  "" )),
+    (("sub_solar_latitude",     defs.BODYX, "graphic"),         ("",   "",  "" )),
+    (("sub_observer_latitude",  defs.BODYX, "centric"),         ("",   "",  "" )),
+    (("sub_observer_latitude",  defs.BODYX, "graphic"),         ("",   "",  "" )),
+    (("sub_solar_longitude",    defs.BODYX, "iau", "west"),     ("",   "",  "" )),
+#    (("sub_solar_longitude",    defs.BODYX, "iau", "east"),     ("",   "",  "" )),
+    (("sub_observer_longitude", defs.BODYX, "iau", "west"),     ("",   "",  "" )),
+#    (("sub_observer_longitude", defs.BODYX, "iau", "east"),     ("",   "",  "" )),
+    (("center_resolution",      defs.BODYX, "u"),               ("",   "",  "" )),
+    (("center_distance",        defs.BODYX, "obs"),             ("",   "",  "" )),
+    (("center_phase_angle",     defs.BODYX),                    ("",   "",  "" )),
+    (("body_diameter_in_pixels",defs.BODYX),                    ("",   "",  "" )),
+    (("pole_clock_angle",       defs.BODYX),                    ("",   "",  "" )),
+    (("pole_position_angle",    defs.BODYX),                    ("",   "",  "" )),
+    (("center_coordinate",      defs.BODYX, "u"),               ("",   "",  "" )),
+    (("center_coordinate",      defs.BODYX, "v"),               ("",   "",  "" ))]
 
 # Assemble the column lists for each type of file for the moons and planet
 
@@ -81,10 +81,10 @@ BODY_DETAILED_COLUMNS = BODY_COLUMNS
 BODY_SUMMARY_DICT = {}
 BODY_DETAILED_DICT = {}
 for body in BODIES:
-    BODY_SUMMARY_DICT.update(replacement_dict(BODY_SUMMARY_COLUMNS,
-                                                         BODYX, [body]))
-    BODY_DETAILED_DICT.update(replacement_dict(BODY_DETAILED_COLUMNS,
-                                                         BODYX, [body]))
+    BODY_SUMMARY_DICT.update(util.replacement_dict(BODY_SUMMARY_COLUMNS,
+                                                         defs.BODYX, [body]))
+    BODY_DETAILED_DICT.update(util.replacement_dict(BODY_DETAILED_COLUMNS,
+                                                         defs.BODYX, [body]))
 ################################################################################
 # Define the tiling for detailed listings
 #
@@ -93,24 +93,24 @@ for body in BODIES:
 # detailed tabulation.
 ################################################################################
 BODY_TILES = {}
-for body in BODY_NAMES:
+for body in defs.BODY_NAMES:
     BODY_TILES[body] = [
-        ("where_all", ("where_in_front", BODYX, body), # mask over remaining tiles
-                      ("where_sunward",  BODYX)),
-        ("where_below",   ("latitude", BODYX), -70. * oops.RPD),
-        ("where_between", ("latitude", BODYX), -70. * oops.RPD, -50. * oops.RPD),
-        ("where_between", ("latitude", BODYX), -50. * oops.RPD, -30. * oops.RPD),
-        ("where_between", ("latitude", BODYX), -30. * oops.RPD, -10. * oops.RPD),
-        ("where_between", ("latitude", BODYX), -10. * oops.RPD,  10. * oops.RPD),
-        ("where_between", ("latitude", BODYX),  10. * oops.RPD,  30. * oops.RPD),
-        ("where_between", ("latitude", BODYX),  30. * oops.RPD,  50. * oops.RPD),
-        ("where_between", ("latitude", BODYX),  50. * oops.RPD,  70. * oops.RPD),
-        ("where_above",   ("latitude", BODYX),  70. * oops.RPD)
+        ("where_all", ("where_in_front", defs.BODYX, body), # mask over remaining tiles
+                      ("where_sunward",  defs.BODYX)),
+        ("where_below",   ("latitude", defs.BODYX), -70. * oops.RPD),
+        ("where_between", ("latitude", defs.BODYX), -70. * oops.RPD, -50. * oops.RPD),
+        ("where_between", ("latitude", defs.BODYX), -50. * oops.RPD, -30. * oops.RPD),
+        ("where_between", ("latitude", defs.BODYX), -30. * oops.RPD, -10. * oops.RPD),
+        ("where_between", ("latitude", defs.BODYX), -10. * oops.RPD,  10. * oops.RPD),
+        ("where_between", ("latitude", defs.BODYX),  10. * oops.RPD,  30. * oops.RPD),
+        ("where_between", ("latitude", defs.BODYX),  30. * oops.RPD,  50. * oops.RPD),
+        ("where_between", ("latitude", defs.BODYX),  50. * oops.RPD,  70. * oops.RPD),
+        ("where_above",   ("latitude", defs.BODYX),  70. * oops.RPD)
     ]
 
 BODY_TILE_DICT = {}
 
-for body in BODY_NAMES:
+for body in defs.BODY_NAMES:
     BODY_TILE_DICT[body] = {}
-    BODY_TILE_DICT[body] = replace(BODY_TILES[body], BODYX, body)
+    BODY_TILE_DICT[body] = util.replace(BODY_TILES[body], defs.BODYX, body)
 ################################################################################

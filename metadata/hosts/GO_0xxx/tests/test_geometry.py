@@ -6,11 +6,11 @@ import unittest
 import pdstable, pdsparser
 import numpy as np
 
-#import metadata as meta
-###import hosts.GO_0xxx.config
+import metadata.util as util
+import hosts.GO_0xxx.host_config as config
 import metadata.tests.unittester_support as unit
 
-#SYSTEMS_TABLE = meta.convert_systems_table(config.SYSTEMS_TABLE, config.SCLK_BASES)
+#SYSTEMS_TABLE = util.convert_systems_table(config.SYSTEMS_TABLE, config.SCLK_BASES)
 
 class Test_Geometry_GOSSI(unittest.TestCase):
 
@@ -46,7 +46,7 @@ class Test_Geometry_GOSSI(unittest.TestCase):
             print('Reading', file)
             table = pdstable.PdsTable(file) 
 
-#            system, secondaries = meta.get_system(SYSTEMS_TABLE, sclk, config.SCLK_BASES)
+#            system, secondaries = util.get_system(SYSTEMS_TABLE, sclk, config.SCLK_BASES)
 
             target = table.column_values['TARGET_NAME']
 

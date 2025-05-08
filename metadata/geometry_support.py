@@ -9,8 +9,10 @@ import warnings
 import fnmatch
 
 import metadata as meta
+import metadata.util as util
+import metadata.defs as defs
+import metadata.columns as col
 
-from pathlib   import Path
 from filecache import FCPath
 
 import host_config as config
@@ -113,7 +115,7 @@ ALT_FORMAT_DICT = {
     ("sub_longitude",  "-180")  : ("-180", 2, 8, "%8.3f",  None,     -999.)}
 
 DEFAULT_BODIES_TABLE = \
-    meta.convert_default_bodies_table(config.DEFAULT_BODIES_TABLE, config.SCLK_BASES)
+    util.convert_default_bodies_table(config.DEFAULT_BODIES_TABLE, config.SCLK_BASES)
 
 ################################################################################
 # Record class
@@ -137,22 +139,22 @@ class Record(object):
         # Determine primary, if any
         sclk = observation.dict["SPACECRAFT_CLOCK_START_COUNT"] + '' 
         self.primary, self.secondaries = \
-            meta.get_primary(DEFAULT_BODIES_TABLE, sclk, config.SCLK_BASES)
+            util.get_primary(DEFAULT_BODIES_TABLE, sclk, config.SCLK_BASES)
         self.level = level
 
         # Level-specific column dictionaries
-        self.dicts = {'sky' : meta.SKY_COLUMNS}
+        self.dicts = {'sky' : col.SKY_COLUMNS}
         if level == 'summary':
             self.dicts |= {
-                'sun'    : meta.SUN_SUMMARY_COLUMNS,
-                'ring'   : meta.RING_SUMMARY_DICT,
-                'body'   : meta.BODY_SUMMARY_DICT,
+                'sun'    : col.SUN_SUMMARY_COLUMNS,
+                'ring'   : col.RING_SUMMARY_DICT,
+                'body'   : col.BODY_SUMMARY_DICT,
             }
         else:
             self.dicts |= {
-                'sun'    : meta.SUN_DETAILED_COLUMNS,
-                'ring'   : meta.RING_SUMMARY_DETAILED,
-                'body'   : meta.BODY_SUMMARY_DETAILED
+                'sun'    : col.SUN_DETAILED_COLUMNS,
+                'ring'   : col.RING_SUMMARY_DETAILED,
+                'body'   : col.BODY_SUMMARY_DETAILED
             }
 
         # Set up planet-based geometry
@@ -160,14 +162,14 @@ class Record(object):
         self.blocker = None
 
         if self.primary:
-            self.rings_present = meta.BODIES[self.primary].ring_frame is not None    
-            self.ring_tile_dict = meta.RING_TILE_DICT[self.primary]
-            self.body_tile_dict = meta.BODY_TILE_DICT[self.primary]
+            self.rings_present = col.BODIES[self.primary].ring_frame is not None    
+            self.ring_tile_dict = col.RING_TILE_DICT[self.primary]
+            self.body_tile_dict = col.BODY_TILE_DICT[self.primary]
 
         # Determine target
         self.target = config.target_name(observation.dict)
-        if self.target in meta.TRANSLATIONS.keys():
-            self.target = meta.TRANSLATIONS[self.target]
+        if self.target in defs.TRANSLATIONS.keys():
+            self.target = defs.TRANSLATIONS[self.target]
 
         # Create the record prefix
         filespec = observation.dict["FILE_SPECIFICATION_NAME"]
@@ -179,8 +181,8 @@ class Record(object):
         self.backplane = oops.backplane.Backplane(observation, meshgrid)
         
         # Build body list
-        body_names = meta.BODIES.keys()
-        if self.target not in meta.BODIES and oops.Body.exists(self.target):
+        body_names = col.BODIES.keys()
+        if self.target not in col.BODIES and oops.Body.exists(self.target):
             body_names += [self.target]
 
         # Inventory the bodies in the FOV
@@ -199,9 +201,9 @@ class Record(object):
 
             # Add a targeted irregular moon to the dictionaries if present
             if self.target in self.bodies and self.target not in self.dicts['body'].keys():
-                self.dicts['body'][self.target] = meta.replace(meta.BODY_SUMMARY_COLUMNS,
-                                                         meta.BODYX, self.target)
-                self.body_tile_dict[self.target] = meta.replace(meta.BODY_TILES, meta.BODYX, self.target)
+                self.dicts['body'][self.target] = util.replace(col.BODY_SUMMARY_COLUMNS,
+                                                         defs.BODYX, self.target)
+                self.body_tile_dict[self.target] = util.replace(col.BODY_TILES, col.BODYX, self.target)
 
     #===============================================================================
     def _meshgrid(self, observation, meshgrids):
@@ -293,7 +295,7 @@ class Record(object):
     #===============================================================================
     @staticmethod
     def _prep_row(prefixes, backplane, blocker, column_descs, *,
-                  primary=None, target=None, name_length=meta.NAME_LENGTH,
+                  primary=None, target=None, name_length=defs.NAME_LENGTH,
                   tiles=[], tiling_min=100, ignore_shadows=False,
                   start_index=1, allow_zero_rows=False, no_mask=False, 
                   no_body=False):
@@ -448,7 +450,7 @@ class Record(object):
                 mask_desc = column_desc[1]
 
                 # Fill in the backplane array
-                if event_key[1] == meta.NULL:
+                if event_key[1] == defs.NULL:
                     values = oops.Scalar(0., True)
                 else:
                     values = backplane.evaluate(event_key)
@@ -657,10 +659,10 @@ class Record(object):
             results = [null_value, null_value]
 
         elif flag == "360":
-            results = meta._get_range_mod360(values)
+            results = util._get_range_mod360(values)
 
         elif flag == "-180":
-            results = meta._get_range_mod360(values, alt_format=flag)
+            results = util._get_range_mod360(values, alt_format=flag)
 
         else:
             results = [values.min().as_builtin(), values.max().as_builtin()]
@@ -926,7 +928,7 @@ class Suite(object):
         index_filename = index_filenames[0]
         ext = index_filename.suffix
         self.volume_id = config.get_volume_id(self.input_dir)
-        supplemental_index_name = meta.get_index_name(self.input_dir, self.volume_id, 'supplemental')
+        supplemental_index_name = util.get_index_name(self.input_dir, self.volume_id, 'supplemental')
         supplemental_index_filename = self.input_dir.joinpath(supplemental_index_name+ext)
 
         logger.info('New geometry index for %s.' % self.volume_id)
@@ -1149,7 +1151,7 @@ def process_tables(host=None,
         new_only = False
 
     # Build volume glob
-    vol_glob = meta.get_volume_glob(input_tree.name)
+    vol_glob = util.get_volume_glob(input_tree.name)
 
     # Walk the input tree, making indexes for each found volume
     for root, dirs, files in input_tree.walk():
@@ -1163,7 +1165,7 @@ def process_tables(host=None,
 
         # Determine notional collection and volume
         parts = root.parts
-        col = parts[-2]
+        coll = parts[-2]
         vol = parts[-1]
 
         # Proceed only if this root is a volume
@@ -1171,8 +1173,8 @@ def process_tables(host=None,
             if not volume or vol == volume:
                 # Set up input and output directories
                 indir = root
-                if output_tree.parts[-1] != col: 
-                    outdir = output_tree.joinpath(col)
+                if output_tree.parts[-1] != coll: 
+                    outdir = output_tree.joinpath(coll)
                 outdir = output_tree.joinpath(vol)
 
                 # Do not continue if this volume is excluded

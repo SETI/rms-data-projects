@@ -1,14 +1,13 @@
 ################################################################################
 # label_support.py - Tools for generating metadata labels.
 ################################################################################
-import time
-import pdsparser
-
 from filecache              import FCPath
 from pdstemplate            import PdsTemplate
 from pdstemplate.pds3table  import pds3_table_preprocessor
 
 import metadata as meta
+import metadata.util as util
+import metadata.defs as defs
 
 #===============================================================================
 def create(filepath, system=None, 
@@ -46,9 +45,9 @@ def create(filepath, system=None,
     # Default template path
     offset = 0 if not system else len(system) + 1
     if use_global_template:
-        template_path = FCPath(meta.GLOBAL_TEMPLATE_PATH) / FCPath('%s.lbl' % body[underscore+6+offset:])
+        template_path = FCPath(defs.GLOBAL_TEMPLATE_PATH) / FCPath('%s.lbl' % body[underscore+6+offset:])
     else:
-        template_name = meta.get_template_name(filename, volume_id)
+        template_name = util.get_template_name(filename, volume_id)
         template_path = FCPath('./templates/').resolve() / (template_name + '.lbl')
 
     # Default preprocessor

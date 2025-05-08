@@ -1,8 +1,8 @@
 ################################################################################
 # COLUMNS_RING.py: Column definitions for ring geometry tables
 ################################################################################
-planet_ring = BODYX + ":RING"
-planet_ansa = BODYX + ":ANSA"
+planet_ring = defs.BODYX + ":RING"
+planet_ansa = defs.BODYX + ":ANSA"
 
 ################################################################################
 # *COLUMN description tuples are
@@ -90,10 +90,10 @@ RING_GRIDLESS_COLUMNS = [
     (("sub_solar_latitude",     planet_ring),               ("",   "",  "" )),
     (("sub_observer_latitude",  planet_ring),               ("",   "",  "" )),
     (("body_diameter_in_pixels",planet_ring,
-                                    replacement_fn("RING_SYSTEM_RADII", BODYX)),
+                            util.replacement_fn("defs.RING_SYSTEM_RADII", defs.BODYX)),
                                                             ("",   "",  "" )),
-    (("center_coordinate",      BODYX, "u"),                ("",   "",  "" )),
-    (("center_coordinate",      BODYX, "v"),                ("",   "",  "" ))]
+    (("center_coordinate",      defs.BODYX, "u"),                ("",   "",  "" )),
+    (("center_coordinate",      defs.BODYX, "v"),                ("",   "",  "" ))]
 
 # Assemble the column lists for each type of file for the rings and for Saturn
 RING_SUMMARY_COLUMNS  = (RING_COLUMNS + ANSA_COLUMNS +
@@ -103,11 +103,11 @@ RING_DETAILED_COLUMNS = RING_COLUMNS + ANSA_COLUMNS
 # Create a dictionary for the columns of each planet
 RING_SUMMARY_DICT = {}
 RING_DETAILED_DICT = {}
-for body in BODY_NAMES:
-    RING_SUMMARY_DICT.update(replacement_dict(RING_SUMMARY_COLUMNS,
-                                                         BODYX, [body]))
-    RING_DETAILED_DICT.update(replacement_dict(RING_DETAILED_COLUMNS,
-                                                         BODYX, [body]))
+for body in defs.BODY_NAMES:
+    RING_SUMMARY_DICT.update(util.replacement_dict(RING_SUMMARY_COLUMNS,
+                                                         defs.BODYX, [body]))
+    RING_DETAILED_DICT.update(util.replacement_dict(RING_DETAILED_COLUMNS,
+                                                         defs.BODYX, [body]))
 
 ################################################################################
 # Define the tiling for detailed listings
@@ -119,11 +119,11 @@ for body in BODY_NAMES:
 RING_AZ = ("ring_azimuth", planet_ring, "obs")
 
 RING_TILES = {}
-for body in BODY_NAMES:
+for body in defs.BODY_NAMES:
     RING_TILES[body] = [
         ("where_all",                                   # mask over remaining tiles
-            ("where_in_front", planet_ring, BODYX),
-            ("where_outside_shadow", planet_ring, BODYX),
+            ("where_in_front", planet_ring, defs.BODYX),
+            ("where_outside_shadow", planet_ring, defs.BODYX),
             ("where_below", ("ring_radius", planet_ring), 150000.)),
         ("where_between", RING_AZ, 0.20 * np.pi, 0.45 * np.pi),
         ("where_between", RING_AZ, 0.45 * np.pi, 0.55 * np.pi),
@@ -138,10 +138,10 @@ for body in BODY_NAMES:
     ]
 
 OUTER_RING_TILES = {}
-for body in BODY_NAMES:
+for body in defs.BODY_NAMES:
     OUTER_RING_TILES[body] = [
         ("where_all",                                   # mask over remaining tiles
-                ("where_in_front", planet_ring, BODYX),
+                ("where_in_front", planet_ring, defs.BODYX),
         ("where_above", ("ring_radius", planet_ring), 150000.)),
         ("where_between", RING_AZ, 0.20 * np.pi, 0.45 * np.pi),
         ("where_between", RING_AZ, 0.45 * np.pi, 0.55 * np.pi),
@@ -157,11 +157,11 @@ for body in BODY_NAMES:
     ]
 
 RING_TILE_DICT = {}
-for body in BODY_NAMES:
-    RING_TILE_DICT[body] = replace(RING_TILES[body], BODYX, body)
+for body in defs.BODY_NAMES:
+    RING_TILE_DICT[body] = util.replace(RING_TILES[body], defs.BODYX, body)
 
 OUTER_RING_TILE_DICT = {}
-for body in BODY_NAMES:
-    OUTER_RING_TILE_DICT[body] = replace(OUTER_RING_TILES[body], BODYX, body)
+for body in defs.BODY_NAMES:
+    OUTER_RING_TILE_DICT[body] = util.replace(OUTER_RING_TILES[body], defs.BODYX, body)
 
 ################################################################################

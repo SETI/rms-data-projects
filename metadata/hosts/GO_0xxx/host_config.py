@@ -14,6 +14,7 @@ from filecache import FCPath
 import oops
 import hosts.galileo.ssi as ssi
 import metadata as meta
+import metadata.util as util
 
 import host_init
 
@@ -111,7 +112,7 @@ def get_volume_id(label_path):
         None.
     """
     top = 'GO_0xxx'
-    return meta.splitpath(label_path, top)[1].parts[0]
+    return util.splitpath(label_path, top)[1].parts[0]
 
 #===============================================================================
 def _event_tai(label_path, label_dict, stop=False):
@@ -151,8 +152,8 @@ def _spacecraft_clock_start_count_from_label(label_dict):
         str: SCLK start count.
     """
     start_count = label_dict['SPACECRAFT_CLOCK_START_COUNT']
-    start_fields = meta.sclk_split_count(start_count)
-    return meta.sclk_format_count(start_fields, 'nnnnnnnn:nn:n:n')
+    start_fields = util.sclk_split_count(start_count)
+    return util.sclk_format_count(start_fields, 'nnnnnnnn:nn:n:n')
 
 #===============================================================================
 def _spacecraft_clock_stop_count_from_label(label_dict):
@@ -169,14 +170,14 @@ def _spacecraft_clock_stop_count_from_label(label_dict):
         str: SCLK start count.
     """
     start_count = label_dict['SPACECRAFT_CLOCK_START_COUNT']
-    start_fields = meta.sclk_split_count(start_count)
+    start_fields = util.sclk_split_count(start_count)
 
     exposure = label_dict['EXPOSURE_DURATION'] / 1000
     exposure_ticks = exposure*120
-    exposure_fields,over = meta.rebase(exposure_ticks, SCLK_BASES, ceil=True)
+    exposure_fields,over = util.rebase(exposure_ticks, SCLK_BASES, ceil=True)
 
-    stop_fields = meta.add_by_base(start_fields, exposure_fields, SCLK_BASES)
-    return meta.sclk_format_count(stop_fields[1:], 'nnnnnnnn:nn:n:n')
+    stop_fields = util.add_by_base(start_fields, exposure_fields, SCLK_BASES)
+    return util.sclk_format_count(stop_fields[1:], 'nnnnnnnn:nn:n:n')
 
 
 ################################################################################

@@ -24,6 +24,7 @@
 #  4) Run this script to generate the supplemental files in that tree.
 #
 ################################################################################
+import host_init
 import metadata.index_support as idx
 
 idx.process_index(host='GOISS', 

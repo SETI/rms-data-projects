@@ -6,7 +6,6 @@ import unittest
 import pdstable, pdsparser
 import numpy as np
 
-#import metadata as meta
 import metadata.tests.unittester_support as unit
 
 

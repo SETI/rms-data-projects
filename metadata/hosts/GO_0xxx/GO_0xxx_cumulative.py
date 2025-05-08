@@ -15,6 +15,7 @@
 #  3) Run this script to generate the cumulative tables in the output tree.
 #
 ################################################################################
+import host_init
 import metadata.cumulative_support as cml
 
 cml.create_cumulative_indexes(host='GOISS', 

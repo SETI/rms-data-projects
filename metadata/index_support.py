@@ -7,7 +7,7 @@ import warnings
 import hosts.pds3 as pds3
 
 import metadata as meta
-import metadata.label_support as lab
+import metadata.util as util
 import pdstable
 
 from filecache              import FCPath
@@ -58,9 +58,9 @@ class IndexTable(meta.Table):
         logger.info('New%s index for %s.' % (s, self.volume_id))
 
         # Get relevant filenames and paths
-        primary_index_name = meta.get_index_name(self.input_dir, self.volume_id, None)
-        index_name = meta.get_index_name(self.input_dir, self.volume_id, qualifier) 
-        template_name = meta.get_template_name(index_name, self.volume_id) 
+        primary_index_name = util.get_index_name(self.input_dir, self.volume_id, None)
+        index_name = util.get_index_name(self.input_dir, self.volume_id, qualifier) 
+        template_name = util.get_template_name(index_name, self.volume_id) 
         self.index_path = self.output_dir/(index_name + '.tab')
 
         # If the index name is the same as the primary inxex name,
@@ -93,10 +93,10 @@ class IndexTable(meta.Table):
 
         # Extract relevent fields from the template
         template_path = FCPath('./templates/')/(template_name + '.lbl')
-        label_name = meta.get_index_name(self.input_dir, self.volume_id, qualifier) 
+        label_name = util.get_index_name(self.input_dir, self.volume_id, qualifier) 
         label_path = self.output_dir / FCPath(label_name + '.lbl')
 
-        template = meta.read_txt_file(template_path, as_string=True)
+        template = util.read_txt_file(template_path, as_string=True)
         pds3_table = Pds3Table(label_path, template, validate=False, numbers=True, formats=True)
         self.column_stubs = IndexTable._get_column_values(pds3_table)
 
@@ -136,7 +136,7 @@ class IndexTable(meta.Table):
                  continue
 
                 # Log volume ID and subpath
-                subdir = meta.get_volume_subdir(root, config.get_volume_id(root))
+                subdir = util.get_volume_subdir(root, config.get_volume_id(root))
                 logger.info('%s %4d/%4d  %s' % (self.volume_id, i+1, n, subdir/name))
 
                 # Make the index for this file
@@ -412,7 +412,7 @@ class IndexTable(meta.Table):
 
 #===============================================================================
 def key__volume_id(label_path, label_dict):
-    """Key function for VOLUME_ID.   The return value will appear in the index
+    """Key function for VOLUME_ID. The return value will appear in the index
     file under VOLUME_ID.
 
     Args:
@@ -436,7 +436,7 @@ def key__file_specification_name(label_path, label_dict):
     Returns:
         str: File Specification name.
     """
-    return meta.get_volume_subdir(label_path, config.get_volume_id(label_path))
+    return util.get_volume_subdir(label_path, config.get_volume_id(label_path))
     
 
 ################################################################################
@@ -497,7 +497,7 @@ def process_index(host=None, type='', glob=None):
     labels_only = args.labels is not False
 
     # Build volume glob
-    vol_glob = meta.get_volume_glob(input_tree.name)
+    vol_glob = util.get_volume_glob(input_tree.name)
 
     # Walk the input tree, making indexes for each found volume
     for root, dirs, files in input_tree.walk():
@@ -524,7 +524,8 @@ def process_index(host=None, type='', glob=None):
                 outdir = output_tree/vol
 
                 # Process this volumne
-                index = IndexTable(indir, outdir, qualifier=args.type, glob=glob)
+                index = IndexTable(indir, outdir, 
+                                   qualifier=args.type, volume_id=vol, glob=glob)
                 index.create(labels_only=labels_only)
 
                 unused = index.unused if not unused else unused & index.unused

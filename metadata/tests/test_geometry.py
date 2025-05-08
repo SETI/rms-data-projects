@@ -5,7 +5,7 @@ import unittest
 import pdstable, pdsparser
 import numpy as np
 
-import unittester_support as unit
+import metadata.tests.unittester_support as unit
 
 
 class Test_Geometry(unittest.TestCase):

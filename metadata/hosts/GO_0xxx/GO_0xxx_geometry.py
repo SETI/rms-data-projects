@@ -14,6 +14,7 @@
 #  2) Run this script to generate the geometry tables in the output tree.
 #
 ################################################################################
+import host_init
 import metadata.geometry_support as geom
 
 geom.process_tables(host='GOISS', 
