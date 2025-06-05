@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1B00.sch"
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="https://pds.nasa.gov/pds4/disp/v1/PDS4_DISP_1B00.sch"
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="https://pds.nasa.gov/pds4/sp/v1/PDS4_SP_1B00_1100.sch"
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="https://pds.nasa.gov/pds4/mission/cassini/v1/PDS4_CASSINI_1B00_1300.sch"
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+
+<Product_Observational
+    xmlns="http://pds.nasa.gov/pds4/pds/v1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:disp="http://pds.nasa.gov/pds4/disp/v1"
+    xmlns:sp="http://pds.nasa.gov/pds4/sp/v1"
+    xmlns:cassini="http://pds.nasa.gov/pds4/mission/cassini/v1"
+
+    xsi:schemaLocation="
+    http://pds.nasa.gov/pds4/pds/v1 https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1B00.xsd
+    http://pds.nasa.gov/pds4/disp/v1 https://pds.nasa.gov/pds4/disp/v1/PDS4_DISP_1B00.xsd
+    http://pds.nasa.gov/pds4/sp/v1 https://pds.nasa.gov/pds4/sp/v1/PDS4_SP_1B00_1100.xsd
+    http://pds.nasa.gov/pds4/mission/cassini/v1 https://pds.nasa.gov/pds4/mission/cassini/v1/PDS4_CASSINI_1B00_1300.xsd">
+
+    <Identification_Area>
+        <logical_identifier>urn:nasa:pds:cassini_vims_cruise:data_raw:1294640556</logical_identifier>
+        <version_id>1.0</version_id>
+        <title>Cassini VIMS 3D Array 1294640556.qub</title>
+        <information_model_version>1.11.0.0</information_model_version>
+        <product_class>Product_Observational</product_class>
+        <Modification_History>
+            <Modification_Detail>
+                <modification_date>2020-03-28</modification_date>
+                <version_id>1.0</version_id>
+                <description>Initial PDS4 Version. Migrated from the PDS3 data product.</description>
+            </Modification_Detail>
+        </Modification_History>
+    </Identification_Area>
+
+    <Observation_Area>
+        <comment>
+            This data file was migrated from the original PDS3 file:
+                COVIMS_0001/data/1999010T054026_1999010T060958/v1294640556_1.qub
+            The contents of this data file were reorganized in order to make it
+            PDS4 compliant. Sideplanes and backplanes were removed from the cube
+            itself and appended at the end of the file as separate arrays. The
+            resulting data file remains compatible with ISIS2 standards. Values
+            for instrument attributes were derived from the corresponding values
+            in the original PDS3 label.
+        </comment>
+        <Time_Coordinates>
+            <start_date_time>1999-01-10T05:50:42.330Z</start_date_time>
+            <stop_date_time>1999-01-10T05:51:08.669Z</stop_date_time>
+        </Time_Coordinates>
+        <Primary_Result_Summary>
+            <purpose>Calibration</purpose>
+            <processing_level>Raw</processing_level>
+            <Science_Facets>
+                <wavelength_range>Visible</wavelength_range>
+                <wavelength_range>Near Infrared</wavelength_range>
+                <discipline_name>Spectroscopy</discipline_name>
+                <facet1>Spectral Cube</facet1>
+            </Science_Facets>
+        </Primary_Result_Summary>
+        <Investigation_Area>
+            <name>Cassini-Huygens</name>
+            <type>Mission</type>
+            <Internal_Reference>
+                <lid_reference>urn:nasa:pds:context:investigation:mission.cassini-huygens</lid_reference>
+                <reference_type>data_to_investigation</reference_type>
+            </Internal_Reference>
+        </Investigation_Area>
+        <Observing_System>
+            <name>Cassini Orbiter Visual and Infrared Mapping Spectrometer</name>
+            <Observing_System_Component>
+                <name>Cassini Orbiter</name>
+                <type>Spacecraft</type>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:context:instrument_host:spacecraft.co</lid_reference>
+                    <reference_type>is_instrument_host</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+            <Observing_System_Component>
+                <name>Cassini Orbiter Visual and Infrared Mapping Spectrometer</name>
+                <type>Instrument</type>
+                <description>VIMS</description>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:context:instrument:vims.co</lid_reference>
+                    <reference_type>is_instrument</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+        </Observing_System>
+        <Target_Identification>
+            <name>Unknown</name>
+            <type>Calibrator</type>
+            <Internal_Reference>
+                <lid_reference>urn:nasa:pds:context:target:calibrator.unk</lid_reference>
+                <reference_type>data_to_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+        <Mission_Area>
+            <cassini:Cassini>
+                <cassini:VIMS_Specific_Attributes>
+                    <cassini:mission_phase_name>INSTRUMENT CHECKOUT 1</cassini:mission_phase_name>
+                    <cassini:spacecraft_clock_count_partition>1</cassini:spacecraft_clock_count_partition>
+                    <cassini:spacecraft_clock_start_count>1294640556.096</cassini:spacecraft_clock_start_count>
+                    <cassini:spacecraft_clock_stop_count>1294640651.096</cassini:spacecraft_clock_stop_count>
+                    <cassini:limitations>None known.</cassini:limitations>
+                    <cassini:antiblooming_state_flag>OFF</cassini:antiblooming_state_flag>
+                    <cassini:background_sampling_frequency>1</cassini:background_sampling_frequency>
+                    <cassini:background_sampling_mode_id_ir>AVG2</cassini:background_sampling_mode_id_ir>
+                    <cassini:background_sampling_mode_id_vis>NORMAL</cassini:background_sampling_mode_id_vis>
+                    <cassini:bias_state_id>LOW</cassini:bias_state_id>
+                    <cassini:command_file_name>IO_VIMS_C11_5_fab.ioi</cassini:command_file_name>
+                    <cassini:command_sequence_number>5</cassini:command_sequence_number>
+                    <cassini:compressor_id>-1</cassini:compressor_id>  <!-- Information not provided -->
+                    <cassini:data_buffer_state_flag>ENABLED</cassini:data_buffer_state_flag>
+                    <cassini:detector_temperature_IR_high_res unit="K">-999.</cassini:detector_temperature_IR_high_res>  <!-- Unknown -->
+                    <cassini:detector_temperature_IR_low_res unit="K">-999.</cassini:detector_temperature_IR_low_res>  <!-- Unknown -->
+                    <cassini:detector_temperature_visible unit="K">-999.</cassini:detector_temperature_visible>  <!-- Unknown -->
+                    <cassini:earth_received_start_time>1999-010T06:22:39.798</cassini:earth_received_start_time>
+                    <cassini:earth_received_stop_time>1999-010T06:24:14.759</cassini:earth_received_stop_time>
+                    <cassini:exposure_duration_ir unit="ms">80.</cassini:exposure_duration_ir>
+                    <cassini:exposure_duration_vis unit="ms">160.</cassini:exposure_duration_vis>
+                    <cassini:fast_hk_item_name_1>Information not provided</cassini:fast_hk_item_name_1>
+                    <cassini:fast_hk_item_name_2>Information not provided</cassini:fast_hk_item_name_2>
+                    <cassini:fast_hk_item_name_3>Information not provided</cassini:fast_hk_item_name_3>
+                    <cassini:fast_hk_item_name_4>Information not provided</cassini:fast_hk_item_name_4>
+                    <cassini:fast_hk_pickup_rate>-1</cassini:fast_hk_pickup_rate>  <!-- Not applicable -->
+                    <cassini:flight_software_version_id>1.0</cassini:flight_software_version_id>
+                    <cassini:gain_mode_id_ir>LOW</cassini:gain_mode_id_ir>
+                    <cassini:gain_mode_id_vis>HIGH</cassini:gain_mode_id_vis>
+                    <cassini:ground_software_version_id>VIMS 8.0 05-07-2003</cassini:ground_software_version_id>
+                    <cassini:housekeeping_clock_count>Information not provided</cassini:housekeeping_clock_count>
+                    <cassini:image_observation_type>['CALIBRATION']</cassini:image_observation_type>
+                    <cassini:inst_cmprs_name>NOTCOMP</cassini:inst_cmprs_name>
+                    <cassini:inst_cmprs_ratio>-999.</cassini:inst_cmprs_ratio>  <!-- Not compressed -->
+                    <cassini:instrument_data_rate>-999.</cassini:instrument_data_rate>
+                    <cassini:instrument_mode_id>POINT</cassini:instrument_mode_id>
+                    <cassini:instrument_temperature_spectrometer unit="K">-999.</cassini:instrument_temperature_spectrometer>  <!-- Unknown -->
+                    <cassini:instrument_temperature_grating unit="K">-999.</cassini:instrument_temperature_grating>  <!-- Unknown -->
+                    <cassini:integration_delay_flag>DISABLED</cassini:integration_delay_flag>
+                    <cassini:interframe_delay_duration unit="ms">20.</cassini:interframe_delay_duration>
+                    <cassini:interline_delay_duration unit="ms">290.</cassini:interline_delay_duration>
+                    <cassini:missing_packet_flag>NO</cassini:missing_packet_flag>
+                    <cassini:missing_pixels>0</cassini:missing_pixels>
+                    <cassini:native_start_time>1294638924.13632</cassini:native_start_time>
+                    <cassini:native_stop_time>1294638951.3095</cassini:native_stop_time>
+                    <cassini:observation_id>Information not provided</cassini:observation_id>
+                    <cassini:offset_flag>OFF</cassini:offset_flag>
+                    <cassini:optics_temperature_ir_1 unit="K">-999.</cassini:optics_temperature_ir_1>  <!-- Unknown -->
+                    <cassini:optics_temperature_ir_2 unit="K">-999.</cassini:optics_temperature_ir_2>  <!-- Unknown -->
+                    <cassini:optics_temperature_vis unit="K">-999.</cassini:optics_temperature_vis>  <!-- Unknown -->
+                    <cassini:overwritten_channel_flag>OFF</cassini:overwritten_channel_flag>
+                    <cassini:packing_flag>ON</cassini:packing_flag>
+                    <cassini:parameter_set_id>C11_5_1</cassini:parameter_set_id>
+                    <cassini:pds3_product_creation_time>2005-083T10:32:57.000</cassini:pds3_product_creation_time>
+                    <cassini:pds3_product_version_type>FINAL</cassini:pds3_product_version_type>
+                    <cassini:pds3_target_desc>Information not provided</cassini:pds3_target_desc>
+                    <cassini:pds3_target_name>SKY</cassini:pds3_target_name>
+                    <cassini:pre-pds_version_number>1</cassini:pre-pds_version_number>
+                    <cassini:power_state_flag_ir>ON</cassini:power_state_flag_ir>
+                    <cassini:power_state_flag_vis>ON</cassini:power_state_flag_vis>
+                    <cassini:sampling_mode_id_ir>NORMAL</cassini:sampling_mode_id_ir>
+                    <cassini:sampling_mode_id_vis>NORMAL</cassini:sampling_mode_id_vis>
+                    <cassini:scan_mode_id>BOTH</cassini:scan_mode_id>
+                    <cassini:sequence_id>C11</cassini:sequence_id>
+                    <cassini:sequence_title>Information not provided</cassini:sequence_title>
+                    <cassini:shutter_state_flag>ENABLED</cassini:shutter_state_flag>
+                    <cassini:snapshot_mode_flag>OFF</cassini:snapshot_mode_flag>
+                    <cassini:spectral_editing_flag>OFF</cassini:spectral_editing_flag>
+                    <cassini:spectral_summing_flag>OFF</cassini:spectral_summing_flag>
+                    <cassini:start_time_doy>1999-010T05:50:42.330</cassini:start_time_doy>
+                    <cassini:stop_time_doy>1999-010T05:51:08.669</cassini:stop_time_doy>
+                    <cassini:swath_length unit="pixel">1</cassini:swath_length>
+                    <cassini:swath_width unit="pixel">1</cassini:swath_width>
+                    <cassini:telemetry_format_id>SAF_142200</cassini:telemetry_format_id>
+                    <cassini:x_offset unit="pixel">1</cassini:x_offset>
+                    <cassini:z_offset unit="pixel">1</cassini:z_offset>
+                </cassini:VIMS_Specific_Attributes>
+            </cassini:Cassini>
+        </Mission_Area>
+        <Discipline_Area>
+            <disp:Display_Settings>
+                <Local_Internal_Reference>
+                    <local_identifier_reference>array-3d-spectrum</local_identifier_reference>
+                    <local_reference_type>display_settings_to_array</local_reference_type>
+                </Local_Internal_Reference>
+                <disp:Display_Direction>
+                    <disp:comment>
+                        This class specifies how two of the dimensions of the Array_3D_Spectrum object
+                        should be displayed in the vertical (line) and horizontal (sample) dimensions
+                        of a display device.
+                    </disp:comment>
+                    <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
+                    <disp:horizontal_display_direction>Left to Right</disp:horizontal_display_direction>
+                    <disp:vertical_display_axis>Line</disp:vertical_display_axis>
+                    <disp:vertical_display_direction>Top to Bottom</disp:vertical_display_direction>
+                </disp:Display_Direction>
+            </disp:Display_Settings>
+            <sp:Spectral_Characteristics>
+                <Local_Internal_Reference>
+                    <local_identifier_reference>array-3d-spectrum</local_identifier_reference>
+                    <local_reference_type>spectral_characteristics_to_array_object</local_reference_type>
+                </Local_Internal_Reference>
+                <sp:spectrum_format>3D</sp:spectrum_format>
+                <sp:spectral_bin_type>wavelength</sp:spectral_bin_type>
+                <sp:Field_of_View>
+                    <sp:description>
+                        As described in detail by Brown et al. (2004), the size and shape of the VIMS instrument's
+                        field of view in any given product depends on a variety of parameters, including the
+                        swath_width, swath_length, instrument_mode_id, sampling_mode_id_ir, and sampling_mode_id_vis.
+                        Note that the fields of view are different for the visual and IR channels. Users of this
+                        product must consult the VIMS documentation in order to interpret the field of view of this
+                        product.
+                    </sp:description>
+                    <sp:Complex_FOV></sp:Complex_FOV>  <!-- Consult the documentation -->
+                    <Internal_Reference>
+                        <lid_reference>urn:nasa:pds:cassini_vims_saturn:document:vims_instrument_description</lid_reference>
+                        <reference_type>spectral_characteristics_to_document</reference_type>
+                    </Internal_Reference>
+                </sp:Field_of_View>
+                <sp:Bin_Description>
+                    <sp:bin_profile_description>
+                        The binary portion of a VIMS file consists of two spatial and one
+                        spectral dimension (Sample, Line and Band in ISIS terminology).
+                        While the spatial dimensions of the cube core vary, nearly all cubes
+                        consist of 352 spectral bands (planes). A very small number of cubes
+                        contain only 256 bands, corresponding to the IR wavelengths only.
+
+                        If the value of the attribute cassini:spectral_summing_flag is ON,
+                        this cube was obtained using spectral summing in steps of eight spectral
+                        bins. The values you will find within each set of eight adjacent bins
+                        should be identical in this file, although in rare cases isolated NULLs
+                        and/or erroneous values may be found.
+                    </sp:bin_profile_description>
+                    <sp:Spectral_Lookup>
+                        <sp:Bin_Center_Lookup>
+                            <Internal_Reference>
+                                <lid_reference>urn:nasa:pds:cassini_vims_cruise:calibration:wavelength-bins-1999.6000</lid_reference>
+                                <reference_type>spectral_characteristics_to_bin_center_values</reference_type>
+                                <comment>
+                                    This mapping from bin number (1-352) to wavelength is based on the RC19 pipeline. Note
+                                    that it accounts for observed time variations in the mapping. This table updates the
+                                    corresponding information contained in the original PDS3 labels. Those original values,
+                                    based on ground-based calibration, are retained in the ISIS2 header of this data file.
+                                    For those few files with 256 bands instead of 352, skip over the first 96 rows of this
+                                    table.
+                                </comment>
+                            </Internal_Reference>
+                        </sp:Bin_Center_Lookup>
+                        <sp:Bin_Width_Lookup>
+                            <Internal_Reference>
+                                <lid_reference>urn:nasa:pds:cassini_vims_cruise:calibration:wavelength-bins-1999.6000</lid_reference>
+                                <reference_type>spectral_characteristics_to_bin_width_values</reference_type>
+                                <comment>
+                                    This mapping from bin number (1-352) to wavelength bin width is approximate, based on
+                                    the assumption that each wavelength bin extends half-way to its neighboring bins.
+                                </comment>
+                            </Internal_Reference>
+                        </sp:Bin_Width_Lookup>
+                  </sp:Spectral_Lookup>
+                </sp:Bin_Description>
+            </sp:Spectral_Characteristics>
+        </Discipline_Area>
+    </Observation_Area>
+
+    <Reference_List>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_vims_cruise:data_raw:index</lid_reference>
+            <reference_type>data_to_resource</reference_type>
+            <comment>The cumulative index table of basic parameters associated with each observation.</comment>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_vims_saturn:document:vims-wavelength-and-radiometric-calibration-report</lid_reference>
+            <reference_type>data_to_document</reference_type>
+            <comment>
+                Nominally, this refers to the VIMS Wavelength and Radiometric Calibration 19, Final Report, Clark et. al.,
+                January 25, 2018. In the event that the 2018 report is not the final Final Calibration Report, this LID will
+                refer to the lastest version of the report. The report provides details for wavelength and radiometric calibration
+                of Cassini VIMS data. It Includes adjustments for shifts in the wavelength calibration of the spectrometer which
+                occurred during various post-launch mission phases.
+            </comment>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_vims_saturn:document:vims-ir-pixel-timing</lid_reference>
+            <reference_type>data_to_document</reference_type>
+            <comment>
+                The VIMS IR Pixel Timing document, Brown and Soderblom (2018), which
+                provides details for calculating the time offset for each VIMS IR pixel.
+            </comment>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_vims_saturn:document:vims_instrument_description</lid_reference>
+            <reference_type>data_to_document</reference_type>
+            <comment>
+                An overview of the instrument and its components. This information
+                was extracted from the PDS3 instrument catalog file.
+            </comment>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:cassini_vims_cruise:browse_raw:1294640556-full</lid_reference>
+            <reference_type>data_to_browse</reference_type>
+            <comment>
+                The browse image in PNG format that illustrates the scientific content
+                of this product.
+            </comment>
+        </Internal_Reference>
+        <External_Reference>
+            <doi>10.1007/s11214-004-1453-x</doi>
+            <reference_text>
+                Brown, R. H. et al., The Cassini Visual And Infrared Mapping
+                Spectrometer (VIMS) Investigation, Space Science Reviews, Volume 115,
+                Issue 1-4, pp. 111-168, 2004.
+            </reference_text>
+        </External_Reference>
+        <Source_Product_External>
+            <external_source_product_identifier>
+                CO-E/V/J/S-VIMS-2-QUBE-V1.0:COVIMS_0001:data/1999010T054026_1999010T060958:v1294640556_1.qub
+            </external_source_product_identifier>
+            <reference_type>data_to_raw_source_product</reference_type>
+            <curating_facility>PDS RMS Node</curating_facility>
+            <description>
+                The original PDS3 version of this product. The form of the reference is
+                dataset_id:volume_id:directory_path:file_name.
+            </description>
+        </Source_Product_External>
+    </Reference_List>
+
+    <File_Area_Observational>
+        <File>
+            <file_name>1294640556.qub</file_name>
+            <creation_date_time>2020-01-11T07:33:56Z</creation_date_time>
+            <md5_checksum>1c8feb2498244f4de34c8946b1f4b617</md5_checksum>
+        </File>
+        <Composite_Structure>
+            <type_description>3D Spectral Array with suffix planes</type_description>
+            <description>
+                This file contains multiple objects. The Composite_Structure class provides associations
+                between the primary data object and the supplementary objects.
+            </description>
+            <Local_ID_Reference>
+                <comment>
+                    This refers to the primary data array. The axes are (Line, Band, Sample).
+                </comment>
+                <id_reference_to>array-3d-spectrum</id_reference_to>
+                <id_reference_type>has_primary_component</id_reference_type>
+            </Local_ID_Reference>
+
+<!-- Identifying the supplemental objects: the PDS3 side- and backplanes -->
+
+            <Local_ID_Reference>
+                <comment>
+                    This refers to a sideplane visualized as an extension of the sample axis.
+                    The axes are (Line,Band). The values are background data.
+                </comment>
+                <id_reference_to>sideplane</id_reference_to>
+                <id_reference_type>has_component</id_reference_type>
+            </Local_ID_Reference>
+            <Local_ID_Reference>    <!-- band suffix plane SLICE_TIME_SECONDS -->
+                <comment>
+                    This refers to the SLICE_TIME_SECONDS backplane, which can be visualized as an
+                    extension of the Band (wavelength) axis. The axes are (Line,Sample).
+                    Values are four-byte integers.
+                </comment>
+                <id_reference_to>backplane-SLICE_TIME_SECONDS</id_reference_to>
+                <id_reference_type>has_component</id_reference_type>
+            </Local_ID_Reference>
+            <Local_ID_Reference>    <!-- band suffix plane SLICE_TIME_TICKS -->
+                <comment>
+                    This refers to the SLICE_TIME_TICKS backplane, which can be visualized as an
+                    extension of the Band (wavelength) axis. The axes are (Line,Sample).
+                    Values are four-byte integers.
+                </comment>
+                <id_reference_to>backplane-SLICE_TIME_TICKS</id_reference_to>
+                <id_reference_type>has_component</id_reference_type>
+            </Local_ID_Reference>
+
+<!-- Associations between the spectral data cube and the supplemental objects -->
+
+            <Local_ID_Relation>
+                <id_reference_from>array-3d-spectrum</id_reference_from>
+                <id_reference_to>sideplane</id_reference_to>
+                <id_reference_type>has_backplane</id_reference_type>
+            </Local_ID_Relation>
+            <Local_ID_Relation>    <!-- band suffix plane SLICE_TIME_SECONDS -->
+                <id_reference_from>array-3d-spectrum</id_reference_from>
+                <id_reference_to>backplane-SLICE_TIME_SECONDS</id_reference_to>
+                <id_reference_type>has_backplane</id_reference_type>
+            </Local_ID_Relation>
+            <Local_ID_Relation>    <!-- band suffix plane SLICE_TIME_TICKS -->
+                <id_reference_from>array-3d-spectrum</id_reference_from>
+                <id_reference_to>backplane-SLICE_TIME_TICKS</id_reference_to>
+                <id_reference_type>has_backplane</id_reference_type>
+            </Local_ID_Relation>
+        </Composite_Structure>
+
+<!-- Descriptions of the individual objects in the file -->
+
+<!-- The internal ISIS2 Header -->
+
+        <Header>
+            <name>ISIS2 Header</name>
+            <local_identifier>isis-header</local_identifier>
+            <offset unit="byte">0</offset>
+            <object_length unit="byte">14336</object_length>
+            <parsing_standard_id>ISIS2</parsing_standard_id>
+        </Header>
+
+<!-- ISIS2 History -->
+
+        <Header>
+            <name>Processing History</name>
+            <local_identifier>isis-history</local_identifier>
+            <offset unit="byte">14336</offset>
+            <object_length unit="byte">13824</object_length>
+            <parsing_standard_id>ISIS2 History Label</parsing_standard_id>
+        </Header>
+
+<!-- The Data 3D Array -->
+
+        <Array_3D_Spectrum>
+            <name>Raw Data Number</name>
+            <local_identifier>array-3d-spectrum</local_identifier>
+            <offset unit="byte">28160</offset>
+            <axes>3</axes>
+            <axis_index_order>Last Index Fastest</axis_index_order>
+            <Element_Array>
+                <data_type>SignedMSB2</data_type>
+            </Element_Array>
+            <Axis_Array>
+                <axis_name>Line</axis_name>
+                <elements>64</elements>
+                <sequence_number>1</sequence_number>
+            </Axis_Array>
+            <Axis_Array>
+                <axis_name>Band</axis_name>
+                <local_identifier>wavelength-axis</local_identifier>
+                <elements>352</elements>
+                <sequence_number>2</sequence_number>
+            </Axis_Array>
+            <Axis_Array>
+                <axis_name>Sample</axis_name>
+                <elements>1</elements>
+                <sequence_number>3</sequence_number>
+            </Axis_Array>
+            <Special_Constants>
+                <missing_constant>-8192</missing_constant>
+                <high_instrument_saturation>-32765</high_instrument_saturation>
+                <high_representation_saturation>-32764</high_representation_saturation>
+                <valid_minimum>-4095</valid_minimum>
+                <low_instrument_saturation>-32766</low_instrument_saturation>
+                <low_representation_saturation>-32767</low_representation_saturation>
+            </Special_Constants>
+        </Array_3D_Spectrum>
+
+<!-- Side Plane 2D Array -->
+
+        <Array_2D>
+            <name>Sample Suffix Backgrounds</name>
+            <local_identifier>sideplane</local_identifier>
+            <offset unit="byte">73216</offset>
+            <axes>2</axes>
+            <axis_index_order>Last Index Fastest</axis_index_order>
+            <description>
+                This sideplane is visualized as an extension of the sample axis. The axes are (Line,Band).
+                The values are background data; however the visual and IR channels populate this array
+                differently; See the documentation referenced in the Reference_Area above.
+            </description>
+            <Element_Array>
+                <data_type>SignedMSB4</data_type>
+            </Element_Array>
+            <Axis_Array>
+                <axis_name>Line</axis_name>
+                <elements>64</elements>
+                <sequence_number>1</sequence_number>
+            </Axis_Array>
+            <Axis_Array>
+                <axis_name>Band</axis_name>
+                <elements>352</elements>
+                <sequence_number>2</sequence_number>
+            </Axis_Array>
+            <Special_Constants>
+                <missing_constant>-8192</missing_constant>
+                <high_instrument_saturation>-32765</high_instrument_saturation>
+                <high_representation_saturation>-32764</high_representation_saturation>
+                <valid_minimum>-4095</valid_minimum>
+                <low_instrument_saturation>-32766</low_instrument_saturation>
+                <low_representation_saturation>-32767</low_representation_saturation>
+            </Special_Constants>
+        </Array_2D>
+
+<!-- Backplane arrays, described as individual 2D Arrays -->
+
+        <Array_2D>
+            <name>Backplane SLICE_TIME_SECONDS</name>
+            <local_identifier>backplane-SLICE_TIME_SECONDS</local_identifier>
+            <offset unit="byte">163328</offset>
+            <axes>2</axes>
+            <axis_index_order>Last Index Fastest</axis_index_order>
+            <description>
+                This is the SLICE_TIME_SECONDS backplane, which can be visualized as an
+                extension of the Band (wavelength) axis. The axes are (Line,Sample).
+                Values are four-byte integers.
+            </description>
+            <Element_Array>
+                <data_type>SignedMSB4</data_type>
+                <unit>sec</unit>
+            </Element_Array>
+            <Axis_Array>
+                <axis_name>Line</axis_name>
+                <elements>64</elements>
+                <sequence_number>1</sequence_number>
+            </Axis_Array>
+            <Axis_Array>
+                <axis_name>Sample</axis_name>
+                <elements>1</elements>
+                <sequence_number>2</sequence_number>
+            </Axis_Array>
+            <Special_Constants>
+                <missing_constant>-8192</missing_constant>
+            </Special_Constants>
+        </Array_2D>
+
+        <Array_2D>
+            <name>Backplane SLICE_TIME_TICKS</name>
+            <local_identifier>backplane-SLICE_TIME_TICKS</local_identifier>
+            <offset unit="byte">163584</offset>
+            <axes>2</axes>
+            <axis_index_order>Last Index Fastest</axis_index_order>
+            <description>
+                This is the SLICE_TIME_TICKS backplane, which can be visualized as an
+                extension of the Band (wavelength) axis. The axes are (Line,Sample).
+                Values are four-byte integers.
+            </description>
+            <Element_Array>
+                <data_type>SignedMSB4</data_type>
+                <unit>sec</unit>
+            </Element_Array>
+            <Axis_Array>
+                <axis_name>Line</axis_name>
+                <elements>64</elements>
+                <sequence_number>1</sequence_number>
+            </Axis_Array>
+            <Axis_Array>
+                <axis_name>Sample</axis_name>
+                <elements>1</elements>
+                <sequence_number>2</sequence_number>
+            </Axis_Array>
+            <Special_Constants>
+                <missing_constant>-8192</missing_constant>
+            </Special_Constants>
+        </Array_2D>
+
+<!-- Corner 2D Array -->
+
+        <Array_2D>
+            <name>Corner Array</name>
+            <local_identifier>corner</local_identifier>
+            <offset unit="byte">163840</offset>
+            <axes>2</axes>
+            <axis_index_order>Last Index Fastest</axis_index_order>
+            <Element_Array>
+                <data_type>SignedMSB4</data_type>
+            </Element_Array>
+            <Axis_Array>
+                <axis_name>Backplane</axis_name>
+                <elements>2</elements>
+                <sequence_number>1</sequence_number>
+            </Axis_Array>
+            <Axis_Array>
+                <axis_name>Line</axis_name>
+                <elements>64</elements>
+                <sequence_number>2</sequence_number>
+            </Axis_Array>
+        </Array_2D>
+    </File_Area_Observational>
+</Product_Observational>
