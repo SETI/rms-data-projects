@@ -150,9 +150,11 @@ def write_jnojir_status_index(filepath):
         # Convert FILE_NAME to FILE_SPECIFICATION_NAME
         values[FILE_SPECIFICATION_NAME] = 'DATA/' + values[FILE_SPECIFICATION_NAME]
 
-        # These errors appear in JNOJIR_1047
-        if values[M_DIFFUSER_CAL_TEMP_K] == 9999:
-            values[M_DIFFUSER_CAL_TEMP_K] = -1.
+        # These errors appear starting in JNOJIR_1047
+        for icol in (M_DIFFUSER_CAL_TEMP_K, S_SLIT_TEMP_K, S_SC_IF_TEMP_K,
+                     S_COLD_RADIATOR_TEMP_K, M_CAL_SOURCE_TEMP_K):
+            if values[icol] == 9999:
+                values[icol] = -1.
 
         if values[FILE_SPECIFICATION_NAME].endswith('.IMG'):
             prev_time_sci_hk = values[TIME_SCI_HK]
