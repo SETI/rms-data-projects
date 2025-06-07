@@ -83,7 +83,7 @@ def write_rec(f, label_filename, volume_id):
     f.write('"%-27s",' % label['PRODUCT_ID'])
     f.write('"%-3s",'  % label['PRODUCT_TYPE'])
     f.write('"%-48s",' % sequence_id)
-    f.write('"%-28s",' % fix_target(label['TARGET_NAME']))
+    f.write('"%-35s",' % fix_target(label['TARGET_NAME']))
     f.write('"%-29s",' % label['MISSION_PHASE_NAME'])
     f.write('"%-19s",' % label['PRODUCT_CREATION_TIME_fmt'])
     f.write('"%-23s",' % label['START_TIME_fmt'])

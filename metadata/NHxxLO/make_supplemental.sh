@@ -1,7 +1,14 @@
-tablelabel --save -t NHxxLO_supplemental_index_template.txt \
+DIR=/Users/Shared/GitHub/rms-data-projects/metadata/NHxxLO
+
+cd /Volumes/pdsdata-admin/holdings/metadata/NHxxLO_xxxx
+
+python $DIR/NHxxLO_supplemental_index.py NH??LO_1001
+python $DIR/NHxxLO_supplemental_index.py NH??LO_2001
+
+tablelabel --save -t $DIR/NHxxLO_supplemental_index_template.txt \
 NH??LO_1001/NH??LO_1001_supplemental_index.tab
 
-tablelabel --save -t NHxxLO_supplemental_index_template.txt \
+tablelabel --save -t $DIR/NHxxLO_supplemental_index_template.txt \
 NH??LO_2001/NH??LO_2001_supplemental_index.tab
 
 cat NHLALO_1001/NH??LO_1001_supplemental_index.tab \
@@ -22,8 +29,8 @@ cat NHLALO_2001/NH??LO_2001_supplemental_index.tab \
     NHK2LO_2001/NH??LO_2001_supplemental_index.tab \
   > NHxxLO_2999/NHxxLO_2999_supplemental_index.tab
 
-tablelabel --save -t NHxxLO_supplemental_index_template.txt \
+tablelabel --save -t $DIR/NHxxLO_supplemental_index_template.txt \
 NHxxLO_1999/NHxxLO_1999_supplemental_index.tab
 
-tablelabel --save -t NHxxLO_supplemental_index_template.txt \
+tablelabel --save -t $DIR/NHxxLO_supplemental_index_template.txt \
 NHxxLO_2999/NHxxLO_2999_supplemental_index.tab
