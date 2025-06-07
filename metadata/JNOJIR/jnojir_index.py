@@ -152,7 +152,7 @@ def write_jnojir_index(filepath):
         new_rec = ','.join(values) + '\r\n'
 
         # Write the new record
-        f.write(new_rec.encode('latin8'))
+        f.write(new_rec.encode('latin-1'))
 
     # Close and label the output file
     f.close()

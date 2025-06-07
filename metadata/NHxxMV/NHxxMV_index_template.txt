@@ -1,0 +1,235 @@
+$ONCE(volume_id = '_'.join(BASENAME(LABEL_PATH()).split('_')[:2]))
+$ONCE(index_path = LABEL_PATH()[:-4] + '.tab')
+$ONCE(records = FILE_RECORDS(index_path))
+$ONCE(record_bytes = RECORD_BYTES(index_path))
+$ONCE(index_type = 'CUMULATIVE' if volume_id.endswith('999') else 'SINGLE')
+$ONCE(skip = 1 if merge_filespec else 0)
+PDS_VERSION_ID        = PDS3
+
+RECORD_TYPE           = FIXED_LENGTH
+RECORD_BYTES          = $record_bytes$
+FILE_RECORDS          = $records$
+
+^INDEX_TABLE          = "$BASENAME(index_path)$"
+
+$IF(index_type == 'SINGLE')
+DATA_SET_ID           = "$data_set_id.rstrip()$"
+VOLUME_ID             = $volume_id$
+$END_IF
+INSTRUMENT_HOST_NAME  = "NEW HORIZONS"
+INSTRUMENT_ID         = "MVIC"
+TARGET_NAME           = "N/A"
+PRODUCT_CREATION_TIME = $FILE_TIME(index_path)$
+$IF(index_type == 'SINGLE')
+START_TIME            = $start_time$
+STOP_TIME             = $stop_time$
+$END_IF
+
+OBJECT     = INDEX_TABLE
+  INTERCHANGE_FORMAT = ASCII
+  INDEX_TYPE         = "$index_type$"
+  ROWS               = $records$
+  ROW_BYTES          = $record_bytes$
+  COLUMNS            = $16 - skip$
+  DESCRIPTION        = "This index table provides an entry for each
+    data product on this volume."
+
+  OBJECT     = COLUMN
+    COLUMN_NUMBER = 1
+    NAME = VOLUME_ID
+    START_BYTE = 2
+    BYTES = 11
+    DATA_TYPE = CHARACTER
+    FORMAT = "A11"
+    DESCRIPTION = "This parameter identifies the archive volume."
+  END_OBJECT = COLUMN
+
+$IF(merge_filespec)
+  $ONCE(columns = 15)
+  OBJECT     = COLUMN
+    COLUMN_NUMBER = 2
+    NAME = FILE_SPECIFICATION_NAME
+    START_BYTE = 16
+    BYTES = 52
+    DATA_TYPE = CHARACTER
+    FORMAT = A52
+    DESCRIPTION = "This parameter provides the full path to the data file."
+  END_OBJECT = COLUMN
+
+$ELSE
+  OBJECT     = COLUMN
+    COLUMN_NUMBER = 2
+    NAME = PATH_NAME
+    START_BYTE = 16
+    BYTES = 21
+    DATA_TYPE = CHARACTER
+    FORMAT = "A21"
+    DESCRIPTION = "This parameter provides the directory path to the data
+product."
+  END_OBJECT = COLUMN
+
+  OBJECT     = COLUMN
+    COLUMN_NUMBER = 3
+    NAME = FILE_NAME
+    START_BYTE = 40
+    BYTES = 31
+    DATA_TYPE = CHARACTER
+    FORMAT = "A31"
+    DESCRIPTION = "This parameter provides the name of the label file for this
+data product."
+  END_OBJECT = COLUMN
+
+$END_IF
+  OBJECT     = COLUMN
+    COLUMN_NUMBER = $4 - skip$
+    NAME = DATA_SET_ID
+    START_BYTE = $74 - 3*skip$
+    BYTES = 43
+    DATA_TYPE = CHARACTER
+    FORMAT = "A43"
+    DESCRIPTION = "This parameter provides the PDS data set id."
+  END_OBJECT = COLUMN
+
+  OBJECT     = COLUMN
+    COLUMN_NUMBER = $5 - skip$
+    NAME = PRODUCT_ID
+    START_BYTE = $120 - 3*skip$
+    BYTES = 27
+    DATA_TYPE = CHARACTER
+    FORMAT = "A27"
+    DESCRIPTION = "This parameter provides the PDS unique identifier assigned
+to the data product."
+  END_OBJECT = COLUMN
+
+  OBJECT     = COLUMN
+    COLUMN_NUMBER = $6 - skip$
+    NAME = PRODUCT_CREATION_TIME
+    START_BYTE = $150 - 3*skip$
+    BYTES = 19
+    DATA_TYPE = DATE
+    FORMAT = "A19"
+    DESCRIPTION = "This parameter provides the date the data label was
+created."
+  END_OBJECT = COLUMN
+
+  OBJECT     = COLUMN
+    COLUMN_NUMBER = $7 - skip$
+    NAME = REDUCTION_LEVEL
+    START_BYTE = $172 - 3*skip$
+    BYTES = 10
+    DATA_TYPE = CHARACTER
+    FORMAT = "A10"
+    DESCRIPTION = "This parameter provides the level of data
+      reduction:
+
+        LEVEL1  = Raw data
+
+        LEVEL2  = Calibrated/Reduced data in engineering units
+                  appropriate for the instrument.
+      "
+  END_OBJECT = COLUMN
+
+  OBJECT     = COLUMN
+    COLUMN_NUMBER = $8 - skip$
+    NAME = SPACECRAFT_CLOCK_START_COUNT
+    START_BYTE = $185 - 3*skip$
+    BYTES = 18
+    DATA_TYPE = CHARACTER
+    FORMAT = "A18"
+    DESCRIPTION = "This parameter provides the spacecraft clock value at the
+start of the observation, at the spacecraft for spacecraft data, or it is set
+to N/A for Deep Space Network Tracking and Navigation Files (DSN TNFs)."
+  END_OBJECT = COLUMN
+
+  OBJECT     = COLUMN
+    COLUMN_NUMBER = $9 - skip$
+    NAME = SPACECRAFT_CLOCK_STOP_COUNT
+    START_BYTE = $206 - 3*skip$
+    BYTES = 18
+    DATA_TYPE = CHARACTER
+    FORMAT = "A18"
+    DESCRIPTION = "This parameter provides the spacecraft clock value at the
+end of the observation, at the spacecraft for spacecraft data, or it is set to
+N/A for Deep Space Network Tracking and Navigation Files (DSN TNFs)."
+  END_OBJECT = COLUMN
+
+  OBJECT     = COLUMN
+    COLUMN_NUMBER = $10 - skip$
+    NAME = START_TIME
+    START_BYTE = $227 - 3*skip$
+    BYTES = 23
+    DATA_TYPE = TIME
+    FORMAT = "A23"
+    DESCRIPTION = "This parameter provides the UTC value at the start of the
+observation at the spacecraft for spacecraft data, or on the earth for Deep
+Space Network Tracking and Navigation Files (DSN TNFs)."
+  END_OBJECT = COLUMN
+
+  OBJECT     = COLUMN
+    COLUMN_NUMBER = $11 - skip$
+    NAME = STOP_TIME
+    START_BYTE = $253 - 3*skip$
+    BYTES = 23
+    DATA_TYPE = TIME
+    FORMAT = "A23"
+    DESCRIPTION = "This parameter provides the UTC value at the end of the
+observation at the spacecraft for spacecraft data, or on the earth for Deep
+Space Network Tracking and Navigation Files (DSN TNFs)."
+  END_OBJECT = COLUMN
+
+  OBJECT     = COLUMN
+    COLUMN_NUMBER = $12 - skip$
+    NAME = TARGET_NAME
+    START_BYTE = $279 - 3*skip$
+    BYTES = 28
+    DATA_TYPE = CHARACTER
+    FORMAT = "A28"
+    DESCRIPTION = "This parameter identifies the target, defined as the
+active central body in the Guidance and Control System at the time of the
+observation."
+  END_OBJECT = COLUMN
+
+  OBJECT     = COLUMN
+    COLUMN_NUMBER = $13 - skip$
+    NAME = INSTRUMENT_HOST
+    START_BYTE = $310 - 3*skip$
+    BYTES = 12
+    DATA_TYPE = CHARACTER
+    FORMAT = "A12"
+    DESCRIPTION = "This parameter identifies the spacecraft."
+  END_OBJECT = COLUMN
+
+  OBJECT     = COLUMN
+    COLUMN_NUMBER = $14 - skip$
+    NAME = INSTRUMENT_ID
+    START_BYTE = $325 - 3*skip$
+    BYTES = 6
+    DATA_TYPE = CHARACTER
+    FORMAT = "A6"
+    DESCRIPTION = "This parameter identifies the instrument."
+  END_OBJECT = COLUMN
+
+  OBJECT     = COLUMN
+    COLUMN_NUMBER = $15 - skip$
+    NAME = INSTRUMENT_NAME
+    START_BYTE = $334 - 3*skip$
+    BYTES = 61
+    DATA_TYPE = CHARACTER
+    FORMAT = "A61"
+    DESCRIPTION = "This parameter identifies the instrument."
+  END_OBJECT = COLUMN
+
+  OBJECT     = COLUMN
+    COLUMN_NUMBER = $16 - skip$
+    NAME = TELEMETRY_APPLICATION_ID
+    START_BYTE = $398 - 3*skip$
+    BYTES = 7
+    DATA_TYPE = CHARACTER
+    FORMAT = "A7"
+    DESCRIPTION = "This parameter identifies the application identifier (ApID)
+in the telemetry packets used to create the data product.  The ApID format
+uses here is 0xXXX, where XXX are hexadecimal digits"
+  END_OBJECT = COLUMN
+
+END_OBJECT = INDEX_TABLE
+END

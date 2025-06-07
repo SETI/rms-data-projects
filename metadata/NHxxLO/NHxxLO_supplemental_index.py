@@ -7,8 +7,31 @@
 #  python NHxxLO_supplemental_index.py path/to/volumes/NHxxLO_xxxx/NHccLO_n00n
 ################################################################################
 
-import os, sys
+import os
 import pdsparser
+import re
+import sys
+
+# Matches the mis-valued TARGET_NAME fields
+JUPITER_MOON_TARGET = re.compile(r'J\d+ (.*)')
+
+def fix_target(target):
+
+    # Fix Jupiter moon targets
+    match = JUPITER_MOON_TARGET.fullmatch(target)
+    if match:
+        return match.group(1)
+
+    # "M 7" -> "M7"
+    if target == 'M 7':
+        return 'M7'
+
+    # Missing right paren
+    if '(' in target and ')' not in target:
+        return target.rstrip() + ')'
+
+    return target
+
 
 def write_rec(f, label_filename, volume_id):
 
@@ -33,7 +56,7 @@ def write_rec(f, label_filename, volume_id):
 
         return
 
-    label = pdsparser.PdsLabel.from_file(label_filename).as_dict()
+    label = pdsparser.Pds3Label(label_filename)
 
     cap_filename = label_filename.upper()
     idata = cap_filename.rindex('DATA')
@@ -54,26 +77,17 @@ def write_rec(f, label_filename, volume_id):
     else:
         binning_mode = '1x1'
 
-    target_name = label['TARGET_NAME']
-    if target_name[:3] == 'J17':
-        target_name = target_name[4:]
-    elif target_name[:2] in ('J1', 'J2', 'J6', 'J7'): # Fix Jupiter errors
-        target_name = target_name[3:]
-
-    # Strip parenthetical names
-    target_name = target_name.partition('(')[0].strip()
-
     f.write('"%-11s",' % volume_id)
     f.write('"%-52s",' % file_specification_name)
     f.write('"%-30s",' % label['DATA_SET_ID'])
     f.write('"%-27s",' % label['PRODUCT_ID'])
     f.write('"%-3s",'  % label['PRODUCT_TYPE'])
     f.write('"%-48s",' % sequence_id)
-    f.write('"%-22s",' % target_name)
-    f.write('"%-22s",' % label['MISSION_PHASE_NAME'])
-    f.write('"%-19s",' % label['PRODUCT_CREATION_TIME'])
-    f.write('"%-23s",' % label['START_TIME'])
-    f.write('"%-23s",' % label['STOP_TIME'])
+    f.write('"%-28s",' % fix_target(label['TARGET_NAME']))
+    f.write('"%-29s",' % label['MISSION_PHASE_NAME'])
+    f.write('"%-19s",' % label['PRODUCT_CREATION_TIME_fmt'])
+    f.write('"%-23s",' % label['START_TIME_fmt'])
+    f.write('"%-23s",' % label['STOP_TIME_fmt'])
     f.write('"%-16s",' % label['SPACECRAFT_CLOCK_START_COUNT'])
     f.write('"%-16s",' % label['SPACECRAFT_CLOCK_STOP_COUNT'])
     f.write('%1d,'     % label['SPACECRAFT_CLOCK_CNT_PARTITION'])
@@ -104,37 +118,37 @@ def write_rec(f, label_filename, volume_id):
     write_value_or_na(f, '%10.5f,', 'CELESTIAL_NORTH_CLOCK_ANGLE'     , -999.)
     write_value_or_na(f, '%10.5f,', 'BODY_POLE_CLOCK_ANGLE'           , -999.)
 
-    write_value_or_na(f, '%19.7f,', 'SC_TARGET_POSITION_VECTOR' , 0., 0)
-    write_value_or_na(f, '%19.7f,', 'SC_TARGET_POSITION_VECTOR' , 0., 1)
-    write_value_or_na(f, '%19.7f,', 'SC_TARGET_POSITION_VECTOR' , 0., 2)
-    write_value_or_na(f, '%10.6f,', 'SC_TARGET_VELOCITY_VECTOR' , 0., 0)
-    write_value_or_na(f, '%10.6f,', 'SC_TARGET_VELOCITY_VECTOR' , 0., 1)
-    write_value_or_na(f, '%10.6f,', 'SC_TARGET_VELOCITY_VECTOR' , 0., 2)
-    write_value_or_na(f, '%19.7f,', 'TARGET_CENTER_DISTANCE'    , 0.)
+    write_value_or_na(f, '%14.2f,', 'SC_TARGET_POSITION_VECTOR' , 0., 0)
+    write_value_or_na(f, '%14.2f,', 'SC_TARGET_POSITION_VECTOR' , 0., 1)
+    write_value_or_na(f, '%14.2f,', 'SC_TARGET_POSITION_VECTOR' , 0., 2)
+    write_value_or_na(f, '%8.4f,' , 'SC_TARGET_VELOCITY_VECTOR' , 0., 0)
+    write_value_or_na(f, '%8.4f,' , 'SC_TARGET_VELOCITY_VECTOR' , 0., 1)
+    write_value_or_na(f, '%8.4f,' , 'SC_TARGET_VELOCITY_VECTOR' , 0., 2)
+    write_value_or_na(f, '%14.2f,', 'TARGET_CENTER_DISTANCE'    , 0.)
 
-    write_value_or_na(f, '%19.7f,', 'TARGET_SUN_POSITION_VECTOR', 0., 0)
-    write_value_or_na(f, '%19.7f,', 'TARGET_SUN_POSITION_VECTOR', 0., 1)
-    write_value_or_na(f, '%19.7f,', 'TARGET_SUN_POSITION_VECTOR', 0., 2)
-    write_value_or_na(f, '%10.6f,', 'TARGET_SUN_VELOCITY_VECTOR', 0., 0)
-    write_value_or_na(f, '%10.6f,', 'TARGET_SUN_VELOCITY_VECTOR', 0., 1)
-    write_value_or_na(f, '%10.6f,', 'TARGET_SUN_VELOCITY_VECTOR', 0., 2)
-    write_value_or_na(f, '%19.7f,', 'SOLAR_DISTANCE'            , 0.)
+    write_value_or_na(f, '%14.2f,', 'TARGET_SUN_POSITION_VECTOR', 0., 0)
+    write_value_or_na(f, '%14.2f,', 'TARGET_SUN_POSITION_VECTOR', 0., 1)
+    write_value_or_na(f, '%14.2f,', 'TARGET_SUN_POSITION_VECTOR', 0., 2)
+    write_value_or_na(f, '%8.4f,' , 'TARGET_SUN_VELOCITY_VECTOR', 0., 0)
+    write_value_or_na(f, '%8.4f,' , 'TARGET_SUN_VELOCITY_VECTOR', 0., 1)
+    write_value_or_na(f, '%8.4f,' , 'TARGET_SUN_VELOCITY_VECTOR', 0., 2)
+    write_value_or_na(f, '%14.2f,', 'SOLAR_DISTANCE'            , 0.)
 
-    write_value_or_na(f, '%19.7f,', 'SC_SUN_POSITION_VECTOR'    , 0., 0)
-    write_value_or_na(f, '%19.7f,', 'SC_SUN_POSITION_VECTOR'    , 0., 1)
-    write_value_or_na(f, '%19.7f,', 'SC_SUN_POSITION_VECTOR'    , 0., 2)
-    write_value_or_na(f, '%10.6f,', 'SC_SUN_VELOCITY_VECTOR'    , 0., 0)
-    write_value_or_na(f, '%10.6f,', 'SC_SUN_VELOCITY_VECTOR'    , 0., 1)
-    write_value_or_na(f, '%10.6f,', 'SC_SUN_VELOCITY_VECTOR'    , 0., 2)
-    write_value_or_na(f, '%19.7f,', 'SPACECRAFT_SOLAR_DISTANCE' , 0.)
+    write_value_or_na(f, '%14.2f,', 'SC_SUN_POSITION_VECTOR'    , 0., 0)
+    write_value_or_na(f, '%14.2f,', 'SC_SUN_POSITION_VECTOR'    , 0., 1)
+    write_value_or_na(f, '%14.2f,', 'SC_SUN_POSITION_VECTOR'    , 0., 2)
+    write_value_or_na(f, '%8.4f,' , 'SC_SUN_VELOCITY_VECTOR'    , 0., 0)
+    write_value_or_na(f, '%8.4f,' , 'SC_SUN_VELOCITY_VECTOR'    , 0., 1)
+    write_value_or_na(f, '%8.4f,' , 'SC_SUN_VELOCITY_VECTOR'    , 0., 2)
+    write_value_or_na(f, '%14.2f,', 'SPACECRAFT_SOLAR_DISTANCE' , 0.)
 
-    write_value_or_na(f, '%19.7f,', 'SC_EARTH_POSITION_VECTOR'  , 0., 0)
-    write_value_or_na(f, '%19.7f,', 'SC_EARTH_POSITION_VECTOR'  , 0., 1)
-    write_value_or_na(f, '%19.7f,', 'SC_EARTH_POSITION_VECTOR'  , 0., 2)
-    write_value_or_na(f, '%10.6f,', 'SC_EARTH_VELOCITY_VECTOR'  , 0., 0)
-    write_value_or_na(f, '%10.6f,', 'SC_EARTH_VELOCITY_VECTOR'  , 0., 1)
-    write_value_or_na(f, '%10.6f,', 'SC_EARTH_VELOCITY_VECTOR'  , 0., 2)
-    write_value_or_na(f, '%19.7f,', 'SC_GEOCENTRIC_DISTANCE'    , 0.)
+    write_value_or_na(f, '%14.2f,', 'SC_EARTH_POSITION_VECTOR'  , 0., 0)
+    write_value_or_na(f, '%14.2f,', 'SC_EARTH_POSITION_VECTOR'  , 0., 1)
+    write_value_or_na(f, '%14.2f,', 'SC_EARTH_POSITION_VECTOR'  , 0., 2)
+    write_value_or_na(f, '%8.4f,' , 'SC_EARTH_VELOCITY_VECTOR'  , 0., 0)
+    write_value_or_na(f, '%8.4f,' , 'SC_EARTH_VELOCITY_VECTOR'  , 0., 1)
+    write_value_or_na(f, '%8.4f,' , 'SC_EARTH_VELOCITY_VECTOR'  , 0., 2)
+    write_value_or_na(f, '%14.2f,', 'SC_GEOCENTRIC_DISTANCE'    , 0.)
 
     write_value_or_na(f, '%13.10f,', 'QUATERNION', 0., 0)
     write_value_or_na(f, '%13.10f,', 'QUATERNION', 0., 1)
@@ -157,12 +171,13 @@ for arg in sys.argv[1:]:
         os.makedirs(outdir)
 
     outpath = outdir.rstrip('/') + '/' + volume_id + '_supplemental_index.tab'
-    f = open(outpath, 'w', encoding='latin8')
+    f = open(outpath, 'w', encoding='latin-1')
 
     prev_root = ''
     for (root, dirs, files) in os.walk(os.path.join(arg, 'data')):
         for name in files:
-            if not name.upper().endswith('.LBL'): continue
+            if not name.upper().endswith('.LBL'):
+                continue
 
             if prev_root != root:
                 print(root)
