@@ -50,75 +50,91 @@ def extract_xml_headers(file_path):
     xml_header_content = "".join(headers)  # Convert list to string while preserving format
     return xml_header_content  # Return as a variable instead of writing to a file
 
+
 def add_modification_detail(file_path):
     """
-    Opens the XML file as text, injects a new Modification_Detail entry in the correct place,
-    and saves the file without affecting the rest of the formatting.
+    Removes the old v1.1 Modification_Detail entry if it exists and replaces it
+    with the new one, preserving formatting.
     """
-
-    # Read the original XML file as raw text
     with open(file_path, "r", encoding="UTF-8") as f:
         lines = f.readlines()
 
-    # Count occurrences of <Modification_Detail>
-    mod_detail_count = sum(1 for line in lines if "<Modification_Detail>" in line)
+    # Break if Modification_Detail already found.
+    start, end = None, None
+    for i in range(len(lines)):
+        if "<Modification_Detail>" in lines[i]:
+            if (
+                "<modification_date>2025-06-11</modification_date>" in lines[i + 1]
+                and "<version_id>1.1</version_id>" in lines[i + 2]
+                and "Values have been corrected for start_date_time" in lines[i + 3]
+            ):
+                print("Corrected Modification_Detail entry already exists. Skipping.")
+                return
 
-    # If there are already two or more instances, exit the function
-    if mod_detail_count >= 2:
-        print("Two or more Modification_Detail entries exist. No changes made.")
-        return
-
-    # Locate the <Modification_History> section and capture indentation of existing <Modification_Detail>
-    mod_history_start = None
-    mod_detail_indent = None
+    # Remove outdated Modification_Detail if found
+    start, end = None, None
     for i, line in enumerate(lines):
-        if "<Modification_History>" in line:
-            mod_history_start = i
-        elif "<Modification_Detail>" in line and mod_history_start is not None:
-            # Capture the indentation of the first existing <Modification_Detail> entry
-            mod_detail_indent = line[:len(line) - len(line.lstrip())]
-            break
+        if "<Modification_Detail>" in line:
+            candidate_start = i
+        if "<modification_date>2021-02-24</modification_date>" in line:
+            if (i + 2 < len(lines)
+                and "<version_id>1.1</version_id>" in lines[i + 1]
+                and "<description>Minor errors were repaired in the XML label.</description>" in lines[i + 2]):
+                start = candidate_start
+                # Now find the closing tag line
+                for j in range(i + 3, len(lines)):
+                    if "</Modification_Detail>" in lines[j]:
+                        end = j + 1  # include closing tag
+                        break
+                break
 
+    if start is not None and end is not None:
+        print("Removing outdated Modification_Detail entry.")
+        del lines[start:end]
+
+    # Find where to insert the new entry
+    mod_history_start = next((i for i, line in enumerate(lines) if "<Modification_History>" in line), None)
     if mod_history_start is None:
         print("Modification_History section not found. No changes made.")
         return
 
-    # If no existing <Modification_Detail> was found, default to 8 spaces (based on your structure)
-    if mod_detail_indent is None:
-        mod_detail_indent = " " * 8
+    def get_indent(index):
+        return lines[index][:len(lines[index]) - len(lines[index].lstrip())]
 
-    # Ensure the first line of <Modification_Detail> is aligned correctly with <Modification_History>
-    mod_history_indent = lines[mod_history_start][:len(lines[mod_history_start]) - len(lines[mod_history_start].lstrip())]
+    mod_detail_indent = next((get_indent(i) for i in range(mod_history_start + 1, len(lines))
+                              if "<Modification_Detail>" in lines[i]), " " * 8)
+    mod_history_indent = get_indent(mod_history_start)
 
-    # Define the new Modification_Detail entry with aligned indentation
-    new_mod_detail = f"""\
-{mod_history_indent}    <Modification_Detail>
-{mod_detail_indent}    <modification_date>2025-06-05</modification_date>
-{mod_detail_indent}    <version_id>1.1</version_id>
-{mod_detail_indent}    <description>
-{mod_detail_indent}        Values have been corrected for start_date_time, stop_date_time,
-{mod_detail_indent}            cassini:start_time_doy, and cassini:stop_time_doy.
-{mod_detail_indent}        Updated cassini:mission_phase_name (for which multiple values are possible)
-{mod_detail_indent}            in order to provide consistency across multiple instrument data sets.
-{mod_detail_indent}        Inserted new Legacy_Metadata class to contain original values replaced
-{mod_detail_indent}            by the above corrections.
-{mod_detail_indent}        Updated values of fast_hk_item_name_1, fast_hk_item_name_2, fast_hk_item_name_3,
-{mod_detail_indent}            and fast_hk_item_name_4 for consistency with attribute definitions.
-{mod_detail_indent}        See urn:nasa:pds:cassini_vims_cruise:document:v2.0_modifications for details.
-{mod_detail_indent}    </description>
-{mod_detail_indent}</Modification_Detail>
-"""
+    new_mod_detail = [
+        f"{mod_history_indent}    <Modification_Detail>\n",
+        f"{mod_detail_indent}    <modification_date>2025-06-11</modification_date>\n",
+        f"{mod_detail_indent}    <version_id>1.1</version_id>\n",
+        f"{mod_detail_indent}    <description>\n",
+        f"{mod_detail_indent}        Values have been corrected for start_date_time, stop_date_time,\n",
+        f"{mod_detail_indent}            cassini:start_time_doy, and cassini:stop_time_doy.\n",
+        f"{mod_detail_indent}        Updated cassini:mission_phase_name (for which multiple values are possible)\n",
+        f"{mod_detail_indent}            in order to provide consistency across multiple instrument data sets.\n",
+        f"{mod_detail_indent}        Inserted new Legacy_Metadata class to contain original values replaced\n",
+        f"{mod_detail_indent}            by the above corrections.\n",
+        f"{mod_detail_indent}        Updated values of fast_hk_item_name_1, fast_hk_item_name_2, fast_hk_item_name_3,\n",
+        f"{mod_detail_indent}            and fast_hk_item_name_4 for consistency with attribute definitions.\n",
+        f"{mod_detail_indent}        See urn:nasa:pds:cassini_vims_cruise:document:v2.0_modifications for details.\n",
+        f"{mod_detail_indent}    </description>\n",
+        f"{mod_detail_indent}</Modification_Detail>\n"
+    ]
 
-    # Insert after <Modification_History> but before existing <Modification_Detail>
+    # Insert after <Modification_History> but before any existing <Modification_Detail>
     insert_position = mod_history_start + 1
     while insert_position < len(lines) and lines[insert_position].strip() == "":
-        insert_position += 1  # Skip blank lines
+        insert_position += 1
 
-    lines.insert(insert_position, new_mod_detail)  # Add with newline
+    lines.insert(insert_position, "".join(new_mod_detail))
 
-    # Write back the modified content
     with open(file_path, "w", encoding="UTF-8") as f:
         f.writelines(lines)
+
+    print("Updated Modification_Detail entry injected successfully.")
+
 
 
 def add_internal_reference_text(file_path):
@@ -403,6 +419,8 @@ def start_time_replace(directory_path, pattern, kernel_dir, mission_data):
         # Get the namespaces
         namespaces = root.nsmap
 
+        vid = root.find(".//Identification_Area/version_id", namespaces=namespaces)
+        vid.text = "1.1"
         # Replace "Spacecraft" with "Host"
         # XPath to find all Observing_System_Component/type elements
         components = root.findall(".//Observing_System_Component/type",
