@@ -1,0 +1,4 @@
+pds:Product_Observational/pds:Observation_Area<1>/pds:Observing_System<1>/pds:Observing_System_Component<1>/pds:Internal_Reference<1>/pds:lid_reference<1>,instrument_facility_lid
+pds:Product_Observational/pds:Observation_Area<1>/pds:Observing_System<1>/pds:Observing_System_Component<2>/pds:Internal_Reference<1>/pds:lid_reference<1>,instrument_host_lid
+pds:Product_Observational/pds:Observation_Area<1>/pds:Observing_System<1>/pds:Observing_System_Component<3>/pds:Internal_Reference<1>/pds:lid_reference<1>,instrument_lid
+pds:Product_Observational/pds:Observation_Area<1>/pds:Target_Identification<1>/pds:Internal_Reference<1>/pds:lid_reference<1>,primary_target_lid
