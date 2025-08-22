@@ -29,7 +29,7 @@ ring_names = {
     'five': 'Ring 5',
     'six': 'Ring 6',
     'atm': 'Atmos',
-    'equator': 'Ring-plane'}
+    'equator': 'ring plane'}
 
 observatory_names = {
     'kao': 'Kuiper Airborne Observatory',
@@ -75,6 +75,10 @@ def plot_preview_full(path, file, save_path, atm_flag):
     filepath = os.path.join(path, file)
     data = np.loadtxt(filepath, dtype = str, delimiter=',')
     
+    # Once file is loaded, strip the extra '_1000m'
+    if not atm_flag:
+        file = file[:-10] + file[-4:]
+    
     # Extract info from filename
     filename_info = file.split('_')
     star_id = filename_info[0]
@@ -91,10 +95,7 @@ def plot_preview_full(path, file, save_path, atm_flag):
     else:
         ring = filename_info[5]
     ring_name = ring_names[ring]
-    if atm_flag:
-        direction = filename_info[6][:-4].capitalize()
-    else:
-        direction = filename_info[6].capitalize()
+    direction = filename_info[6][:-4].capitalize()
     
     # Extract the relevant columns from the file
     x_axis = data[1:, 0].astype(float)
@@ -175,6 +176,10 @@ def plot_preview_medium(path, file, save_path, atm_flag):
     filepath = os.path.join(path, file)
     data = np.loadtxt(filepath, dtype = str, delimiter=',')
     
+    # Once file is loaded, strip the extra '_1000m'
+    if not atm_flag:
+        file = file[:-10] + file[-4:]
+    
     # Extract info from filename
     filename_info = file.split('_')
     star_id = filename_info[0]
@@ -191,10 +196,7 @@ def plot_preview_medium(path, file, save_path, atm_flag):
     else:
         ring = filename_info[5]
     ring_name = ring_names[ring]
-    if atm_flag:
-        direction = filename_info[6][:-4].capitalize()
-    else:
-        direction = filename_info[6].capitalize()
+    direction = filename_info[6][:-4].capitalize()
     
     # Extract the relevant columns from the file
     x_axis = data[1:, 0].astype(float)
@@ -262,7 +264,7 @@ def plot_preview_medium(path, file, save_path, atm_flag):
     
     # Save file
     medium_px = 500 
-    file_out = file[:-4] + '_preview_medium.png'   
+    file_out = file[:-4] + '_preview_med.png'   
     filepath_out = os.path.join(save_path, file_out)
     plt.savefig(filepath_out, dpi = medium_px / figure_side)
     plt.close()
@@ -274,6 +276,10 @@ def plot_preview_small(path, file, save_path, atm_flag):
     # Load the file
     filepath = os.path.join(path, file)
     data = np.loadtxt(filepath, dtype = str, delimiter=',')
+    
+    # Once file is loaded, strip the extra '_1000m'
+    if not atm_flag:
+        file = file[:-10] + file[-4:]
     
     # Extract info from filename
     filename_info = file.split('_')
@@ -291,10 +297,7 @@ def plot_preview_small(path, file, save_path, atm_flag):
     else:
         ring = filename_info[5]
     ring_name = ring_names[ring]
-    if atm_flag:
-        direction = filename_info[6][:-4].capitalize()
-    else:
-        direction = filename_info[6].capitalize()
+    direction = filename_info[6][:-4].capitalize()
     
     # Extract the relevant columns from the file
     x_axis = data[1:, 0].astype(float)
@@ -372,8 +375,8 @@ def plot_preview_small(path, file, save_path, atm_flag):
     # Add annotation with title information
     annotation_text = star_id + ' ' + \
                       observatory_abbrev + ' ' + \
-                      aperture_m + ' ' + \
-                      wavelength + '\n' + \
+                      aperture_m + '\n' + \
+                      wavelength + ' ' + \
                       ring_name + ' ' + \
                       direction
     panel.text(0.5, 0.975, annotation_text,
@@ -399,6 +402,10 @@ def plot_preview_thumb(path, file, save_path, atm_flag):
     filepath = os.path.join(path, file)
     data = np.loadtxt(filepath, dtype = str, delimiter=',')
     
+    # Once file is loaded, strip the extra '_1000m'
+    if not atm_flag:
+        file = file[:-10] + file[-4:]
+    
     # Extract info from filename
     filename_info = file.split('_')
     star_id = filename_info[0]
@@ -415,10 +422,7 @@ def plot_preview_thumb(path, file, save_path, atm_flag):
     else:
         ring = filename_info[5]
     ring_name = ring_names[ring]
-    if atm_flag:
-        direction = filename_info[6][:-4].capitalize()
-    else:
-        direction = filename_info[6].capitalize()
+    direction = filename_info[6][:-4].capitalize()
     
     # Extract the relevant columns from the file
     x_axis = data[1:, 0].astype(float)
@@ -476,8 +480,8 @@ def plot_preview_thumb(path, file, save_path, atm_flag):
     # Add annotation with title information
     annotation_text = star_id + ' ' + \
                       observatory_abbrev + ' ' + \
-                      aperture_m + ' ' + \
-                      wavelength + '\n' + \
+                      aperture_m + '\n' + \
+                      wavelength + ' ' + \
                       ring_name + ' ' + \
                       direction
     panel.text(0.5, 0.95, annotation_text,
