@@ -1,0 +1,3 @@
+nillable:
+  rings:lowest_detectable_normal_optical_depth:
+    missing: -999
