@@ -18,7 +18,7 @@ def generate_previews(data_directory):
             atm_flag = False
             for file in files:
                 if file.endswith('_1000m.tab'):
-                    mirror_path = path.replace('holdings', 'previews')
+                    mirror_path = path.replace('bundles', 'previews')
                     os.makedirs(mirror_path, exist_ok = True)
                     plot_preview_full(path, file, mirror_path, atm_flag)
                     plot_preview_medium(path, file, mirror_path, atm_flag)
@@ -29,7 +29,7 @@ def generate_previews(data_directory):
             atm_flag = True
             for file in files:
                 if file.endswith('.tab'):
-                    mirror_path = path.replace('holdings', 'previews')
+                    mirror_path = path.replace('bundles', 'previews')
                     os.makedirs(mirror_path, exist_ok = True)
                     plot_preview_full(path, file, mirror_path, atm_flag)
                     plot_preview_medium(path, file, mirror_path, atm_flag)
@@ -37,5 +37,5 @@ def generate_previews(data_directory):
                     plot_preview_thumb(path, file, mirror_path, atm_flag)
 
 if __name__ == "__main__":
-    data_directory = '/Users/mseritan/holdings/uranus_occs_earthbased'
+    data_directory = '/Users/mseritan/holdings_LOCAL/pds4-holdings/bundles/uranus_occs_earthbased'
     generate_previews(data_directory)
