@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1L00.sch"
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+
+<Product_Ancillary xmlns="http://pds.nasa.gov/pds4/pds/v1"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://pds.nasa.gov/pds4/pds/v1 https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1L00.xsd">
+    <Identification_Area>
+        <logical_identifier>urn:nasa:pds:rms_metadata:document_opus:cassini_uvis_solarocc_beckerjarmak2023_index</logical_identifier>
+        <version_id>1.0</version_id>
+        <title>Index File</title>
+        <information_model_version>1.21.0.0</information_model_version>
+        <product_class>Product_Ancillary</product_class>
+        <License_Information>
+            <name>Creative Common Public License CC0 1.0 (2024)</name>
+            <description>Creative Commons Zero (CC0) license information.</description>
+            <Internal_Reference>
+                <lid_reference>urn:nasa:pds:system_bundle:document_pds4_standards:creative_commons_1.0.0::1.0</lid_reference>
+                <reference_type>product_to_license</reference_type>
+            </Internal_Reference>
+        </License_Information>
+    </Identification_Area>
+    <File_Area_Ancillary>
+        <File>
+            <file_name>cassini_uvis_solarocc_beckerjarmak2023_index.csv</file_name>
+            <local_identifier>index-table</local_identifier>
+            <creation_date_time>2025-11-04T11:09:01.780320Z</creation_date_time>
+            <md5_checksum>9da368abdaea9a88f567749ca9d8e3bc</md5_checksum>
+            <comment></comment>
+        </File>
+        <Header>
+            <offset unit="byte">0</offset>
+            <object_length unit="byte">885</object_length>
+            <parsing_standard_id>UTF-8 Text</parsing_standard_id>
+            <description>Provides the column headers, separated by commas, for the data table.</description>
+        </Header>
+        <Table_Character>
+            <offset unit="byte"></offset>
+            <object_length unit="byte">27959</object_length>
+            <records>41</records>
+            <record_delimiter>Line-Feed</record_delimiter>
+            <description></description>
+            <Record_Character>
+                <fields>35</fields>
+                <groups>0</groups>
+                <record_length unit="byte">682</record_length>
+                    <Field_Character>
+                        <name>lid</name>
+                        <field_number>1</field_number>
+                        <field_location unit="byte">1</field_location>
+                        <data_type>ASCII_LID</data_type>
+                        <field_length unit="byte">110</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>bundle</name>
+                        <field_number>2</field_number>
+                        <field_location unit="byte">102</field_location>
+                        <data_type>ASCII_Text_Collapsed</data_type>
+                        <field_length unit="byte">38</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>bundle_lid</name>
+                        <field_number>3</field_number>
+                        <field_location unit="byte">141</field_location>
+                        <data_type>ASCII_LID</data_type>
+                        <field_length unit="byte">51</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>filepath</name>
+                        <field_number>4</field_number>
+                        <field_location unit="byte">193</field_location>
+                        <data_type>ASCII_File_Specification_Name</data_type>
+                        <field_length unit="byte">75</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>pds:start_date_time</name>
+                        <field_number>5</field_number>
+                        <field_location unit="byte">269</field_location>
+                        <data_type>ASCII_Date_Time_YMD_UTC</data_type>
+                        <field_length unit="byte">24</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>pds:stop_date_time</name>
+                        <field_number>6</field_number>
+                        <field_location unit="byte">294</field_location>
+                        <data_type>ASCII_Date_Time_YMD_UTC</data_type>
+                        <field_length unit="byte">24</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>pds:wavelength_range</name>
+                        <field_number>7</field_number>
+                        <field_location unit="byte">319</field_location>
+                        <data_type>ASCII_Short_String_Collapsed</data_type>
+                        <field_length unit="byte">11</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>instrument_host_lid</name>
+                        <field_number>8</field_number>
+                        <field_location unit="byte">331</field_location>
+                        <data_type>ASCII_LID</data_type>
+                        <field_length unit="byte">50</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>instrument_lid</name>
+                        <field_number>9</field_number>
+                        <field_location unit="byte">382</field_location>
+                        <data_type>ASCII_LID</data_type>
+                        <field_length unit="byte">39</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>primary_target_lid</name>
+                        <field_number>10</field_number>
+                        <field_location unit="byte">422</field_location>
+                        <data_type>ASCII_LID</data_type>
+                        <field_length unit="byte">45</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:occultation_type</name>
+                        <field_number>11</field_number>
+                        <field_location unit="byte">468</field_location>
+                        <data_type>ASCII_Short_String_Collapsed</data_type>
+                        <field_length unit="byte">5</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:occultation_direction</name>
+                        <field_number>12</field_number>
+                        <field_location unit="byte">474</field_location>
+                        <data_type>ASCII_Short_String_Collapsed</data_type>
+                        <field_length unit="byte">7</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:time_series_direction</name>
+                        <field_number>13</field_number>
+                        <field_location unit="byte">482</field_location>
+                        <data_type>ASCII_Short_String_Collapsed</data_type>
+                        <field_length unit="byte">7</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:planetary_occultation_flag</name>
+                        <field_number>14</field_number>
+                        <field_location unit="byte">490</field_location>
+                        <data_type>ASCII_Short_String_Collapsed</data_type>
+                        <field_length unit="byte">1</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:data_quality_score</name>
+                        <field_number>15</field_number>
+                        <field_location unit="byte">492</field_location>
+                        <data_type>ASCII_Short_String_Collapsed</data_type>
+                        <field_length unit="byte">4</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:ring_plane</name>
+                        <field_number>16</field_number>
+                        <field_location unit="byte">497</field_location>
+                        <data_type>ASCII_Short_String_Collapsed</data_type>
+                        <field_length unit="byte">7</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:minimum_projected_sun_diameter</name>
+                        <field_number>17</field_number>
+                        <field_location unit="byte">505</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">8</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:maximum_projected_sun_diameter</name>
+                        <field_number>18</field_number>
+                        <field_location unit="byte">514</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">8</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:sigma_projected_sun_diameter</name>
+                        <field_number>19</field_number>
+                        <field_location unit="byte">523</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">4</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:minimum_wavelength</name>
+                        <field_number>20</field_number>
+                        <field_location unit="byte">528</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">4</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:maximum_wavelength</name>
+                        <field_number>21</field_number>
+                        <field_location unit="byte">533</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">5</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:reference_time_utc</name>
+                        <field_number>22</field_number>
+                        <field_location unit="byte">539</field_location>
+                        <data_type>ASCII_Date_Time_YMD_UTC</data_type>
+                        <field_length unit="byte">20</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:observed_event_start_tdb</name>
+                        <field_number>23</field_number>
+                        <field_location unit="byte">560</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">13</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:observed_event_stop_tdb</name>
+                        <field_number>24</field_number>
+                        <field_location unit="byte">574</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">13</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:ring_event_start_tdb</name>
+                        <field_number>25</field_number>
+                        <field_location unit="byte">588</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">13</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:ring_event_stop_tdb</name>
+                        <field_number>26</field_number>
+                        <field_location unit="byte">602</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">13</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:minimum_ring_radius</name>
+                        <field_number>27</field_number>
+                        <field_location unit="byte">616</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">8</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:maximum_ring_radius</name>
+                        <field_number>28</field_number>
+                        <field_location unit="byte">625</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">8</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:observed_ring_elevation</name>
+                        <field_number>29</field_number>
+                        <field_location unit="byte">634</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">5</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:light_source_incidence_angle</name>
+                        <field_number>30</field_number>
+                        <field_location unit="byte">640</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">5</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:data_quality_index</name>
+                        <field_number>31</field_number>
+                        <field_location unit="byte">646</field_location>
+                        <data_type>ASCII_Short_String_Collapsed</data_type>
+                        <field_length unit="byte">3</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:lowest_detectable_normal_optical_depth</name>
+                        <field_number>33</field_number>
+                        <field_location unit="byte">650</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">8</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:highest_detectable_normal_optical_depth</name>
+                        <field_number>34</field_number>
+                        <field_location unit="byte">659</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">8</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:background_signal</name>
+                        <field_number>35</field_number>
+                        <field_location unit="byte">668</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">6</field_length>
+                    </Field_Character>
+                    <Field_Character>
+                        <name>rings:average_unocculted_signal</name>
+                        <field_number>36</field_number>
+                        <field_location unit="byte">675</field_location>
+                        <data_type>ASCII_Real</data_type>
+                        <field_length unit="byte">7</field_length>
+                    </Field_Character>
+            </Record_Character>
+        </Table_Character>
+    </File_Area_Ancillary>
+</Product_Ancillary>

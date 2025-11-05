@@ -1,4 +1,3 @@
-pds:Product_Observational/pds:Identification_Area<1>/pds:version_id<1>
 pds:Product_Observational/pds:Observation_Area<1>/pds:Time_Coordinates<1>/pds:start_date_time<1>
 pds:Product_Observational/pds:Observation_Area<1>/pds:Time_Coordinates<1>/pds:stop_date_time<1>
 pds:Product_Observational/pds:Observation_Area<1>/pds:Primary_Result_Summary<1>/pds:Science_Facets<1>/pds:wavelength_range<1>
