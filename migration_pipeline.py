@@ -7,7 +7,37 @@ import re
 import hashlib
 
 
-def migrate_iss(pds4_dir, pds3_dir, pattern, json_path, destination_path):
+def infer_dataset_id_from_path(pds4_dir, pds3_dir):
+    """Infer dataset_id from PDS4 or PDS3 directory path (e.g. cassini_iss_cruise)."""
+    for path_str in (pds4_dir, pds3_dir):
+        if not path_str:
+            continue
+        path = Path(path_str)
+        for part in path.parts:
+            if re.match(r'cassini_iss_[a-z]+', part):
+                return part
+    return 'cassini_iss_cruise'
+
+
+def extract_dataset_id_from_label(label_text):
+    """Extract dataset_id from logical_identifier in label (e.g. cassini_iss_saturn). Returns None if not found."""
+    match = re.search(r'<logical_identifier>\s*urn:nasa:pds:([^:]+):', label_text)
+    return match.group(1) if match else None
+
+
+def _normalize_multiline_xml_content(value):
+    """Escape for XML and normalize newlines so continuation lines use consistent indentation (24 spaces)."""
+    escaped = html.escape(value)
+    if '\n' not in escaped:
+        return escaped
+    lines = [line.strip() for line in escaped.splitlines() if line.strip()]
+    if not lines:
+        return ''
+    continuation_indent = ' ' * 24
+    return lines[0] + ''.join('\n' + continuation_indent + ln for ln in lines[1:])
+
+
+def migrate_iss(pds4_dir, pds3_dir, pattern, json_path, destination_path, dataset_id=None):
     # Define directories and patterns
     pds4_directory = Path(pds4_dir)
     pds3_directory = Path(pds3_dir)
@@ -76,6 +106,13 @@ def migrate_iss(pds4_dir, pds3_dir, pattern, json_path, destination_path):
             if calibration_info is None:
                 print(f"Skipping {name}: No calibration info found in JSON")
                 continue
+
+            # Resolve dataset_id for this file: CLI/passed value, or from source label LID, or from path, or default
+            if dataset_id is not None:
+                file_dataset_id = dataset_id
+            else:
+                source_text = file_path.read_text(encoding='utf-8')
+                file_dataset_id = extract_dataset_id_from_label(source_text) or infer_dataset_id_from_path(pds4_dir, pds3_dir)
             
             # Copy the file only if calibration info exists
             shutil.copyfile(file_path, dest_path)
@@ -96,9 +133,12 @@ def migrate_iss(pds4_dir, pds3_dir, pattern, json_path, destination_path):
                         continue
 
             # Build radiometric correction text separately to avoid nested f-string issues
+            # Escape XML special chars (e.g. &, <) before inserting into the element
             radiometric_text = ""
             if "RADIOMETRIC_CORRECTION_TEXT" in calibration_info:
-                lines = [f'                        {line.strip()};' for line in calibration_info["RADIOMETRIC_CORRECTION_TEXT"].split(";") if line.strip()]
+                raw = calibration_info["RADIOMETRIC_CORRECTION_TEXT"]
+                escaped = html.escape(raw)
+                lines = [f'                        {line.strip()};' for line in escaped.split(";") if line.strip()]
                 radiometric_text = f'''                    <cassini:radiometric_correction_text>
 {chr(10).join(lines)}
                     </cassini:radiometric_correction_text>'''
@@ -122,7 +162,7 @@ def migrate_iss(pds4_dir, pds3_dir, pattern, json_path, destination_path):
 {f'                    <cassini:ab_pixel_correction_flag>{html.escape(calibration_info["AB_PIXEL_CORRECTION_FLAG"])}</cassini:ab_pixel_correction_flag>' if "AB_PIXEL_CORRECTION_FLAG" in calibration_info else ""}
 {f'                    <cassini:bias_subtraction_text>{html.escape(calibration_info["BIAS_SUBTRACTION_TEXT"])}</cassini:bias_subtraction_text>' if "BIAS_SUBTRACTION_TEXT" in calibration_info else ""}
 {f'                    <cassini:data_conversion_text>{html.escape(calibration_info["DATA_CONVERSION_TEXT"])}</cassini:data_conversion_text>' if "DATA_CONVERSION_TEXT" in calibration_info else ""}
-{f'                    <cassini:flat_field_file_name>{html.escape(calibration_info["FLAT_FIELD_FILE_NAME"])}</cassini:flat_field_file_name>' if "FLAT_FIELD_FILE_NAME" in calibration_info else ""}
+{f'                    <cassini:flat_field_file_name>{_normalize_multiline_xml_content(calibration_info["FLAT_FIELD_FILE_NAME"])}\n                    </cassini:flat_field_file_name>' if "FLAT_FIELD_FILE_NAME" in calibration_info else ""}
 {f'                    <cassini:uneven_bit_weight_correction_flag>{html.escape(calibration_info["UNEVEN_BIT_WEIGHT_CORRECTION_FLAG"])}</cassini:uneven_bit_weight_correction_flag>' if "UNEVEN_BIT_WEIGHT_CORRECTION_FLAG" in calibration_info else ""}
                 </cassini:ISS_Calibrated_Attributes>
 '''
@@ -158,7 +198,7 @@ def migrate_iss(pds4_dir, pds3_dir, pattern, json_path, destination_path):
             # Update logical_identifier
             text = re.sub(
                 r"<logical_identifier>.*?</logical_identifier>",
-                f"<logical_identifier>urn:nasa:pds:cassini_iss_cruise:data_calibrated:{name}_calib</logical_identifier>",
+                f"<logical_identifier>urn:nasa:pds:{file_dataset_id}:data_calibrated:{name}_calib</logical_identifier>",
                 text,
                 flags=re.DOTALL,
             )
@@ -175,7 +215,7 @@ def migrate_iss(pds4_dir, pds3_dir, pattern, json_path, destination_path):
             name_prefix = name[:5] if len(name) >= 5 else name
             new_comment = f'''        <comment>
             This label was created from the original PDS4 label:
-            cassini_iss_cruise/data_raw/{name_prefix}xxxxx/{name}.lblx
+            {file_dataset_id}/data_raw/{name_prefix}xxxxx/{name}.lblx
             The contents of this label include metadata extracted from
             the calibrated PDS3 data product.
         </comment>'''
@@ -254,8 +294,6 @@ def migrate_iss(pds4_dir, pds3_dir, pattern, json_path, destination_path):
                 # Legacy_Metadata exists in the original file, inject calibrated attributes before it
                 # Find the start of the line containing Legacy_Metadata to preserve indentation
                 line_start = text.rfind('\n', 0, insertion_point) + 1
-                # Get the indentation of the Legacy_Metadata line (should be 20 spaces)
-                legacy_line_content = text[line_start:insertion_point]
                 
                 # Insert the block with proper newline before it
                 # Remove any trailing whitespace before insertion point, then add newline and block
@@ -349,7 +387,8 @@ def migrate_iss(pds4_dir, pds3_dir, pattern, json_path, destination_path):
             data_dir = data_directory if data_directory else None
             
             # Determine instrument type for external_source_product_identifier (ISSWA for wide, ISSNA for narrow)
-            instrument_type = 'ISSWA' if name.endswith('w') else 'ISSNA'
+            name_lower = name.lower()
+            instrument_type = 'ISSWA' if name_lower.endswith('w') else 'ISSNA'
             
             if existing_source_match:
                 volume_from_existing = existing_source_match.group(1)  # e.g., COISS_1001 (from existing Source_Product_External)
@@ -365,7 +404,7 @@ def migrate_iss(pds4_dir, pds3_dir, pattern, json_path, destination_path):
             else:
                 # Fallback if pattern doesn't match - use name to construct
                 # Detect camera type from name suffix (w = wide, n = narrow)
-                camera_prefix = 'N' if name.endswith('n') else 'W'  # Default to W if not n
+                camera_prefix = 'N' if name_lower.endswith('n') else 'W'  # Default to W if not n
                 
                 # Use volume from path or default
                 final_volume = coiss_volume if coiss_volume else 'COISS_1001'
@@ -387,15 +426,15 @@ def migrate_iss(pds4_dir, pds3_dir, pattern, json_path, destination_path):
                     external_source_id = f'CO-E/V/J-{instrument_type}-2-EDR-V1.0:calibrated:{volume_pattern}:{final_volume}:data/{final_data_dir}:{camera_prefix}{name_base}_CALIB.IMG'
             
             # Inject calibration document references after edrsis in Reference_List
-            calibration_docs = '''<Internal_Reference>
-            <lid_reference>urn:nasa:pds:cassini_iss_cruise:document:in_flight_cal</lid_reference>
+            calibration_docs = f'''<Internal_Reference>
+            <lid_reference>urn:nasa:pds:{file_dataset_id}:document:in_flight_cal</lid_reference>
             <reference_type>data_to_document</reference_type>
             <comment>
                 In-Flight Calibration of the Cassini ISS.
             </comment>
         </Internal_Reference>
         <Internal_Reference>
-            <lid_reference>urn:nasa:pds:cassini_iss_cruise:document:theoretical_basis</lid_reference>
+            <lid_reference>urn:nasa:pds:{file_dataset_id}:document:theoretical_basis</lid_reference>
             <reference_type>data_to_document</reference_type>
             <comment>
                 Theoretical Basis for the Cassini CISSCAL Program.
@@ -404,7 +443,7 @@ def migrate_iss(pds4_dir, pds3_dir, pattern, json_path, destination_path):
         '''
             # Insert calibration doc references after edrsis Internal_Reference
             updated_text = re.sub(
-                r'(        <Internal_Reference>\s*<lid_reference>urn:nasa:pds:cassini_iss_cruise:document:edrsis</lid_reference>.*?</Internal_Reference>\s*)',
+                rf'(        <Internal_Reference>\s*<lid_reference>urn:nasa:pds:{re.escape(file_dataset_id)}:document:edrsis</lid_reference>.*?</Internal_Reference>\s*)',
                 r'\1' + calibration_docs,
                 updated_text,
                 flags=re.DOTALL,
@@ -412,7 +451,7 @@ def migrate_iss(pds4_dir, pds3_dir, pattern, json_path, destination_path):
             
             # Inject new Internal_Reference and Source_Product_External entries before existing Source_Product_External
             new_references = f'''        <Internal_Reference>
-            <lid_reference>urn:nasa:pds:cassini_iss_cruise:data_raw:{name}</lid_reference>
+            <lid_reference>urn:nasa:pds:{file_dataset_id}:data_raw:{name}</lid_reference>
             <reference_type>data_to_raw_product</reference_type>
             <comment>
                 The raw product from which this calibrated product was produced.
@@ -428,7 +467,7 @@ def migrate_iss(pds4_dir, pds3_dir, pattern, json_path, destination_path):
                 Calibrated ISS images were produced in PDS3 style but not peer-reviewed.
                 They have been available since 2016 in the holdings of the PDS Ring-Moon
                 Systems node and are currently listed as part of the RMS Annex,
-                urn:nasa:rms-annex:cassini_iss_cruise
+                urn:nasa:rms-annex:{file_dataset_id}
             </description>
         </Source_Product_External>
 '''
@@ -578,9 +617,9 @@ def fix_proc_namespace(lblx_path):
         if 'proc:Processing_Information' not in text:
             return False  # proc namespace not used, no fix needed
         
-        # Pattern to insert xmlns:proc after xmlns:cassini and before xsi:schemaLocation
-        # Handle single-line format: xmlns:cassini="..." xsi:schemaLocation="
-        pattern = r'(xmlns:cassini="http://pds\.nasa\.gov/pds4/mission/cassini/v1")(\s*)(xsi:schemaLocation=)'
+        # Pattern to insert xmlns:proc after xmlns:cassini and before xsi:schemaLocation.
+        # Allow arbitrary whitespace/newlines (and other attributes) between them (multi-line root element).
+        pattern = r'(xmlns:cassini="http://pds\.nasa\.gov/pds4/mission/cassini/v1")([\s\S]*?)(xsi:schemaLocation=)'
         replacement = r'\1 xmlns:proc="http://pds.nasa.gov/pds4/proc/v1"\2\3'
         
         if re.search(pattern, text):
@@ -646,6 +685,8 @@ def main():
                              ' or saturn (required without --fix-mode)')
     parser.add_argument('destination_path', type=str, nargs='?', metavar='DEST_PATH',
                         help='The path to where you want the final labels to go (required without --fix-mode)')
+    parser.add_argument('--dataset-id', type=str, metavar='DATASET_ID',
+                        help='Dataset ID for LIDs/paths (e.g. cassini_iss_cruise). If omitted, inferred per file from each label\'s logical_identifier (preserves cruise vs saturn).')
 
     args = parser.parse_args()
 
@@ -657,7 +698,7 @@ def main():
         if not all([args.pds4_directory, args.pds3_directory, args.pattern, args.json_path, args.destination_path]):
             parser.error("All migration arguments are required when not using --fix-mode")
         migrate_iss(args.pds4_directory, args.pds3_directory, args.pattern, args.json_path,
-                    args.destination_path)
+                    args.destination_path, dataset_id=args.dataset_id)
 
 if __name__ == '__main__':
     main()
