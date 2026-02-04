@@ -291,9 +291,6 @@ def migrate_iss(pds4_dir, pds3_dir, pattern, json_path, destination_path, datase
                 # Insert the block after </ISS_Specific_Attributes> with proper newline
                 updated_text = text[:line_end] + "\n" + cleaned_block + text[line_end:]
             else:
-                # Legacy_Metadata exists in the original file, inject calibrated attributes before it
-                # Find the start of the line containing Legacy_Metadata to preserve indentation
-                line_start = text.rfind('\n', 0, insertion_point) + 1
                 
                 # Insert the block with proper newline before it
                 # Remove any trailing whitespace before insertion point, then add newline and block
@@ -471,7 +468,6 @@ def migrate_iss(pds4_dir, pds3_dir, pattern, json_path, destination_path, datase
             </description>
         </Source_Product_External>
 '''
-            #FIXIT: change to cassini_iss_saturn if and when it happens.
             # Insert before the existing Source_Product_External
             updated_text = re.sub(
                 r'(        </Internal_Reference>\s*)(        <Source_Product_External>)',
