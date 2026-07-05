@@ -1,0 +1,36 @@
+# HST PDS4 bundle FITS fallback map
+#
+# Used when a bundle deliverable has no browse_* collections. Each non-comment
+# line defines one fallback data collection for a bundle:
+#
+#   <bundle_id>  <data_collection>  <strip_suffix>  <policy>
+#
+# data_collection — subdirectory of the deliverable (e.g. data_stis_x2d)
+# strip_suffix    — passed to picmaker --strip (e.g. _x2d)
+# policy:
+#   include — generate previews from FITS in this collection
+#   skip    — do not process
+#
+# Picmaker options for FITS fallback are in hst_bundle_fits_previews.txt
+# (percentile stretch + four-size resize). No --hst flag; STIS x2d is
+# single-detector 2-D imaging.
+#
+# --- hst_14930 (STIS Europa imaging, no browse in deliverable) ---
+#
+# Decision: picmaker on data_stis_x2d FITS (not MAST browse download).
+#
+# MAST browse rejected because:
+#   - STIS MAST browse is browse_stis_x1d (1-D extracted-spectrum plots), not
+#     browse_stis_x2d. Other bundles (hst_13736, hst_10341) ship x1d browse;
+#     that product is unrelated to the x2d 2-D calibrated images here.
+#   - Adding browse_stis_x1d would show spectra, not the Europa imaging
+#     previews expected from x2d science products.
+#   - Would require an out-of-band MAST fetch and a browse collection not
+#     referenced in bundle.xml.
+#
+# x2d FITS chosen because:
+#   - data_stis_x2d is in the deliverable (2 visits, 1100x1100 SCI extensions).
+#   - Closest analog to legacy HSTO X2D_JPEG_DOCUMENT for STIS 2-D imaging.
+#   - Verified with picmaker --percentile 0.02 99.98 on odf701zqq_x2d.fits.
+
+hst_14930  data_stis_x2d  _x2d  include

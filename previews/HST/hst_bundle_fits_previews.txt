@@ -1,0 +1,4 @@
+--suffix _thumb --frame 100 100 --percentile 0.02 99.98 -x jpg
+--suffix _small --frame 256 256 --percentile 0.02 99.98 -x jpg
+--suffix _med   --frame 512 512 --percentile 0.02 99.98 -x jpg
+--suffix _full  --percentile 0.02 99.98 -x jpg
