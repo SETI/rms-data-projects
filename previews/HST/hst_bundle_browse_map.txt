@@ -1,0 +1,44 @@
+# HST PDS4 bundle browse collection map
+#
+# Each non-comment line defines one browse_<instrument>_<suffix> collection:
+#
+#   <collection_name>  <strip_suffix>  <policy>
+#
+# strip_suffix — passed to picmaker --strip (e.g. _drz strips "_drz" from filenames)
+# policy:
+#   include — generate previews from this collection
+#   skip    — do not process (lower-priority alternate)
+#
+# Collections not listed here default to include with strip suffix derived from
+# the collection name (text after the final underscore, prefixed with _).
+#
+# --- WFC3 browse collection policy ---
+#
+# Decision: process browse_wfc3_drz only (option A).
+#
+# Alternatives considered:
+#   B — browse_wfc3_drc only: drizzled + cosmic-ray cleaned; change drz→skip,
+#       drc→include below.
+#   C — all five browse_wfc3_* collections: set all WFC3 rows to include; yields
+#       separate preview trees per processing level (raw/flt/flc/drz/drc).
+#   D — one best per visit across collections: not supported by this static map.
+#
+# Rationale for drz (option A):
+#   - Drizzled, visit-combined 2-D imaging product; closest analog to legacy
+#     HSTO DRZ_JPEG_DOCUMENT preference for OPUS browse.
+#   - Avoids five duplicate preview sets per visit when collections share roots.
+#   - raw/flt/flc are lower calibration levels; drc is similar to drz but not
+#     the established legacy default for display previews.
+
+browse_wfc3_drz   _drz   include
+browse_wfc3_drc   _drc   skip
+browse_wfc3_raw   _raw   skip
+browse_wfc3_flt   _flt   skip
+browse_wfc3_flc   _flc   skip
+
+# --- STIS ---
+browse_stis_x1d   _x1d   include
+
+# --- GHRS / FOS ---
+browse_ghrs_c0f   _c0f   include
+browse_fos_c0f    _c0f   include
